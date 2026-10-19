@@ -9,7 +9,7 @@
   },
   "scripts": {
     "sim": "node src/cli.ts",
-    "test": "node --test test/",
+    "test": "node --test",
     "check": "tsc -p .",
     "sync-ledger": "scripts/sync-ledger.sh"
   },
