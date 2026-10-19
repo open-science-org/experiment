@@ -4,7 +4,7 @@ With the learning oracle, each failed attempt raises the next chance on that res
 
 - **Date:** 2026-10-17
 - **Code:** commit `3b82e1b`
-- **Experiment:** [sim/experiments/failures.yaml](../../experiments/failures.yaml)
+- **Experiment:** [config/experiments/failures.yaml](../../config/experiments/failures.yaml)
 - **Command:** `npm run sim -- failures --seeds 100 --save`
 - **Runs:** 600 (100 seeds per row), in `runs.jsonl`; the full configuration in `config.json`
 

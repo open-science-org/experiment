@@ -4,7 +4,7 @@ The same settings as `settings`, on the real shape of the Lean problem set (42 r
 
 - **Date:** 2026-10-17
 - **Code:** commit `3b82e1b`
-- **Experiment:** [sim/experiments/lean-tree.yaml](../../experiments/lean-tree.yaml)
+- **Experiment:** [config/experiments/lean-tree.yaml](../../config/experiments/lean-tree.yaml)
 - **Command:** `npm run sim -- lean-tree --seeds 100 --save`
 - **Runs:** 600 (100 seeds per row), in `runs.jsonl`; the full configuration in `config.json`
 

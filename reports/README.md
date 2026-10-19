@@ -1,6 +1,6 @@
 # Problem-space reports
 
-Every problem space in [sim/spaces/](../spaces/) gets the same canonical report: the same experiments, the same sections, the same figures. Add a space by hand or with `npm run sim -- new "<description>"`, then `npm run sim -- report <id>`.
+Every problem space in [spaces/](../spaces/) gets the same canonical report: the same experiments, the same sections, the same figures. Add a space by hand or with `npm run sim -- new "<description>"`, then `npm run sim -- report <id>`.
 
 **α\*** is the highest α at which agents who choose clearly share more (by 0.2) than at α = 1; "–" means not within α ≥ 0.1.
 

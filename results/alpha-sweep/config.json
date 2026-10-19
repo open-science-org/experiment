@@ -10,7 +10,7 @@
     "experiment": {
       "id": "alpha-sweep",
       "title": "α sweep under agent's-choice visibility",
-      "description": "Agents choose whether to publish each lemma (section 2.5 of sim/README.md). α from 1 (traditional) down to 0.1, with c = 0.15 (c = 0 at α = 1). Default scoop risk ψ = 0.5.",
+      "description": "Agents choose whether to publish each lemma (section 2.5 of docs/simulator.md). α from 1 (traditional) down to 0.1, with c = 0.15 (c = 0 at α = 1). Default scoop risk ψ = 0.5.",
       "seeds": 100,
       "set": {
         "rules": {

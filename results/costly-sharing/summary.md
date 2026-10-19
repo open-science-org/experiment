@@ -4,7 +4,7 @@ Taking up a published result costs `absorbCost` compute, and each proof is wrong
 
 - **Date:** 2026-10-17
 - **Code:** commit `3b82e1b`
-- **Experiment:** [sim/experiments/costly-sharing.yaml](../../experiments/costly-sharing.yaml)
+- **Experiment:** [config/experiments/costly-sharing.yaml](../../config/experiments/costly-sharing.yaml)
 - **Command:** `npm run sim -- costly-sharing --seeds 100 --save`
 - **Runs:** 2400 (100 seeds per row), in `runs.jsonl`; the full configuration in `config.json`
 

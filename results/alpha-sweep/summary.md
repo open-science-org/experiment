@@ -1,10 +1,10 @@
 # α sweep under agent's-choice visibility
 
-Agents choose whether to publish each lemma (section 2.5 of sim/README.md). α from 1 (traditional) down to 0.1, with c = 0.15 (c = 0 at α = 1). Default scoop risk ψ = 0.5.
+Agents choose whether to publish each lemma (section 2.5 of docs/simulator.md). α from 1 (traditional) down to 0.1, with c = 0.15 (c = 0 at α = 1). Default scoop risk ψ = 0.5.
 
 - **Date:** 2026-10-17
 - **Code:** commit `d369863`
-- **Experiment:** [sim/experiments/alpha-sweep.yaml](../../experiments/alpha-sweep.yaml)
+- **Experiment:** [config/experiments/alpha-sweep.yaml](../../config/experiments/alpha-sweep.yaml)
 - **Command:** `npm run sim -- alpha-sweep --seeds 100 --save`
 - **Runs:** 1000 (100 seeds per row), in `runs.jsonl`; the full configuration in `config.json`
 

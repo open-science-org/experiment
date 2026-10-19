@@ -1,6 +1,6 @@
 """Turns the Lean problem set's reference DAG into a world file for the simulator.
 
-    python3 sim/worlds/from-reference-dag.py problems/reference-dag.md sim/worlds/lean-reference.json
+    python3 worlds/from-reference-dag.py lean/reference-dag.md worlds/lean-reference.json
 
 Theorem names are replaced by anonymous ids (area letter and number), so the file shows the shape of
 the reference tree without the lemma statements. Posted targets keep their public ids (A3, B5, ...)

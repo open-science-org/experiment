@@ -1,0 +1,26 @@
+{
+  "name": "oso-experiment",
+  "version": "0.1.0",
+  "description": "Does OSO beat traditional research for the same money? Simulated research communities, problem spaces and canonical reports",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "sim": "node src/cli.ts",
+    "test": "node --test test/",
+    "check": "tsc -p .",
+    "sync-ledger": "scripts/sync-ledger.sh"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.135.0",
+    "yaml": "^2.9.1"
+  },
+  "devDependencies": {
+    "@noble/curves": "^2.4.0",
+    "@noble/hashes": "^2.4.0",
+    "@types/node": "^26.6.5",
+    "typescript": "~5.9"
+  }
+}

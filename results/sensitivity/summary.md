@@ -4,7 +4,7 @@ Traditional and OSO (immediate) under four variants. Under traditional rules onl
 
 - **Date:** 2026-10-17
 - **Code:** commit `d369863`
-- **Experiment:** [sim/experiments/sensitivity.yaml](../../experiments/sensitivity.yaml)
+- **Experiment:** [config/experiments/sensitivity.yaml](../../config/experiments/sensitivity.yaml)
 - **Command:** `npm run sim -- sensitivity --seeds 100 --save`
 - **Runs:** 800 (100 seeds per row), in `runs.jsonl`; the full configuration in `config.json`
 

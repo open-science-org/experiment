@@ -1,10 +1,10 @@
 # The simple model: one chain, shared vs. hidden progress
 
-A single chain of 300 results, each with success chance p = 0.2 per attempt; N identical agents; X = 640 attempts in total, one per agent per round. Shared: every result is published and taken up at once. Hidden: nothing is published until the end of the chain, which no one reaches. Measure: the deepest result proved by anyone. The exact values come from sim/analytic.ts.
+A single chain of 300 results, each with success chance p = 0.2 per attempt; N identical agents; X = 640 attempts in total, one per agent per round. Shared: every result is published and taken up at once. Hidden: nothing is published until the end of the chain, which no one reaches. Measure: the deepest result proved by anyone. The exact values come from src/experiments/analytic.ts.
 
 - **Date:** 2026-10-17
 - **Code:** commit `d369863`
-- **Experiment:** [sim/experiments/simple.yaml](../../experiments/simple.yaml)
+- **Experiment:** [config/experiments/simple.yaml](../../config/experiments/simple.yaml)
 - **Command:** `npm run sim -- simple --seeds 1000 --save`
 - **Runs:** 10000 (1000 seeds per row), in `runs.jsonl`; the full configuration in `config.json`
 

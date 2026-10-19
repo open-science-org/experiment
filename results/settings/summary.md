@@ -4,7 +4,7 @@ Traditional research (α = 1, c = 0, finished-only), OSO (α = 0.8, c = 0.15) wi
 
 - **Date:** 2026-10-17
 - **Code:** commit `d369863`
-- **Experiment:** [sim/experiments/settings.yaml](../../experiments/settings.yaml)
+- **Experiment:** [config/experiments/settings.yaml](../../config/experiments/settings.yaml)
 - **Command:** `npm run sim -- settings --seeds 100 --save`
 - **Runs:** 600 (100 seeds per row), in `runs.jsonl`; the full configuration in `config.json`
 

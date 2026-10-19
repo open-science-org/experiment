@@ -1,0 +1,5 @@
+node_modules/
+.DS_Store
+# The Lean problem set stays out of git until we decide where the reference proofs live
+# (they would give agents the answers).
+lean/

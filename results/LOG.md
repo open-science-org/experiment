@@ -1,6 +1,8 @@
 # Simulation log
 
-One line per saved experiment, newest last. Findings are discussed in [../README.md](../README.md#results).
+One line per saved experiment, newest last. Findings are discussed in [the simulator doc](../docs/simulator.md#5-results).
+
+Runs up to 2026-10-19 were made when the simulator lived in `sim/` of [open-science-org/app](https://github.com/open-science-org/app); their commits are app commits. Every one of them reproduces exactly in this repository.
 
 | Date | Experiment | Commit | Seeds | Command |
 | --- | --- | --- | --- | --- |

@@ -4,7 +4,7 @@ The Lean reference tree; every agent learns from failure (learning oracle, gain 
 
 - **Date:** 2026-10-17
 - **Code:** commit `3b82e1b`
-- **Experiment:** [sim/experiments/complex.yaml](../../experiments/complex.yaml)
+- **Experiment:** [config/experiments/complex.yaml](../../config/experiments/complex.yaml)
 - **Command:** `npm run sim -- complex --seeds 100 --save`
 - **Runs:** 800 (100 seeds per row), in `runs.jsonl`; the full configuration in `config.json`
 

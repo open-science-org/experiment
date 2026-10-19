@@ -4,7 +4,7 @@ Agent's-choice visibility. ψ is how much publishing a lemma raises a rival's ch
 
 - **Date:** 2026-10-17
 - **Code:** commit `d369863`
-- **Experiment:** [sim/experiments/alpha-psi.yaml](../../experiments/alpha-psi.yaml)
+- **Experiment:** [config/experiments/alpha-psi.yaml](../../config/experiments/alpha-psi.yaml)
 - **Command:** `npm run sim -- alpha-psi --seeds 100 --save`
 - **Runs:** 2700 (100 seeds per row), in `runs.jsonl`; the full configuration in `config.json`
 
