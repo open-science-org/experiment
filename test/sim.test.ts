@@ -271,9 +271,9 @@ test('the canonical report has the same sections for every space', async () => {
   const spec = { ...space.spec, id: 'test-report' };
   const h = buildReport({ spec, scenario: space.scenario }, 4, () => {}, REPORTS_DIR);
   const md = readFileSync(join(REPORTS_DIR, 'test-report', 'report.md'), 'utf8');
-  for (const heading of ['## 1. The problem space', '## 2. Progress for the money', '## 3. The six settings', '## 4. Does flow-back make agents share?', '## 5. When sharing is costly or sometimes wrong', '## What this shows and what it does not', '## Reproduce']) {
+  for (const heading of ['## 1. The problem space', '## 2. Progress for the money', '## 3. The six settings', '## 4. Does flow-back make agents share?', '## 5. When sharing is costly or sometimes wrong', '## 6. Sensitivity to the parameters', '## What this shows and what it does not', '## Reproduce']) {
     assert.ok(md.includes(heading), heading);
   }
-  for (const f of ['figures/frontier.svg', 'figures/alpha.svg', 'figures/world.svg', 'data.json']) assert.ok(existsSync(join(REPORTS_DIR, 'test-report', f)), f);
+  for (const f of ['figures/frontier.svg', 'figures/alpha.svg', 'figures/world.svg', 'figures/sensitivity.svg', 'figures/flow-back-grid.svg', 'data.json']) assert.ok(existsSync(join(REPORTS_DIR, 'test-report', f)), f);
   assert.ok(['OSO ahead', 'no clear difference', 'traditional ahead'].includes(h.verdict));
 });

@@ -37,6 +37,7 @@ npm run sim -- check my-space.yaml                   # validate a hand-written s
   - the six rule settings;
   - whether flow-back makes agents share;
   - robustness when sharing is costly or sometimes wrong;
+  - sensitivity to each parameter: those communities, funders or the protocol set (they will be market-driven, so the result must hold across them) and those we guessed;
   - what it shows and does not;
   - how to reproduce.
 

@@ -43,8 +43,80 @@
     "osoLead": 4.51
    }
   ],
+  "sensitivity": [
+   {
+    "parameter": "α, retention",
+    "group": "market",
+    "min": 2.5699999999999994,
+    "max": 3.29,
+    "base": 0.8
+   },
+   {
+    "parameter": "c, cited share of the mint",
+    "group": "market",
+    "min": 2.67,
+    "max": 2.8599999999999994,
+    "base": 0.15
+   },
+   {
+    "parameter": "mint per result",
+    "group": "market",
+    "min": 2.2600000000000002,
+    "max": 4.18,
+    "base": 1
+   },
+   {
+    "parameter": "θ, validation screen",
+    "group": "market",
+    "min": 2.32,
+    "max": 2.7199999999999998,
+    "base": 0.5
+   },
+   {
+    "parameter": "ρ, compute follows earnings",
+    "group": "market",
+    "min": 0.25,
+    "max": 4.37,
+    "base": 0.5
+   },
+   {
+    "parameter": "ψ, scoop risk",
+    "group": "guess",
+    "min": 2.66,
+    "max": 3.29,
+    "base": 0.5
+   },
+   {
+    "parameter": "κ, value of being used",
+    "group": "guess",
+    "min": 2.5999999999999996,
+    "max": 2.92,
+    "base": 1
+   },
+   {
+    "parameter": "σ₀, perception noise",
+    "group": "guess",
+    "min": 2.0300000000000002,
+    "max": 3,
+    "base": 1
+   },
+   {
+    "parameter": "τ, choice randomness",
+    "group": "guess",
+    "min": 1.12,
+    "max": 4.52,
+    "base": 0.3
+   },
+   {
+    "parameter": "attribution error",
+    "group": "guess",
+    "min": 2.67,
+    "max": 2.84,
+    "base": 0
+   }
+  ],
   "seeds": 100,
-  "commit": "17604d1",
+  "commit": "44f5044+",
   "date": "2026-10-19"
  },
  "settings": [
@@ -211,6 +283,530 @@
    "OSO lead": "+4.5",
    "traditional targets": "0.2",
    "OSO targets": "0.9"
+  }
+ ],
+ "sensitivity": [
+  {
+   "parameter": "α, retention",
+   "value": "0.2",
+   "OSO frontier": "6.0",
+   "traditional frontier": "2.7",
+   "OSO lead": "+3.3",
+   "OSO targets": "2.6",
+   "traditional targets": "0.7",
+   "results shared": "85%"
+  },
+  {
+   "parameter": "α, retention",
+   "value": "0.4",
+   "OSO frontier": "5.9",
+   "traditional frontier": "2.7",
+   "OSO lead": "+3.2",
+   "OSO targets": "2.2",
+   "traditional targets": "0.7",
+   "results shared": "66%"
+  },
+  {
+   "parameter": "α, retention",
+   "value": "0.6",
+   "OSO frontier": "5.6",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.9",
+   "OSO targets": "1.4",
+   "traditional targets": "0.7",
+   "results shared": "46%"
+  },
+  {
+   "parameter": "α, retention",
+   "value": "0.8 (this space)",
+   "OSO frontier": "5.4",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.7",
+   "OSO targets": "1.0",
+   "traditional targets": "0.7",
+   "results shared": "41%"
+  },
+  {
+   "parameter": "α, retention",
+   "value": "0.95",
+   "OSO frontier": "5.3",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.6",
+   "OSO targets": "0.9",
+   "traditional targets": "0.7",
+   "results shared": "40%"
+  },
+  {
+   "parameter": "c, cited share of the mint",
+   "value": "0%",
+   "OSO frontier": "5.6",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.9",
+   "OSO targets": "1.0",
+   "traditional targets": "0.7",
+   "results shared": "43%"
+  },
+  {
+   "parameter": "c, cited share of the mint",
+   "value": "5%",
+   "OSO frontier": "5.5",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.8",
+   "OSO targets": "1.1",
+   "traditional targets": "0.7",
+   "results shared": "41%"
+  },
+  {
+   "parameter": "c, cited share of the mint",
+   "value": "15% (this space)",
+   "OSO frontier": "5.4",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.7",
+   "OSO targets": "1.0",
+   "traditional targets": "0.7",
+   "results shared": "41%"
+  },
+  {
+   "parameter": "c, cited share of the mint",
+   "value": "30%",
+   "OSO frontier": "5.4",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.7",
+   "OSO targets": "0.9",
+   "traditional targets": "0.7",
+   "results shared": "41%"
+  },
+  {
+   "parameter": "c, cited share of the mint",
+   "value": "50%",
+   "OSO frontier": "5.4",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.7",
+   "OSO targets": "0.9",
+   "traditional targets": "0.7",
+   "results shared": "41%"
+  },
+  {
+   "parameter": "mint per result",
+   "value": "0",
+   "OSO frontier": "5.0",
+   "traditional frontier": "0.8",
+   "OSO lead": "+4.2",
+   "OSO targets": "0.5",
+   "traditional targets": "0.2",
+   "results shared": "42%"
+  },
+  {
+   "parameter": "mint per result",
+   "value": "0.5",
+   "OSO frontier": "5.5",
+   "traditional frontier": "2.8",
+   "OSO lead": "+2.7",
+   "OSO targets": "1.0",
+   "traditional targets": "0.7",
+   "results shared": "41%"
+  },
+  {
+   "parameter": "mint per result",
+   "value": "1 (this space)",
+   "OSO frontier": "5.4",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.7",
+   "OSO targets": "1.0",
+   "traditional targets": "0.7",
+   "results shared": "41%"
+  },
+  {
+   "parameter": "mint per result",
+   "value": "2",
+   "OSO frontier": "5.5",
+   "traditional frontier": "2.9",
+   "OSO lead": "+2.5",
+   "OSO targets": "1.1",
+   "traditional targets": "0.8",
+   "results shared": "41%"
+  },
+  {
+   "parameter": "mint per result",
+   "value": "4",
+   "OSO frontier": "5.4",
+   "traditional frontier": "3.2",
+   "OSO lead": "+2.3",
+   "OSO targets": "1.0",
+   "traditional targets": "0.8",
+   "results shared": "43%"
+  },
+  {
+   "parameter": "θ, validation screen",
+   "value": "0%",
+   "OSO frontier": "5.4",
+   "traditional frontier": "3.1",
+   "OSO lead": "+2.3",
+   "OSO targets": "1.1",
+   "traditional targets": "0.8",
+   "results shared": "42%"
+  },
+  {
+   "parameter": "θ, validation screen",
+   "value": "25%",
+   "OSO frontier": "5.6",
+   "traditional frontier": "2.9",
+   "OSO lead": "+2.7",
+   "OSO targets": "1.1",
+   "traditional targets": "0.7",
+   "results shared": "42%"
+  },
+  {
+   "parameter": "θ, validation screen",
+   "value": "50% (this space)",
+   "OSO frontier": "5.4",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.7",
+   "OSO targets": "1.0",
+   "traditional targets": "0.7",
+   "results shared": "41%"
+  },
+  {
+   "parameter": "θ, validation screen",
+   "value": "75%",
+   "OSO frontier": "5.4",
+   "traditional frontier": "2.8",
+   "OSO lead": "+2.7",
+   "OSO targets": "1.0",
+   "traditional targets": "0.6",
+   "results shared": "41%"
+  },
+  {
+   "parameter": "θ, validation screen",
+   "value": "95%",
+   "OSO frontier": "5.5",
+   "traditional frontier": "3.1",
+   "OSO lead": "+2.4",
+   "OSO targets": "1.3",
+   "traditional targets": "0.8",
+   "results shared": "43%"
+  },
+  {
+   "parameter": "ρ, compute follows earnings",
+   "value": "0%",
+   "OSO frontier": "5.0",
+   "traditional frontier": "0.6",
+   "OSO lead": "+4.4",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "results shared": "42%"
+  },
+  {
+   "parameter": "ρ, compute follows earnings",
+   "value": "25%",
+   "OSO frontier": "5.0",
+   "traditional frontier": "1.2",
+   "OSO lead": "+3.8",
+   "OSO targets": "0.4",
+   "traditional targets": "0.2",
+   "results shared": "41%"
+  },
+  {
+   "parameter": "ρ, compute follows earnings",
+   "value": "50% (this space)",
+   "OSO frontier": "5.4",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.7",
+   "OSO targets": "1.0",
+   "traditional targets": "0.7",
+   "results shared": "41%"
+  },
+  {
+   "parameter": "ρ, compute follows earnings",
+   "value": "75%",
+   "OSO frontier": "5.9",
+   "traditional frontier": "5.2",
+   "OSO lead": "+0.7",
+   "OSO targets": "1.5",
+   "traditional targets": "1.8",
+   "results shared": "42%"
+  },
+  {
+   "parameter": "ρ, compute follows earnings",
+   "value": "100%",
+   "OSO frontier": "6.0",
+   "traditional frontier": "5.7",
+   "OSO lead": "+0.3",
+   "OSO targets": "2.5",
+   "traditional targets": "2.3",
+   "results shared": "41%"
+  },
+  {
+   "parameter": "ψ, scoop risk",
+   "value": "0",
+   "OSO frontier": "6.0",
+   "traditional frontier": "2.7",
+   "OSO lead": "+3.3",
+   "OSO targets": "2.8",
+   "traditional targets": "0.7",
+   "results shared": "99%"
+  },
+  {
+   "parameter": "ψ, scoop risk",
+   "value": "0.25",
+   "OSO frontier": "5.6",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.9",
+   "OSO targets": "1.2",
+   "traditional targets": "0.7",
+   "results shared": "43%"
+  },
+  {
+   "parameter": "ψ, scoop risk",
+   "value": "0.5 (this space)",
+   "OSO frontier": "5.4",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.7",
+   "OSO targets": "1.0",
+   "traditional targets": "0.7",
+   "results shared": "41%"
+  },
+  {
+   "parameter": "ψ, scoop risk",
+   "value": "0.75",
+   "OSO frontier": "5.4",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.7",
+   "OSO targets": "0.9",
+   "traditional targets": "0.7",
+   "results shared": "40%"
+  },
+  {
+   "parameter": "ψ, scoop risk",
+   "value": "0.9",
+   "OSO frontier": "5.4",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.7",
+   "OSO targets": "0.9",
+   "traditional targets": "0.7",
+   "results shared": "40%"
+  },
+  {
+   "parameter": "κ, value of being used",
+   "value": "0",
+   "OSO frontier": "5.3",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.6",
+   "OSO targets": "0.9",
+   "traditional targets": "0.7",
+   "results shared": "40%"
+  },
+  {
+   "parameter": "κ, value of being used",
+   "value": "0.5",
+   "OSO frontier": "5.3",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.6",
+   "OSO targets": "0.9",
+   "traditional targets": "0.7",
+   "results shared": "40%"
+  },
+  {
+   "parameter": "κ, value of being used",
+   "value": "1 (this space)",
+   "OSO frontier": "5.4",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.7",
+   "OSO targets": "1.0",
+   "traditional targets": "0.7",
+   "results shared": "41%"
+  },
+  {
+   "parameter": "κ, value of being used",
+   "value": "2",
+   "OSO frontier": "5.6",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.9",
+   "OSO targets": "1.1",
+   "traditional targets": "0.7",
+   "results shared": "43%"
+  },
+  {
+   "parameter": "κ, value of being used",
+   "value": "4",
+   "OSO frontier": "5.6",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.9",
+   "OSO targets": "1.2",
+   "traditional targets": "0.7",
+   "results shared": "46%"
+  },
+  {
+   "parameter": "σ₀, perception noise",
+   "value": "0",
+   "OSO frontier": "5.2",
+   "traditional frontier": "2.8",
+   "OSO lead": "+2.4",
+   "OSO targets": "0.9",
+   "traditional targets": "0.7",
+   "results shared": "36%"
+  },
+  {
+   "parameter": "σ₀, perception noise",
+   "value": "0.5",
+   "OSO frontier": "5.2",
+   "traditional frontier": "3.1",
+   "OSO lead": "+2.0",
+   "OSO targets": "0.7",
+   "traditional targets": "0.8",
+   "results shared": "38%"
+  },
+  {
+   "parameter": "σ₀, perception noise",
+   "value": "1 (this space)",
+   "OSO frontier": "5.4",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.7",
+   "OSO targets": "1.0",
+   "traditional targets": "0.7",
+   "results shared": "41%"
+  },
+  {
+   "parameter": "σ₀, perception noise",
+   "value": "2",
+   "OSO frontier": "5.7",
+   "traditional frontier": "2.7",
+   "OSO lead": "+3.0",
+   "OSO targets": "1.2",
+   "traditional targets": "0.6",
+   "results shared": "48%"
+  },
+  {
+   "parameter": "τ, choice randomness",
+   "value": "0.05",
+   "OSO frontier": "5.5",
+   "traditional frontier": "4.4",
+   "OSO lead": "+1.2",
+   "OSO targets": "1.4",
+   "traditional targets": "1.1",
+   "results shared": "32%"
+  },
+  {
+   "parameter": "τ, choice randomness",
+   "value": "0.15",
+   "OSO frontier": "5.4",
+   "traditional frontier": "4.3",
+   "OSO lead": "+1.1",
+   "OSO targets": "1.4",
+   "traditional targets": "1.0",
+   "results shared": "32%"
+  },
+  {
+   "parameter": "τ, choice randomness",
+   "value": "0.3 (this space)",
+   "OSO frontier": "5.4",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.7",
+   "OSO targets": "1.0",
+   "traditional targets": "0.7",
+   "results shared": "41%"
+  },
+  {
+   "parameter": "τ, choice randomness",
+   "value": "0.6",
+   "OSO frontier": "5.6",
+   "traditional frontier": "1.7",
+   "OSO lead": "+3.9",
+   "OSO targets": "0.6",
+   "traditional targets": "0.4",
+   "results shared": "47%"
+  },
+  {
+   "parameter": "τ, choice randomness",
+   "value": "1",
+   "OSO frontier": "5.6",
+   "traditional frontier": "1.1",
+   "OSO lead": "+4.5",
+   "OSO targets": "0.4",
+   "traditional targets": "0.3",
+   "results shared": "50%"
+  },
+  {
+   "parameter": "attribution error",
+   "value": "0 (this space)",
+   "OSO frontier": "5.4",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.7",
+   "OSO targets": "1.0",
+   "traditional targets": "0.7",
+   "results shared": "41%"
+  },
+  {
+   "parameter": "attribution error",
+   "value": "0.1",
+   "OSO frontier": "5.5",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.8",
+   "OSO targets": "1.0",
+   "traditional targets": "0.7",
+   "results shared": "41%"
+  },
+  {
+   "parameter": "attribution error",
+   "value": "0.3",
+   "OSO frontier": "5.5",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.8",
+   "OSO targets": "1.0",
+   "traditional targets": "0.7",
+   "results shared": "41%"
+  },
+  {
+   "parameter": "attribution error",
+   "value": "0.6",
+   "OSO frontier": "5.5",
+   "traditional frontier": "2.7",
+   "OSO lead": "+2.8",
+   "OSO targets": "1.0",
+   "traditional targets": "0.7",
+   "results shared": "41%"
+  }
+ ],
+ "flowBackGrid": [
+  {
+   "α \\ c": 0.95,
+   "0%": "41% · 5.5",
+   "5%": "40% · 5.4",
+   "15%": "40% · 5.3",
+   "30%": "40% · 5.4",
+   "50%": "40% · 5.5"
+  },
+  {
+   "α \\ c": 0.8,
+   "0%": "43% · 5.6",
+   "5%": "41% · 5.5",
+   "15%": "41% · 5.4",
+   "30%": "41% · 5.4",
+   "50%": "41% · 5.4"
+  },
+  {
+   "α \\ c": 0.6,
+   "0%": "46% · 5.6",
+   "5%": "45% · 5.7",
+   "15%": "46% · 5.6",
+   "30%": "46% · 5.6",
+   "50%": "44% · 5.7"
+  },
+  {
+   "α \\ c": 0.4,
+   "0%": "67% · 5.9",
+   "5%": "66% · 5.9",
+   "15%": "66% · 5.9",
+   "30%": "66% · 5.9",
+   "50%": "66% · 5.9"
+  },
+  {
+   "α \\ c": 0.2,
+   "0%": "86% · 6.0",
+   "5%": "85% · 6.0",
+   "15%": "85% · 6.0",
+   "30%": "86% · 6.0",
+   "50%": "85% · 6.0"
   }
  ],
  "curves": {

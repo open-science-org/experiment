@@ -4,9 +4,11 @@
 import { execSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { battery, KNOWLEDGE_LEVELS } from './battery.ts';
+import { battery, GRID, KNOWLEDGE_LEVELS, SENSITIVITY, sensitivityBattery } from './battery.ts';
+import { getPath, loadScenario, expandPaths } from '../engine/config.ts';
+import { preset } from '../experiments/experiment.ts';
 import { runExperiment, type Output } from '../experiments/experiment.ts';
-import { lineChart, worldFigure } from './figures.ts';
+import { heatmap, lineChart, rangeChart, worldFigure, type RangeRow } from './figures.ts';
 import { mean, sd, type RunResult } from '../engine/measures.ts';
 import { Rng } from '../engine/rng.ts';
 import { spaceIds, spaceToYaml, withCalibratedBudget, type Space } from '../spaces/spaces.ts';
@@ -68,6 +70,8 @@ export interface Headline {
   osoChoice: { frontier: number; sharing: number };
   alphaStar: number | null;
   robustness: { condition: string; osoLead: number }[];
+  /** OSO's (choice) lead in level over traditional across each parameter's tested values. */
+  sensitivity: { parameter: string; group: string; min: number; max: number; base: number }[];
   seeds: number;
   commit: string;
   date: string;
@@ -98,7 +102,7 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
   const world = worlds.create(scenario.world, 'world')(scenario.success, new Rng(1).fork(1));
 
   const outputs: Record<string, Output> = {};
-  for (const exp of battery(space, seeds)) {
+  for (const exp of [...battery(space, seeds), ...sensitivityBattery(space, seeds)]) {
     const t0 = Date.now();
     outputs[exp.id] = runExperiment(exp, seeds);
     log(`  ${exp.title}: ${outputs[exp.id].rows.length} rows × ${seeds} runs (${((Date.now() - t0) / 1000).toFixed(1)}s)`);
@@ -172,6 +176,53 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
   }));
   writeFileSync(join(outDir, 'figures', 'world.svg'), worldFigure(world, `The research tree: ${spec.title}`, spec.areas));
 
+  // Sensitivity: OSO (agents choose what to share) against traditional, one parameter at a time.
+  const choiceScenario = loadScenario(spec.scenarioFile ?? null, expandPaths(spec.scenario ?? {}), preset('osoChoice'));
+  const sens = SENSITIVITY.map((p) => {
+    const o = outputs[`sensitivity-${p.id}`];
+    const fmtV = p.format ?? ((v: number) => String(v));
+    const points = p.values.map((v) => {
+      const c = summarize(byLabel(o, { setting: 'OSO (choice)', [p.id]: v }));
+      const t = p.osoOnly ? trad : summarize(byLabel(o, { setting: 'Traditional', [p.id]: v }));
+      return { v, value: fmtV(v), oso: c, trad: t, lead: c.frontier - t.frontier, leadSE: Math.hypot(c.frontierSE, t.frontierSE), targetLead: c.targetsSolved - t.targetsSolved };
+    });
+    const leads = points.map((q) => q.lead);
+    return { p, points, base: getPath(choiceScenario, p.path) as number, baseLead: choice.frontier - trad.frontier, min: Math.min(...leads), max: Math.max(...leads) };
+  });
+  const groupName = { market: 'Set by communities, funders or the protocol', guess: 'Guessed: how agents think and see' };
+  writeFileSync(join(outDir, 'figures', 'sensitivity.svg'), rangeChart({
+    title: "How OSO's lead depends on each parameter",
+    subtitle: `OSO with agents choosing what to share, minus traditional: hardest level reached (${seeds} runs per value). Right of 0: OSO ahead.`,
+    xLabel: 'OSO lead in hardest level reached',
+    rows: sens.map((x): RangeRow => ({ label: x.p.label, group: groupName[x.p.group], points: x.points.map((q) => ({ value: q.value, y: q.lead })), base: x.baseLead })),
+    format: (v) => (v > 0 ? '+' : '') + v.toFixed(1),
+  }));
+  const grid = outputs.grid;
+  const gridCell = (a: number, c: number) => summarize(byLabel(grid, { 'α': a, c }));
+  const cFmt = (v: number) => `${Math.round(v * 100)}%`;
+  writeFileSync(join(outDir, 'figures', 'flow-back-grid.svg'), heatmap({
+    title: 'The flow-back levers together',
+    subtitle: 'Share of intermediate results agents choose to publish; below it, the hardest level reached.',
+    rowLabel: 'α, retention', colLabel: 'c, cited share of the mint',
+    rows: GRID.alpha.map(String), cols: GRID.c.map(cFmt),
+    values: GRID.alpha.map((a) => GRID.c.map((c) => gridCell(a, c).sharing)), range: [0, 1],
+    format: (v) => pct(v), note: (r, k) => `level ${f1(gridCell(GRID.alpha[r], GRID.c[k]).frontier)}`,
+  }));
+  const market = sens.filter((x) => x.p.group === 'market');
+  const mostSensitive = market.reduce((a, b) => (b.max - b.min > a.max - a.min ? b : a));
+  const marketMin = market.reduce((a, b) => (b.min < a.min ? b : a));
+  const worst = marketMin.points.reduce((a, b) => (b.lead < a.lead ? b : a));
+  const worstText = worst.lead > 2 * worst.leadSE ? 'still clearly positive'
+    : worst.lead < -2 * worst.leadSE ? '**negative: traditional research is ahead there**'
+    : '**within noise: no clear difference there**';
+  const sensRows = sens.flatMap((x) => x.points.map((q) => ({
+    parameter: x.p.label, value: q.value + (q.v === x.base ? ' (this space)' : ''),
+    'OSO frontier': f1(q.oso.frontier), 'traditional frontier': f1(q.trad.frontier), 'OSO lead': (q.lead >= 0 ? '+' : '') + f1(q.lead),
+    'OSO targets': f1(q.oso.targetsSolved), 'traditional targets': f1(q.trad.targetsSolved), 'results shared': pct(q.oso.sharing),
+  })));
+  const gridTable = GRID.alpha.map((a) => ({ 'α \\ c': a, ...Object.fromEntries(GRID.c.map((c) => { const g = gridCell(a, c); return [cFmt(c), `${pct(g.sharing)} · ${f1(g.frontier)}`]; })) }));
+  const sensitivityLine = `Across the tested values of the parameters a market or community sets, OSO's lead (agents choosing what to share) runs from **${marketMin.min >= 0 ? '+' : ''}${f1(marketMin.min)}** to **+${f1(Math.max(...market.map((x) => x.max)))}** levels. The smallest lead, at ${marketMin.p.label} = ${worst.value}, is ${worstText}. The lead is most sensitive to **${mostSensitive.p.label}**.`;
+
   const { commit, dirty } = git();
   const date = new Date().toISOString().slice(0, 10);
   const headline: Headline = {
@@ -180,6 +231,7 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
     oso: { frontier: oso.frontier, reach: oso.reach, cost: oso.cost, targetsSolved: oso.targetsSolved },
     osoChoice: { frontier: choice.frontier, sharing: choice.sharing },
     alphaStar, robustness: robustness.map((r) => ({ condition: r.condition, osoLead: r.osoLead })),
+    sensitivity: sens.map((x) => ({ parameter: x.p.label, group: x.p.group, min: x.min, max: x.max, base: x.base })),
     seeds, commit: dirty ? `${commit}+` : commit, date,
   };
 
@@ -218,6 +270,7 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
 - **Cost to reach level ${L}:** ${costLine(oso, 'OSO')}; ${costLine(trad, 'traditional')}.
 - **Does flow-back make agents share?** ${alphaStar !== null ? `When agents choose, sharing rises clearly (by 0.2 or more) once α is ${alphaStar} or lower.` : 'When agents choose, sharing does not rise clearly (by 0.2) for any α down to 0.1.'} At OSO's default α = 0.8, agents shared ${pct(choice.sharing)} of their intermediate results.
 - **Robustness:** OSO's lead in level is ${weakest.osoLead >= 0 ? 'smallest' : 'reversed'} when shared knowledge is **${weakest.condition}** (${weakest.osoLead >= 0 ? '+' : ''}${f1(weakest.osoLead)} levels).
+- **Sensitivity:** ${sensitivityLine}
 
 *${verdictRule} ${seeds} simulated runs per setting · simulator commit \`${headline.commit}\` · ${date}. This is a simulation with guessed parameters, not evidence about real research; see [What this shows](#what-this-shows-and-what-it-does-not).*
 
@@ -271,10 +324,38 @@ Absorbing a published result costs 0.5 compute; proofs are wrong 10% of the time
 
 ${markdownTable(robTable)}
 
+## 6. Sensitivity to the parameters
+
+In OSO, α and c are set by each community ([OIP-14](https://github.com/open-science-org/OIPs/blob/master/OIPS/oip-14.md)), validators decide how strict the screen is, funders decide how far compute follows earnings, and the mint may become a community parameter ([OIP-8](https://github.com/open-science-org/OIPs/blob/master/OIPS/oip-8.md)). Their values will be set by competing communities, not by us, so the result must hold across them. The parameters below the line are our guesses about how agents think.
+
+Each parameter is varied alone, from this space's settings, with agents choosing what to share (the realistic case: incentives matter only if sharing is a choice). The lead is OSO's hardest level reached minus traditional's under the same parameter value; α and c do not exist under traditional rules, so there it is compared with traditional's default.
+
+![OSO's lead by parameter](figures/sensitivity.svg)
+
+${sensitivityLine}
+
+| parameter | means | tested | OSO lead (lowest to highest) |
+| --- | --- | --- | --- |
+${sens.map((x) => `| ${x.p.label} | ${x.p.meaning} | ${x.points.map((q) => q.value).join(', ')} | ${x.min >= 0 ? '+' : ''}${f1(x.min)} to ${x.max >= 0 ? '+' : ''}${f1(x.max)} |`).join('\n')}
+
+The two flow-back levers together:
+
+![Sharing by α and c](figures/flow-back-grid.svg)
+
+${markdownTable(gridTable)}
+
+Each cell: share of intermediate results published · hardest level reached.
+
+<details><summary>Every tested value</summary>
+
+${markdownTable(sensRows)}
+
+</details>
+
 ## What this shows and what it does not
 
 - **It is a simulation** of the [OSO demo specification](https://github.com/open-science-org/OSO/blob/master/docs/demo-model.md): results are abstract, success is chance, and agents follow a formula. It shows how the incentive rules play out *if* this space works as described, not that it does.
-- **The parameters are guesses,** especially the success chances, the scoop risk ψ, and the costs and error rates in section 5.
+- **The parameters are guesses,** especially the success chances, the scoop risk ψ, and the costs and error rates in section 5. Section 6 varies each one alone; it does not vary them together, except α and c.
 - **By default, sharing is free and always correct,** which favours OSO; section 5 shows how much of the lead survives without that.
 ${spec.notes ? `- **Notes for this space:** ${spec.notes}\n` : ''}
 ## Reproduce
@@ -289,7 +370,7 @@ The space is [spaces/${spec.id}.yaml](../../spaces/${spec.id}.yaml)${spec.source
   writeFileSync(join(outDir, 'space.yaml'), spaceToYaml(spec));
   writeFileSync(join(outDir, 'data.json'), JSON.stringify({
     headline,
-    settings: settings.table, alpha: alphaTable, robustness: robTable,
+    settings: settings.table, alpha: alphaTable, robustness: robTable, sensitivity: sensRows, flowBackGrid: gridTable,
     curves: Object.fromEntries(['Traditional', 'OSO (immediate)', 'OSO (choice)'].map((l) => [l, frontierCurve(curveRuns(l), X)])),
     world: { results: world.n, levels: world.levels, targets: T, deadEnds },
   }, null, 1) + '\n');
@@ -312,12 +393,15 @@ export function writeIndex(root = REPORTS_DIR): void {
     'level reached (OSO / traditional)': `${f1(h.oso.frontier)} / ${f1(h.traditional.frontier)} of ${h.maxLevel}`,
     'targets solved (OSO / traditional)': `${f1(h.oso.targetsSolved)} / ${f1(h.traditional.targetsSolved)} of ${h.targets}`,
     'α*': h.alphaStar ?? '–',
+    'OSO lead across market parameters': h.sensitivity ? (() => { const m = h.sensitivity.filter((x) => x.group === 'market'); return `${f1(Math.min(...m.map((x) => x.min)))} to ${f1(Math.max(...m.map((x) => x.max)))} levels`; })() : '–',
     runs: h.seeds,
     date: h.date,
   }));
   writeFileSync(join(root, 'README.md'), `# Problem-space reports
 
 Every problem space in [spaces/](../spaces/) gets the same canonical report: the same experiments, the same sections, the same figures. Add a space by hand or with \`npm run sim -- new "<description>"\`, then \`npm run sim -- report <id>\`.
+
+**OSO lead across market parameters**: the range of OSO's lead in level (agents choosing what to share) as each community- or funder-set parameter is varied alone (report section 6).
 
 **α\\*** is the highest α at which agents who choose clearly share more (by 0.2) than at α = 1; "–" means not within α ≥ 0.1.
 

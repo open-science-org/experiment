@@ -9,8 +9,9 @@
 - **Cost to reach level 7:** OSO 485 compute; traditional 957 compute (in the 35% of runs that got there).
 - **Does flow-back make agents share?** When agents choose, sharing rises clearly (by 0.2 or more) once α is 0.3 or lower. At OSO's default α = 0.8, agents shared 22% of their intermediate results.
 - **Robustness:** OSO's lead in level is smallest when shared knowledge is **costly to absorb** (+2.0 levels).
+- **Sensitivity:** Across the tested values of the parameters a market or community sets, OSO's lead (agents choosing what to share) runs from **+0.3** to **+1.9** levels. The smallest lead, at ρ, compute follows earnings = 100%, is still clearly positive. The lead is most sensitive to **α, retention**.
 
-*The verdict compares the hardest level reached, the targets solved and (when both communities reach level 7 in at least 90% of runs) the cost to get there, each against two standard errors. 100 simulated runs per setting · simulator commit `17604d1` · 2026-10-19. This is a simulation with guessed parameters, not evidence about real research; see [What this shows](#what-this-shows-and-what-it-does-not).*
+*The verdict compares the hardest level reached, the targets solved and (when both communities reach level 7 in at least 90% of runs) the cost to get there, each against two standard errors. 100 simulated runs per setting · simulator commit `44f5044+` · 2026-10-19. This is a simulation with guessed parameters, not evidence about real research; see [What this shows](#what-this-shows-and-what-it-does-not).*
 
 ## 1. The problem space
 
@@ -101,10 +102,102 @@ Absorbing a published result costs 0.5 compute; proofs are wrong 10% of the time
 | sometimes wrong | 4.9 | 7.4 | +2.5 | 3.3 | 5.4 |
 | costly and sometimes wrong | 4.7 | 6.9 | +2.2 | 3.2 | 4.7 |
 
+## 6. Sensitivity to the parameters
+
+In OSO, α and c are set by each community ([OIP-14](https://github.com/open-science-org/OIPs/blob/master/OIPS/oip-14.md)), validators decide how strict the screen is, funders decide how far compute follows earnings, and the mint may become a community parameter ([OIP-8](https://github.com/open-science-org/OIPs/blob/master/OIPS/oip-8.md)). Their values will be set by competing communities, not by us, so the result must hold across them. The parameters below the line are our guesses about how agents think.
+
+Each parameter is varied alone, from this space's settings, with agents choosing what to share (the realistic case: incentives matter only if sharing is a choice). The lead is OSO's hardest level reached minus traditional's under the same parameter value; α and c do not exist under traditional rules, so there it is compared with traditional's default.
+
+![OSO's lead by parameter](figures/sensitivity.svg)
+
+Across the tested values of the parameters a market or community sets, OSO's lead (agents choosing what to share) runs from **+0.3** to **+1.9** levels. The smallest lead, at ρ, compute follows earnings = 100%, is still clearly positive. The lead is most sensitive to **α, retention**.
+
+| parameter | means | tested | OSO lead (lowest to highest) |
+| --- | --- | --- | --- |
+| α, retention | share of the value reaching a result that it keeps; the rest flows back to what it built on | 0.2, 0.4, 0.6, 0.8, 0.95 | +0.4 to +1.9 |
+| c, cited share of the mint | share of each new mint paid to the results it built on | 0%, 5%, 15%, 30%, 50% | +0.5 to +0.7 |
+| mint per result | tokens minted for each validated result, relative to bounties (the smallest bounty is a few units) | 0, 0.5, 1, 2, 4 | +0.5 to +1.1 |
+| θ, validation screen | chance validators reject a trivial result | 0%, 25%, 50%, 75%, 95% | +0.6 to +1.1 |
+| ρ, compute follows earnings | share of each round's compute funders give by recent earnings rather than equally | 0%, 25%, 50%, 75%, 100% | +0.3 to +0.8 |
+| ψ, scoop risk | how likely agents think a shared lemma lets a rival take the target | 0, 0.25, 0.5, 0.75, 0.9 | +0.6 to +2.3 |
+| κ, value of being used | how much agents think publishing raises a lemma's use | 0, 0.5, 1, 2, 4 | +0.5 to +0.8 |
+| σ₀, perception noise | how noisily agents see the value of what they might attempt | 0, 0.5, 1, 2 | +0.3 to +1.2 |
+| τ, choice randomness | how loosely agents follow their best option | 0.05, 0.15, 0.3, 0.6, 1 | +0.4 to +1.6 |
+| attribution error | noise in the ledger's weights of what each result built on | 0, 0.1, 0.3, 0.6 | +0.6 to +0.7 |
+
+The two flow-back levers together:
+
+![Sharing by α and c](figures/flow-back-grid.svg)
+
+| α \ c | 0% | 5% | 15% | 30% | 50% |
+| --- | --- | --- | --- | --- | --- |
+| 0.95 | 23% · 6.2 | 22% · 6.1 | 22% · 6.1 | 22% · 6.2 | 22% · 6.2 |
+| 0.8 | 24% · 6.4 | 23% · 6.3 | 22% · 6.3 | 23% · 6.3 | 22% · 6.1 |
+| 0.6 | 25% · 6.3 | 25% · 6.6 | 25% · 6.4 | 24% · 6.5 | 25% · 6.5 |
+| 0.4 | 34% · 6.7 | 34% · 6.8 | 34% · 6.9 | 33% · 6.8 | 34% · 6.8 |
+| 0.2 | 65% · 7.5 | 64% · 7.5 | 63% · 7.6 | 62% · 7.5 | 61% · 7.5 |
+
+Each cell: share of intermediate results published · hardest level reached.
+
+<details><summary>Every tested value</summary>
+
+| parameter | value | OSO frontier | traditional frontier | OSO lead | OSO targets | traditional targets | results shared |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| α, retention | 0.2 | 7.6 | 5.7 | +1.9 | 5.9 | 4.2 | 63% |
+| α, retention | 0.4 | 6.9 | 5.7 | +1.2 | 4.7 | 4.2 | 34% |
+| α, retention | 0.6 | 6.4 | 5.7 | +0.8 | 4.4 | 4.2 | 25% |
+| α, retention | 0.8 (this space) | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 22% |
+| α, retention | 0.95 | 6.1 | 5.7 | +0.4 | 4.2 | 4.2 | 22% |
+| c, cited share of the mint | 0% | 6.4 | 5.7 | +0.7 | 4.4 | 4.2 | 24% |
+| c, cited share of the mint | 5% | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 23% |
+| c, cited share of the mint | 15% (this space) | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 22% |
+| c, cited share of the mint | 30% | 6.3 | 5.7 | +0.7 | 4.4 | 4.2 | 23% |
+| c, cited share of the mint | 50% | 6.1 | 5.7 | +0.5 | 4.2 | 4.2 | 22% |
+| mint per result | 0 | 7.0 | 6.5 | +0.5 | 5.4 | 5.3 | 24% |
+| mint per result | 0.5 | 6.3 | 5.6 | +0.6 | 4.4 | 4.1 | 23% |
+| mint per result | 1 (this space) | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 22% |
+| mint per result | 2 | 6.5 | 5.4 | +1.1 | 4.5 | 3.9 | 23% |
+| mint per result | 4 | 6.4 | 5.6 | +0.8 | 4.5 | 4.1 | 26% |
+| θ, validation screen | 0% | 6.4 | 5.7 | +0.7 | 4.4 | 4.2 | 23% |
+| θ, validation screen | 25% | 6.3 | 5.6 | +0.7 | 4.3 | 4.3 | 22% |
+| θ, validation screen | 50% (this space) | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 22% |
+| θ, validation screen | 75% | 6.2 | 5.5 | +0.7 | 4.3 | 4.1 | 23% |
+| θ, validation screen | 95% | 6.7 | 5.7 | +1.1 | 5.1 | 4.2 | 25% |
+| ρ, compute follows earnings | 0% | 5.4 | 4.6 | +0.8 | 3.5 | 3.2 | 20% |
+| ρ, compute follows earnings | 25% | 5.4 | 4.6 | +0.8 | 3.6 | 3.3 | 20% |
+| ρ, compute follows earnings | 50% (this space) | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 22% |
+| ρ, compute follows earnings | 75% | 7.1 | 6.7 | +0.4 | 5.5 | 5.2 | 26% |
+| ρ, compute follows earnings | 100% | 7.6 | 7.3 | +0.3 | 6.3 | 6.0 | 28% |
+| ψ, scoop risk | 0 | 8.0 | 5.7 | +2.3 | 6.9 | 4.2 | 98% |
+| ψ, scoop risk | 0.25 | 6.3 | 5.7 | +0.6 | 4.3 | 4.2 | 24% |
+| ψ, scoop risk | 0.5 (this space) | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 22% |
+| ψ, scoop risk | 0.75 | 6.3 | 5.7 | +0.6 | 4.3 | 4.2 | 22% |
+| ψ, scoop risk | 0.9 | 6.3 | 5.7 | +0.6 | 4.3 | 4.2 | 22% |
+| κ, value of being used | 0 | 6.2 | 5.7 | +0.5 | 4.3 | 4.2 | 22% |
+| κ, value of being used | 0.5 | 6.3 | 5.7 | +0.7 | 4.4 | 4.2 | 22% |
+| κ, value of being used | 1 (this space) | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 22% |
+| κ, value of being used | 2 | 6.2 | 5.7 | +0.6 | 4.3 | 4.2 | 23% |
+| κ, value of being used | 4 | 6.4 | 5.7 | +0.8 | 4.4 | 4.2 | 26% |
+| σ₀, perception noise | 0 | 6.1 | 5.7 | +0.3 | 4.2 | 4.2 | 19% |
+| σ₀, perception noise | 0.5 | 6.1 | 5.5 | +0.6 | 4.3 | 4.0 | 19% |
+| σ₀, perception noise | 1 (this space) | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 22% |
+| σ₀, perception noise | 2 | 6.5 | 5.3 | +1.2 | 4.5 | 4.0 | 29% |
+| τ, choice randomness | 0.05 | 6.4 | 5.9 | +0.4 | 4.5 | 4.4 | 15% |
+| τ, choice randomness | 0.15 | 6.2 | 5.8 | +0.5 | 4.5 | 4.3 | 16% |
+| τ, choice randomness | 0.3 (this space) | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 22% |
+| τ, choice randomness | 0.6 | 6.3 | 5.1 | +1.2 | 4.0 | 3.8 | 29% |
+| τ, choice randomness | 1 | 6.5 | 4.9 | +1.6 | 4.0 | 3.6 | 32% |
+| attribution error | 0 (this space) | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 22% |
+| attribution error | 0.1 | 6.3 | 5.7 | +0.6 | 4.2 | 4.2 | 23% |
+| attribution error | 0.3 | 6.3 | 5.7 | +0.6 | 4.3 | 4.2 | 23% |
+| attribution error | 0.6 | 6.3 | 5.7 | +0.7 | 4.3 | 4.2 | 23% |
+
+</details>
+
 ## What this shows and what it does not
 
 - **It is a simulation** of the [OSO demo specification](https://github.com/open-science-org/OSO/blob/master/docs/demo-model.md): results are abstract, success is chance, and agents follow a formula. It shows how the incentive rules play out *if* this space works as described, not that it does.
-- **The parameters are guesses,** especially the success chances, the scoop risk ψ, and the costs and error rates in section 5.
+- **The parameters are guesses,** especially the success chances, the scoop risk ψ, and the costs and error rates in section 5. Section 6 varies each one alone; it does not vary them together, except α and c.
 - **By default, sharing is free and always correct,** which favours OSO; section 5 shows how much of the lead survives without that.
 
 ## Reproduce
@@ -113,4 +206,4 @@ Absorbing a published result costs 0.5 compute; proofs are wrong 10% of the time
 npm run sim -- report abstract-field --seeds 100
 ```
 
-The space is [spaces/abstract-field.yaml](../../spaces/abstract-field.yaml) (written by hand; the default scenario). Every number above is in [data.json](data.json). Generated by the OSO simulator at commit `17604d1`.
+The space is [spaces/abstract-field.yaml](../../spaces/abstract-field.yaml) (written by hand; the default scenario). Every number above is in [data.json](data.json). Generated by the OSO simulator at commit `44f5044+` (with uncommitted changes).

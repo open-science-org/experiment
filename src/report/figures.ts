@@ -161,3 +161,113 @@ export function worldFigure(w: World, title: string, areaNames: string[] = []): 
   out.push('</svg>');
   return out.join('\n');
 }
+
+export interface RangeRow {
+  label: string;
+  group: string;
+  /** Each tested value: its label and the outcome there. */
+  points: { value: string; y: number }[];
+  /** The outcome at the space's own value. */
+  base: number;
+}
+
+/**
+ * Sensitivity, one row per parameter: a dot for each tested value of the outcome (OSO's lead), a
+ * line across their range, and a tick at the base value. Ends are labelled with the parameter values.
+ */
+export function rangeChart(c: { title: string; subtitle: string; xLabel: string; rows: RangeRow[]; format?: (v: number) => string }): string {
+  const fx = c.format ?? ((v: number) => v.toFixed(1));
+  const groups = [...new Set(c.rows.map((r) => r.group))];
+  const rowH = 30, groupGap = 34, left = 210, right = 70, top = 96;
+  const W = 760, pw = W - left - right;
+  const H = top + c.rows.length * rowH + groups.length * groupGap + 50;
+  const all = c.rows.flatMap((r) => [...r.points.map((p) => p.y), r.base]).concat([0]);
+  let lo = Math.min(...all), hi = Math.max(...all);
+  const pad = (hi - lo || 1) * 0.08;
+  lo -= pad; hi += pad;
+  const sx = (v: number) => left + ((v - lo) / (hi - lo)) * pw;
+  const step = niceStep((hi - lo) / 5);
+  const ticks: number[] = [];
+  for (let t = Math.ceil(lo / step) * step; t <= hi; t += step) ticks.push(Math.round(t / step) * step);
+  const out: string[] = [];
+  out.push(`<svg xmlns="http://www.w3.org/2000/svg" class="viz" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${esc(c.title)}">`);
+  out.push(`<style>${STYLE}</style><rect class="bg" width="${W}" height="${H}" rx="8"/>`);
+  out.push(`<text class="title" x="20" y="30">${esc(c.title)}</text>`);
+  out.push(`<text class="sub" x="20" y="50">${esc(c.subtitle)}</text>`);
+  out.push(`<line class="line c1" x1="20" y1="70" x2="38" y2="70"/><circle class="dot f1" cx="29" cy="70" r="4.5"/><text class="tick" x="46" y="74">one tested value (end labels give the value)</text>`);
+  out.push(`<line class="base" x1="330" y1="63" x2="330" y2="77" style="stroke-width:2.5"/><text class="tick" x="338" y="74">this space's value</text>`);
+  const plotBottom = H - 50;
+  for (const t of ticks) {
+    out.push(`<line class="grid" x1="${sx(t)}" x2="${sx(t)}" y1="${top - 8}" y2="${plotBottom}" ${t === 0 ? 'style="stroke:var(--ink-2)"' : ''}/>`);
+    out.push(`<text class="tick" x="${sx(t)}" y="${plotBottom + 18}" text-anchor="middle">${esc(fx(t))}</text>`);
+  }
+  out.push(`<text class="axis" x="${left + pw / 2}" y="${H - 10}" text-anchor="middle">${esc(c.xLabel)}</text>`);
+  let y = top;
+  for (const g of groups) {
+    y += 12;
+    out.push(`<text class="label" x="20" y="${y}">${esc(g)}</text>`);
+    y += groupGap - 12;
+    for (const r of c.rows.filter((row) => row.group === g)) {
+      const ys = r.points.map((p) => p.y);
+      const [mn, mx] = [Math.min(...ys), Math.max(...ys)];
+      out.push(`<text class="tick" x="28" y="${y + 4}">${esc(r.label)}</text>`);
+      out.push(`<line class="line c1" x1="${sx(mn)}" x2="${sx(mx)}" y1="${y}" y2="${y}" style="stroke-opacity:0.45;stroke-width:6"/>`);
+      out.push(`<line class="base" x1="${sx(r.base)}" x2="${sx(r.base)}" y1="${y - 9}" y2="${y + 9}" style="stroke-width:2.5"/>`);
+      for (const p of r.points) {
+        out.push(`<circle class="dot f1" cx="${sx(p.y).toFixed(1)}" cy="${y}" r="4.5"><title>${esc(`${r.label} = ${p.value}: ${fx(p.y)}`)}</title></circle>`);
+      }
+      const at = (v: number) => r.points.find((p) => p.y === v)!.value;
+      if (mx - mn > (hi - lo) * 0.02) {
+        out.push(`<text class="tick" x="${sx(mn) - 8}" y="${y + 4}" text-anchor="end" style="font-size:10px">${esc(at(mn))}</text>`);
+        out.push(`<text class="tick" x="${sx(mx) + 8}" y="${y + 4}" style="font-size:10px">${esc(at(mx))}</text>`);
+      }
+      y += rowH;
+    }
+  }
+  out.push('</svg>');
+  return out.join('\n');
+}
+
+function niceStep(raw: number): number {
+  const mag = 10 ** Math.floor(Math.log10(raw || 1));
+  return [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= raw) ?? 10 * mag;
+}
+
+// Sequential blue, light to dark (validated reference ramp, steps 100-700).
+const RAMP = ['#cde2fb', '#b7d3f6', '#9ec5f4', '#86b6ef', '#6da7ec', '#5598e7', '#3987e5', '#2a78d6', '#256abf', '#1c5cab', '#184f95', '#104281', '#0d366b'];
+
+/** A heat map with the value printed in every cell (so colour is never the only cue). */
+export function heatmap(c: {
+  title: string; subtitle: string; rowLabel: string; colLabel: string;
+  rows: string[]; cols: string[]; values: number[][]; range: [number, number];
+  format: (v: number) => string; note?: (r: number, k: number) => string;
+}): string {
+  const cell = 74, left = 130, top = 110;
+  const W = Math.max(560, left + c.cols.length * cell + 40), H = top + c.rows.length * cell + 60;
+  const shade = (v: number) => {
+    const t = Math.max(0, Math.min(1, (v - c.range[0]) / (c.range[1] - c.range[0] || 1)));
+    const i = Math.round(t * (RAMP.length - 1));
+    return { fill: RAMP[i], ink: i >= 6 ? '#ffffff' : '#0b0b0b' };
+  };
+  const out: string[] = [];
+  out.push(`<svg xmlns="http://www.w3.org/2000/svg" class="viz" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${esc(c.title)}">`);
+  out.push(`<style>${STYLE}</style><rect class="bg" width="${W}" height="${H}" rx="8"/>`);
+  out.push(`<text class="title" x="20" y="30">${esc(c.title)}</text>`);
+  out.push(`<text class="sub" x="20" y="50">${esc(c.subtitle)}</text>`);
+  out.push(`<text class="axis" x="${left + (c.cols.length * cell) / 2}" y="${top - 34}" text-anchor="middle">${esc(c.colLabel)}</text>`);
+  c.cols.forEach((col, k) => out.push(`<text class="tick" x="${left + k * cell + cell / 2}" y="${top - 12}" text-anchor="middle">${esc(col)}</text>`));
+  out.push(`<text class="axis" transform="translate(30 ${top + (c.rows.length * cell) / 2}) rotate(-90)" text-anchor="middle">${esc(c.rowLabel)}</text>`);
+  c.rows.forEach((row, r) => {
+    out.push(`<text class="tick" x="${left - 12}" y="${top + r * cell + cell / 2 + 4}" text-anchor="end">${esc(row)}</text>`);
+    c.cols.forEach((col, k) => {
+      const v = c.values[r][k];
+      const { fill, ink } = shade(v);
+      const x = left + k * cell, y = top + r * cell;
+      out.push(`<rect x="${x + 1}" y="${y + 1}" width="${cell - 2}" height="${cell - 2}" rx="4" style="fill:${fill}"><title>${esc(`${c.rowLabel} ${row}, ${c.colLabel} ${col}: ${c.format(v)}${c.note ? ` · ${c.note(r, k)}` : ''}`)}</title></rect>`);
+      out.push(`<text x="${x + cell / 2}" y="${y + cell / 2 + (c.note ? 0 : 5)}" text-anchor="middle" style="fill:${ink};font-size:14px;font-weight:700">${esc(c.format(v))}</text>`);
+      if (c.note) out.push(`<text x="${x + cell / 2}" y="${y + cell / 2 + 17}" text-anchor="middle" style="fill:${ink};font-size:10px">${esc(c.note(r, k))}</text>`);
+    });
+  });
+  out.push('</svg>');
+  return out.join('\n');
+}
