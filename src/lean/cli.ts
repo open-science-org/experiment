@@ -12,6 +12,7 @@
 //   summary <run>                 rewrite the public summary of a run
 //   world <run>                   write worlds/lean-measured.json and spaces/lean-measured.yaml
 //   compare <id> <run> <run> ...  several runs (one per model) side by side
+//   series <id>                   combine finished races <id>-r1, <id>-r2, … into one summary
 //   community [options]           real-agent communities, traditional and OSO, on the same budget
 //     --agents m1,m2,...  --budget DOLLARS (per agent)  --rounds N (30)  --repairs N (2)
 //     --rules traditional,oso  --effort low|medium|high (medium)  --run ID  --stub  --dry-run
@@ -125,6 +126,25 @@ if (cmd === 'community') {
   }
   const dir = writeCommunityComparison(id, results, stub ? 'This is a pipeline test: the labs play from the reference proofs.' : '', stub);
   console.log(`\nSummary: ${dir}/summary.md`);
+  process.exit(0);
+}
+
+if (cmd === 'series') {
+  if (!arg) throw new Error('usage: npm run pilot -- series <id>');
+  const { readCommunity, writeRaceSeries } = await import('./community.ts');
+  const { existsSync, readFileSync } = await import('node:fs');
+  const { join } = await import('node:path');
+  const { LEAN_DIR } = await import('./tasks.ts');
+  const pairs = [];
+  for (let k = 1; k < 100; k++) {
+    const done = (r: string) => existsSync(join(LEAN_DIR, 'runs', `${arg}-r${k}-${r}`, 'result.json'));
+    if (!existsSync(join(LEAN_DIR, 'runs', `${arg}-r${k}-traditional`)) && !existsSync(join(LEAN_DIR, 'runs', `${arg}-r${k}-oso`))) break;
+    if (done('traditional') && done('oso')) pairs.push({ rep: k, traditional: readCommunity(`${arg}-r${k}-traditional`), oso: readCommunity(`${arg}-r${k}-oso`) });
+  }
+  if (!pairs.length) throw new Error(`no finished pair of races for ${arg}`);
+  const cfgFile = join(LEAN_DIR, 'runs', `${arg}.config.json`);
+  const design = existsSync(cfgFile) ? String((JSON.parse(readFileSync(cfgFile, 'utf8')) as { design?: string }).design ?? '') : '';
+  console.log(`${pairs.length} finished pair(s): ${writeRaceSeries(arg, pairs, design)}/summary.md`);
   process.exit(0);
 }
 

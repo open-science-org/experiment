@@ -6,15 +6,9 @@
   "concurrency": 6,
   "allowGrind": false,
   "conditions": [
-   "library",
    "alone"
   ],
   "only": [
-   "C3",
-   "A3",
-   "C4",
-   "X1",
-   "B3",
    "B5",
    "X2",
    "A5"
@@ -27,11 +21,11 @@
   }
  },
  "totals": {
-  "input": 38546,
-  "output": 1742849,
-  "cacheRead": 65920,
+  "input": 57896,
+  "output": 2311299,
+  "cacheRead": 82944,
   "cacheWrite": 0,
-  "cost": 0.5499196354000001
+  "cost": 0.9106778354000001
  },
  "byDepth": [
   {
@@ -143,6 +137,42 @@
    "meanTurns": 2,
    "tokens": 54031.5,
    "outputTokens": 51426.5
+  },
+  {
+   "id": "B5",
+   "depth": 5,
+   "area": "B",
+   "posted": "B5",
+   "condition": "alone",
+   "attempts": 2,
+   "proved": 0,
+   "meanTurns": 4,
+   "tokens": 111266,
+   "outputTokens": 106290
+  },
+  {
+   "id": "X2",
+   "depth": 5,
+   "area": "cross",
+   "posted": "X2",
+   "condition": "alone",
+   "attempts": 2,
+   "proved": 0,
+   "meanTurns": 4,
+   "tokens": 96287,
+   "outputTokens": 87907
+  },
+  {
+   "id": "A5",
+   "depth": 7,
+   "area": "A",
+   "posted": "A5",
+   "condition": "alone",
+   "attempts": 2,
+   "proved": 0,
+   "meanTurns": 4,
+   "tokens": 94859,
+   "outputTokens": 90028
   },
   {
    "id": "C3",
