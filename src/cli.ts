@@ -23,7 +23,7 @@ import { oracles } from './engine/oracles.ts';
 import { allocations, policies, visibilities } from './engine/rules.ts';
 import { worlds } from './engine/world.ts';
 import { buildReport, writeIndex } from './report/report.ts';
-import { claudeComplete, generateSpace, checkSpace } from './spaces/new-space.ts';
+import { anyComplete, generateSpace, checkSpace } from './spaces/new-space.ts';
 import { loadSpace, spaceIds, spaceToYaml } from './spaces/spaces.ts';
 
 const args = process.argv.slice(2);
@@ -76,7 +76,8 @@ if (target === 'report') {
 
 if (target === 'new') {
   if (!second) throw new Error('usage: npm run sim -- new "<description of the field>" [--report] [--seeds N]');
-  const space = await generateSpace(second, claudeComplete(), { log: console.log });
+  const { complete, via } = await anyComplete();
+  const space = await generateSpace(second, complete, { log: console.log, via });
   const path = join(SPACES_DIR, `${space.spec.id}.yaml`);
   if (existsSync(path)) throw new Error(`spaces/${space.spec.id}.yaml already exists; rename the generated id or remove the old file`);
   writeFileSync(path, spaceToYaml(space.spec));

@@ -87,6 +87,9 @@ npm run viewer        # then open http://127.0.0.1:8791
 
 One local app, with one navigation for everything:
 
+- **Design an experiment:** in two steps, without the command line.
+  1. **The field.** Pick one that exists; or describe a new one in words and let a model draft it (it is checked, test-run and drawn before you save it); or write or edit the field's file, starting from a template or another field. Saving it offers to build its standard report.
+  2. **The experiment.** Choose the rule settings to compare, up to two parameters to vary, the measures and the runs per row. The app shows how many simulated runs that is, runs it in the background with a live log, and shows the result; it is saved like any other experiment (`config/experiments/`, `results/`).
 - **Overview:** the question; every simulated field's verdict, with OSO's and traditional's hardest level, targets solved, and OSO's lead as the market-set parameters vary; and the latest comparison of models in the Lean pilot.
 - **Field reports:** each field's full canonical report, with its figures.
 - **Replay a community:** pick a field, a seed and two rule settings. The same community then plays back side by side, round by round, on the research tree: what each agent attempts, what is proved but kept hidden, what is published, and who earns what. A run is traced on demand; recording draws no random numbers, so it is the same run the reports count. A link such as `#/replay?space=drug-discovery&seed=3&round=30` opens a given moment.

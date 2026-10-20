@@ -11,6 +11,7 @@ import { traceRun } from '../engine/model.ts';
 import { preset } from '../experiments/experiment.ts';
 import { loadSpace, spaceIds, withCalibratedBudget, type Space } from '../spaces/spaces.ts';
 import { LEAN_DIR, leanAvailable, loadTasks } from '../lean/tasks.ts';
+import * as design from './design.ts';
 
 const PORT = Number(process.env.PORT ?? 8791);
 /** Folders the viewer may serve files and documents from. Never lean/ (private) or .env. */
@@ -111,13 +112,39 @@ function pilotRun(id: string) {
   };
 }
 
-const server = createServer((req, res) => {
+/** Reads a JSON request body (small: designs and field files). */
+function body(req: import('node:http').IncomingMessage): Promise<Record<string, unknown>> {
+  return new Promise((ok, fail) => {
+    let s = '';
+    req.on('data', (d) => { s += d; if (s.length > 1 << 20) { fail(new Error('request too large')); req.destroy(); } });
+    req.on('end', () => { try { ok(s ? JSON.parse(s) : {}); } catch { fail(new Error('the request is not JSON')); } });
+  });
+}
+
+const server = createServer(async (req, res) => {
   const url = new URL(req.url ?? '/', `http://127.0.0.1:${PORT}`);
   const send = (status: number, body: unknown, type = 'application/json') => {
     res.writeHead(status, { 'Content-Type': type, 'Cache-Control': 'no-store' });
     res.end(type === 'application/json' ? JSON.stringify(body) : (body as string | Buffer));
   };
   try {
+    if (req.method === 'POST') {
+      // Only this app may post: a page on another site cannot set this header without CORS.
+      if (req.headers['x-oso-app'] !== '1') return send(403, { error: 'forbidden' });
+      const b = await body(req);
+      const job = (j: design.Job) => send(200, { job: j.id });
+      if (url.pathname === '/api/spaces/check') return send(200, design.checkField(String(b.yaml ?? '')));
+      if (url.pathname === '/api/spaces/save') { const r = design.saveField(String(b.yaml ?? ''), b.overwrite === true); spaces.delete(r.id); return send(200, r); }
+      if (url.pathname === '/api/spaces/generate') return job(design.generateFieldJob(String(b.description ?? '')));
+      if (url.pathname === '/api/experiments/check') return send(200, design.checkExperiment(b.design as design.Design));
+      if (url.pathname === '/api/experiments/run') return job(design.runExperimentJob(b.design as design.Design, b.overwrite === true));
+      if (url.pathname === '/api/reports/build') return job(design.buildReportJob(String(b.space ?? ''), Number(b.seeds ?? 100)));
+      return send(404, { error: 'not found' });
+    }
+    if (url.pathname === '/api/design/options') return send(200, design.options());
+    if (url.pathname === '/api/spaces/yaml') return send(200, { yaml: design.fieldYaml(url.searchParams.get('id') ?? '') });
+    if (url.pathname === '/api/jobs') return send(200, design.listJobs());
+    if (url.pathname.startsWith('/api/jobs/')) return send(200, design.getJob(url.pathname.slice('/api/jobs/'.length)));
     if (url.pathname === '/') return send(200, readFileSync(PAGE, 'utf8'), 'text/html; charset=utf-8');
     if (url.pathname === '/api/overview') return send(200, overview());
     if (url.pathname === '/api/doc') return send(200, doc(url.searchParams.get('path') ?? ''));
@@ -133,7 +160,7 @@ const server = createServer((req, res) => {
     if (url.pathname === '/api/pilot/run') return send(200, pilotRun(url.searchParams.get('id') ?? ''));
     send(404, { error: 'not found' });
   } catch (e) {
-    send(500, { error: (e as Error).message });
+    send(400, { error: (e as Error).message });
   }
 });
 server.listen(PORT, '127.0.0.1', () => console.log(`Experiment viewer: http://127.0.0.1:${PORT}`));

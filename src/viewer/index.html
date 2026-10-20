@@ -108,6 +108,19 @@
   .list a { display: block; padding: 8px 12px; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--ink); background: var(--surface); }
   .list a:hover { color: var(--s1); }
   .list { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; max-width: 900px; }
+  .step { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; margin-bottom: 14px; max-width: 1100px; }
+  .step h2 { font-size: 16px; margin: 0 0 4px; }
+  .step .row { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin: 10px 0; }
+  .step label { font-size: 13px; color: var(--ink-2); }
+  .choice { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 8px 0; }
+  .choice label { color: var(--ink); font-size: 13px; display: flex; gap: 6px; align-items: center; }
+  textarea { font: 12.5px/1.45 ui-monospace, Menlo, monospace; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; width: 100%; }
+  textarea.prose { font: 14px/1.5 Helvetica, Arial, sans-serif; }
+  .joblog { font: 12px/1.45 ui-monospace, Menlo, monospace; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; max-height: 220px; overflow: auto; white-space: pre-wrap; margin-top: 8px; }
+  .ok { color: var(--good); font-weight: 700; } .no { color: var(--bad); font-weight: 700; }
+  .vary { display: grid; grid-template-columns: minmax(200px, 320px) minmax(160px, 1fr); gap: 6px 10px; align-items: center; margin: 6px 0; }
+  .vary .meaning { grid-column: 1 / -1; font-size: 12px; color: var(--ink-3); margin-top: -2px; }
+  .preview svg { max-width: 100%; height: auto; }
   .note { font-size: 12px; color: var(--ink-2); margin: 0 0 12px; }
 </style>
 </head>
@@ -119,6 +132,7 @@
 <div class="app">
 <nav class="side" aria-label="Sections">
   <a href="#/">Overview</a>
+  <a href="#/design"><b>Design an experiment</b></a>
   <div class="group">Simulated fields</div>
   <div id="nav-fields"></div>
   <a href="#/replay">Replay a community</a>
@@ -133,6 +147,49 @@
   <section id="view-overview" class="hidden"></section>
   <section id="view-doc" class="hidden"><div class="crumbs" id="doc-crumbs"></div><article class="doc" id="doc-body"></article></section>
   <section id="view-experiments" class="hidden"></section>
+  <section id="view-design" class="hidden">
+    <p class="lede">Design your own experiment in two steps: the <b>field</b> agents work in, then the <b>comparison</b>: which rules, which parameters to vary, what to measure. Everything you save is a plain file in the repository (<code>spaces/</code>, <code>config/experiments/</code>, <code>results/</code>), the same as one made at the command line.</p>
+
+    <div class="step">
+      <h2>1. The field</h2>
+      <p class="note">A field is its research tree (results, what each builds on, how hard each is), its targets with bounties, and its words for things. Use one that exists, describe a new one and let a model draft it, or write the file yourself.</p>
+      <div class="choice" role="radiogroup">
+        <label><input type="radio" name="fmode" value="existing" checked> Use an existing field</label>
+        <label><input type="radio" name="fmode" value="describe"> Describe a new field</label>
+        <label><input type="radio" name="fmode" value="edit"> Write or edit a field's file</label>
+      </div>
+      <div id="f-existing" class="row"><label>Field <select id="f-pick"></select></label><a id="f-report-link" href="#">Read its report</a></div>
+      <div id="f-describe" class="hidden">
+        <textarea id="f-desc" class="prose" rows="4" placeholder="For example: protein design. Starting from known folds, labs design binders, then enzymes; each stage is much harder; three target enzymes carry prizes."></textarea>
+        <div class="row"><button class="btn primary" id="f-draft">Draft the field</button><span class="muted">A model (Claude Opus 5.5, through the key in .env) writes the file; it is checked and test-run, and errors go back to the model. Costs a few cents. You review it before saving.</span></div>
+      </div>
+      <div id="f-edit" class="hidden">
+        <div class="row"><label>Start from <select id="f-start"><option value="">a blank template</option></select></label><span class="muted">Every setting is documented in <a href="#/doc/config/scenarios/default.yaml">config/scenarios/default.yaml</a>; a small field can list its results one by one, like <a href="#" id="f-graph-example">the battery field</a>.</span></div>
+        <textarea id="f-yaml" rows="22" spellcheck="false"></textarea>
+        <div class="row"><button class="btn" id="f-check">Check</button><button class="btn primary" id="f-save">Save field</button><label><input type="checkbox" id="f-overwrite"> save over an existing field with the same id</label></div>
+      </div>
+      <div id="f-job" class="joblog hidden" aria-live="polite"></div>
+      <div id="f-result"></div>
+    </div>
+
+    <div class="step">
+      <h2>2. The experiment</h2>
+      <p class="note">Each combination of a rule setting and the values you vary is one row of the result; each row is run many times with different random draws. The field's agents and budget are the same in every row.</p>
+      <div class="row">
+        <label>Field <select id="e-space"></select></label>
+        <label>Name <input id="e-id" value="my-experiment" style="width:180px"></label>
+        <label>Title <input id="e-title" value="" placeholder="What the experiment asks" style="width:320px"></label>
+      </div>
+      <div><label>Compare these rule settings</label><div class="choice" id="e-settings"></div></div>
+      <div><label>Vary (optional): each varied parameter overrides the rule setting's own value</label><div id="e-vary"></div></div>
+      <div><label>Measure</label><div class="choice" id="e-columns"></div></div>
+      <div class="row"><label>Runs per row <input id="e-seeds" type="number" min="1" max="1000" value="50" style="width:80px"></label><span id="e-summary" class="muted"></span></div>
+      <details><summary class="muted">Show the experiment file</summary><pre id="e-yaml"></pre></details>
+      <div class="row"><button class="btn primary" id="e-run">Run the experiment</button><label><input type="checkbox" id="e-overwrite"> run over an existing experiment with the same name</label></div>
+      <div id="e-job" class="joblog hidden" aria-live="polite"></div>
+      <article id="e-result" class="doc hidden"></article>
+    </div>
+  </section>
 
   <!-- Simulation playback -->
   <section id="view-sim" class="hidden">
@@ -191,7 +248,7 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 const api = (path) => fetch(path).then(async (r) => { const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText); return j; });
 const money = (x) => '$' + (x < 0.1 ? x.toFixed(3) : x.toFixed(2));
 
-const VIEWS = ['view-overview', 'view-doc', 'view-experiments', 'view-sim', 'view-pilot'];
+const VIEWS = ['view-overview', 'view-doc', 'view-experiments', 'view-sim', 'view-pilot', 'view-design'];
 const show = (view) => { for (const v of VIEWS) $(v).classList.toggle('hidden', v !== view); window.scrollTo(0, 0); };
 const params = () => new URLSearchParams(location.hash.split('?')[1] ?? '');
 let OV = null;
@@ -204,6 +261,7 @@ async function route() {
   if (path === '/') { show('view-overview'); return drawOverview(); }
   if (path.startsWith('/doc/')) { show('view-doc'); return openDoc(path.slice(5)); }
   if (path === '/experiments') { show('view-experiments'); return drawExperiments(); }
+  if (path === '/design') { show('view-design'); return enterDesign(); }
   if (path === '/replay') { show('view-sim'); return enterReplay(); }
   if (path === '/pilot') { show('view-pilot'); if (!pilot.loadedList) loadRunList(); return drawPilotSummaries(); }
   show('view-overview'); drawOverview();
@@ -259,6 +317,136 @@ async function drawExperiments() {
 async function drawPilotSummaries() {
   const ov = await overviewData();
   $('pilot-summaries').innerHTML = ov.pilot.map((p) => `<a href="#/doc/results/pilot/${p.id}/summary.md">${esc(p.title)}</a>`).join('') || '<p class="muted" style="padding:8px 12px">No summaries yet.</p>';
+}
+
+/* ------------------------------------------------------------------ Design */
+const post = (path, data) => fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-OSO-App': '1' }, body: JSON.stringify(data) })
+  .then(async (r) => { const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText); return j; });
+const D = { opts: null, spaces: [] };
+
+/** Follows a background job, showing its log, until it ends. */
+function follow(jobId, logEl, onDone) {
+  logEl.classList.remove('hidden');
+  const tick = async () => {
+    const j = await api('/api/jobs/' + jobId);
+    logEl.innerHTML = `<b>${esc(j.title)}</b> · ${j.status === 'running' ? 'running…' : j.status === 'done' ? '<span class="ok">done</span>' : '<span class="no">failed</span>'}\n` + esc(j.log.slice(-60).join('\n'));
+    logEl.scrollTop = logEl.scrollHeight;
+    if (j.status === 'running') setTimeout(tick, 1200); else onDone?.(j);
+  };
+  tick();
+}
+
+async function refreshSpaces() {
+  D.spaces = await api('/api/spaces');
+  const opts = D.spaces.map((s) => `<option value="${s.id}">${esc(s.title)}</option>`).join('');
+  for (const id of ['f-pick', 'e-space']) { const v = $(id).value; $(id).innerHTML = opts; if (v) $(id).value = v; }
+  $('f-start').innerHTML = '<option value="">a blank template</option>' + opts;
+  OV = null;
+  const ov = await overviewData();
+  $('nav-fields').innerHTML = ov.fields.sort((a, b) => a.title.localeCompare(b.title)).map((h) => `<a class="sub" href="#/doc/reports/${h.id}/report.md">${esc(h.title)}</a>`).join('');
+}
+
+let designReady = false;
+async function enterDesign() {
+  if (designReady) return;
+  designReady = true;
+  D.opts = await api('/api/design/options');
+  await refreshSpaces();
+  // Step 1
+  const modes = { existing: 'f-existing', describe: 'f-describe', edit: 'f-edit' };
+  for (const r of document.querySelectorAll('input[name=fmode]')) r.onchange = () => { for (const [m, el] of Object.entries(modes)) $(el).classList.toggle('hidden', m !== r.value); $('f-result').innerHTML = ''; };
+  const reportLink = () => { $('f-report-link').href = `#/doc/reports/${$('f-pick').value}/report.md`; $('e-space').value = $('f-pick').value; designCheck(); };
+  $('f-pick').onchange = reportLink; reportLink();
+  $('f-yaml').value = D.opts.template;
+  $('f-start').onchange = async () => { $('f-yaml').value = $('f-start').value ? (await api('/api/spaces/yaml?id=' + $('f-start').value)).yaml : D.opts.template; };
+  $('f-graph-example').onclick = async (e) => { e.preventDefault(); $('f-start').value = 'solid-state-battery'; $('f-start').onchange(); };
+  $('f-check').onclick = () => checkField();
+  $('f-save').onclick = async () => {
+    const c = await checkField(); if (!c?.ok) return;
+    try {
+      const r = await post('/api/spaces/save', { yaml: $('f-yaml').value, overwrite: $('f-overwrite').checked });
+      await refreshSpaces();
+      $('f-pick').value = r.id; $('e-space').value = r.id;
+      $('f-result').insertAdjacentHTML('afterbegin', `<p><span class="ok">Saved</span> as <code>spaces/${esc(r.id)}.yaml</code>. <button class="btn" id="f-build">Build its standard report</button> <span class="muted">(about a minute: every report runs the same experiments)</span></p>`);
+      $('f-build').onclick = () => post('/api/reports/build', { space: r.id, seeds: 100 }).then((j) => follow(j.job, $('f-job'), async (job) => { await refreshSpaces(); if (job.status === 'done') $('f-result').insertAdjacentHTML('afterbegin', `<p><a href="#/doc/reports/${esc(r.id)}/report.md">Read the report →</a></p>`); }));
+      designCheck();
+    } catch (e) { $('f-result').insertAdjacentHTML('afterbegin', `<p class="no">${esc(e.message)}</p>`); }
+  };
+  $('f-draft').onclick = async () => {
+    try {
+      const j = await post('/api/spaces/generate', { description: $('f-desc').value });
+      follow(j.job, $('f-job'), (job) => {
+        if (job.status !== 'done') return;
+        document.querySelector('input[name=fmode][value=edit]').checked = true;
+        for (const [m, el] of Object.entries(modes)) $(el).classList.toggle('hidden', m !== 'edit');
+        $('f-yaml').value = job.result.yaml;
+        checkField();
+      });
+    } catch (e) { $('f-job').classList.remove('hidden'); $('f-job').textContent = e.message; }
+  };
+  // Step 2
+  $('e-settings').innerHTML = Object.entries(D.opts.settings).map(([k, v]) => `<label><input type="checkbox" value="${k}" ${['traditional', 'oso', 'osoChoice'].includes(k) ? 'checked' : ''}> ${esc(v)}</label>`).join('');
+  const paramOpts = '<option value="">— nothing —</option>' + D.opts.parameters.map((p) => `<option value="${p.path}">${esc(p.label)}${p.group === 'market' ? ' (set by communities or funders)' : ''}</option>`).join('');
+  $('e-vary').innerHTML = [0, 1].map((i) => `<div class="vary"><select data-v="${i}" class="v-path">${paramOpts}</select><input data-v="${i}" class="v-values" placeholder="values, e.g. 0.2, 0.4, 0.6"><div class="meaning" id="v-meaning-${i}"></div></div>`).join('');
+  for (const sel of document.querySelectorAll('.v-path')) sel.onchange = () => {
+    const p = D.opts.parameters.find((x) => x.path === sel.value);
+    const i = sel.dataset.v;
+    document.querySelector(`.v-values[data-v="${i}"]`).value = p?.values.join(', ') ?? '';
+    $('v-meaning-' + i).textContent = p ? `${p.meaning} (${p.path})` : '';
+    designCheck();
+  };
+  $('e-columns').innerHTML = D.opts.columns.map((c) => `<label title="${esc(c.meaning)}"><input type="checkbox" value="${c.id}" ${D.opts.defaultColumns.includes(c.id) ? 'checked' : ''}> ${esc(c.meaning)}</label>`).join('');
+  for (const el of document.querySelectorAll('#view-design .step:nth-of-type(2) input, #view-design .step:nth-of-type(2) select')) el.addEventListener('change', designCheck);
+  $('e-id').addEventListener('input', designCheck);
+  $('e-run').onclick = async () => {
+    const c = await designCheck(); if (!c?.ok) return;
+    if (c.runs > 20000 && !confirm(`That is ${c.runs.toLocaleString()} simulated runs. Run it?`)) return;
+    try {
+      const j = await post('/api/experiments/run', { design: currentDesign(), overwrite: $('e-overwrite').checked });
+      $('e-result').classList.add('hidden');
+      follow(j.job, $('e-job'), async (job) => {
+        if (job.status !== 'done') return;
+        const d = await api('/api/doc?path=' + encodeURIComponent(job.result.doc));
+        $('e-result').innerHTML = d.html + `<p><a href="#/doc/${esc(job.result.doc)}">Open it in saved experiments</a> · <a href="#/replay?space=${esc(currentDesign().space)}">Replay this field round by round</a></p>`;
+        $('e-result').classList.remove('hidden');
+        OV = null;
+      });
+    } catch (e) { $('e-job').classList.remove('hidden'); $('e-job').textContent = e.message; }
+  };
+  designCheck();
+}
+
+async function checkField() {
+  $('f-result').innerHTML = '<p class="muted">Checking and test-running…</p>';
+  const c = await post('/api/spaces/check', { yaml: $('f-yaml').value });
+  if (!c.ok) { $('f-result').innerHTML = `<p class="no">Not valid yet:</p><pre class="err">${esc(c.error)}</pre>`; return c; }
+  const s = c.summary;
+  $('f-result').innerHTML = `<p><span class="ok">Valid</span>, and a test run works. <b>${esc(c.title)}</b> (<code>${esc(c.id)}</code>${c.exists ? ', <span class="no">a field with this id exists</span>' : ''}): ${s.results} results in ${s.levels} levels, ${s.targets} targets, ${s.deadEnds} dead ends; ${s.agents} agents; budget ${s.budget}${s.calibrated ? ' (calibrated: the smallest budget at which OSO solves about 90% of the targets)' : ''}.</p><div class="preview">${c.svg}</div>`;
+  return c;
+}
+
+function currentDesign() {
+  return {
+    id: $('e-id').value.trim(), title: $('e-title').value.trim(), space: $('e-space').value,
+    settings: [...$('e-settings').querySelectorAll('input:checked')].map((i) => i.value),
+    vary: [0, 1].map((i) => ({ path: document.querySelector(`.v-path[data-v="${i}"]`).value, values: document.querySelector(`.v-values[data-v="${i}"]`).value.split(',').map((x) => x.trim()).filter(Boolean).map(Number).filter(Number.isFinite) })).filter((v) => v.path),
+    columns: [...$('e-columns').querySelectorAll('input:checked')].map((i) => i.value),
+    seeds: Number($('e-seeds').value),
+  };
+}
+
+let checkTimer = null;
+function designCheck() {
+  return new Promise((done) => {
+    clearTimeout(checkTimer);
+    checkTimer = setTimeout(async () => {
+      if (!D.opts) return done(null);
+      const c = await post('/api/experiments/check', { design: currentDesign() });
+      $('e-summary').innerHTML = c.ok ? `${c.rows} row${c.rows === 1 ? '' : 's'} × ${$('e-seeds').value} runs = <b>${c.runs.toLocaleString()} simulated runs</b>${c.exists ? ' · <span class="no">an experiment with this name exists</span>' : ''}` : `<span class="no">${esc(c.error)}</span>`;
+      $('e-yaml').textContent = c.ok ? c.yaml : '';
+      done(c);
+    }, 250);
+  });
 }
 
 let replayReady = false;

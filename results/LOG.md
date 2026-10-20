@@ -20,3 +20,4 @@ Runs up to 2026-10-19 were made when the simulator lived in `sim/` of [open-scie
 | 2026-10-17 | [failures](failures/summary.md) | `3b82e1b` | 100 | `npm run sim -- failures --seeds 100 --save` |
 | 2026-10-17 | [costly-sharing](costly-sharing/summary.md) | `3b82e1b` | 100 | `npm run sim -- costly-sharing --seeds 100 --save` |
 | 2026-10-17 | [complex](complex/summary.md) | `3b82e1b` | 100 | `npm run sim -- complex --seeds 100 --save` |
+| 2026-10-20 | [funding-rule-drug-discovery](funding-rule-drug-discovery/summary.md) | `980152f` (uncommitted changes) | 100 | `npm run sim -- funding-rule-drug-discovery --seeds 100 --save` |

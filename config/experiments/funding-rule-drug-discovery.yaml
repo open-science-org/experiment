@@ -1,0 +1,51 @@
+# Designed in the experiment app.
+id: funding-rule-drug-discovery
+title: Does the funding rule decide the race? Drug discovery
+description: "Designed in the app on the field \"Early-stage drug discovery\"
+  (spaces/drug-discovery.yaml): Traditional vs OSO (immediate) vs OSO (choice), varying ρ, compute
+  follows earnings. A varied parameter overrides the rule setting's own value."
+seeds: 100
+set:
+  world:
+    kind: layered
+    levels: 6
+    width: 9
+    maxPrereqs: 2
+    skipProb: 0.1
+    areas: 3
+    areaStickiness: 0.85
+    targets:
+      - level: 6
+        count: 3
+    bountyBase: 2
+    bountyGrowth: 3
+  success:
+    p0: 0.6
+    eta: 0.45
+  measures:
+    targetLevel: 5
+  budget:
+    X: 1240
+    rounds: 103
+    perAgentPerRound: null
+factors:
+  - name: setting
+    levels:
+      - label: Traditional
+        preset: traditional
+      - label: OSO (immediate)
+        preset: oso
+      - label: OSO (choice)
+        preset: osoChoice
+  - name: ρ, compute follows earnings
+    path: budget.allocation.rho
+    values:
+      - 0
+      - 0.5
+      - 1
+columns:
+  - frontier
+  - targetsSolved
+  - cost
+  - gamerShare
+  - sharing

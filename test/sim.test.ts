@@ -290,3 +290,21 @@ test('a traced run is the same run, and its events account for what was publishe
     assert.equal(Math.max(0, ...[...published].map((x) => t.world.level[x])), t.result.frontier);
   }
 });
+
+test('the designer turns a design into a valid experiment and rejects bad designs', async () => {
+  const design = await import('../src/viewer/design.ts');
+  const d = { id: 'designer-test', title: 'T', space: 'solid-state-battery', settings: ['traditional', 'oso'], vary: [{ path: 'rules.screen', values: [0, 0.9] }], columns: ['frontier'], seeds: 3 };
+  const c = design.checkExperiment(d);
+  assert.ok(c.ok, c.error);
+  assert.equal(c.rows, 4);
+  assert.equal(c.runs, 12);
+  const spec = design.experimentFor(d);
+  assert.equal(spec.factors?.[0].name, 'setting');
+  assert.equal((spec.set as Record<string, Record<string, unknown>>).budget.X, 240, 'uses the calibrated budget');
+  assert.equal(design.checkExperiment({ ...d, id: 'Bad Name' }).ok, false);
+  assert.equal(design.checkExperiment({ ...d, settings: [] }).ok, false);
+  assert.equal(design.checkExperiment({ ...d, vary: [{ path: 'rules.nope', values: [1] }] }).ok, false);
+  const f = design.checkField(readFileSync(new URL('../spaces/drug-discovery.yaml', import.meta.url), 'utf8'));
+  assert.ok(f.ok && f.svg?.startsWith('<svg'));
+  assert.equal(design.checkField('id: x\ntitle: y').ok, false);
+});
