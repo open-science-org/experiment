@@ -84,6 +84,10 @@ if (cmd === 'community') {
     agents, budget: Number(pick('budget', '0.5')), rounds: Number(pick('rounds', '30')), repairs: Number(pick('repairs', '2')),
     alpha: 0.8, c: 0.15, mint: 1, effort: pick('effort', 'medium') as 'low' | 'medium' | 'high', allowGrind: stub,
     personas: (cfg.personas as string[] | undefined) ?? [],
+    personaNames: (cfg.personaNames as string[] | undefined) ?? [],
+    repairsByLab: cfg.repairsByLab as number[] | undefined,
+    effortByLab: cfg.effortByLab as ('low' | 'medium' | 'high')[] | undefined,
+    reuseByLab: cfg.reuseByLab as boolean[] | undefined,
   };
   const rules = pick('rules', 'traditional,oso').split(',') as ('traditional' | 'oso')[];
   console.log(`${rules.length} communities × ${agents.length} labs × $${base.budget} = $${(rules.length * agents.length * base.budget).toFixed(2)} at most, at list prices; up to ${base.rounds} rounds.`);
@@ -95,7 +99,7 @@ if (cmd === 'community') {
   const results = [];
   for (const r of rules) {
     console.log(`\n${r === 'oso' ? 'OSO' : 'Traditional'} community:`);
-    const result = await runCommunity({ ...base, rules: r }, (com, i) => (stub ? referenceAgent(com, i) : openRouterChat({ provider: 'openrouter', model: agents[i], effort: base.effort, maxTokens: 32_000 })), price, `${id}-${r}`);
+    const result = await runCommunity({ ...base, rules: r }, (com, i) => (stub ? referenceAgent(com, i) : openRouterChat({ provider: 'openrouter', model: agents[i], effort: base.effortByLab?.[i] ?? base.effort, maxTokens: 32_000 })), price, `${id}-${r}`);
     results.push({ runId: `${id}-${r}`, result });
   }
   const dir = writeCommunityComparison(id, results, stub ? 'This is a pipeline test: the labs play from the reference proofs.' : '', stub);

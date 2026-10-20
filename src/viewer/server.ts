@@ -193,6 +193,7 @@ const server = createServer(async (req, res) => {
       if (url.pathname === '/api/spaces/generate') return job(design.generateFieldJob(String(b.description ?? '')));
       if (url.pathname === '/api/experiments/check') return send(200, design.checkExperiment(b.design as design.Design));
       if (url.pathname === '/api/experiments/run') return job(design.runExperimentJob(b.design as design.Design, b.overwrite === true));
+      if (url.pathname === '/api/persona/text') return send(200, { text: design.personaText(b.persona as design.Persona) });
       if (url.pathname === '/api/community/start') return job(design.startRaceJob(b.design as design.RaceDesign));
       if (url.pathname === '/api/reports/build') return job(design.buildReportJob(String(b.space ?? ''), Number(b.seeds ?? 100)));
       return send(404, { error: 'not found' });

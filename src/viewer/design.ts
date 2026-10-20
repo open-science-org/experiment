@@ -127,7 +127,8 @@ export function options() {
     settings: SETTINGS,
     parameters: PARAMETERS,
     traits: TRAITS,
-    approaches: APPROACHES,
+    personas: PERSONAS,
+    personaFeatures: PERSONA_FEATURES,
     flowBackSettings: FLOW_BACK,
     columns: Object.keys(COLUMNS).map((id) => ({ id, meaning: COLUMN_INFO[id] ?? id })),
     defaultColumns: ['frontier', 'reachTarget', 'cost', 'targetsSolved', 'sharing'],
@@ -303,30 +304,87 @@ function cliJob(kind: string, title: string, args: string[], result: () => unkno
   return job;
 }
 
-/** Approaches a real AI lab can be given, echoing the simulated agent kinds; or the user's own text. */
-export const APPROACHES: Record<string, string> = {
-  none: '',
-  foundation: 'Your lab is a foundation builder: prefer proving general lemmas that many later results can build on, even if no target is in reach yet.',
-  racer: 'Your lab is a target racer: go straight for the targets with the biggest bounties, and prove a lemma only when a target needs it.',
-  explorer: 'Your lab is a cheap explorer: keep each attempt short and simple; try many small lemmas rather than a few long proofs.',
-  specialistA: 'Your lab specialises in the sequence u (area A): work on results about u.',
-  specialistB: 'Your lab specialises in sorting (area B): work on results about isort, msort, Sorted and cnt.',
-  specialistC: 'Your lab specialises in 2 × 2 matrices (area C): work on results about M2.',
-  freeRider: 'Your lab builds on others\' published results as much as it can and avoids repeating work that already exists.',
-};
+/**
+ * A persona: how a real AI lab behaves, separate from its model (what it is capable of and costs).
+ * "Instructed" features become sentences in the lab's instructions, generated from their values, so a
+ * persona means the same thing in every run; "enforced" features are set by the harness, whatever the
+ * model does.
+ */
+export interface Persona {
+  name: string;
+  /** 0: safe bets … 1: long shots. */ risk: number;
+  /** 0: what pays now … 1: patient. */ horizon: number;
+  /** 0: no gaming … 1: farms easy results. */ gaming: number;
+  focus: 'any' | 'A' | 'B' | 'C';
+  /** Enforced: whether it sees and may cite other labs' published results. */ reuse: boolean;
+  /** Enforced: repairs per action. */ persistence: number;
+  /** Enforced: reasoning effort. */ thoroughness: 'low' | 'medium' | 'high';
+}
 
-export interface RaceDesign { id: string; labs: { model: string; approach: string; text?: string }[]; budget: number; rounds: number; repairs: number; effort: 'low' | 'medium' | 'high'; rules: ('traditional' | 'oso')[] }
+export const PERSONA_FEATURES = [
+  { key: 'risk', label: 'risk attitude', kind: 'instructed', type: 'slider', left: 'safe bets', right: 'long shots', explain: 'Whether the lab goes for results it is likely to prove, or for the hard, high-bounty targets even when it may fail.' },
+  { key: 'horizon', label: 'horizon', kind: 'instructed', type: 'slider', left: 'what pays now', right: 'patient', explain: 'Whether the lab spends on lemmas that pay off later (a foundation builder) or only on what earns now (a racer).' },
+  { key: 'gaming', label: 'gaming', kind: 'instructed', type: 'slider', left: 'none', right: 'farms easy results', explain: 'Whether the lab tries to earn by publishing many easy results. A result one basic tactic proves earns nothing, so this tests how easy the screen is to beat.' },
+  { key: 'focus', label: 'focus', kind: 'instructed', type: 'select', options: { any: 'all areas', A: 'the sequence (A)', B: 'sorting (B)', C: 'matrices (C)' }, explain: 'Whether the lab works on one area only, like a specialist.' },
+  { key: 'reuse', label: 'reuse', kind: 'enforced', type: 'toggle', explain: 'Whether the lab is shown, and may cite, other labs\' published results. Off: it works alone even under OSO. Enforced by the harness, not just asked for.' },
+  { key: 'persistence', label: 'persistence', kind: 'enforced', type: 'number', min: 0, max: 5, explain: 'How many times the lab may repair a proof Lean rejected, within one action.' },
+  { key: 'thoroughness', label: 'thoroughness', kind: 'enforced', type: 'select', options: { low: 'low', medium: 'medium', high: 'high' }, explain: 'The model\'s reasoning effort: how long it thinks before each reply. More thinking costs more.' },
+  { key: 'sharing', label: 'sharing', kind: 'unavailable', type: 'none', explain: 'Whether the lab publishes or holds back its results. Not yet available: under OSO every result is published at once; it needs a setting where labs choose what to publish.' },
+] as const;
+
+const neutral: Omit<Persona, 'name'> = { risk: 0.5, horizon: 0.5, gaming: 0, focus: 'any', reuse: true, persistence: 2, thoroughness: 'medium' };
+export const PERSONAS: Persona[] = [
+  { name: 'Neutral', ...neutral },
+  { name: 'Foundation builder', ...neutral, risk: 0.3, horizon: 0.95, thoroughness: 'high', persistence: 3 },
+  { name: 'Target racer', ...neutral, risk: 0.8, horizon: 0.1 },
+  { name: 'Cheap explorer', ...neutral, risk: 0.2, horizon: 0.4, thoroughness: 'low', persistence: 1 },
+  { name: 'Specialist: sequence', ...neutral, focus: 'A', horizon: 0.7 },
+  { name: 'Specialist: sorting', ...neutral, focus: 'B', horizon: 0.7 },
+  { name: 'Specialist: matrices', ...neutral, focus: 'C', horizon: 0.7 },
+  { name: 'Lone wolf', ...neutral, reuse: false },
+  { name: 'Gamer', ...neutral, gaming: 0.9, risk: 0.1, horizon: 0.1, thoroughness: 'low', persistence: 1 },
+];
+
+/** The instructions a persona's features produce (the enforced features are not in the text). */
+export function personaText(p: Persona): string {
+  const out: string[] = [];
+  if (p.risk <= 0.33) out.push('Prefer results you are likely to prove; avoid long shots.');
+  if (p.risk >= 0.67) out.push('Go for the hard, high-bounty targets, even when you may well fail.');
+  if (p.horizon >= 0.67) out.push('Be patient: lemmas that later results can build on are worth your budget even if no target is in reach yet.');
+  if (p.horizon <= 0.33) out.push('Go for what pays now: attempt targets within reach, and prove a lemma only when a target needs it.');
+  if (p.gaming >= 0.67) out.push('Earn by publishing as many easy results as you can: quantity over depth.');
+  else if (p.gaming >= 0.34) out.push('Easy results that earn the mint are worth publishing when you see them.');
+  const areas = { A: 'the sequence u (area A)', B: 'sorting: isort, msort, Sorted and cnt (area B)', C: '2 × 2 matrices, M2 (area C)' } as const;
+  if (p.focus !== 'any') out.push(`Work only on ${areas[p.focus]}.`);
+  if (!p.reuse) out.push('You work alone: you cannot see other labs\' results.');
+  return out.join(' ');
+}
+
+/** A race: labs (each a model and a persona), the budget per lab, rounds, and which rules. */
+export interface RaceDesign { id: string; labs: { model: string; persona: Persona }[]; budget: number; rounds: number; rules: ('traditional' | 'oso')[] }
 
 /** Starts a race of real AI labs (spends money: the page confirms the maximum first). */
 export function startRaceJob(d: RaceDesign): Job {
   if (!ID.test(d.id)) throw new Error('the run name must be kebab-case (a-z, 0-9, hyphens)');
   if (!d.labs.length || d.labs.length > 12) throw new Error('between 1 and 12 labs');
   if (!(d.budget > 0 && d.budget <= 20)) throw new Error('budget per lab must be between $0 and $20');
-  if (!(d.rounds >= 1 && d.rounds <= 200) || !(d.repairs >= 0 && d.repairs <= 5)) throw new Error('rounds 1-200, repairs 0-5');
+  if (!(d.rounds >= 1 && d.rounds <= 200)) throw new Error('rounds must be between 1 and 200');
+  for (const l of d.labs) {
+    const p = l.persona;
+    if (![p.risk, p.horizon, p.gaming].every((x) => x >= 0 && x <= 1)) throw new Error('risk, horizon and gaming go from 0 to 1');
+    if (!['any', 'A', 'B', 'C'].includes(p.focus) || !['low', 'medium', 'high'].includes(p.thoroughness) || !(p.persistence >= 0 && p.persistence <= 5)) throw new Error('bad persona');
+  }
   if (!d.rules.length || d.rules.some((r) => r !== 'traditional' && r !== 'oso')) throw new Error('choose traditional, OSO or both');
   for (const l of d.labs) if (!/^[\w.-]+\/[\w.:-]+$/.test(l.model)) throw new Error(`bad model id ${l.model}`);
-  const personas = d.labs.map((l) => (l.approach === 'custom' ? String(l.text ?? '').slice(0, 600) : APPROACHES[l.approach] ?? ''));
-  const config = { agents: d.labs.map((l) => l.model), personas, budget: d.budget, rounds: d.rounds, repairs: d.repairs, effort: d.effort, rules: d.rules, run: d.id };
+  const config = {
+    agents: d.labs.map((l) => l.model),
+    personaNames: d.labs.map((l) => l.persona.name),
+    personas: d.labs.map((l) => personaText(l.persona)),
+    repairsByLab: d.labs.map((l) => Math.round(l.persona.persistence)),
+    effortByLab: d.labs.map((l) => l.persona.thoroughness),
+    reuseByLab: d.labs.map((l) => l.persona.reuse),
+    budget: d.budget, rounds: d.rounds, rules: d.rules, run: d.id,
+  };
   const file = join(ROOT, 'lean', 'runs', `${d.id}.config.json`);
   writeFileSync(file, JSON.stringify(config, null, 1));
   const max = d.budget * d.labs.length * d.rules.length;

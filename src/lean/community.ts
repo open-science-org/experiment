@@ -34,8 +34,13 @@ export interface CommunityOptions {
   effort: 'low' | 'medium' | 'high';
   /** Allow grind (only for the stand-in agents, whose reference proofs use it). */
   allowGrind?: boolean;
-  /** Each lab's approach, added to its instructions (empty: none). */
+  /** Each lab's persona: its name and the instructions its features produce (empty: none). */
   personas?: string[];
+  personaNames?: string[];
+  /** Enforced persona features, per lab: repairs per action, reasoning effort, and whether it sees others' results. */
+  repairsByLab?: number[];
+  effortByLab?: ('low' | 'medium' | 'high')[];
+  reuseByLab?: boolean[];
 }
 
 /** A result in the community's library. */
@@ -120,7 +125,10 @@ export class Community {
   bounty(t: Task) { return 4 * 2 ** (t.depth - 1); }
   solved(id: string) { return this.library.find((e) => e.target === id); }
   /** What agent i can see and cite: everything published, and its own private results. */
-  visible(i: number) { return this.library.filter((e) => e.public || e.author === i); }
+  visible(i: number) {
+    const reuse = this.opts.reuseByLab?.[i] ?? true;
+    return this.library.filter((e) => e.author === i || (e.public && reuse));
+  }
   checkLibrary(i: number): CheckOptions['library'] {
     return [...this.free, ...this.visible(i).map((e) => ({ name: `${e.ns}.${e.name}`, ns: e.ns, short: e.name, signature: e.signature }))];
   }
@@ -173,7 +181,7 @@ export class Community {
 - Every result you prove is published at once, and every lab can build on it immediately.
 - Each new result earns its author a mint of ${o.mint}; if it builds on earlier results, ${o.c * 100}% of that mint goes to them.
 - When value reaches a result (a target's bounty, or value flowing from later work), its author keeps ${o.alpha * 100}% and the rest flows back to the results it used, and on down.`;
-    const persona = o.personas?.[i]?.trim();
+    const persona = o.personas?.[i]?.trim() ? `Your lab's way of working${o.personaNames?.[i] ? ` (${o.personaNames[i]})` : ''}: ${o.personas[i].trim()}` : '';
     return `You are lab ${i + 1} of ${o.agents.length} in a research community proving theorems in Lean 4 (version 4.35.0, core library only, no Mathlib). Your aim is to earn as much as you can within your budget; every model call you make costs budget.
 
 ${rules}
@@ -219,7 +227,8 @@ Take one action.`;
     const usage: Usage = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, cost: 0 };
     const transcript: Action['transcript'] = [];
     let kind: Action['kind'] = 'none', target: string | undefined, lemma: ReturnType<typeof parseLemma> = null, ok = false, reason = '';
-    for (let k = 0; k <= this.opts.repairs; k++) {
+    const repairs = this.opts.repairsByLab?.[i] ?? this.opts.repairs;
+    for (let k = 0; k <= repairs; k++) {
       const reply = await chat(system, messages);
       for (const key of ['input', 'output', 'cacheRead', 'cacheWrite'] as const) usage[key] += reply.usage[key];
       usage.cost = (usage.cost ?? 0) + (reply.usage.cost ?? 0);

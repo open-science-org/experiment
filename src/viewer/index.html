@@ -150,8 +150,16 @@
   .trait { display: grid; grid-template-columns: 120px 1fr 64px; gap: 6px; align-items: center; font-size: 12px; margin: 3px 0; }
   .trait input[type=range] { min-width: 0; }
   .trait input[type=number] { width: 64px; padding: 2px 4px; }
-  .labs .lab { display: grid; grid-template-columns: 34px minmax(220px, 1.2fr) minmax(180px, 1fr) 70px; gap: 8px; align-items: center; margin: 6px 0; }
-  .labs .lab textarea { grid-column: 2 / -1; }
+  .lab { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin: 8px 0; background: var(--bg); }
+  .lab .lhead { display: grid; grid-template-columns: 60px minmax(240px, 1fr) minmax(200px, 1fr) auto; gap: 10px; align-items: end; }
+  .lab .part { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .04em; display: block; margin-bottom: 3px; }
+  .lab .feats { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 6px 18px; margin-top: 10px; }
+  .feat { font-size: 12px; }
+  .feat .fl { display: flex; justify-content: space-between; gap: 6px; }
+  .feat .kind { font-size: 10.5px; padding: 0 5px; border-radius: 8px; border: 1px solid var(--line); color: var(--ink-3); }
+  .feat .kind.enforced { border-color: var(--s1); color: var(--s1); }
+  .feat .ends { display: flex; justify-content: space-between; color: var(--ink-3); font-size: 10.5px; }
+  .lab .told { margin-top: 8px; font-size: 12.5px; background: var(--surface); border: 1px dashed var(--line); border-radius: 6px; padding: 6px 8px; }
   .setting-note { display: block; font-size: 11.5px; color: var(--ink-3); margin-left: 22px; }
   .note { font-size: 12px; color: var(--ink-2); margin: 0 0 12px; }
 </style>
@@ -182,15 +190,13 @@
   <section id="view-experiments" class="hidden"></section>
   <section id="view-community" class="hidden">
     <p class="lede">Two communities of AI labs, the same models and the same budget, race on the Lean problem set. <b>Traditional:</b> a lab's lemmas stay private until it proves a target; then the target and its lemmas are published and the lab takes the bounty. <b>OSO:</b> every result is published as soon as Lean accepts it, and value flows back to the results it used. Lean checks every proof.</p>
-    <details class="step" id="race" style="max-width:none"><summary><b>Start a race of your own</b> <span class="muted">· choose the labs, their models and approaches, and the budget</span></summary>
-      <p class="note">Each lab is an AI model working on the problem set. Its <b>approach</b> is added to its instructions, like the simulated agent kinds; or write your own. Both communities get exactly the same labs and budget.</p>
+    <details class="step" id="race" style="max-width:none"><summary><b>Start a race of your own</b> <span class="muted">· each lab is a model (its brain) and a persona (its behaviour)</span></summary>
+      <p class="note">A lab has two separate parts. <b>Model</b>: its brain, which sets how capable it is and what each step costs. <b>Persona</b>: its behaviour, set by features. <i>Instructed</i> features are written into the lab's instructions (shown under each lab, exactly as the lab will read them); <i>enforced</i> features are set by the harness, whatever the model does. The same persona can run on different models, and the same model under different personas, so a result can be traced to the brain or to the behaviour. Both communities get exactly the same labs and budget.</p>
       <div class="labs" id="r-labs"></div>
       <div class="row"><button class="btn" id="r-add">Add a lab</button></div>
       <div class="row">
         <label>Budget per lab, $ <input id="r-budget" type="number" min="0.05" max="20" step="0.05" value="0.5" style="width:80px"></label>
         <label>Rounds <input id="r-rounds" type="number" min="1" max="200" value="30" style="width:70px"></label>
-        <label>Repairs per action <input id="r-repairs" type="number" min="0" max="5" value="2" style="width:60px"></label>
-        <label>Reasoning effort <select id="r-effort"><option>low</option><option selected>medium</option><option>high</option></select></label>
         <label><input type="checkbox" id="r-trad" checked> Traditional</label><label><input type="checkbox" id="r-oso" checked> OSO</label>
         <label>Name <input id="r-id" value="my-race" style="width:150px"></label>
       </div>
@@ -412,28 +418,62 @@ async function drawPilotSummaries() {
 /* ------------------------------------------------------------------ Communities: OSO vs traditional, live or replayed */
 const C = { run: null, now: 0, t0: 0, t1: 0, timer: null, poll: null, ready: false };
 
-const R = { models: [], approaches: {}, labs: [] };
-const APPROACH_NAMES = { none: 'No particular approach', foundation: 'Foundation builder', racer: 'Target racer', explorer: 'Cheap explorer', specialistA: 'Specialist: the sequence (A)', specialistB: 'Specialist: sorting (B)', specialistC: 'Specialist: matrices (C)', freeRider: 'Free rider', custom: 'My own text…' };
+const R = { models: [], personas: [], features: [], labs: [] };
 async function initRace() {
   const [models, opts] = await Promise.all([api('/api/models'), api('/api/design/options')]);
-  R.models = models; R.approaches = opts.approaches;
-  R.labs = [['deepseek/deepseek-v4.1-flash', 'foundation'], ['google/gemini-3.8-flash', 'racer'], ['openai/gpt-5.6-terra', 'none'], ['deepseek/deepseek-v4.1-flash', 'explorer']].map(([model, approach]) => ({ model, approach, text: '' }));
+  R.models = models; R.personas = opts.personas; R.features = opts.personaFeatures;
+  const preset = (n) => ({ ...R.personas.find((p) => p.name === n) });
+  R.labs = [['deepseek/deepseek-v4.1-flash', 'Foundation builder'], ['google/gemini-3.8-flash', 'Target racer'], ['openai/gpt-5.6-terra', 'Neutral'], ['deepseek/deepseek-v4.1-flash', 'Cheap explorer']].map(([model, p]) => ({ model, persona: preset(p) }));
   drawLabs();
   for (const id of ['r-budget', 'r-rounds', 'r-trad', 'r-oso']) $(id).addEventListener('input', raceCost);
-  $('r-add').onclick = () => { R.labs.push({ model: R.labs.at(-1)?.model ?? 'deepseek/deepseek-v4.1-flash', approach: 'none', text: '' }); drawLabs(); };
+  $('r-add').onclick = () => { R.labs.push({ model: R.labs.at(-1)?.model ?? 'deepseek/deepseek-v4.1-flash', persona: preset('Neutral') }); drawLabs(); };
   $('r-start').onclick = startRace;
 }
+function featureControl(i, f, p) {
+  const kind = `<span class="kind ${f.kind}">${f.kind === 'unavailable' ? 'not yet available' : f.kind}</span>`;
+  let ctl = '';
+  if (f.type === 'slider') ctl = `<input type="range" min="0" max="1" step="0.05" value="${p[f.key]}" data-i="${i}" data-f="${f.key}" aria-label="${esc(f.label)}"><div class="ends"><span>${esc(f.left)}</span><span>${esc(f.right)}</span></div>`;
+  else if (f.type === 'select') ctl = `<select data-i="${i}" data-f="${f.key}" aria-label="${esc(f.label)}">${Object.entries(f.options).map(([k, v]) => `<option value="${k}" ${p[f.key] === k ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select>`;
+  else if (f.type === 'toggle') ctl = `<label><input type="checkbox" data-i="${i}" data-f="${f.key}" ${p[f.key] ? 'checked' : ''}> sees and cites other labs' results</label>`;
+  else if (f.type === 'number') ctl = `<input type="number" min="${f.min}" max="${f.max}" value="${p[f.key]}" data-i="${i}" data-f="${f.key}" style="width:60px" aria-label="${esc(f.label)}"> repairs per action`;
+  else ctl = '<span class="muted">—</span>';
+  return `<div class="feat" title="${esc(f.explain)}"><div class="fl"><b>${esc(f.label)}</b>${kind}</div>${ctl}<div class="muted" style="font-size:11px">${esc(f.explain)}</div></div>`;
+}
 function drawLabs() {
-  const mopts = (sel) => R.models.map((m) => `<option value="${esc(m.id)}" ${m.id === sel ? 'selected' : ''}>${esc(m.id)} · $${m.input.toFixed(2)} / $${m.output.toFixed(2)} per M</option>`).join('');
-  $('r-labs').innerHTML = R.labs.map((l, i) => `<div class="lab"><b>Lab ${i + 1}</b><select data-i="${i}" class="r-model" aria-label="Lab ${i + 1} model">${mopts(l.model)}</select><select data-i="${i}" class="r-appr" aria-label="Lab ${i + 1} approach">${Object.entries(APPROACH_NAMES).map(([k, v]) => `<option value="${k}" ${k === l.approach ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select><button class="btn" data-i="${i}" ${R.labs.length < 2 ? 'disabled' : ''}>Remove</button>${l.approach === 'custom' ? `<textarea data-i="${i}" class="prose" rows="2" placeholder="How this lab should work, in a sentence or two">${esc(l.text)}</textarea>` : l.approach !== 'none' ? `<div class="muted" style="grid-column:2/-1;font-size:12px">${esc(R.approaches[l.approach] ?? '')}</div>` : ''}</div>`).join('');
-  for (const el of $('r-labs').querySelectorAll('.r-model')) el.onchange = () => { R.labs[el.dataset.i].model = el.value; raceCost(); };
-  for (const el of $('r-labs').querySelectorAll('.r-appr')) el.onchange = () => { R.labs[el.dataset.i].approach = el.value; drawLabs(); };
-  for (const el of $('r-labs').querySelectorAll('textarea')) el.oninput = () => { R.labs[el.dataset.i].text = el.value; };
-  for (const el of $('r-labs').querySelectorAll('button')) el.onclick = () => { R.labs.splice(Number(el.dataset.i), 1); drawLabs(); };
+  const mopts = (sel) => R.models.map((m) => `<option value="${esc(m.id)}" ${m.id === sel ? 'selected' : ''}>${esc(m.id)} · $${m.input.toFixed(2)} / $${m.output.toFixed(2)} per M tokens</option>`).join('');
+  const popts = (sel) => R.personas.map((p) => `<option ${p.name === sel ? 'selected' : ''}>${esc(p.name)}</option>`).join('') + (R.personas.some((p) => p.name === sel) ? '' : `<option selected>${esc(sel)}</option>`);
+  $('r-labs').innerHTML = R.labs.map((l, i) => `<div class="lab">
+      <div class="lhead"><b>Lab ${i + 1}</b>
+        <label><span class="part">Model: the brain</span><select data-i="${i}" class="r-model">${mopts(l.model)}</select></label>
+        <label><span class="part">Persona: the behaviour</span><select data-i="${i}" class="r-persona">${popts(l.persona.name)}</select></label>
+        <span><button class="btn r-edit" data-i="${i}">${l.open ? 'Hide features' : 'Adjust features'}</button> <button class="btn r-del" data-i="${i}" ${R.labs.length < 2 ? 'disabled' : ''}>Remove</button></span></div>
+      ${l.open ? `<div class="feats">${R.features.map((f) => featureControl(i, f, l.persona)).join('')}</div>` : ''}
+      <div class="told" id="told-${i}"><span class="muted">Told to the lab:</span> …</div>
+      <div class="muted" style="font-size:11.5px;margin-top:4px">Enforced: ${l.persona.reuse ? 'sees other labs\' results' : '<b>works alone</b>'} · ${l.persona.persistence} repairs per action · ${esc(l.persona.thoroughness)} reasoning effort</div>
+    </div>`).join('');
+  R.labs.forEach((l, i) => told(i));
+  const on = (sel, ev, fn) => { for (const el of $('r-labs').querySelectorAll(sel)) el.addEventListener(ev, () => fn(el, R.labs[el.dataset.i])); };
+  on('.r-model', 'change', (el, l) => { l.model = el.value; raceCost(); });
+  on('.r-persona', 'change', (el, l) => { l.persona = { ...R.personas.find((p) => p.name === el.value) }; drawLabs(); });
+  on('.r-edit', 'click', (el, l) => { l.open = !l.open; drawLabs(); });
+  on('.r-del', 'click', (el) => { R.labs.splice(Number(el.dataset.i), 1); drawLabs(); });
+  on('[data-f]', 'change', (el, l) => {
+    const f = el.dataset.f;
+    l.persona[f] = el.type === 'checkbox' ? el.checked : el.type === 'range' || el.type === 'number' ? Number(el.value) : el.value;
+    if (!l.persona.name.endsWith('(adjusted)')) l.persona.name = `${l.persona.name} (adjusted)`;
+    drawLabs();
+  });
   raceCost();
 }
+async function told(i) {
+  try {
+    const { text } = await post('/api/persona/text', { persona: R.labs[i].persona });
+    const el = $('told-' + i);
+    if (el) el.innerHTML = `<span class="muted">Told to the lab:</span> ${text ? esc(text) : '<i class="muted">nothing beyond the common instructions</i>'}`;
+  } catch {}
+}
 function raceDesign() {
-  return { id: $('r-id').value.trim(), labs: R.labs, budget: Number($('r-budget').value), rounds: Number($('r-rounds').value), repairs: Number($('r-repairs').value), effort: $('r-effort').value, rules: [['r-trad', 'traditional'], ['r-oso', 'oso']].filter(([id]) => $(id).checked).map(([, r]) => r) };
+  return { id: $('r-id').value.trim(), labs: R.labs.map((l) => ({ model: l.model, persona: l.persona })), budget: Number($('r-budget').value), rounds: Number($('r-rounds').value), rules: [['r-trad', 'traditional'], ['r-oso', 'oso']].filter(([id]) => $(id).checked).map(([, r]) => r) };
 }
 async function raceCost() {
   const d = raceDesign(), max = d.budget * d.labs.length * d.rules.length;
@@ -455,7 +495,7 @@ async function startRace() {
 async function enterCommunity() {
   if (!C.ready) {
     C.ready = true;
-    initRace();
+    initRace().then(() => { if (params().get('race') === 'open') { $('race').open = true; R.labs[0].open = true; drawLabs(); } });
     $('c-run').onchange = () => { $('c-follow').checked = true; loadCommunity(); };
     $('c-play').onclick = () => {
       if (C.timer) return stopC();
