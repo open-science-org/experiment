@@ -11,6 +11,16 @@
 
 Each model attempted every posted target alone (no library) and with the theorems it rests on (library), 2 attempts each. One attempt is a proof plus up to 3 repairs on Lean's errors; reasoning effort high; `grind` banned. All models were called through OpenRouter, which reports each call's cost.
 
+## Progress for the money
+
+How many targets each model proved as it spent, working up the tree from the shallowest target, alone (as in traditional research, where each prover builds everything itself) and with the lemmas each target rests on (as in OSO, where they are shared). **The lemmas' own cost is not counted**: this panel attempted only the targets, so the "with lemmas" line shows the saving for a prover who finds the lemmas already published, not the community's whole bill. Dollar costs depend on which provider served each call (see the notes).
+
+![claude-opus-5.5](figures/progress-claude-opus-5.5.svg)
+![claude-sonnet-5.5](figures/progress-claude-sonnet-5.5.svg)
+![gpt-5.6-terra](figures/progress-gpt-5.6-terra.svg)
+![gemini-3.8-flash](figures/progress-gemini-3.8-flash.svg)
+![deepseek-v4.1-flash](figures/progress-deepseek-v4.1-flash.svg)
+
 ## By model
 
 | model | proved with library | proved alone | cost per attempt, library | cost per attempt, alone | cost per proof, library / alone | total cost |

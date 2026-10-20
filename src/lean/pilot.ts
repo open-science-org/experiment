@@ -9,6 +9,7 @@ import { RESULTS_DIR, ROOT, SPACES_DIR } from '../paths.ts';
 import { attempt, systemPrompt, taskPrompt, type AttemptResult, type Chat, type ModelSettings } from './agent.ts';
 import { libraryFor, referenceProof } from './selftest.ts';
 import { LEAN_DIR, loadTasks, type Task } from './tasks.ts';
+import { lineChart } from '../report/figures.ts';
 
 export type Condition = 'library' | 'alone';
 
@@ -298,6 +299,36 @@ export function writeComparison(id: string, runIds: string[], title: string): st
     savings.length ? `**With the lemmas, a proof took ${Math.min(...savings).toFixed(1)} to ${Math.max(...savings).toFixed(1)} times fewer output tokens** than without, across models (tokens, not dollars: OpenRouter sends a model's calls to providers with different prices).` : '',
     cheapest ? `**Cheapest with lemmas: ${short(cheapest.model)},** at $${cheapest.library.costPerProof!.toFixed(3)} per proof (${Math.round(100 * rate(cheapest.library))}% of attempts proved).` : '',
   ].filter(Boolean);
+  // Progress for the money: targets proved as each model spends, working up the tree (by depth),
+  // alone and with the lemmas. Lemmas' own cost is not counted: the panel attempted only targets.
+  const dir = join(RESULTS_DIR, 'pilot', id);
+  mkdirSync(join(dir, 'figures'), { recursive: true });
+  const curves = models_.map((m) => {
+    const recs = runs.find((r) => r.runId === m.runId)!.records.filter((x) => x.posted);
+    const curve = (cond: Condition) => {
+      const rs = recs.filter((x) => x.condition === cond).sort((a, b) => a.depth - b.depth || a.publicId.localeCompare(b.publicId) || a.k - b.k);
+      const proved = new Set<string>();
+      let spent = 0;
+      const pts: [number, number][] = [[0, 0]];
+      for (const x of rs) { spent += x.usage.cost ?? 0; if (x.ok) proved.add(x.publicId); pts.push([spent, proved.size]); }
+      return pts;
+    };
+    const lib = curve('library'), alone = curve('alone');
+    const T = new Set(recs.map((x) => x.publicId)).size;
+    const maxX = Math.max(lib.at(-1)![0], alone.at(-1)![0], 1e-6);
+    const nice = (x: number) => { const m10 = 10 ** Math.floor(Math.log10(x)); return [1, 2, 2.5, 5, 10].map((k) => k * m10).find((v) => v >= x)!; };
+    const top = nice(maxX);
+    const file = `figures/progress-${short(m.model).replace(/[^\w.-]/g, '-')}.svg`;
+    writeFileSync(join(dir, file), lineChart({
+      title: `${short(m.model)}: targets proved for the money`,
+      subtitle: 'Cumulative, working up the tree. The lemmas\' own cost is not counted.',
+      xLabel: 'Dollars spent', yLabel: 'Targets proved',
+      series: [{ name: 'With lemmas', slot: 1, points: lib }, { name: 'Alone', slot: 2, points: alone }],
+      x: [0, top], y: [0, T], xTicks: [0, top / 4, top / 2, (3 * top) / 4, top], yTicks: Array.from({ length: T + 1 }, (_, i) => i).filter((i) => T <= 8 || i % 2 === 0),
+      format: { x: (v) => `$${Number.isInteger(v) ? v : v.toFixed(2)}`, y: (v) => String(Math.round(v)) },
+    }));
+    return { model: m.model, file, library: lib, alone, targets: T };
+  });
   const r0 = runs[0].opts;
   const md = `# Lean pilot: ${title}
 
@@ -306,6 +337,12 @@ export function writeComparison(id: string, runIds: string[], title: string): st
 ${headline.map((h) => `- ${h}`).join('\n')}
 ${models_.some((m) => m.missingAlone.length) ? `\n*Missing: ${models_.filter((m) => m.missingAlone.length).map((m) => `${short(m.model)} alone on ${m.missingAlone.join(', ')}`).join('; ')} (see the notes).*\n` : ''}
 Each model attempted every posted target alone (no library) and with the theorems it rests on (library), ${r0.attempts} attempts each. One attempt is a proof plus up to ${r0.repairs} repairs on Lean's errors; reasoning effort ${r0.model.effort}; \`grind\` ${r0.allowGrind ? 'allowed' : 'banned'}. All models were called through OpenRouter, which reports each call's cost.
+
+## Progress for the money
+
+How many targets each model proved as it spent, working up the tree from the shallowest target, alone (as in traditional research, where each prover builds everything itself) and with the lemmas each target rests on (as in OSO, where they are shared). **The lemmas' own cost is not counted**: this panel attempted only the targets, so the "with lemmas" line shows the saving for a prover who finds the lemmas already published, not the community's whole bill. Dollar costs depend on which provider served each call (see the notes).
+
+${curves.map((c) => `![${short(c.model)}](${c.file})`).join('\n')}
 
 ## By model
 
@@ -317,9 +354,7 @@ ${table(perTarget)}
 
 A target a model proves alone does not need its lemmas, for that model: shared lemmas then save cost, but do not make the result reachable. Ids are the anonymous ids of [worlds/lean-reference.json](../../../worlds/lean-reference.json). Runs: ${runIds.map((r) => `[${r}](../${r}/summary.md)`).join(', ')}.
 `;
-  const dir = join(RESULTS_DIR, 'pilot', id);
-  mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, 'summary.md'), md);
-  writeFileSync(join(dir, 'data.json'), JSON.stringify({ id, title, runs: runIds, attempts: r0.attempts, repairs: r0.repairs, allowGrind: r0.allowGrind, effort: r0.model.effort, headline, models: models_ }, null, 1) + '\n');
+  writeFileSync(join(dir, 'data.json'), JSON.stringify({ id, title, runs: runIds, attempts: r0.attempts, repairs: r0.repairs, allowGrind: r0.allowGrind, effort: r0.model.effort, headline, models: models_, curves }, null, 1) + '\n');
   return dir;
 }

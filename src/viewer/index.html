@@ -334,14 +334,17 @@ async function drawOverview() {
     const ratio = m.library.tokensPerProof && m.alone.tokensPerProof ? (m.alone.tokensPerProof / m.library.tokensPerProof).toFixed(1) : null;
     const bar = (label, p, cls) => `<span>${label}</span><div class="b ${cls}" style="width:${p.attempts ? (100 * p.proved / p.attempts).toFixed(1) : 0}%"></div><span class="n">${p.attempts ? `${p.proved}/${p.attempts}` : '–'}</span>`;
     const verdict = m.alone.attempts && m.alone.proved === m.alone.attempts ? 'proved every target alone' : m.needsLemmas.length ? `needed the lemmas for ${m.needsLemmas.join(', ')}` : 'lemmas did not decide any target';
+    const curve = cd.curves?.find((c) => c.model === m.model);
+    const src = curve ? `/files/${esc(ov.comparisonPath.replace(/summary\.md$/, curve.file))}` : '';
+    const chart = curve ? `<a href="${src}" target="_blank" rel="noopener" title="Open full size"><img src="${src}" alt="${esc(name)}: targets proved for the money, with lemmas and alone" style="width:100%;margin-top:8px;border-radius:6px"></a>` : '';
     return `<div class="field"><span class="chip ${m.needsLemmas.length ? 'ahead' : ''}">${esc(verdict)}</span><h3>${esc(name)}</h3>
       <div class="pair">${bar('with lemmas', m.library, 'oso')}${bar('alone', m.alone, 'trad')}</div>
-      <div class="muted" style="margin-top:8px">Attempts that proved their target (8 targets × 2 attempts). Per proof: ${k(m.library.tokensPerProof)} output tokens with lemmas${ratio ? `, ${k(m.alone.tokensPerProof)} alone (${ratio}× more)` : ''}; $${m.library.costPerProof?.toFixed(3) ?? '–'} with lemmas${m.alone.costPerProof ? `, $${m.alone.costPerProof.toFixed(3)} alone` : ''}.${m.missingAlone.length ? ` Not run alone: ${m.missingAlone.join(', ')}.` : ''}</div></div>`;
+      <div class="muted" style="margin-top:8px">Attempts that proved their target (8 targets × 2 attempts). Per proof: ${k(m.library.tokensPerProof)} output tokens with lemmas${ratio ? `, ${k(m.alone.tokensPerProof)} alone (${ratio}× more)` : ''}; $${m.library.costPerProof?.toFixed(3) ?? '–'} with lemmas${m.alone.costPerProof ? `, $${m.alone.costPerProof.toFixed(3)} alone` : ''}.${m.missingAlone.length ? ` Not run alone: ${m.missingAlone.join(', ')}.` : ''}</div>${chart}</div>`;
   }).join('') : '';
   const comp = cd ? `<div class="findings"><ul>${cd.headline.map((h) => `<li>${md(h)}</li>`).join('')}</ul></div>
       <div class="fields">${models}</div>
       <div class="legend" style="margin-top:8px"><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s1)"/></svg>with the lemmas the target rests on</span><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s2)"/></svg>alone</span></div>
-      <p class="note"><a href="#/doc/${esc(ov.comparisonPath)}">Every target and model, with notes →</a></p>`
+      <p class="note">The charts show targets proved as each model spends, working up the tree, alone and with the lemmas. The lemmas' own cost is not counted: they show what a prover saves when the lemmas are already published. The real comparison of communities, traditional against OSO with real agents, is the next step. <a href="#/doc/${esc(ov.comparisonPath)}">Every target and model, with notes →</a></p>`
     : ov.comparison ? `<article class="doc">${ov.comparison.html.replace(/<h1>.*?<\/h1>/, '')}</article>` : '<p class="muted">No pilot comparison yet.</p>';
   $('view-overview').innerHTML = `
     <p class="lede">Communities of research agents get the same field, agents and budget, under two sets of rules. <b>Traditional:</b> work is published only when it is finished, and nothing flows back to the work it built on. <b>OSO:</b> results are published as they are found, and part of each result's value flows back to what it built on. The <a href="https://github.com/open-science-org/OSO/blob/master/docs/demo-model.md" target="_blank" rel="noopener">specification</a> defines the model once.</p>
