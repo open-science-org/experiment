@@ -146,7 +146,7 @@ export function extractProof(text: string): string | null {
 export interface AttemptResult { ok: boolean; turns: Turn[]; uses: string[]; failure?: string }
 
 /** One attempt: a proof, then repairs on Lean's errors until it passes or the repairs run out. */
-export async function attempt(task: Task, library: CheckOptions['library'], chat: Chat, { repairs = 3, allowGrind = false } = {}): Promise<AttemptResult> {
+export async function attempt(task: Task, library: CheckOptions['library'], chat: Chat, { repairs = 3, allowGrind = false, onTurn = (_: Turn) => {} } = {}): Promise<AttemptResult> {
   const system = systemPrompt(allowGrind);
   const messages: { role: 'user' | 'assistant'; content: unknown }[] = [{ role: 'user', content: taskPrompt(task, library) }];
   const turns: Turn[] = [];
@@ -159,6 +159,7 @@ export async function attempt(task: Task, library: CheckOptions['library'], chat
     const proof = extractProof(reply.text);
     const result = proof ? await check(task, proof, { library, allowGrind }) : null;
     turns.push({ proof, check: result, usage: reply.usage, stop: reply.stop });
+    onTurn(turns[turns.length - 1]);
     if (result?.ok) return { ok: true, turns, uses: result.uses };
     messages.push({ role: 'assistant', content: reply.content });
     const feedback = !proof

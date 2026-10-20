@@ -277,3 +277,16 @@ test('the canonical report has the same sections for every space', async () => {
   for (const f of ['figures/frontier.svg', 'figures/alpha.svg', 'figures/world.svg', 'figures/sensitivity.svg', 'figures/flow-back-grid.svg', 'data.json']) assert.ok(existsSync(join(REPORTS_DIR, 'test-report', f)), f);
   assert.ok(['OSO ahead', 'no clear difference', 'traditional ahead'].includes(h.verdict));
 });
+
+test('a traced run is the same run, and its events account for what was published', async () => {
+  const { traceRun } = await import('../src/engine/model.ts');
+  for (const name of ['traditional', 'oso', 'osoChoice']) {
+    const sc = scenarioFor(name);
+    const t = traceRun(sc, 5);
+    assert.deepEqual(t.result, run(sc, 5));
+    const published = new Set(t.events.filter((e) => e.k === 'publish').map((e) => (e as { x: number }).x));
+    const rounds = t.events.filter((e) => e.k === 'round');
+    assert.equal(rounds.length, t.result.curve.length);
+    assert.equal(Math.max(0, ...[...published].map((x) => t.world.level[x])), t.result.frontier);
+  }
+});

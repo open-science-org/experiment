@@ -12,7 +12,8 @@
     "test": "node --test",
     "check": "tsc -p .",
     "sync-ledger": "scripts/sync-ledger.sh",
-    "pilot": "node --env-file-if-exists=.env src/lean/cli.ts"
+    "pilot": "node --env-file-if-exists=.env src/lean/cli.ts",
+    "viewer": "node --env-file-if-exists=.env src/viewer/server.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.135.0",

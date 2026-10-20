@@ -79,6 +79,16 @@ npm run pilot -- world <run>                    # measured chances -> worlds/lea
 - **What gets published:** transcripts contain proofs, so they stay in `lean/runs/`, which is private. The public summary in `results/pilot/<run>/` uses only anonymous ids.
 - **The model:** Claude Opus 5.5 at effort `high`, through whichever key is in `.env`, which Git ignores. With `ANTHROPIC_API_KEY`, it calls Anthropic directly (adaptive thinking, with server-side fallbacks on). With `OPENROUTER_API_KEY`, it goes through OpenRouter, which also serves GPT, Gemini and open models (`--model`); OpenRouter reports each call's cost, so the summary gives dollars.
 
+## Watching and replaying
+
+```sh
+npm run viewer        # then open http://127.0.0.1:8791
+```
+
+- **Simulated communities:** pick a field, a seed and two rule settings. The same community then plays back side by side, round by round, on the research tree: what each agent attempts, what is proved but kept hidden, what is published, and who earns what. A run is traced on demand: recording it draws no random numbers, so it is the same run the reports count. A link such as `#space=drug-discovery&seed=3&round=30` opens a given moment.
+- **Lean pilot:** every attempt by every model, filling in as runs progress; with "Follow live" it refreshes while runs are going. Replay shows the order in which attempts finished, and clicking an attempt shows its turns: each proof, and Lean's errors.
+- **Private:** the viewer listens on this machine only, because pilot transcripts contain proofs.
+
 ## Layout
 
 | Path | Contents |
@@ -92,6 +102,7 @@ npm run pilot -- world <run>                    # measured chances -> worlds/lea
 | [worlds/](worlds/) | Data for worlds read from files, such as the Lean reference tree |
 | [vendor/oso-ledger/](vendor/oso-ledger/) | A pinned copy of the [app](https://github.com/open-science-org/app)'s ledger. The tests check that the simulator's waterfall pays exactly what the real ledger pays; `npm run sync-ledger` refreshes it |
 | [lean/](lean/) | The Lean problem set (public part) |
+| [src/viewer/](src/viewer/) | The viewer: a local server and one page |
 | [test/](test/) | Tests |
 
 The Lean problem set is in `lean/`: its definitions and targets are public, and its reference proofs are private.

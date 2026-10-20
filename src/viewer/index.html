@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Experiment viewer</title>
+<style>
+  :root {
+    --bg: #f6f5f2; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #8a8983; --line: #e1e0db;
+    --s1: #2a78d6; --s1-soft: #d6e6fa; --s2: #eb6834; --good: #0ca30c; --bad: #d03b3b; --focus: #2a78d6;
+    font-family: Helvetica, Arial, sans-serif; color: var(--ink); background: var(--bg);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #121211; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --ink-3: #8f8e86; --line: #34332f;
+      --s1: #3987e5; --s1-soft: #1f3550; --s2: #d95926; --good: #3fbf3f; --bad: #e06060; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); }
+  header { display: flex; align-items: baseline; gap: 24px; padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--surface); flex-wrap: wrap; }
+  h1 { font-size: 18px; margin: 0; }
+  .tabs button { border: 0; background: none; font: inherit; font-size: 14px; color: var(--ink-2); padding: 6px 2px; margin-right: 18px; cursor: pointer; border-bottom: 2px solid transparent; }
+  .tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--s1); font-weight: 700; }
+  main { padding: 16px 20px 40px; max-width: 1500px; margin: 0 auto; }
+  .bar { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; }
+  .bar label { font-size: 13px; color: var(--ink-2); display: flex; gap: 6px; align-items: center; }
+  select, input, button.btn { font: inherit; font-size: 13px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
+  button.btn { cursor: pointer; }
+  button.btn.primary { background: var(--s1); color: #fff; border-color: var(--s1); }
+  button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+  input[type=range] { flex: 1; min-width: 180px; padding: 0; accent-color: var(--s1); }
+  .clock { font-variant-numeric: tabular-nums; font-size: 13px; color: var(--ink-2); min-width: 150px; }
+  .panes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 900px) { .panes { grid-template-columns: 1fr; } }
+  .pane { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px; min-width: 0; }
+  .pane h2 { font-size: 15px; margin: 0 0 8px; }
+  .stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-bottom: 8px; }
+  .stat { font-size: 11px; color: var(--ink-2); }
+  .stat b { display: block; font-size: 18px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  svg.tree { width: 100%; height: auto; display: block; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--ink-2); margin: 4px 0 10px; }
+  .legend svg { vertical-align: middle; margin-right: 4px; }
+  .log { font-size: 12px; color: var(--ink-2); max-height: 160px; overflow: auto; border-top: 1px solid var(--line); margin-top: 8px; padding-top: 6px; line-height: 1.5; }
+  table.agents { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+  table.agents th, table.agents td { text-align: left; padding: 3px 6px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+  table.agents th { color: var(--ink-2); font-weight: 400; }
+  .meter { height: 8px; background: var(--s1); border-radius: 0 4px 4px 0; min-width: 1px; }
+  .muted { color: var(--ink-3); font-size: 12px; }
+  .grid { overflow: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+  table.pilot { border-collapse: collapse; font-size: 13px; min-width: 100%; }
+  table.pilot th, table.pilot td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+  table.pilot thead th { position: sticky; top: 0; background: var(--surface); color: var(--ink-2); font-weight: 400; font-size: 12px; }
+  table.pilot th.run { border-left: 1px solid var(--line); color: var(--ink); font-weight: 700; }
+  td.cell { border-left: 1px solid var(--line); }
+  .mark { display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 22px; padding: 0 5px; margin-right: 4px; border-radius: 5px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font: inherit; font-size: 12px; cursor: pointer; }
+  .mark.ok { border-color: var(--good); }
+  .mark.ok::before { content: "✓"; color: var(--good); margin-right: 3px; font-weight: 700; }
+  .mark.fail { border-color: var(--bad); }
+  .mark.fail::before { content: "✕"; color: var(--bad); margin-right: 3px; font-weight: 700; }
+  .mark.running { border-style: dashed; animation: pulse 1.2s ease-in-out infinite; }
+  .mark.running::before { content: "…"; margin-right: 3px; }
+  @keyframes pulse { 50% { opacity: .35; } }
+  @media (prefers-reduced-motion: reduce) { .mark.running { animation: none; } }
+  .cards { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; min-width: 190px; }
+  .card .t { font-size: 12px; color: var(--ink-2); }
+  .card .v { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .live { display: inline-block; font-size: 11px; font-weight: 700; color: var(--good); margin-left: 6px; }
+  .runs { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+  aside.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(760px, 100vw); background: var(--surface); border-left: 1px solid var(--line); box-shadow: -8px 0 24px rgba(0,0,0,.15); overflow: auto; padding: 16px 18px; transform: translateX(105%); transition: transform .2s; z-index: 10; }
+  aside.drawer.open { transform: none; }
+  aside.drawer h3 { margin: 0 0 4px; font-size: 16px; }
+  .turn { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 12px; }
+  .turn h4 { font-size: 13px; margin: 0 0 6px; }
+  pre { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; font-size: 12px; overflow: auto; white-space: pre-wrap; word-break: break-word; }
+  pre.err { border-color: var(--bad); }
+  .hidden { display: none !important; }
+  .note { font-size: 12px; color: var(--ink-2); margin: 0 0 12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Experiment viewer</h1>
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="tab-sim" aria-selected="true">Simulated communities</button>
+    <button role="tab" id="tab-pilot" aria-selected="false">Lean pilot</button>
+  </nav>
+</header>
+
+<main>
+  <!-- Simulation playback -->
+  <section id="view-sim">
+    <div class="bar">
+      <label>Field <select id="sim-space"></select></label>
+      <label>Seed <input id="sim-seed" type="number" min="1" value="1" style="width:70px"></label>
+      <label>Left <select id="sim-left"></select></label>
+      <label>Right <select id="sim-right"></select></label>
+      <button class="btn primary" id="sim-load">Load</button>
+      <span class="muted">Same field, agents, budget and seed on both sides: only the rules differ.</span>
+    </div>
+    <div class="bar">
+      <button class="btn" id="sim-first" aria-label="First round">⏮</button>
+      <button class="btn" id="sim-prev" aria-label="Previous round">◀</button>
+      <button class="btn primary" id="sim-play" aria-label="Play">▶ Play</button>
+      <button class="btn" id="sim-next" aria-label="Next round">▶|</button>
+      <label>Speed <select id="sim-speed"><option value="2">2 rounds/s</option><option value="5" selected>5 rounds/s</option><option value="12">12 rounds/s</option><option value="30">30 rounds/s</option></select></label>
+      <input type="range" id="sim-scrub" min="0" max="0" value="0" aria-label="Round">
+      <span class="clock" id="sim-clock">Round 0</span>
+    </div>
+    <div class="legend" id="sim-legend"></div>
+    <div class="panes">
+      <div class="pane" id="pane-left"></div>
+      <div class="pane" id="pane-right"></div>
+    </div>
+  </section>
+
+  <!-- Lean pilot playback -->
+  <section id="view-pilot" class="hidden">
+    <p class="note">Each attempt is one model trying to prove one theorem: a proof plus up to three repairs on Lean's errors. <b>Alone</b>: no lemmas given; <b>with</b>: the theorems it rests on are given. The number on a mark is how many turns the attempt used (✓ proved, ✕ not proved, … in progress). Click a mark to read the attempt's turns. Transcripts contain proofs and stay on this machine.</p>
+    <div class="bar"><div class="runs" id="pilot-runs">Loading runs…</div><button class="btn primary" id="pilot-load">Show</button></div>
+    <div class="bar">
+      <button class="btn" id="pilot-first" aria-label="Start">⏮</button>
+      <button class="btn primary" id="pilot-play" aria-label="Play">▶ Replay</button>
+      <label>Speed <select id="pilot-speed"><option value="30">×30</option><option value="120" selected>×120</option><option value="600">×600</option></select></label>
+      <input type="range" id="pilot-scrub" min="0" max="0" value="0" aria-label="Time">
+      <span class="clock" id="pilot-clock"></span>
+      <label><input type="checkbox" id="pilot-follow" checked> Follow live</label>
+    </div>
+    <div class="cards" id="pilot-cards"></div>
+    <div class="grid"><table class="pilot" id="pilot-grid"></table></div>
+  </section>
+</main>
+
+<aside class="drawer" id="drawer" aria-label="Attempt transcript">
+  <button class="btn" id="drawer-close" style="float:right">Close</button>
+  <div id="drawer-body"></div>
+</aside>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const api = (path) => fetch(path).then(async (r) => { const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText); return j; });
+const money = (x) => '$' + (x < 0.1 ? x.toFixed(3) : x.toFixed(2));
+
+// Tabs
+for (const [tab, view] of [['tab-sim', 'view-sim'], ['tab-pilot', 'view-pilot']]) {
+  $(tab).onclick = () => {
+    for (const [t, v] of [['tab-sim', 'view-sim'], ['tab-pilot', 'view-pilot']]) { $(t).setAttribute('aria-selected', t === tab); $(v).classList.toggle('hidden', v !== view); }
+    if (view === 'view-pilot' && !pilot.loadedList) loadRunList();
+  };
+}
+
+/* ------------------------------------------------------------------ Simulation playback */
+const sim = { panes: [], round: 0, max: 0, timer: null };
+
+function legend() {
+  const node = (fill, stroke, dash = '') => `<svg width="16" height="16"><circle cx="8" cy="8" r="6" fill="${fill}" stroke="${stroke}" stroke-width="2" ${dash}/></svg>`;
+  $('sim-legend').innerHTML = [
+    `<span>${node('var(--surface)', 'var(--ink-3)')}not proved yet</span>`,
+    `<span>${node('var(--s1-soft)', 'var(--s1)')}proved, but kept hidden (number = how many agents hold it)</span>`,
+    `<span>${node('var(--s1)', 'var(--s1)')}published: anyone can build on it</span>`,
+    `<span><svg width="16" height="16"><polygon points="8,1 10,6 15,6 11,9 12.5,15 8,11.5 3.5,15 5,9 1,6 6,6" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.2"/></svg>target (with bounty)</span>`,
+    `<span><svg width="20" height="16"><circle cx="10" cy="8" r="7" fill="none" stroke="var(--s2)" stroke-width="2"/></svg>attempted this round (dashed: every attempt failed)</span>`,
+  ].join('');
+}
+
+// Rebuilds the state of a run after every round from its event log.
+function snapshots(run) {
+  const n = run.world.n, A = run.agents.length;
+  const published = new Int16Array(n).fill(-1);
+  const holders = Array.from({ length: n }, () => new Set());
+  const proved = new Int32Array(A), pubs = new Int32Array(A);
+  let earnings = new Array(A).fill(0), spend = 0, level = 0;
+  const byRound = new Map();
+  for (const e of run.events) { if (!byRound.has(e.r)) byRound.set(e.r, []); byRound.get(e.r).push(e); }
+  const last = Math.max(0, ...run.events.map((e) => e.r));
+  const snaps = [{ published: published.slice(), hidden: holders.map((h) => h.size), tried: new Map(), proved: proved.slice(), pubs: pubs.slice(), earnings: earnings.slice(), spend: 0, level: 0, log: [] }];
+  for (let t = 1; t <= last; t++) {
+    const tried = new Map(), log = [];
+    for (const e of byRound.get(t) ?? []) {
+      if (e.k === 'attempt') {
+        const c = tried.get(e.x) ?? { n: 0, ok: 0 }; c.n++; if (e.ok) c.ok++; tried.set(e.x, c);
+        if (e.ok) { proved[e.a]++; if (published[e.x] < 0) holders[e.x].add(e.a); log.push(`agent ${e.a + 1} proved ${name(run, e.x)}${e.dup ? ' (already published: duplicate work)' : ''}${e.wrong ? ' (wrongly)' : ''}`); }
+      } else if (e.k === 'publish') {
+        published[e.x] = e.a; holders[e.x].clear(); pubs[e.a]++;
+        log.push(`agent ${e.a + 1} published ${name(run, e.x)}${run.world.isTarget[e.x] ? ` — target solved, bounty ${run.world.bounty[e.x]}` : ''}`);
+      } else if (e.k === 'retract') {
+        if (e.published) published[e.x] = -1; holders[e.x].delete(e.a);
+        log.push(`${name(run, e.x)} was found wrong and retracted`);
+      } else if (e.k === 'rejected') {
+        log.push(`agent ${e.a + 1}'s proof of target ${name(run, e.x)} was rejected: it rested on a wrong result`);
+      } else if (e.k === 'round') { earnings = e.earnings; spend = e.spend; level = e.level; }
+    }
+    const fails = [...tried.values()].reduce((a, c) => a + c.n - c.ok, 0);
+    const trivial = (byRound.get(t) ?? []).filter((e) => e.k === 'trivial').length;
+    if (fails) log.push(`${fails} failed attempt${fails > 1 ? 's' : ''}`);
+    if (trivial) log.push(`${trivial} trivial result${trivial > 1 ? 's' : ''} submitted (gaming the mint)`);
+    snaps.push({ published: published.slice(), hidden: holders.map((h) => h.size), tried, proved: proved.slice(), pubs: pubs.slice(), earnings: earnings.slice(), spend, level, log });
+  }
+  return snaps;
+}
+
+const name = (run, x) => run.world.names?.[x] ?? `#${x}`;
+
+function layout(world) {
+  const perLevel = [];
+  for (let r = 0; r < world.n; r++) (perLevel[world.level[r]] ??= []).push(r);
+  const width = Math.max(...perLevel.filter(Boolean).map((l) => l.length));
+  const colW = 70, rowH = width > 12 ? 22 : 30, left = 24, top = 24;
+  const pos = [];
+  for (let r = 0; r < world.n; r++) pos[r] = [left + (world.level[r] - 1) * colW, top + perLevel[world.level[r]].indexOf(r) * rowH];
+  return { pos, W: left * 2 + (world.levels - 1) * colW, H: top * 2 + (width - 1) * rowH };
+}
+
+function drawPane(pane, t) {
+  const { run, snaps, el, lay } = pane;
+  const s = snaps[Math.min(t, snaps.length - 1)];
+  const w = run.world;
+  const solved = w.isTarget.filter((x, r) => x && s.published[r] >= 0).length;
+  const T = w.isTarget.filter(Boolean).length;
+  const pubN = [...s.published].filter((a) => a >= 0).length;
+  const hiddenN = s.hidden.filter((h) => h > 0).length;
+  const done = t >= snaps.length - 1;
+  let svg = `<svg class="tree" viewBox="0 0 ${lay.W} ${lay.H}" role="img" aria-label="Research tree for ${esc(run.setting.label)} at round ${t}">`;
+  for (let r = 0; r < w.n; r++) for (const j of w.prereqs[r]) {
+    const on = s.published[j] >= 0 && s.published[r] >= 0;
+    svg += `<line x1="${lay.pos[j][0]}" y1="${lay.pos[j][1]}" x2="${lay.pos[r][0]}" y2="${lay.pos[r][1]}" stroke="${on ? 'var(--s1)' : 'var(--line)'}" stroke-width="${on ? 1.4 : 1}" stroke-opacity="${on ? 0.6 : 1}"/>`;
+  }
+  for (let r = 0; r < w.n; r++) {
+    const [x, y] = lay.pos[r];
+    const pub = s.published[r] >= 0, hid = s.hidden[r] > 0;
+    const fill = pub ? 'var(--s1)' : hid ? 'var(--s1-soft)' : 'var(--surface)';
+    const stroke = pub || hid ? 'var(--s1)' : 'var(--ink-3)';
+    const tip = `${name(run, r)} · level ${w.level[r]} · chance per attempt ${(w.p[r] * 100).toFixed(1)}%${w.isTarget[r] ? ` · target, bounty ${w.bounty[r]}` : ''}${pub ? ` · published by agent ${s.published[r] + 1}` : hid ? ` · held privately by ${s.hidden[r]} agent(s)` : ''}`;
+    const tr = s.tried.get(r);
+    if (tr) svg += `<circle cx="${x}" cy="${y}" r="${w.isTarget[r] ? 13 : 10}" fill="none" stroke="var(--s2)" stroke-width="2" ${tr.ok ? '' : 'stroke-dasharray="3 2"'}/>`;
+    if (w.isTarget[r]) {
+      const pts = Array.from({ length: 10 }, (_, k) => { const a = -Math.PI / 2 + k * Math.PI / 5, rad = k % 2 ? 4 : 9; return `${(x + rad * Math.cos(a)).toFixed(1)},${(y + rad * Math.sin(a)).toFixed(1)}`; }).join(' ');
+      svg += `<polygon points="${pts}" fill="${fill}" stroke="${pub ? 'var(--s1)' : 'var(--ink)'}" stroke-width="1.3"><title>${esc(tip)}</title></polygon>`;
+    } else {
+      svg += `<circle cx="${x}" cy="${y}" r="6" fill="${fill}" stroke="${stroke}" stroke-width="1.6"><title>${esc(tip)}</title></circle>`;
+    }
+    if (hid && !pub) svg += `<text x="${x}" y="${y + 3.5}" text-anchor="middle" font-size="9" font-weight="700" fill="var(--s1)">${s.hidden[r]}</text>`;
+  }
+  svg += '</svg>';
+  const maxE = Math.max(1e-9, ...s.earnings);
+  const agents = run.agents.map((a) => `<tr><td>${a.id + 1}</td><td>${esc(a.archetype)}</td><td>${s.proved[a.id]}</td><td>${s.pubs[a.id]}</td><td style="width:40%"><div class="meter" style="width:${(100 * s.earnings[a.id] / maxE).toFixed(1)}%" title="${s.earnings[a.id].toFixed(1)}"></div></td><td>${s.earnings[a.id].toFixed(0)}</td></tr>`).join('');
+  el.innerHTML = `<h2>${esc(run.setting.label)}${done ? ' <span class="muted">· run ended</span>' : ''}</h2>
+    <div class="stats">
+      <div class="stat">Compute spent<b>${s.spend.toFixed(0)}<span class="muted"> / ${run.budget.X}</span></b></div>
+      <div class="stat">Hardest level published<b>${s.level}<span class="muted"> / ${w.levels}</span></b></div>
+      <div class="stat">Targets solved<b>${solved}<span class="muted"> / ${T}</span></b></div>
+      <div class="stat">Published<b>${pubN}</b></div>
+      <div class="stat">Proved, hidden<b>${hiddenN}</b></div>
+    </div>
+    ${svg}
+    <table class="agents"><thead><tr><th>agent</th><th>kind</th><th>proved</th><th>published</th><th colspan="2">earnings</th></tr></thead><tbody>${agents}</tbody></table>
+    <div class="log" aria-live="polite"><b>Round ${t}:</b> ${s.log.length ? s.log.slice(0, 30).map(esc).join(' · ') + (s.log.length > 30 ? ` · +${s.log.length - 30} more` : '') : 'nothing happened'}</div>`;
+}
+
+function drawSim() {
+  for (const p of sim.panes) drawPane(p, sim.round);
+  $('sim-scrub').value = sim.round;
+  $('sim-clock').textContent = `Round ${sim.round} of ${sim.max}`;
+}
+
+async function loadSim() {
+  stopSim();
+  const space = $('sim-space').value, seed = Number($('sim-seed').value) || 1;
+  $('pane-left').innerHTML = $('pane-right').innerHTML = '<p class="muted">Running the simulation…</p>';
+  try {
+    const runs = await Promise.all([$('sim-left').value, $('sim-right').value].map((setting) => api(`/api/sim?space=${encodeURIComponent(space)}&setting=${setting}&seed=${seed}`)));
+    sim.panes = runs.map((run, i) => ({ run, snaps: snapshots(run), el: $(i ? 'pane-right' : 'pane-left'), lay: layout(run.world) }));
+    sim.max = Math.max(...sim.panes.map((p) => p.snaps.length - 1));
+    const want = Number(new URLSearchParams(location.hash.slice(1)).get('round'));
+    sim.round = Number.isFinite(want) ? Math.min(sim.max, want) : 0;
+    $('sim-scrub').max = sim.max;
+    drawSim();
+  } catch (e) { $('pane-left').innerHTML = `<p>Could not run: ${esc(e.message)}</p>`; }
+}
+
+function stopSim() { clearInterval(sim.timer); sim.timer = null; $('sim-play').textContent = '▶ Play'; }
+function playSim() {
+  if (sim.timer) return stopSim();
+  if (sim.round >= sim.max) sim.round = 0;
+  $('sim-play').textContent = '⏸ Pause';
+  sim.timer = setInterval(() => { if (sim.round >= sim.max) return stopSim(); sim.round++; drawSim(); }, 1000 / Number($('sim-speed').value));
+}
+$('sim-play').onclick = playSim;
+$('sim-speed').onchange = () => { if (sim.timer) { stopSim(); playSim(); } };
+$('sim-first').onclick = () => { stopSim(); sim.round = 0; drawSim(); };
+$('sim-prev').onclick = () => { stopSim(); sim.round = Math.max(0, sim.round - 1); drawSim(); };
+$('sim-next').onclick = () => { stopSim(); sim.round = Math.min(sim.max, sim.round + 1); drawSim(); };
+$('sim-scrub').oninput = (e) => { stopSim(); sim.round = Number(e.target.value); drawSim(); };
+$('sim-load').onclick = loadSim;
+
+(async () => {
+  legend();
+  const [spaces, settings] = await Promise.all([api('/api/spaces'), api('/api/settings')]);
+  $('sim-space').innerHTML = spaces.map((s) => `<option value="${s.id}">${esc(s.title)}</option>`).join('');
+  const opts = Object.entries(settings).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('');
+  $('sim-left').innerHTML = $('sim-right').innerHTML = opts;
+  $('sim-left').value = 'traditional'; $('sim-right').value = 'oso';
+  if (spaces.some((s) => s.id === 'drug-discovery')) $('sim-space').value = 'drug-discovery';
+  const h = new URLSearchParams(location.hash.slice(1));
+  for (const [k, id] of [['space', 'sim-space'], ['seed', 'sim-seed'], ['left', 'sim-left'], ['right', 'sim-right']]) if (h.get(k)) $(id).value = h.get(k);
+  loadSim();
+  if (h.has('pilot')) $('tab-pilot').click();
+})();
+
+/* ------------------------------------------------------------------ Lean pilot playback */
+const pilot = { runs: [], t0: 0, t1: 0, now: 0, timer: null, poll: null, loadedList: false, selected: [] };
+
+async function loadRunList() {
+  const runs = await api('/api/pilot/runs');
+  pilot.loadedList = true;
+  if (!runs.length) { $('pilot-runs').textContent = 'No pilot runs on this machine.'; return; }
+  const panel = runs.filter((r) => r.id.startsWith('panel-'));
+  const pre = new Set(panel.length ? panel.map((r) => r.id) : [runs[0].id]);
+  $('pilot-runs').innerHTML = runs.map((r) => `<label><input type="checkbox" value="${esc(r.id)}" ${pre.has(r.id) ? 'checked' : ''}> ${esc(r.model.split('/').pop())} <span class="muted">${esc(r.id)} · ${r.recorded} attempts</span>${r.live ? '<span class="live">● live</span>' : ''}</label>`).join('');
+  loadPilot();
+}
+
+// Times: recorded start and end where present; older records are placed in file order.
+function timeline(run) {
+  const recs = run.records;
+  const firstEvent = run.events[0]?.t;
+  let base = recs.find((r) => r.startedAt)?.startedAt ?? firstEvent ?? Date.now();
+  let cursor = base - recs.filter((r) => !r.endedAt).reduce((a, r) => a + r.seconds * 1000 / Math.max(1, run.options.concurrency), 0);
+  const items = recs.map((r) => {
+    if (r.endedAt) return { ...r, start: r.startedAt, end: r.endedAt };
+    cursor += r.seconds * 1000 / Math.max(1, run.options.concurrency);
+    return { ...r, start: cursor - r.seconds * 1000, end: cursor };
+  });
+  // Attempts in progress: started (events) but not recorded yet.
+  const doneKeys = new Set(recs.map((r) => `${r.publicId}|${r.condition}|${r.k}`));
+  const open = new Map();
+  for (const e of run.events) {
+    const key = `${e.id}|${e.condition}|${e.k}`;
+    if (e.kind === 'start') open.set(key, { publicId: e.id, condition: e.condition, k: e.k, start: e.t, end: Infinity, running: true, turnsSoFar: 0 });
+    else if (e.kind === 'turn' && open.has(key)) open.get(key).turnsSoFar = e.turn;
+    else if (e.kind === 'done' || e.kind === 'error') open.delete(key);
+  }
+  for (const [key, v] of open) if (!doneKeys.has(key)) items.push(v);
+  return items;
+}
+
+async function loadPilot() {
+  const ids = [...$('pilot-runs').querySelectorAll('input:checked')].map((i) => i.value);
+  if (!ids.length) return;
+  const runs = await Promise.all(ids.map((id) => api(`/api/pilot/run?id=${encodeURIComponent(id)}`)));
+  pilot.runs = runs.map((run) => ({ ...run, items: timeline(run) }));
+  const all = pilot.runs.flatMap((r) => r.items);
+  pilot.t0 = Math.min(...all.map((i) => i.start));
+  pilot.t1 = Math.max(...all.map((i) => (Number.isFinite(i.end) ? i.end : Date.now())), Date.now() - 1);
+  const live = pilot.runs.some((r) => r.items.some((i) => i.running));
+  if ($('pilot-follow').checked || !pilot.now) pilot.now = live ? Date.now() : pilot.t1;
+  $('pilot-scrub').max = Math.round((pilot.t1 - pilot.t0) / 1000);
+  drawPilot();
+  clearTimeout(pilot.poll);
+  if (live) pilot.poll = setTimeout(() => { if ($('pilot-follow').checked && !pilot.timer) loadPilot(); else pilot.poll = setTimeout(loadPilot, 5000); }, 4000);
+}
+
+function drawPilot() {
+  const now = pilot.now;
+  $('pilot-scrub').value = Math.round((now - pilot.t0) / 1000);
+  const el = Math.max(0, (now - pilot.t0) / 1000);
+  $('pilot-clock').textContent = `${Math.floor(el / 60)} min ${Math.floor(el % 60)} s into the runs`;
+  // Cards per run.
+  $('pilot-cards').innerHTML = pilot.runs.map((run) => {
+    const done = run.items.filter((i) => !i.running && i.end <= now);
+    const running = run.items.filter((i) => i.start <= now && (i.running || i.end > now));
+    const cost = done.reduce((a, i) => a + (i.usage?.cost ?? 0), 0);
+    return `<div class="card"><div class="t">${esc(run.options.model.model)}</div><div class="v">${done.filter((i) => i.ok).length} / ${done.length} proved</div><div class="t">${running.length ? `${running.length} in progress · ` : ''}${money(cost)} so far</div></div>`;
+  }).join('');
+  // Grid: theorem × (run × condition).
+  const ids = [...new Set(pilot.runs.flatMap((r) => r.items.map((i) => i.publicId)))];
+  const depth = new Map(pilot.runs[0]?.tree.map((t) => [t.id, t.depth]) ?? []);
+  const posted = new Map(pilot.runs[0]?.tree.map((t) => [t.id, t.posted]) ?? []);
+  ids.sort((a, b) => (depth.get(a) ?? 0) - (depth.get(b) ?? 0) || a.localeCompare(b));
+  const conds = ['alone', 'library'];
+  let head = '<thead><tr><th>theorem</th><th>depth</th>' + pilot.runs.map((r) => `<th class="run" colspan="2">${esc(r.options.model.model.split('/').pop())}</th>`).join('') + '</tr>';
+  head += '<tr><th></th><th></th>' + pilot.runs.map(() => conds.map((c, k) => `<th ${k ? '' : 'class="run"'}>${c === 'library' ? 'with lemmas' : 'alone'}</th>`).join('')).join('') + '</tr></thead>';
+  let body = '<tbody>';
+  for (const id of ids) {
+    body += `<tr><th>${esc(id)}${posted.get(id) ? '' : ' <span class="muted">lemma</span>'}</th><td>${depth.get(id) ?? ''}</td>`;
+    pilot.runs.forEach((run, ri) => {
+      for (const c of conds) {
+        const its = run.items.filter((i) => i.publicId === id && i.condition === c && i.start <= now).sort((a, b) => a.k - b.k);
+        body += '<td class="cell">' + (its.length ? its.map((i) => {
+          const running = i.running || i.end > now;
+          const cls = running ? 'running' : i.ok ? 'ok' : 'fail';
+          const label = running ? (i.turnsSoFar ? `turn ${i.turnsSoFar + 1}` : '') : `${i.turns}`;
+          const tip = running ? 'in progress' : `${i.ok ? 'proved' : 'not proved'} in ${i.turns} turn(s) · ${money(i.usage?.cost ?? 0)}`;
+          return `<button class="mark ${cls}" data-run="${ri}" data-id="${esc(id)}" data-c="${c}" data-k="${i.k}" title="${esc(tip)}">${label}</button>`;
+        }).join('') : '<span class="muted">–</span>') + '</td>';
+      }
+    });
+    body += '</tr>';
+  }
+  $('pilot-grid').innerHTML = head + body + '</tbody>';
+}
+
+$('pilot-grid').onclick = (e) => {
+  const b = e.target.closest('.mark'); if (!b) return;
+  const run = pilot.runs[Number(b.dataset.run)];
+  const rec = run.records.find((r) => r.publicId === b.dataset.id && r.condition === b.dataset.c && r.k === Number(b.dataset.k));
+  const title = `${esc(b.dataset.id)} · ${b.dataset.c === 'library' ? 'with lemmas' : 'alone'} · attempt ${Number(b.dataset.k) + 1} · ${esc(run.options.model.model)}`;
+  if (!rec) { $('drawer-body').innerHTML = `<h3>${title}</h3><p>In progress.</p>`; }
+  else {
+    $('drawer-body').innerHTML = `<h3>${title}</h3><p class="muted">${rec.ok ? 'Proved' : 'Not proved'} in ${rec.turns} turn(s) · ${money(rec.usage.cost ?? 0)} · ${rec.usage.output.toLocaleString()} output tokens${rec.uses?.length ? ` · used ${rec.uses.length} library theorem(s)` : ''}</p>` +
+      rec.transcript.map((t, n) => `<div class="turn"><h4>Turn ${n + 1}: ${t.check?.ok ? '<span style="color:var(--good)">✓ accepted by Lean</span>' : t.proof ? '<span style="color:var(--bad)">✕ rejected</span>' : 'no proof in the reply'} <span class="muted">· ${money(t.usage.cost ?? 0)} · ${esc(t.stop)}</span></h4>${t.check && !t.check.ok ? `<pre class="err">${esc(t.check.errors.join('\n\n'))}</pre>` : ''}${t.proof ? `<pre>${esc(t.proof)}</pre>` : ''}</div>`).join('');
+  }
+  $('drawer').classList.add('open');
+};
+$('drawer-close').onclick = () => $('drawer').classList.remove('open');
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $('drawer').classList.remove('open'); });
+
+function stopPilot() { clearInterval(pilot.timer); pilot.timer = null; $('pilot-play').textContent = '▶ Replay'; }
+$('pilot-play').onclick = () => {
+  if (pilot.timer) return stopPilot();
+  $('pilot-follow').checked = false;
+  if (pilot.now >= pilot.t1) pilot.now = pilot.t0;
+  $('pilot-play').textContent = '⏸ Pause';
+  pilot.timer = setInterval(() => {
+    pilot.now = Math.min(pilot.t1, pilot.now + 100 * Number($('pilot-speed').value));
+    drawPilot();
+    if (pilot.now >= pilot.t1) stopPilot();
+  }, 100);
+};
+$('pilot-first').onclick = () => { stopPilot(); $('pilot-follow').checked = false; pilot.now = pilot.t0; drawPilot(); };
+$('pilot-scrub').oninput = (e) => { stopPilot(); $('pilot-follow').checked = false; pilot.now = pilot.t0 + Number(e.target.value) * 1000; drawPilot(); };
+$('pilot-follow').onchange = (e) => { if (e.target.checked) { stopPilot(); loadPilot(); } };
+$('pilot-load').onclick = loadPilot;
+</script>
+</body>
+</html>

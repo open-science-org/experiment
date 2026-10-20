@@ -12,6 +12,19 @@ import { ledgerWeights, shares, worlds, type World } from './world.ts';
 
 export type { RunResult } from './measures.ts';
 
+/**
+ * What happened in a run, for playback (viewer). Recorded only when asked; recording draws no random
+ * numbers, so a traced run is the same run. r is the round; a an agent; x a result.
+ */
+export type TraceEvent =
+  | { r: number; k: 'attempt'; a: number; x: number; ok: boolean; p: number; dup?: boolean; wrong?: boolean }
+  | { r: number; k: 'trivial'; a: number; published: boolean }
+  | { r: number; k: 'publish'; a: number; x: number }
+  | { r: number; k: 'takeup'; a: number; x: number }
+  | { r: number; k: 'rejected'; a: number; x: number }
+  | { r: number; k: 'retract'; a: number; x: number; published: boolean }
+  | { r: number; k: 'round'; spend: number; level: number; earnings: number[]; compute: number[] };
+
 /** The state of a run, read by the measures. */
 export interface State {
   sc: Scenario;
@@ -55,6 +68,8 @@ export interface State {
   duplicates: number;
   trivialPublished: number;
   round: number;
+  /** Events for playback, when recording. */
+  trace?: TraceEvent[];
 }
 
 /** Pays value v entering result x through the waterfall to the authors of x and its ancestors. */
@@ -74,6 +89,7 @@ function publishOne(s: State, i: number, x: number) {
   const { mint, c } = s.sc.rules;
   s.author[x] = i;
   s.pubRound[x] = s.round;
+  s.trace?.push({ r: s.round, k: 'publish', a: i, x });
   const ps = world.prereqs[x];
   s.roundEarnings[i] += ps.length ? (1 - c) * mint : mint;
   ps.forEach((j, k) => payInto(s, j, c * mint * s.w[x][k]));
@@ -90,6 +106,7 @@ function publishOne(s: State, i: number, x: number) {
 function takeUp(s: State, a: number, x: number) {
   s.known[a].add(x);
   if (s.publishedFlawed[x]) s.flawed[a].add(x);
+  s.trace?.push({ r: s.round, k: 'takeup', a, x });
 }
 
 /**
@@ -126,6 +143,7 @@ function retract(s: State, i: number, x: number) {
   };
   drop(i);
   s.retracted++;
+  s.trace?.push({ r: s.round, k: 'retract', a: i, x, published: s.author[x] >= 0 && s.publishedFlawed[x] === 1 });
   if (s.author[x] >= 0 && s.publishedFlawed[x]) {
     for (const a of s.agents) if (s.flawed[a.id].has(x)) drop(a.id);
     s.author[x] = -1;
@@ -161,10 +179,12 @@ function attempt(s: State, i: number, decider: Decider) {
   if (choice.kind === 'trivial') {
     s.spend += k;
     s.spendTrivial += k;
-    if (!s.rng.chance(s.sc.rules.screen)) {
+    const published = !s.rng.chance(s.sc.rules.screen);
+    if (published) {
       s.roundEarnings[i] += s.sc.rules.mint;
       s.trivialPublished++;
     }
+    s.trace?.push({ r: s.round, k: 'trivial', a: i, published });
     return;
   }
   const r = choice.result;
@@ -177,6 +197,7 @@ function attempt(s: State, i: number, decider: Decider) {
   if (!s.oracle.succeeds({ agent: i, result: r, p, failures, othersFailures, rng: s.rng, payload: choice.payload })) {
     s.failures.set(key, failures + 1);
     if (s.sc.rules.publishFailures) s.publicFailures[r]++;
+    s.trace?.push({ r: s.round, k: 'attempt', a: i, x: r, ok: false, p });
     return;
   }
 
@@ -186,10 +207,12 @@ function attempt(s: State, i: number, decider: Decider) {
   if (wrong && world.isTarget[r]) {
     // Targets are checked: the proof is rejected, and the wrong results it rested on come to light.
     s.rejectedTargets++;
+    s.trace?.push({ r: s.round, k: 'rejected', a: i, x: r });
     for (const x of world.ancestors[r]) if (s.flawed[i].has(x)) retract(s, i, x);
     return;
   }
   if (wrong) s.flawed[i].add(r);
+  s.trace?.push({ r: s.round, k: 'attempt', a: i, x: r, ok: true, p, ...(s.author[r] >= 0 ? { dup: true } : {}), ...(wrong ? { wrong: true } : {}) });
 
   s.proved[i].add(r);
   s.known[i].add(r);
@@ -207,7 +230,23 @@ function attempt(s: State, i: number, decider: Decider) {
   });
 }
 
-export function run(sc: Scenario, seed: number): RunResult {
+export interface Traced {
+  world: World;
+  agents: Agent[];
+  events: TraceEvent[];
+  result: RunResult;
+}
+
+/** A run with every event recorded, for playback. */
+export function traceRun(sc: Scenario, seed: number): Traced {
+  const events: TraceEvent[] = [];
+  let world: World | undefined;
+  let agents: Agent[] | undefined;
+  const result = run(sc, seed, { events, onStart: (w, a) => { world = w; agents = a; } });
+  return { world: world!, agents: agents!, events, result };
+}
+
+export function run(sc: Scenario, seed: number, record?: { events: TraceEvent[]; onStart: (world: World, agents: Agent[]) => void }): RunResult {
   const rng = new Rng(seed);
   const world = worlds.create(sc.world, 'world')(sc.success, rng.fork(1));
   const areas = typeof sc.world.areas === 'number' ? sc.world.areas : Math.max(0, ...world.area) + 1;
@@ -245,7 +284,9 @@ export function run(sc: Scenario, seed: number): RunResult {
     duplicates: 0,
     trivialPublished: 0,
     round: 0,
+    trace: record?.events,
   };
+  record?.onStart(world, agents);
   const allocation = allocations.create(sc.budget.allocation, 'budget.allocation')(N);
   // One decider per kind; an archetype may override the default (agents.deciders).
   const built = new Map<string, Decider>();
@@ -267,6 +308,7 @@ export function run(sc: Scenario, seed: number): RunResult {
   for (let t = 1; t <= T; t++) {
     s.round = t;
     const budgets = allocation.budgets(perRound);
+    const compute = record ? Array.from(budgets) : [];
     const turns: number[] = [];
     for (const a of agents) {
       let budget = budgets[a.id] + s.carry[a.id];
@@ -297,6 +339,7 @@ export function run(sc: Scenario, seed: number): RunResult {
     let level = 0;
     for (let r = 0; r < world.n; r++) if (s.author[r] >= 0 && world.level[r] > level) level = world.level[r];
     curve.push({ round: t, spend: s.spend, level });
+    s.trace?.push({ r: t, k: 'round', spend: s.spend, level, earnings: Array.from(s.earnings), compute });
     if (speed === null && level >= sc.measures.targetLevel) {
       speed = t;
       cost = s.spend;

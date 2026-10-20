@@ -66,6 +66,9 @@ export interface Record_ {
   usage: { input: number; output: number; cacheRead: number; cacheWrite: number; cost?: number };
   checkSeconds: number; seconds: number;
   transcript: AttemptResult['turns'];
+  /** When the attempt started and ended (ms since 1970), for playback. */
+  startedAt?: number;
+  endedAt?: number;
 }
 
 export async function runPilot(opts: PilotOptions, chat: Chat, runId: string, log = console.log): Promise<Record_[]> {
@@ -76,6 +79,9 @@ export async function runPilot(opts: PilotOptions, chat: Chat, runId: string, lo
   mkdirSync(privateDir, { recursive: true });
   writeFileSync(join(privateDir, 'options.json'), JSON.stringify(opts, null, 1));
   const file = join(privateDir, 'attempts.jsonl');
+  // Live events for the viewer: when each attempt starts, each turn's outcome, and when it ends.
+  const eventsFile = join(privateDir, 'events.jsonl');
+  const event = (e: Record<string, unknown>) => appendFileSync(eventsFile, JSON.stringify({ t: Date.now(), ...e }) + '\n');
   // Resume: skip attempts already recorded.
   const done = existsSync(file) ? readFileSync(file, 'utf8').trim().split('\n').filter(Boolean).map((l) => JSON.parse(l) as Record_) : [];
   const key = (j: { name: string; condition: string; k: number }) => `${j.name}|${j.condition}|${j.k}`;
@@ -86,10 +92,17 @@ export async function runPilot(opts: PilotOptions, chat: Chat, runId: string, lo
   await Promise.all(Array.from({ length: opts.concurrency }, async () => {
     for (let job = todo.shift(); job; job = todo.shift()) {
       const t0 = Date.now();
+      const who = { id: job.task.publicId, condition: job.condition, k: job.k };
+      event({ kind: 'start', ...who });
       let result: AttemptResult;
       try {
-        result = await attempt(job.task, library(job, tasks), chat, { repairs: opts.repairs, allowGrind: opts.allowGrind });
+        let n = 0;
+        result = await attempt(job.task, library(job, tasks), chat, {
+          repairs: opts.repairs, allowGrind: opts.allowGrind,
+          onTurn: (turn) => event({ kind: 'turn', ...who, turn: ++n, ok: turn.check?.ok ?? false, stop: turn.stop, cost: turn.usage.cost ?? 0, errors: turn.check?.errors.length ?? 0 }),
+        });
       } catch (e) {
+        event({ kind: 'error', ...who, message: (e as Error).message.slice(0, 300) });
         log(`  ${job.task.publicId} ${job.condition} #${job.k + 1}: error, will retry on resume: ${(e as Error).message}`);
         continue;
       }
@@ -100,8 +113,10 @@ export async function runPilot(opts: PilotOptions, chat: Chat, runId: string, lo
         usage: { input: sum((u) => u.input), output: sum((u) => u.output), cacheRead: sum((u) => u.cacheRead), cacheWrite: sum((u) => u.cacheWrite), cost: sum((u) => u.cost ?? 0) },
         checkSeconds: result.turns.reduce((a, t) => a + (t.check?.seconds ?? 0), 0), seconds: (Date.now() - t0) / 1000,
         transcript: result.turns,
+        startedAt: t0, endedAt: Date.now(),
       };
       appendFileSync(file, JSON.stringify(rec) + '\n');
+      event({ kind: 'done', ...who, ok: rec.ok, turns: rec.turns, cost: rec.usage.cost ?? 0 });
       records.push(rec);
       log(`  [${++finished}/${total}] ${rec.publicId.padEnd(5)} ${rec.condition.padEnd(7)} #${rec.k + 1}: ${rec.ok ? `proved in ${rec.turns} turn${rec.turns > 1 ? 's' : ''}` : `failed (${rec.failure})`}`);
     }
