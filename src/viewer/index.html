@@ -159,6 +159,7 @@
   <div id="nav-fields"></div>
   <a href="#/replay">Replay a community</a>
   <div class="group">Real agents</div>
+  <a href="#/community"><b>OSO vs traditional</b></a>
   <a href="#/pilot">Lean pilot</a>
   <div id="nav-pilot"></div>
   <div class="group">Everything else</div>
@@ -169,6 +170,16 @@
   <section id="view-overview" class="hidden"></section>
   <section id="view-doc" class="hidden"><div class="crumbs" id="doc-crumbs"></div><article class="doc" id="doc-body"></article></section>
   <section id="view-experiments" class="hidden"></section>
+  <section id="view-community" class="hidden">
+    <p class="lede">Two communities of AI labs, the same models and the same budget, race on the Lean problem set. <b>Traditional:</b> a lab's lemmas stay private until it proves a target; then the target and its lemmas are published and the lab takes the bounty. <b>OSO:</b> every result is published as soon as Lean accepts it, and value flows back to the results it used. Lean checks every proof.</p>
+    <div class="bar"><label>Run <select id="c-run"></select></label><span id="c-live" class="live hidden">● live</span>
+      <button class="btn" id="c-first" aria-label="Start">⏮</button><button class="btn primary" id="c-play">▶ Replay</button>
+      <label>Speed <select id="c-speed"><option value="20">×20</option><option value="60" selected>×60</option><option value="240">×240</option></select></label>
+      <input type="range" id="c-scrub" min="0" max="0" value="0" aria-label="Time"><span class="clock" id="c-clock"></span>
+      <label><input type="checkbox" id="c-follow" checked> Follow live</label></div>
+    <div class="pane" style="margin-bottom:12px"><div id="c-chart"></div></div>
+    <div class="panes"><div class="pane" id="c-traditional"></div><div class="pane" id="c-oso"></div></div>
+  </section>
   <section id="view-design" class="hidden">
     <p class="lede">Design your own experiment in two steps: the <b>field</b> agents work in, then the <b>comparison</b>: which rules, which parameters to vary, what to measure. Everything you save is a plain file in the repository (<code>spaces/</code>, <code>config/experiments/</code>, <code>results/</code>), the same as one made at the command line.</p>
 
@@ -277,7 +288,7 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 const api = (path) => fetch(path).then(async (r) => { const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText); return j; });
 const money = (x) => '$' + (x < 0.1 ? x.toFixed(3) : x.toFixed(2));
 
-const VIEWS = ['view-overview', 'view-doc', 'view-experiments', 'view-sim', 'view-pilot', 'view-design'];
+const VIEWS = ['view-overview', 'view-doc', 'view-experiments', 'view-sim', 'view-pilot', 'view-design', 'view-community'];
 const show = (view) => { for (const v of VIEWS) $(v).classList.toggle('hidden', v !== view); window.scrollTo(0, 0); };
 const params = () => new URLSearchParams(location.hash.split('?')[1] ?? '');
 let OV = null;
@@ -291,6 +302,7 @@ async function route() {
   if (path.startsWith('/doc/')) { show('view-doc'); return openDoc(path.slice(5)); }
   if (path === '/experiments') { show('view-experiments'); return drawExperiments(); }
   if (path === '/design') { show('view-design'); return enterDesign(); }
+  if (path === '/community') { show('view-community'); return enterCommunity(); }
   if (path === '/replay') { show('view-sim'); return enterReplay(); }
   if (path === '/pilot') { show('view-pilot'); if (!pilot.loadedList) loadRunList(); return drawPilotSummaries(); }
   show('view-overview'); drawOverview();
@@ -366,6 +378,125 @@ async function drawExperiments() {
 async function drawPilotSummaries() {
   const ov = await overviewData();
   $('pilot-summaries').innerHTML = ov.pilot.map((p) => `<a href="#/doc/results/pilot/${p.id}/summary.md">${esc(p.title)}</a>`).join('') || '<p class="muted" style="padding:8px 12px">No summaries yet.</p>';
+}
+
+/* ------------------------------------------------------------------ Communities: OSO vs traditional, live or replayed */
+const C = { run: null, now: 0, t0: 0, t1: 0, timer: null, poll: null, ready: false };
+
+async function enterCommunity() {
+  if (!C.ready) {
+    C.ready = true;
+    $('c-run').onchange = () => { $('c-follow').checked = true; loadCommunity(); };
+    $('c-play').onclick = () => {
+      if (C.timer) return stopC();
+      $('c-follow').checked = false;
+      if (C.now >= C.t1) C.now = C.t0;
+      $('c-play').textContent = '⏸ Pause';
+      C.timer = setInterval(() => { C.now = Math.min(C.t1, C.now + 100 * Number($('c-speed').value)); drawCommunity(); if (C.now >= C.t1) stopC(); }, 100);
+    };
+    $('c-first').onclick = () => { stopC(); $('c-follow').checked = false; C.now = C.t0; drawCommunity(); };
+    $('c-scrub').oninput = (e) => { stopC(); $('c-follow').checked = false; C.now = C.t0 + Number(e.target.value) * 1000; drawCommunity(); };
+    $('c-follow').onchange = (e) => { if (e.target.checked) { stopC(); loadCommunity(); } };
+  }
+  const runs = await api('/api/community/runs');
+  const keep = $('c-run').value;
+  $('c-run').innerHTML = runs.map((r) => `<option value="${esc(r.id)}">${esc(r.id)} · ${r.actions} actions${r.live ? ' · live' : ''}</option>`).join('') || '<option>No community runs yet</option>';
+  if (keep && runs.some((r) => r.id === keep)) $('c-run').value = keep;
+  else { const real = runs.find((r) => r.live && !r.id.startsWith('stub-')) ?? runs.find((r) => !r.id.startsWith('stub-')); if (real) $('c-run').value = real.id; }
+  loadCommunity();
+}
+function stopC() { clearInterval(C.timer); C.timer = null; $('c-play').textContent = '▶ Replay'; }
+
+async function loadCommunity() {
+  const id = $('c-run').value;
+  if (!id || id.startsWith('No ')) return;
+  C.run = await api('/api/community/run?id=' + encodeURIComponent(id));
+  const acts = ['traditional', 'oso'].flatMap((k) => C.run[k]?.actions ?? []);
+  const live = ['traditional', 'oso'].some((k) => C.run[k] && !C.run[k].finished);
+  $('c-live').classList.toggle('hidden', !live);
+  C.t0 = acts.length ? Math.min(...acts.map((a) => a.t)) - 1000 : Date.now();
+  C.t1 = Math.max(C.t0 + 1000, ...acts.map((a) => a.t), live ? Date.now() : 0);
+  if ($('c-follow').checked) C.now = C.t1;
+  $('c-scrub').max = Math.round((C.t1 - C.t0) / 1000);
+  drawCommunity();
+  clearTimeout(C.poll);
+  if (live && location.hash.startsWith('#/community')) C.poll = setTimeout(() => { if ($('c-follow').checked && !C.timer) loadCommunity(); else C.poll = setTimeout(loadCommunity, 4000); }, 4000);
+}
+
+function drawCommunity() {
+  if (!C.run) return;
+  $('c-scrub').value = Math.round((C.now - C.t0) / 1000);
+  const el = Math.max(0, (C.now - C.t0) / 1000);
+  $('c-clock').textContent = `${Math.floor(el / 60)} min ${Math.floor(el % 60)} s`;
+  // Both runs play from their own start, side by side.
+  const sideActs = (k) => {
+    const side = C.run[k]; if (!side?.actions.length) return [];
+    const start = Math.min(...side.actions.map((a) => a.t));
+    return side.actions.filter((a) => a.t - start <= C.now - C.t0);
+  };
+  const curve = (acts) => { const solved = new Set(); let spent = 0; const pts = [[0, 0]]; for (const a of [...acts].sort((x, y) => x.t - y.t)) { spent += a.listCost; if (a.kind === 'target' && a.ok) solved.add(a.target); pts.push([spent, solved.size]); } return pts; };
+  const budget = Math.max(...['traditional', 'oso'].map((k) => (C.run[k] ? C.run[k].options.budget * C.run[k].options.agents.length : 0)), 0.01);
+  const W = 760, H = 300, l = 54, rgt = 150, top = 36, bot = 42, pw = W - l - rgt, ph = H - top - bot;
+  const sx = (x) => l + (x / budget) * pw, sy = (y) => top + ph - (y / 8) * ph;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="Targets solved for the money"><text x="${l}" y="20" font-size="14" font-weight="700" fill="var(--ink)">Targets solved for the money</text>`;
+  for (const y of [0, 2, 4, 6, 8]) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"/><text x="${l - 8}" y="${sy(y) + 4}" text-anchor="end" font-size="11" fill="var(--ink-2)">${y}</text>`;
+  for (const k of [0, 0.25, 0.5, 0.75, 1]) svg += `<text x="${sx(budget * k)}" y="${top + ph + 16}" text-anchor="middle" font-size="11" fill="var(--ink-2)">$${(budget * k).toFixed(2)}</text>`;
+  svg += `<text x="${l + pw / 2}" y="${H - 6}" text-anchor="middle" font-size="11" fill="var(--ink-2)">Dollars spent by the community (list prices)</text>`;
+  const ends = [];
+  for (const [k, color, name] of [['traditional', 'var(--s2)', 'Traditional'], ['oso', 'var(--s1)', 'OSO']]) {
+    if (!C.run[k]) continue;
+    const pts = curve(sideActs(k));
+    let d = ''; pts.forEach(([x, y], i) => { const px = sx(x), py = sy(y); d += i ? ` H${px.toFixed(1)} V${py.toFixed(1)}` : `M${px.toFixed(1)} ${py.toFixed(1)}`; });
+    const [lx, ly] = pts.at(-1);
+    svg += `<path d="${d}" fill="none" stroke="${color}" stroke-width="2.2"/><circle cx="${sx(lx)}" cy="${sy(ly)}" r="4.5" fill="${color}"/>`;
+    ends.push([sy(ly), `${name}: ${ly} for $${lx.toFixed(2)}`]);
+  }
+  ends.sort((a, b) => a[0] - b[0]); for (let i = 1; i < ends.length; i++) if (ends[i][0] - ends[i - 1][0] < 16) ends[i][0] = ends[i - 1][0] + 16;
+  for (const [y, t] of ends) svg += `<text x="${l + pw + 10}" y="${y + 4}" font-size="12" font-weight="700" fill="var(--ink)">${esc(t)}</text>`;
+  $('c-chart').innerHTML = svg + '</svg>';
+  for (const k of ['traditional', 'oso']) drawSide(k, sideActs(k));
+}
+
+function drawSide(k, acts) {
+  const side = C.run[k], el = $('c-' + k);
+  if (!side) { el.innerHTML = `<h2>${k === 'oso' ? 'OSO' : 'Traditional'}</h2><p class="muted">Not started yet.</p>`; return; }
+  const o = side.options, labs = o.agents.map((m, i) => ({ i, model: m.split('/').pop(), spent: 0, actions: 0, ok: 0, passed: false }));
+  const solvedBy = new Map();
+  let dup = 0, trivial = 0, lemmas = 0, failed = 0;
+  for (const a of acts) {
+    const lab = labs[a.agent]; lab.actions++; lab.spent = Math.max(lab.spent, a.spentAfter); if (a.ok) lab.ok++;
+    if (a.kind === 'pass') lab.passed = true;
+    if (/duplicate/.test(a.reason ?? '')) dup++;
+    if (/trivial/.test(a.reason ?? '')) trivial++;
+    if (a.kind === 'lemma' && a.ok && !/trivial/.test(a.reason ?? '')) lemmas++;
+    if (!a.ok && a.kind !== 'pass' && !/duplicate|trivial/.test(a.reason ?? '')) failed++;
+    if (a.kind === 'target' && a.ok && !solvedBy.has(a.target)) solvedBy.set(a.target, a.agent);
+  }
+  const spent = labs.reduce((x, l) => x + l.spent, 0), budget = o.budget * o.agents.length;
+  const chips = C.run.targets.map((t) => { const by = solvedBy.get(t.id); return `<span class="mark ${by !== undefined ? 'ok' : ''}" title="${t.id}: depth ${t.depth}, bounty ${t.bounty}${by !== undefined ? `, solved by lab ${by + 1}` : ''}" style="cursor:default">${t.id}${by !== undefined ? ` · lab ${by + 1}` : ''}</span>`; }).join('');
+  const labRows = labs.map((l) => `<tr><td>${l.i + 1}</td><td>${esc(l.model)}${l.passed ? ' <span class="muted">(passed)</span>' : ''}</td><td>${l.actions}</td><td>${l.ok}</td><td style="width:35%"><div class="meter" style="width:${Math.min(100, 100 * l.spent / o.budget).toFixed(1)}%"></div></td><td>$${l.spent.toFixed(2)}</td></tr>`).join('');
+  const feed = [...acts].sort((a, b) => b.t - a.t).slice(0, 40).map((a) => {
+    const what = a.kind === 'target' ? `target <b>${esc(a.target ?? '?')}</b>` : a.kind === 'lemma' ? `lemma <code>${esc(a.entry ?? a.name ?? '?')}</code>` : a.kind === 'pass' ? 'passed' : 'no action';
+    const res = a.kind === 'pass' ? '' : a.ok ? (a.reason ? `<span class="muted">accepted (${esc(a.reason)})</span>` : '<span class="ok">✓ accepted</span>') : `<span class="no">✕ ${esc(a.reason ?? 'not accepted')}</span>`;
+    return `<div style="padding:3px 0;border-bottom:1px solid var(--line)"><button class="mark" data-k="${k}" data-t="${a.t}" data-agent="${a.agent}" title="Show the turns">${a.turns}</button>round ${a.round} · lab ${a.agent + 1} · ${what} ${res} <span class="muted">· $${a.listCost.toFixed(3)}</span></div>`;
+  }).join('');
+  el.innerHTML = `<h2>${k === 'oso' ? 'OSO' : 'Traditional'}${side.finished && acts.length === side.actions.length ? ' <span class="muted">· finished</span>' : ''}</h2>
+    <div class="stats">
+      <div class="stat">Spent<b>$${spent.toFixed(2)}<span class="muted"> / $${budget.toFixed(2)}</span></b></div>
+      <div class="stat">Targets solved<b>${solvedBy.size}<span class="muted"> / 8</span></b></div>
+      <div class="stat">Lemmas accepted<b>${lemmas}</b></div>
+      <div class="stat">Duplicated work<b>${dup}</b></div>
+      <div class="stat">Failed attempts<b>${failed}</b></div>
+    </div>
+    <div style="margin:6px 0 10px">${chips}</div>
+    <table class="agents"><thead><tr><th>lab</th><th>model</th><th>actions</th><th>accepted</th><th colspan="2">spent of $${o.budget}</th></tr></thead><tbody>${labRows}</tbody></table>
+    <div class="log" style="max-height:340px">${feed || 'No actions yet.'}</div>`;
+  for (const b of el.querySelectorAll('.log .mark')) b.onclick = () => {
+    const a = C.run[b.dataset.k].actions.find((x) => String(x.t) === b.dataset.t && String(x.agent) === b.dataset.agent);
+    $('drawer-body').innerHTML = `<h3>Round ${a.round} · lab ${a.agent + 1} (${esc(a.model)}) · ${b.dataset.k === 'oso' ? 'OSO' : 'traditional'}</h3><p class="muted">${a.kind === 'target' ? 'Target ' + esc(a.target) : 'Lemma ' + esc(a.entry ?? a.name ?? '')} · ${a.ok ? 'accepted' : 'not accepted'}${a.reason ? ' (' + esc(a.reason) + ')' : ''} · ${a.turns} turn(s) · $${a.listCost.toFixed(3)} at list price${a.uses?.length ? ` · used ${a.uses.map((u) => esc(u.replace(/^OSO\./, ''))).join(', ')}` : ''}</p>` +
+      a.transcript.map((t, n) => `<div class="turn"><h4>Turn ${n + 1}${t.errors.length ? ' <span class="no">✕ rejected</span>' : n === a.transcript.length - 1 && a.ok ? ' <span class="ok">✓ accepted</span>' : ''}</h4>${t.errors.length ? `<pre class="err">${esc(t.errors.join('\n\n'))}</pre>` : ''}${t.proof ? `<pre>${esc(t.proof)}</pre>` : `<pre>${esc(t.text.slice(0, 2000))}</pre>`}</div>`).join('');
+    $('drawer').classList.add('open');
+  };
 }
 
 /* ------------------------------------------------------------------ Design */

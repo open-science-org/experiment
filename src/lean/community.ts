@@ -58,6 +58,8 @@ export interface Action {
   kind: 'target' | 'lemma' | 'pass' | 'none';
   target?: string; name?: string; signature?: string;
   ok: boolean; reason?: string; turns: number;
+  /** The library entry an accepted action created, and the results its proof used. */
+  entry?: string; uses?: string[];
   usage: Usage; listCost: number; spentAfter: number;
   transcript: { text: string; proof: string | null; errors: string[] }[];
   t: number;
@@ -275,8 +277,10 @@ Take one action.`;
       messages.push({ role: 'assistant', content: reply.content });
       messages.push({ role: 'user', content: `Not accepted:\n\n${errors.join('\n\n').slice(0, 5000)}\n\nFix it and reply again in the same format.` });
     }
+    const made = ok ? this.library.filter((e) => e.author === i && e.round === round).at(-1) : undefined;
     const a: Action = {
       round, agent: i, model, kind, target, name: lemma?.name, signature: lemma?.signature, ok, reason: reason || (ok ? undefined : 'not accepted'),
+      ...(made ? { entry: made.name, uses: made.uses } : {}),
       turns: transcript.length, usage, listCost: price(usage), spentAfter: this.spent[i], transcript, t: Date.now(),
     };
     this.actions.push(a);
@@ -320,9 +324,9 @@ export function referenceAgent(com: Community, i: number): Chat {
 export interface CommunityResult { opts: CommunityOptions; actions: Action[]; library: Entry[]; earnings: number[]; spent: number[] }
 
 /** Runs one community to the end: rounds of one action per agent with budget left, in parallel. */
-export async function runCommunity(opts: CommunityOptions, chatFor: (com: Community, i: number) => Chat, price: (model: string, u: Usage) => number, runId: string, log = console.log): Promise<CommunityResult> {
+export async function runCommunity(opts: CommunityOptions, chatFor: (com: Community, i: number) => Chat, price: (model: string, u: Usage) => number, runId: string, log = console.log, root = join(LEAN_DIR, 'runs')): Promise<CommunityResult> {
   const com = new Community(opts);
-  const dir = join(LEAN_DIR, 'runs', runId);
+  const dir = join(root, runId);
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, 'options.json'), JSON.stringify({ kind: 'community', ...opts }, null, 1));
   const file = join(dir, 'actions.jsonl');

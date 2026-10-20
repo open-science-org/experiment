@@ -99,6 +99,37 @@ function pilotRuns() {
   }).sort((a, b) => b.modified - a.modified);
 }
 
+/** Community runs: pairs of `<id>-traditional` and `<id>-oso` folders in lean/runs/. */
+function communityRuns() {
+  const dir = join(LEAN_DIR, 'runs');
+  if (!existsSync(dir)) return [];
+  const ids = new Map<string, { id: string; rules: string[]; modified: number; actions: number }>();
+  for (const d of readdirSync(dir)) {
+    const m = /^(.*)-(traditional|oso)$/.exec(d);
+    if (!m || m[1].startsWith('test-') || !existsSync(join(dir, d, 'options.json'))) continue;
+    const opts = JSON.parse(readFileSync(join(dir, d, 'options.json'), 'utf8'));
+    if (opts.kind !== 'community') continue;
+    const f = join(dir, d, 'actions.jsonl');
+    const run = ids.get(m[1]) ?? { id: m[1], rules: [], modified: 0, actions: 0 };
+    run.rules.push(m[2]);
+    if (existsSync(f)) { run.modified = Math.max(run.modified, statSync(f).mtimeMs); run.actions += jsonl(f).length; }
+    ids.set(m[1], run);
+  }
+  return [...ids.values()].map((r) => ({ ...r, live: Date.now() - r.modified < 3 * 60_000 })).sort((a, b) => b.modified - a.modified);
+}
+
+function communityRun(id: string) {
+  if (!/^[\w.-]+$/.test(id)) throw new Error('bad run id');
+  const out: Record<string, unknown> = { id };
+  for (const rules of ['traditional', 'oso']) {
+    const dir = join(LEAN_DIR, 'runs', `${id}-${rules}`);
+    if (!existsSync(join(dir, 'options.json'))) continue;
+    out[rules] = { options: JSON.parse(readFileSync(join(dir, 'options.json'), 'utf8')), actions: jsonl(join(dir, 'actions.jsonl')), finished: existsSync(join(dir, 'result.json')) };
+  }
+  out.targets = loadTasks().filter((t) => t.posted).map((t) => ({ id: t.publicId, depth: t.depth, bounty: 4 * 2 ** (t.depth - 1) }));
+  return out;
+}
+
 function pilotRun(id: string) {
   if (!/^[\w.-]+$/.test(id)) throw new Error('bad run id');
   const dir = join(LEAN_DIR, 'runs', id);
@@ -159,6 +190,8 @@ const server = createServer(async (req, res) => {
     if (url.pathname === '/api/settings') return send(200, SETTINGS);
     if (url.pathname === '/api/sim') return send(200, sim(url.searchParams.get('space') ?? 'abstract-field', url.searchParams.get('setting') ?? 'oso', Number(url.searchParams.get('seed') ?? 1)));
     if (url.pathname === '/api/pilot/runs') return send(200, leanAvailable() ? pilotRuns() : []);
+    if (url.pathname === '/api/community/runs') return send(200, leanAvailable() ? communityRuns() : []);
+    if (url.pathname === '/api/community/run') return send(200, communityRun(url.searchParams.get('id') ?? ''));
     if (url.pathname === '/api/pilot/run') return send(200, pilotRun(url.searchParams.get('id') ?? ''));
     send(404, { error: 'not found' });
   } catch (e) {
