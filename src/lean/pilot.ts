@@ -214,3 +214,58 @@ export function readRun(runId: string): { records: Record_[]; opts: PilotOptions
   const records = readFileSync(join(dir, 'attempts.jsonl'), 'utf8').trim().split('\n').filter(Boolean).map((l) => JSON.parse(l) as Record_);
   return { records, opts: JSON.parse(readFileSync(join(dir, 'options.json'), 'utf8')) as PilotOptions };
 }
+
+/** Several runs side by side (one per model): results/pilot/<id>/summary.md. */
+export function writeComparison(id: string, runIds: string[], title: string): string {
+  const runs = runIds.map((r) => ({ runId: r, ...readRun(r) }));
+  const pct = (x: number) => `${Math.round(x * 100)}%`;
+  const money = (x: number) => `$${x.toFixed(x < 0.1 ? 3 : 2)}`;
+  const table = (rows: Record<string, unknown>[]) => {
+    const cols = Object.keys(rows[0] ?? {});
+    return [`| ${cols.join(' | ')} |`, `| ${cols.map(() => '---').join(' | ')} |`, ...rows.map((r) => `| ${cols.map((c) => r[c]).join(' | ')} |`)].join('\n');
+  };
+  const stat = (rs: Record_[]) => ({ n: rs.length, ok: rs.filter((r) => r.ok).length, cost: rs.reduce((a, r) => a + (r.usage.cost ?? 0), 0) / Math.max(1, rs.length), turns: rs.reduce((a, r) => a + r.turns, 0) / Math.max(1, rs.length) });
+  const models = runs.map((r) => r.opts.model.model);
+  const overall = runs.map((r) => {
+    const lib = stat(r.records.filter((x) => x.condition === 'library'));
+    const alone = stat(r.records.filter((x) => x.condition === 'alone'));
+    const okCost = (c: Condition) => { const rs = r.records.filter((x) => x.condition === c && x.ok); return rs.length ? rs.reduce((a, x) => a + (x.usage.cost ?? 0), 0) / rs.length : NaN; };
+    return {
+      model: `\`${r.opts.model.model}\``,
+      'proved with library': `${lib.ok}/${lib.n} (${pct(lib.ok / Math.max(1, lib.n))})`,
+      'proved alone': `${alone.ok}/${alone.n} (${pct(alone.ok / Math.max(1, alone.n))})`,
+      'cost per attempt, library': money(lib.cost),
+      'cost per attempt, alone': money(alone.cost),
+      'cost per proof, library / alone': `${Number.isFinite(okCost('library')) ? money(okCost('library')) : '–'} / ${Number.isFinite(okCost('alone')) ? money(okCost('alone')) : '–'}`,
+      'total cost': money(r.records.reduce((a, x) => a + (x.usage.cost ?? 0), 0)),
+    };
+  });
+  const ids = [...new Set(runs.flatMap((r) => r.records.map((x) => x.publicId)))];
+  const depth = new Map(runs.flatMap((r) => r.records.map((x) => [x.publicId, x.depth] as const)));
+  ids.sort((a, b) => depth.get(a)! - depth.get(b)! || a.localeCompare(b));
+  const cell = (rs: Record_[]) => (rs.length ? `${rs.filter((x) => x.ok).length}/${rs.length}` : '–');
+  const perTarget = ids.map((t) => ({
+    target: t, depth: depth.get(t),
+    ...Object.fromEntries(runs.map((r, i) => [models[i].split('/').pop()!,
+      `${cell(r.records.filter((x) => x.publicId === t && x.condition === 'alone'))} alone · ${cell(r.records.filter((x) => x.publicId === t && x.condition === 'library'))} with`])),
+  }));
+  const r0 = runs[0].opts;
+  const md = `# Lean pilot: ${title}
+
+Each model attempted every posted target alone (no library) and with the theorems it rests on (library), ${r0.attempts} attempts each. One attempt is a proof plus up to ${r0.repairs} repairs on Lean's errors; reasoning effort ${r0.model.effort}; \`grind\` ${r0.allowGrind ? 'allowed' : 'banned'}. All models were called through OpenRouter, which reports each call's cost.
+
+## By model
+
+${table(overall)}
+
+## By target: proved alone · proved with library
+
+${table(perTarget)}
+
+A target a model proves alone does not need its lemmas, for that model: shared lemmas then save cost, but do not make the result reachable. Ids are the anonymous ids of [worlds/lean-reference.json](../../../worlds/lean-reference.json). Runs: ${runIds.map((r) => `[${r}](../${r}/summary.md)`).join(', ')}.
+`;
+  const dir = join(RESULTS_DIR, 'pilot', id);
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, 'summary.md'), md);
+  return dir;
+}

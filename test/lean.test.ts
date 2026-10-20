@@ -25,6 +25,8 @@ test("axioms and errors are read from Lean's output", () => {
   assert.equal(parseAxioms('nothing'), null);
   const out = 'x/check.lean:12:4: error: unknown identifier \'foo\'\nmore detail\nx/check.lean:20:0: error: other\n';
   assert.deepEqual(parseErrors(out, 11, 3), ["line 2 of your proof, column 4: unknown identifier 'foo'\nmore detail", 'in the statement: other']);
+  const coded = "x/check.lean:52:20: error(lean.unknownIdentifier): Unknown identifier `congrArg₂`\n'OSO.attempt' depends on axioms: [propext, sorryAx]\n";
+  assert.deepEqual(parseErrors(coded, 50, 10), ['line 3 of your proof, column 20: Unknown identifier `congrArg₂`']);
 });
 
 test('the checked file states the library as axioms and the attempt in its namespace', () => {

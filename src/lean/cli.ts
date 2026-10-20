@@ -11,8 +11,9 @@
 //     --run ID                    resume or name a run (default: today's date and time)
 //   summary <run>                 rewrite the public summary of a run
 //   world <run>                   write worlds/lean-measured.json and spaces/lean-measured.yaml
+//   compare <id> <run> <run> ...  several runs (one per model) side by side
 import { chatFor, DEFAULT_MODEL, DEFAULT_MODELS, defaultProvider, type Provider } from './agent.ts';
-import { estimate, readRun, referenceChat, runPilot, writeMeasuredWorld, writeSummary, type Condition, type PilotOptions } from './pilot.ts';
+import { estimate, readRun, writeComparison, referenceChat, runPilot, writeMeasuredWorld, writeSummary, type Condition, type PilotOptions } from './pilot.ts';
 import { selftest } from './selftest.ts';
 import { leanAvailable, loadTasks } from './tasks.ts';
 
@@ -65,6 +66,13 @@ if (cmd === 'calibrate') {
   const records = await runPilot(opts, stub ? referenceChat(loadTasks()) : chatFor(opts.model), runId);
   const dir = writeSummary(runId, records, opts, stub ? 'This is a pipeline test: the "agent" answers with the reference proofs.' : '');
   console.log(`\n${records.filter((r) => r.ok).length}/${records.length} attempts proved. Summary: ${dir}/summary.md; transcripts (private): lean/runs/${runId}/`);
+  process.exit(0);
+}
+
+if (cmd === 'compare') {
+  const [, id, ...runIds] = args.filter((a) => !a.startsWith('--'));
+  if (!id || !runIds.length) throw new Error('usage: npm run pilot -- compare <id> <run> <run> ...');
+  console.log(`${writeComparison(id, runIds, value('title', 'models compared'))}/summary.md`);
   process.exit(0);
 }
 

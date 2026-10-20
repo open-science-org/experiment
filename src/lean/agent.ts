@@ -162,7 +162,9 @@ export async function attempt(task: Task, library: CheckOptions['library'], chat
     if (result?.ok) return { ok: true, turns, uses: result.uses };
     messages.push({ role: 'assistant', content: reply.content });
     const feedback = !proof
-      ? 'Your reply had no ```lean code block with a proof.'
+      ? reply.stop === 'length' || reply.stop === 'max_tokens'
+        ? 'Your reply was cut off by the length limit before it reached a proof. Think less, and send the proof.'
+        : 'Your reply had no ```lean code block with a proof.'
       : `Lean rejected the proof:\n\n${result!.errors.join('\n\n').slice(0, 6000)}`;
     messages.push({ role: 'user', content: `${feedback}\n\nSend a corrected proof in one \`\`\`lean code block.` });
   }

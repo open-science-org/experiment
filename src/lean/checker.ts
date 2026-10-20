@@ -78,7 +78,8 @@ export function parseAxioms(output: string): string[] | null {
 /** Lean's error messages, with line numbers relative to the agent's proof. */
 export function parseErrors(output: string, firstProofLine: number, proofLines: number): string[] {
   const errors: string[] = [];
-  const re = /^[^\n:]*\.lean:(\d+):(\d+): error: ([\s\S]*?)(?=^[^\n:]*\.lean:\d+:\d+: |(?![\s\S]))/gm;
+  // Lean 4.35 may tag an error with a code: `error(lean.unknownIdentifier): …`.
+  const re = /^[^\n:]*\.lean:(\d+):(\d+): error(?:\([^)]*\))?: ([\s\S]*?)(?=^[^\n:]*\.lean:\d+:\d+: |^'[^'\n]*' (?:depends|does not depend)|(?![\s\S]))/gm;
   for (const m of output.matchAll(re)) {
     const line = Number(m[1]) - firstProofLine + 1;
     const where = line >= 1 && line <= proofLines ? `line ${line} of your proof, column ${m[2]}` : 'in the statement';
@@ -113,7 +114,8 @@ export function check(task: Pick<Task, 'ns' | 'signature'>, proof: string, opts:
       const libraryNames = new Set(opts.library.map((l) => l.name));
       const uses = (axioms ?? []).filter((a) => libraryNames.has(a));
       const other = (axioms ?? []).filter((a) => !libraryNames.has(a) && !STANDARD_AXIOMS.includes(a));
-      if (other.length) errors.push(`the proof depends on ${other.join(', ')}, which is not allowed`);
+      if (other.length && !errors.length) errors.push(`Lean reported a problem it did not describe (the proof depends on ${other.join(', ')}); full output:\n${output.trim().slice(0, 3000)}`);
+      else if (other.length && !other.every((a) => a === 'sorryAx')) errors.push(`the proof depends on ${other.filter((a) => a !== 'sorryAx').join(', ')}, which is not allowed`);
       if (!errors.length && axioms === null) errors.push('Lean did not accept the proof');
       resolve({ ok: errors.length === 0, errors, uses, seconds });
     });
