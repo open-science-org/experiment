@@ -144,6 +144,29 @@ function pilotRun(id: string) {
   };
 }
 
+/** Models OpenRouter offers that can reason, with list prices per million tokens (cached for an hour). */
+let modelCache: { at: number; list: unknown[] } | null = null;
+async function models() {
+  if (modelCache && Date.now() - modelCache.at < 3600_000) return modelCache.list;
+  const res = await fetch('https://openrouter.ai/api/v1/models');
+  const data = (await res.json()) as { data: { id: string; name: string; pricing: { prompt: string; completion: string }; supported_parameters?: string[] }[] };
+  const list = data.data
+    .filter((m) => (m.supported_parameters ?? []).includes('reasoning') && !m.id.endsWith(':batch') && !m.id.startsWith('~'))
+    .map((m) => ({ id: m.id, name: m.name, input: Number(m.pricing.prompt) * 1e6, output: Number(m.pricing.completion) * 1e6 }))
+    .sort((a, b) => a.id.localeCompare(b.id));
+  modelCache = { at: Date.now(), list };
+  return list;
+}
+
+/** What is left on the OpenRouter key's limit (the key itself is never sent to the page). */
+async function balance() {
+  const key = process.env.OPENROUTER_API_KEY;
+  if (!key) return { ok: false, message: 'No OPENROUTER_API_KEY in .env' };
+  const res = await fetch('https://openrouter.ai/api/v1/key', { headers: { Authorization: `Bearer ${key}` } });
+  const d = ((await res.json()) as { data?: { limit: number | null; limit_remaining: number | null; usage: number } }).data;
+  return { ok: !!d, limit: d?.limit ?? null, remaining: d?.limit_remaining ?? null, usage: d?.usage ?? null };
+}
+
 /** Reads a JSON request body (small: designs and field files). */
 function body(req: import('node:http').IncomingMessage): Promise<Record<string, unknown>> {
   return new Promise((ok, fail) => {
@@ -170,10 +193,14 @@ const server = createServer(async (req, res) => {
       if (url.pathname === '/api/spaces/generate') return job(design.generateFieldJob(String(b.description ?? '')));
       if (url.pathname === '/api/experiments/check') return send(200, design.checkExperiment(b.design as design.Design));
       if (url.pathname === '/api/experiments/run') return job(design.runExperimentJob(b.design as design.Design, b.overwrite === true));
+      if (url.pathname === '/api/community/start') return job(design.startRaceJob(b.design as design.RaceDesign));
       if (url.pathname === '/api/reports/build') return job(design.buildReportJob(String(b.space ?? ''), Number(b.seeds ?? 100)));
       return send(404, { error: 'not found' });
     }
     if (url.pathname === '/api/design/options') return send(200, design.options());
+    if (url.pathname === '/api/design/agents') return send(200, design.fieldAgents(url.searchParams.get('id') ?? ''));
+    if (url.pathname === '/api/models') return send(200, await models());
+    if (url.pathname === '/api/balance') return send(200, await balance());
     if (url.pathname === '/api/design/field') return send(200, design.fieldValues(url.searchParams.get('id') ?? ''));
     if (url.pathname === '/api/spaces/yaml') return send(200, { yaml: design.fieldYaml(url.searchParams.get('id') ?? '') });
     if (url.pathname === '/api/jobs') return send(200, design.listJobs());

@@ -313,6 +313,12 @@ test('the designer turns a design into a valid experiment and rejects bad design
   assert.equal(rows.length, 3);
   assert.deepEqual(rows.map((r) => [r.scenario.rules.alpha, r.scenario.rules.c, r.scenario.rules.screen]), [[1, 0, 0.9], [0.2, 0.3, 0.9], [0.6, 0.3, 0.9]]);
   assert.equal(design.checkExperiment({ ...d, set: { 'rules.screen': 3 } }).ok, false, 'out of range');
+  // A designed community replaces the field's: kinds left out get no agents.
+  const custom = expand(design.experimentFor({ ...d, agents: { archetypes: { foundation: { skill: 1.5, conjecture: 0.7, cost: 1, horizon: 0.98, risk: 0.2, reuse: 0.9, sharing: 0.5, gaming: 0, specialist: false } }, mix: { foundation: 6 } } }));
+  const mix = custom[0].scenario.agents.mix;
+  assert.equal(Object.values(mix).reduce((a, b) => a + b, 0), 6);
+  assert.equal(custom[0].scenario.agents.archetypes.foundation.skill, 1.5);
+  assert.equal(design.checkExperiment({ ...d, agents: { archetypes: {}, mix: { racer: 0, foundation: 0, explorer: 0, specialist: 0, freeRider: 0, gamer: 0 } } }).ok, false, 'needs an agent');
 });
 
 test("the app's page script parses", async () => {

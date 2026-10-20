@@ -84,10 +84,26 @@ export const PARAMETERS: Parameter[] = [
   { path: 'success.eta', label: 'η, difficulty per level', group: 'field', min: 0.2, max: 0.95, step: 0.05, values: [0.4, 0.5, 0.6, 0.7],
     short: 'how much harder each level is than the one below',
     explain: 'A result at level ℓ succeeds with chance p₀ · η^(ℓ − 1) per attempt. Lower η makes deep results much harder, so building on others\' work matters more.' },
-  { path: 'agents.mix.gamer', label: 'gaming agents', group: 'field', min: 0, max: 6, step: 1, integer: true, values: [0, 1, 2, 4],
-    short: 'how many agents farm trivial results for the mint',
-    explain: 'A gaming agent submits trivial results to collect the mint, and the validation screen θ is what stops it. Adding gaming agents adds to the community: the others stay.' },
 ];
+
+/** The eight traits of a simulated agent (docs/simulator.md, section 2.2). */
+export const TRAITS = [
+  { key: 'skill', label: 'skill', min: 0.1, max: 2, step: 0.05, explain: 'Multiplies the chance that an attempt succeeds: chance = skill × the result\'s base chance (at most 1).' },
+  { key: 'conjecture', label: 'conjecture quality', min: 0, max: 1, step: 0.05, explain: 'How accurately the agent sees what a result is worth before trying it. At 1 it sees exactly; lower, it misjudges by more (see σ₀, perception noise).' },
+  { key: 'cost', label: 'cost per attempt', min: 0.1, max: 3, step: 0.05, explain: 'Compute units one attempt costs this agent. A cheap explorer tries more often with the same budget.' },
+  { key: 'horizon', label: 'horizon', min: 0.5, max: 1, step: 0.01, explain: 'How much the agent values later payoffs: value arriving t rounds from now counts × horizon^t. Near 1 it is patient (foundations pay off late); lower, it wants returns now.' },
+  { key: 'risk', label: 'risk attitude', min: -1, max: 1, step: 0.05, explain: 'Penalty on uncertain payoffs. Positive: cautious, prefers likely successes. Negative: risk-seeking, goes for long shots such as hard targets.' },
+  { key: 'reuse', label: 'reuse', min: 0, max: 1, step: 0.05, explain: 'Chance each round of taking up a result someone else published, so that it can build on it. Low reuse means ignoring others\' work.' },
+  { key: 'sharing', label: 'sharing', min: -1, max: 1, step: 0.05, explain: 'Intrinsic value the agent puts on publishing, in units of the mint: positive likes sharing (as many scientists do), negative dislikes it (a free rider). It matters when agents choose what to publish.' },
+  { key: 'gaming', label: 'gaming', min: 0, max: 1, step: 0.05, explain: 'Share of the agent\'s attempts spent submitting trivial results to collect the mint. The validation screen θ decides how often that pays.' },
+];
+
+/** A field's agents: their kinds with traits, and how many of each. */
+export function fieldAgents(id: string) {
+  const { space } = withCalibratedBudget(loadSpace(id));
+  const a = space.scenario.agents;
+  return { archetypes: a.archetypes, mix: a.mix, specialist: a.specialist };
+}
 
 /** The values a field uses for every parameter (α and c as under OSO's rules). */
 export function fieldValues(id: string): Record<string, number> {
@@ -110,6 +126,8 @@ export function options() {
   return {
     settings: SETTINGS,
     parameters: PARAMETERS,
+    traits: TRAITS,
+    approaches: APPROACHES,
     flowBackSettings: FLOW_BACK,
     columns: Object.keys(COLUMNS).map((id) => ({ id, meaning: COLUMN_INFO[id] ?? id })),
     defaultColumns: ['frontier', 'reachTarget', 'cost', 'targetsSolved', 'sharing'],
@@ -163,6 +181,8 @@ export interface Design {
   settings: string[];
   /** Fixed values that differ from the field's own. */
   set?: Record<string, number>;
+  /** The community, if changed: every kind's traits and how many of each (the whole mix). */
+  agents?: { archetypes: Record<string, Record<string, number | boolean>>; mix: Record<string, number> };
   vary: { path: string; values: number[] }[];
   columns: string[];
   seeds: number;
@@ -212,13 +232,33 @@ export function experimentFor(d: Design): ExperimentSpec {
     ? combos.map((c) => ({ label: SETTINGS[s] + c.label, preset: s, ...(Object.keys(fixedFlow).length || Object.keys(c.set).length ? { set: { ...fixedFlow, ...c.set } } : {}) }))
     : [{ label: SETTINGS[s], preset: s }]));
   const changed = fixed.map(([path, v]) => `${param(path).label} = ${v}`);
+  let agents: Record<string, unknown> = {};
+  if (d.agents) {
+    const { archetypes, mix } = d.agents;
+    for (const [name, t] of Object.entries(archetypes)) {
+      if (!/^[A-Za-z][\w]*$/.test(name)) throw new Error(`agent kind "${name}": use letters and digits only`);
+      for (const tr of TRAITS) {
+        const v = Number(t[tr.key]);
+        if (!Number.isFinite(v) || v < tr.min || v > tr.max) throw new Error(`${name}: ${tr.label} must be between ${tr.min} and ${tr.max}`);
+      }
+    }
+    // The mix is replaced whole: kinds the field had but the design leaves out get 0.
+    const full = Object.fromEntries([...new Set([...Object.keys(space.scenario.agents.mix), ...Object.keys(mix)])].map((k) => [k, Math.max(0, Math.round(Number(mix[k] ?? 0)))]));
+    for (const [k, n] of Object.entries(full)) {
+      if (n > 50) throw new Error(`${k}: at most 50 agents of one kind`);
+      if (n > 0 && !archetypes[k] && !space.scenario.agents.archetypes[k]) throw new Error(`unknown agent kind ${k}`);
+    }
+    if (!Object.values(full).some((n) => n > 0)) throw new Error('the community needs at least one agent');
+    agents = { agents: { archetypes, mix: full } };
+    changed.push(`agents: ${Object.entries(full).filter(([, n]) => n).map(([k, n]) => `${n} ${k}`).join(', ')}`);
+  }
   return {
     id: d.id,
     title: d.title || d.id,
     description: `Designed in the app on the field "${space.spec.title}" (spaces/${d.space}.yaml): ${d.settings.map((s) => SETTINGS[s]).join(' vs ')}${varied.length ? `, varying ${varied.map((v) => param(v.path).label).join(' and ')}` : ''}${changed.length ? `; with ${changed.join(', ')}` : ''}. α and c apply to the OSO (flow-back) settings only.`,
     seeds: d.seeds,
     ...(space.spec.scenarioFile ? { scenario: space.spec.scenarioFile } : {}),
-    set: merge(expandPaths(space.spec.scenario ?? {}), expandPaths(fixedOther)) as Record<string, unknown>,
+    set: merge(merge(expandPaths(space.spec.scenario ?? {}), expandPaths(fixedOther)), agents) as Record<string, unknown>,
     factors: [
       { name: 'setting', levels },
       ...variedOther.map((v) => ({ name: param(v.path).label, path: v.path, values: v.values })),
@@ -250,9 +290,9 @@ function newJob(kind: string, title: string): Job {
 }
 
 /** Runs the command line (`node src/cli.ts …`) as a child process, streaming its output into the job. */
-function cliJob(kind: string, title: string, args: string[], result: () => unknown): Job {
+function cliJob(kind: string, title: string, args: string[], result: () => unknown, script = 'src/cli.ts'): Job {
   const job = newJob(kind, title);
-  const child = spawn(process.execPath, ['--env-file-if-exists=.env', 'src/cli.ts', ...args], { cwd: ROOT });
+  const child = spawn(process.execPath, ['--env-file-if-exists=.env', script, ...args], { cwd: ROOT });
   const take = (data: Buffer) => { for (const line of data.toString().split('\n')) if (line.trim()) job.log.push(line); };
   child.stdout.on('data', take);
   child.stderr.on('data', take);
@@ -261,6 +301,36 @@ function cliJob(kind: string, title: string, args: string[], result: () => unkno
     if (code === 0) { job.status = 'done'; job.result = result(); } else { job.status = 'failed'; job.log.push(`exited with code ${code}`); }
   });
   return job;
+}
+
+/** Approaches a real AI lab can be given, echoing the simulated agent kinds; or the user's own text. */
+export const APPROACHES: Record<string, string> = {
+  none: '',
+  foundation: 'Your lab is a foundation builder: prefer proving general lemmas that many later results can build on, even if no target is in reach yet.',
+  racer: 'Your lab is a target racer: go straight for the targets with the biggest bounties, and prove a lemma only when a target needs it.',
+  explorer: 'Your lab is a cheap explorer: keep each attempt short and simple; try many small lemmas rather than a few long proofs.',
+  specialistA: 'Your lab specialises in the sequence u (area A): work on results about u.',
+  specialistB: 'Your lab specialises in sorting (area B): work on results about isort, msort, Sorted and cnt.',
+  specialistC: 'Your lab specialises in 2 × 2 matrices (area C): work on results about M2.',
+  freeRider: 'Your lab builds on others\' published results as much as it can and avoids repeating work that already exists.',
+};
+
+export interface RaceDesign { id: string; labs: { model: string; approach: string; text?: string }[]; budget: number; rounds: number; repairs: number; effort: 'low' | 'medium' | 'high'; rules: ('traditional' | 'oso')[] }
+
+/** Starts a race of real AI labs (spends money: the page confirms the maximum first). */
+export function startRaceJob(d: RaceDesign): Job {
+  if (!ID.test(d.id)) throw new Error('the run name must be kebab-case (a-z, 0-9, hyphens)');
+  if (!d.labs.length || d.labs.length > 12) throw new Error('between 1 and 12 labs');
+  if (!(d.budget > 0 && d.budget <= 20)) throw new Error('budget per lab must be between $0 and $20');
+  if (!(d.rounds >= 1 && d.rounds <= 200) || !(d.repairs >= 0 && d.repairs <= 5)) throw new Error('rounds 1-200, repairs 0-5');
+  if (!d.rules.length || d.rules.some((r) => r !== 'traditional' && r !== 'oso')) throw new Error('choose traditional, OSO or both');
+  for (const l of d.labs) if (!/^[\w.-]+\/[\w.:-]+$/.test(l.model)) throw new Error(`bad model id ${l.model}`);
+  const personas = d.labs.map((l) => (l.approach === 'custom' ? String(l.text ?? '').slice(0, 600) : APPROACHES[l.approach] ?? ''));
+  const config = { agents: d.labs.map((l) => l.model), personas, budget: d.budget, rounds: d.rounds, repairs: d.repairs, effort: d.effort, rules: d.rules, run: d.id };
+  const file = join(ROOT, 'lean', 'runs', `${d.id}.config.json`);
+  writeFileSync(file, JSON.stringify(config, null, 1));
+  const max = d.budget * d.labs.length * d.rules.length;
+  return cliJob('race', `Race: ${d.id} (at most $${max.toFixed(2)})`, ['community', '--config', file], () => ({ run: d.id, doc: `results/community/${d.id}/summary.md` }), 'src/lean/cli.ts');
 }
 
 export function runExperimentJob(d: Design, overwrite = false): Job {

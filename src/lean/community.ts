@@ -34,6 +34,8 @@ export interface CommunityOptions {
   effort: 'low' | 'medium' | 'high';
   /** Allow grind (only for the stand-in agents, whose reference proofs use it). */
   allowGrind?: boolean;
+  /** Each lab's approach, added to its instructions (empty: none). */
+  personas?: string[];
 }
 
 /** A result in the community's library. */
@@ -171,6 +173,7 @@ export class Community {
 - Every result you prove is published at once, and every lab can build on it immediately.
 - Each new result earns its author a mint of ${o.mint}; if it builds on earlier results, ${o.c * 100}% of that mint goes to them.
 - When value reaches a result (a target's bounty, or value flowing from later work), its author keeps ${o.alpha * 100}% and the rest flows back to the results it used, and on down.`;
+    const persona = o.personas?.[i]?.trim();
     return `You are lab ${i + 1} of ${o.agents.length} in a research community proving theorems in Lean 4 (version 4.35.0, core library only, no Mathlib). Your aim is to earn as much as you can within your budget; every model call you make costs budget.
 
 ${rules}
@@ -186,7 +189,7 @@ Proof rules: core lemmas and tactics such as simp, omega, decide, induction, cas
 Each turn, take exactly one action, and reply with exactly one \`\`\`lean code block:
 - To prove a posted target, start your reply with the line ACTION: target <ID>, and give the proof that completes \`theorem attempt <statement>\` (starting with := or with | match arms).
 - To state and prove a new lemma, start with ACTION: lemma, and give the whole declaration: \`theorem <name> <statement> := <proof>\`. Choose lemmas that bring a target within reach.
-- If nothing seems worth your budget, reply ACTION: pass. You stop for the rest of the run and keep what you have not spent.`;
+- If nothing seems worth your budget, reply ACTION: pass. You stop for the rest of the run and keep what you have not spent.${persona ? `\n\n${persona}` : ''}`;
   }
 
   turnPrompt(i: number, round: number): string {

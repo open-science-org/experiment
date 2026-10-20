@@ -76,18 +76,22 @@ if (cmd === 'community') {
   const { runCommunity, referenceAgent, listPrices, writeCommunityComparison } = await import('./community.ts');
   const { openRouterChat } = await import('./agent.ts');
   const stub = flag('stub');
-  const agents = value('agents', 'deepseek/deepseek-v4.1-flash,google/gemini-3.8-flash,openai/gpt-5.6-terra,deepseek/deepseek-v4.1-flash').split(',');
+  // A race designed in the app comes as a config file; flags set the rest.
+  const cfg = flag('config') ? JSON.parse((await import('node:fs')).readFileSync(value('config', ''), 'utf8')) as Record<string, unknown> : {};
+  const pick = (name: string, fallback: string) => (cfg[name] !== undefined ? String(Array.isArray(cfg[name]) ? (cfg[name] as unknown[]).join(',') : cfg[name]) : value(name, fallback));
+  const agents = pick('agents', 'deepseek/deepseek-v4.1-flash,google/gemini-3.8-flash,openai/gpt-5.6-terra,deepseek/deepseek-v4.1-flash').split(',');
   const base = {
-    agents, budget: Number(value('budget', '0.5')), rounds: Number(value('rounds', '30')), repairs: Number(value('repairs', '2')),
-    alpha: 0.8, c: 0.15, mint: 1, effort: value('effort', 'medium') as 'low' | 'medium' | 'high', allowGrind: stub,
+    agents, budget: Number(pick('budget', '0.5')), rounds: Number(pick('rounds', '30')), repairs: Number(pick('repairs', '2')),
+    alpha: 0.8, c: 0.15, mint: 1, effort: pick('effort', 'medium') as 'low' | 'medium' | 'high', allowGrind: stub,
+    personas: (cfg.personas as string[] | undefined) ?? [],
   };
-  const rules = value('rules', 'traditional,oso').split(',') as ('traditional' | 'oso')[];
+  const rules = pick('rules', 'traditional,oso').split(',') as ('traditional' | 'oso')[];
   console.log(`${rules.length} communities × ${agents.length} labs × $${base.budget} = $${(rules.length * agents.length * base.budget).toFixed(2)} at most, at list prices; up to ${base.rounds} rounds.`);
   if (flag('dry-run')) process.exit(0);
   if (!stub && !process.env.OPENROUTER_API_KEY) { console.error('Set OPENROUTER_API_KEY in .env (or use --stub).'); process.exit(1); }
   const prices = stub ? null : await listPrices([...new Set(agents)]);
   const price = (m: string, u: { input: number; output: number; cacheRead: number }) => (prices ? (u.input + u.cacheRead) * prices[m].input + u.output * prices[m].output : 0.01);
-  const id = value('run', `${stub ? 'stub-' : ''}community-${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}`);
+  const id = pick('run', `${stub ? 'stub-' : ''}community-${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}`);
   const results = [];
   for (const r of rules) {
     console.log(`\n${r === 'oso' ? 'OSO' : 'Traditional'} community:`);

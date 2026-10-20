@@ -142,6 +142,15 @@
   .explainer p { font-size: 13px; line-height: 1.5; margin: 6px 0; }
   .explainer svg { width: 100%; height: auto; display: block; margin: 6px 0; }
   .explainer .cap { font-size: 12.5px; color: var(--ink-2); }
+  .kinds { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 10px; margin: 8px 0; }
+  .kind { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--bg); }
+  .kind .khead { display: flex; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .kind .khead b { font-size: 14px; }
+  .trait { display: grid; grid-template-columns: 120px 1fr 64px; gap: 6px; align-items: center; font-size: 12px; margin: 3px 0; }
+  .trait input[type=range] { min-width: 0; }
+  .trait input[type=number] { width: 64px; padding: 2px 4px; }
+  .labs .lab { display: grid; grid-template-columns: 34px minmax(220px, 1.2fr) minmax(180px, 1fr) 70px; gap: 8px; align-items: center; margin: 6px 0; }
+  .labs .lab textarea { grid-column: 2 / -1; }
   .setting-note { display: block; font-size: 11.5px; color: var(--ink-3); margin-left: 22px; }
   .note { font-size: 12px; color: var(--ink-2); margin: 0 0 12px; }
 </style>
@@ -172,6 +181,21 @@
   <section id="view-experiments" class="hidden"></section>
   <section id="view-community" class="hidden">
     <p class="lede">Two communities of AI labs, the same models and the same budget, race on the Lean problem set. <b>Traditional:</b> a lab's lemmas stay private until it proves a target; then the target and its lemmas are published and the lab takes the bounty. <b>OSO:</b> every result is published as soon as Lean accepts it, and value flows back to the results it used. Lean checks every proof.</p>
+    <details class="step" id="race" style="max-width:none"><summary><b>Start a race of your own</b> <span class="muted">· choose the labs, their models and approaches, and the budget</span></summary>
+      <p class="note">Each lab is an AI model working on the problem set. Its <b>approach</b> is added to its instructions, like the simulated agent kinds; or write your own. Both communities get exactly the same labs and budget.</p>
+      <div class="labs" id="r-labs"></div>
+      <div class="row"><button class="btn" id="r-add">Add a lab</button></div>
+      <div class="row">
+        <label>Budget per lab, $ <input id="r-budget" type="number" min="0.05" max="20" step="0.05" value="0.5" style="width:80px"></label>
+        <label>Rounds <input id="r-rounds" type="number" min="1" max="200" value="30" style="width:70px"></label>
+        <label>Repairs per action <input id="r-repairs" type="number" min="0" max="5" value="2" style="width:60px"></label>
+        <label>Reasoning effort <select id="r-effort"><option>low</option><option selected>medium</option><option>high</option></select></label>
+        <label><input type="checkbox" id="r-trad" checked> Traditional</label><label><input type="checkbox" id="r-oso" checked> OSO</label>
+        <label>Name <input id="r-id" value="my-race" style="width:150px"></label>
+      </div>
+      <div class="row"><button class="btn primary" id="r-start">Start the race</button><span id="r-cost" class="muted"></span></div>
+      <div id="r-job" class="joblog hidden" aria-live="polite"></div>
+    </details>
     <div class="bar"><label>Run <select id="c-run"></select></label><span id="c-live" class="live hidden">● live</span>
       <button class="btn" id="c-first" aria-label="Start">⏮</button><button class="btn primary" id="c-play">▶ Replay</button>
       <label>Speed <select id="c-speed"><option value="20">×20</option><option value="60" selected>×60</option><option value="240">×240</option></select></label>
@@ -221,6 +245,10 @@
           <div id="e-params"></div>
         </div>
         <aside class="explainer" id="e-explain" aria-live="polite"></aside>
+      </div>
+      <div><label>The agents: who is in the community. Every kind has eight traits; change them, change how many of each kind there are, or add a kind of your own. Click a trait to see what it does.</label>
+        <div class="row"><button class="btn" id="a-reset">Reset to the field's agents</button><button class="btn" id="a-add">Add an agent kind</button><span class="muted" id="a-summary"></span></div>
+        <div class="kinds" id="a-kinds"></div>
       </div>
       <div><label>Measure</label><div class="choice" id="e-columns"></div></div>
       <div class="row"><label>Runs per row <input id="e-seeds" type="number" min="1" max="1000" value="50" style="width:80px"></label><span id="e-summary" class="muted"></span></div>
@@ -383,9 +411,50 @@ async function drawPilotSummaries() {
 /* ------------------------------------------------------------------ Communities: OSO vs traditional, live or replayed */
 const C = { run: null, now: 0, t0: 0, t1: 0, timer: null, poll: null, ready: false };
 
+const R = { models: [], approaches: {}, labs: [] };
+const APPROACH_NAMES = { none: 'No particular approach', foundation: 'Foundation builder', racer: 'Target racer', explorer: 'Cheap explorer', specialistA: 'Specialist: the sequence (A)', specialistB: 'Specialist: sorting (B)', specialistC: 'Specialist: matrices (C)', freeRider: 'Free rider', custom: 'My own text…' };
+async function initRace() {
+  const [models, opts] = await Promise.all([api('/api/models'), api('/api/design/options')]);
+  R.models = models; R.approaches = opts.approaches;
+  R.labs = [['deepseek/deepseek-v4.1-flash', 'foundation'], ['google/gemini-3.8-flash', 'racer'], ['openai/gpt-5.6-terra', 'none'], ['deepseek/deepseek-v4.1-flash', 'explorer']].map(([model, approach]) => ({ model, approach, text: '' }));
+  drawLabs();
+  for (const id of ['r-budget', 'r-rounds', 'r-trad', 'r-oso']) $(id).addEventListener('input', raceCost);
+  $('r-add').onclick = () => { R.labs.push({ model: R.labs.at(-1)?.model ?? 'deepseek/deepseek-v4.1-flash', approach: 'none', text: '' }); drawLabs(); };
+  $('r-start').onclick = startRace;
+}
+function drawLabs() {
+  const mopts = (sel) => R.models.map((m) => `<option value="${esc(m.id)}" ${m.id === sel ? 'selected' : ''}>${esc(m.id)} · $${m.input.toFixed(2)} / $${m.output.toFixed(2)} per M</option>`).join('');
+  $('r-labs').innerHTML = R.labs.map((l, i) => `<div class="lab"><b>Lab ${i + 1}</b><select data-i="${i}" class="r-model" aria-label="Lab ${i + 1} model">${mopts(l.model)}</select><select data-i="${i}" class="r-appr" aria-label="Lab ${i + 1} approach">${Object.entries(APPROACH_NAMES).map(([k, v]) => `<option value="${k}" ${k === l.approach ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select><button class="btn" data-i="${i}" ${R.labs.length < 2 ? 'disabled' : ''}>Remove</button>${l.approach === 'custom' ? `<textarea data-i="${i}" class="prose" rows="2" placeholder="How this lab should work, in a sentence or two">${esc(l.text)}</textarea>` : l.approach !== 'none' ? `<div class="muted" style="grid-column:2/-1;font-size:12px">${esc(R.approaches[l.approach] ?? '')}</div>` : ''}</div>`).join('');
+  for (const el of $('r-labs').querySelectorAll('.r-model')) el.onchange = () => { R.labs[el.dataset.i].model = el.value; raceCost(); };
+  for (const el of $('r-labs').querySelectorAll('.r-appr')) el.onchange = () => { R.labs[el.dataset.i].approach = el.value; drawLabs(); };
+  for (const el of $('r-labs').querySelectorAll('textarea')) el.oninput = () => { R.labs[el.dataset.i].text = el.value; };
+  for (const el of $('r-labs').querySelectorAll('button')) el.onclick = () => { R.labs.splice(Number(el.dataset.i), 1); drawLabs(); };
+  raceCost();
+}
+function raceDesign() {
+  return { id: $('r-id').value.trim(), labs: R.labs, budget: Number($('r-budget').value), rounds: Number($('r-rounds').value), repairs: Number($('r-repairs').value), effort: $('r-effort').value, rules: [['r-trad', 'traditional'], ['r-oso', 'oso']].filter(([id]) => $(id).checked).map(([, r]) => r) };
+}
+async function raceCost() {
+  const d = raceDesign(), max = d.budget * d.labs.length * d.rules.length;
+  let bal = '';
+  try { const b = await api('/api/balance'); if (b.ok && b.remaining != null) bal = ` Your OpenRouter key has $${b.remaining.toFixed(2)} left.`; } catch {}
+  $('r-cost').textContent = `At most $${max.toFixed(2)} at list prices (${d.labs.length} labs × $${d.budget} × ${d.rules.length} communit${d.rules.length === 1 ? 'y' : 'ies'}).${bal}`;
+  return max;
+}
+async function startRace() {
+  const d = raceDesign(), max = await raceCost();
+  if (!confirm(`Start "${d.id}"? It can spend up to $${max.toFixed(2)} of your OpenRouter credit.`)) return;
+  try {
+    const j = await post('/api/community/start', { design: d });
+    follow(j.job, $('r-job'), () => enterCommunity());
+    setTimeout(() => enterCommunity().then(() => { $('c-run').value = d.id; loadCommunity(); }), 5000);
+  } catch (e) { $('r-job').classList.remove('hidden'); $('r-job').textContent = e.message; }
+}
+
 async function enterCommunity() {
   if (!C.ready) {
     C.ready = true;
+    initRace();
     $('c-run').onchange = () => { $('c-follow').checked = true; loadCommunity(); };
     $('c-play').onclick = () => {
       if (C.timer) return stopC();
@@ -576,7 +645,16 @@ async function enterDesign() {
   $('e-settings').innerHTML = Object.entries(D.opts.settings).map(([k, v]) => `<label style="display:block"><input type="checkbox" value="${k}" ${['traditional', 'oso', 'osoChoice'].includes(k) ? 'checked' : ''}> ${esc(v)}<span class="setting-note">${esc(SETTING_NOTES[k] ?? '')}</span></label>`).join('');
   if (params().get('param')) selected = params().get('param');
   await loadFieldValues();
-  $('e-space').addEventListener('change', async () => { await loadFieldValues(); designCheck(); });
+  await loadFieldAgents();
+  $('e-space').addEventListener('change', async () => { await loadFieldValues(); await loadFieldAgents(); designCheck(); });
+  $('a-reset').onclick = () => { D.agents = JSON.parse(JSON.stringify({ archetypes: D.fieldAgents.archetypes, mix: D.fieldAgents.mix })); drawAgents(); designCheck(); };
+  $('a-add').onclick = () => {
+    const name = (prompt('Name of the new agent kind (letters and digits):', 'myAgent') ?? '').trim();
+    if (!/^[A-Za-z][\w]*$/.test(name) || D.agents.archetypes[name]) return;
+    D.agents.archetypes[name] = { ...(D.agents.archetypes.plain ?? Object.values(D.agents.archetypes)[0]) };
+    D.agents.mix[name] = 1;
+    drawAgents(); designCheck();
+  };
   $('e-reset').onclick = () => { for (const p of D.opts.parameters) { P[p.path] = { value: D.field[p.path], vary: false, values: p.values.join(', ') }; } drawParams(); designCheck(); };
   $('e-columns').innerHTML = D.opts.columns.map((c) => `<label title="${esc(c.meaning)}"><input type="checkbox" value="${c.id}" ${D.opts.defaultColumns.includes(c.id) ? 'checked' : ''}> ${esc(c.meaning)}</label>`).join('');
   for (const el of document.querySelectorAll('#view-design .step:nth-of-type(2) input, #view-design .step:nth-of-type(2) select')) el.addEventListener('change', designCheck);
@@ -611,6 +689,40 @@ async function checkField() {
 /* Parameters: their state, rows, and the explainer with its example tree. */
 const P = {};
 let selected = 'rules.alpha';
+
+async function loadFieldAgents() {
+  const a = await api('/api/design/agents?id=' + encodeURIComponent($('e-space').value));
+  D.fieldAgents = JSON.parse(JSON.stringify(a));
+  D.agents = JSON.parse(JSON.stringify({ archetypes: a.archetypes, mix: a.mix }));
+  drawAgents();
+}
+const agentsChanged = () => JSON.stringify(D.agents) !== JSON.stringify({ archetypes: D.fieldAgents.archetypes, mix: D.fieldAgents.mix });
+function drawAgents() {
+  const kinds = Object.keys(D.agents.archetypes).sort((a, b) => (D.agents.mix[b] ?? 0) - (D.agents.mix[a] ?? 0));
+  const total = Object.values(D.agents.mix).reduce((a, b) => a + (b || 0), 0);
+  $('a-summary').textContent = `${total} agents${agentsChanged() ? ' · changed from the field\'s' : ''}`;
+  $('a-kinds').innerHTML = kinds.map((k) => {
+    const t = D.agents.archetypes[k], n = D.agents.mix[k] ?? 0;
+    return `<div class="kind" data-k="${esc(k)}"><div class="khead"><b>${esc(k)}</b><label>how many <input type="number" class="a-n" min="0" max="50" value="${n}" style="width:60px"></label></div>` +
+      D.opts.traits.map((tr) => `<div class="trait" data-tr="${tr.key}" title="${esc(tr.explain)}"><span>${esc(tr.label)}</span><input type="range" min="${tr.min}" max="${tr.max}" step="${tr.step}" value="${t[tr.key]}" aria-label="${esc(k)} ${esc(tr.label)}"><input type="number" min="${tr.min}" max="${tr.max}" step="${tr.step}" value="${t[tr.key]}"></div>`).join('') +
+      `<label style="font-size:12px"><input type="checkbox" class="a-spec" ${t.specialist ? 'checked' : ''}> specialist: much better in one area, worse elsewhere</label></div>`;
+  }).join('');
+  for (const card of $('a-kinds').querySelectorAll('.kind')) {
+    const k = card.dataset.k;
+    card.querySelector('.a-n').onchange = (e) => { D.agents.mix[k] = Math.max(0, Math.round(Number(e.target.value) || 0)); drawAgents(); designCheck(); };
+    card.querySelector('.a-spec').onchange = (e) => { D.agents.archetypes[k].specialist = e.target.checked; designCheck(); drawAgents(); };
+    for (const row of card.querySelectorAll('.trait')) {
+      const tr = D.opts.traits.find((x) => x.key === row.dataset.tr);
+      const [range, num] = row.querySelectorAll('input');
+      const set = (v) => { if (!Number.isFinite(v)) return; v = Math.min(tr.max, Math.max(tr.min, v)); D.agents.archetypes[k][tr.key] = v; range.value = v; num.value = v; $('a-summary').textContent = `${Object.values(D.agents.mix).reduce((a, b) => a + (b || 0), 0)} agents${agentsChanged() ? ' · changed from the field\'s' : ''}`; designCheck(); };
+      range.oninput = () => set(Number(range.value));
+      num.onchange = () => set(Number(num.value));
+      const show = () => { $('e-explain').innerHTML = `<h3>${esc(tr.label)} <span class="muted">(${esc(k)})</span></h3><p>${esc(tr.explain)}</p><p class="cap">This kind: ${D.agents.archetypes[k][tr.key]}. Range ${tr.min} to ${tr.max}.</p><p class="cap muted">Agent kinds and their traits are guesses meant to give a varied community; they were not measured. See the simulator doc, section 2.2.</p>`; };
+      row.addEventListener('focusin', show);
+      row.addEventListener('click', show);
+    }
+  }
+}
 
 async function loadFieldValues() {
   D.field = await api('/api/design/field?id=' + encodeURIComponent($('e-space').value));
@@ -798,6 +910,7 @@ function currentDesign() {
     vary: D.opts.parameters.filter((p) => P[p.path].vary).map((p) => ({ path: p.path, values: P[p.path].values.split(',').map((x) => x.trim()).filter(Boolean).map(Number).filter(Number.isFinite) })),
     columns: [...$('e-columns').querySelectorAll('input:checked')].map((i) => i.value),
     seeds: Number($('e-seeds').value),
+    ...(D.agents && agentsChanged() ? { agents: D.agents } : {}),
   };
 }
 
