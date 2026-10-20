@@ -11,3 +11,5 @@ lean/NOTES.md
 lean/runs/
 # Stub runs of the pilot only test the pipeline.
 results/pilot/stub-*/
+# Secrets (API keys): never commit.
+.env

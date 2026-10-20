@@ -8,11 +8,11 @@
     "node": ">=22.18"
   },
   "scripts": {
-    "sim": "node src/cli.ts",
+    "sim": "node --env-file-if-exists=.env src/cli.ts",
     "test": "node --test",
     "check": "tsc -p .",
     "sync-ledger": "scripts/sync-ledger.sh",
-    "pilot": "node src/lean/cli.ts"
+    "pilot": "node --env-file-if-exists=.env src/lean/cli.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.135.0",
