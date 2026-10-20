@@ -13,3 +13,4 @@ lean/runs/
 results/pilot/stub-*/
 # Secrets (API keys): never commit.
 .env
+results/community/stub-*/
