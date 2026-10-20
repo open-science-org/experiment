@@ -79,15 +79,24 @@ npm run pilot -- world <run>                    # measured chances -> worlds/lea
 - **What gets published:** transcripts contain proofs, so they stay in `lean/runs/`, which is private. The public summary in `results/pilot/<run>/` uses only anonymous ids.
 - **The model:** Claude Opus 5.5 at effort `high`, through whichever key is in `.env`, which Git ignores. With `ANTHROPIC_API_KEY`, it calls Anthropic directly (adaptive thinking, with server-side fallbacks on). With `OPENROUTER_API_KEY`, it goes through OpenRouter, which also serves GPT, Gemini and open models (`--model`); OpenRouter reports each call's cost, so the summary gives dollars.
 
-## Watching and replaying
+## The app: everything in one place
 
 ```sh
 npm run viewer        # then open http://127.0.0.1:8791
 ```
 
-- **Simulated communities:** pick a field, a seed and two rule settings. The same community then plays back side by side, round by round, on the research tree: what each agent attempts, what is proved but kept hidden, what is published, and who earns what. A run is traced on demand: recording it draws no random numbers, so it is the same run the reports count. A link such as `#space=drug-discovery&seed=3&round=30` opens a given moment.
-- **Lean pilot:** every attempt by every model, filling in as runs progress; with "Follow live" it refreshes while runs are going. Replay shows the order in which attempts finished, and clicking an attempt shows its turns: each proof, and Lean's errors.
-- **Private:** the viewer listens on this machine only, because pilot transcripts contain proofs.
+One local app, with one navigation for everything:
+
+- **Overview:** the question; every simulated field's verdict, with OSO's and traditional's hardest level, targets solved, and OSO's lead as the market-set parameters vary; and the latest comparison of models in the Lean pilot.
+- **Field reports:** each field's full canonical report, with its figures.
+- **Replay a community:** pick a field, a seed and two rule settings. The same community then plays back side by side, round by round, on the research tree: what each agent attempts, what is proved but kept hidden, what is published, and who earns what. A run is traced on demand; recording draws no random numbers, so it is the same run the reports count. A link such as `#/replay?space=drug-discovery&seed=3&round=30` opens a given moment.
+- **Lean pilot:**
+  - every attempt by every model, filling in while runs go ("Follow live"), or replayed in the order attempts finished;
+  - clicking an attempt shows its turns: each proof, and Lean's errors;
+  - the summary of each run.
+- **Saved experiments:** every saved result and the log of runs, plus the simulator's documentation.
+
+It listens on this machine only. It serves documents and figures from `reports/`, `results/`, `docs/`, `worlds/`, `config/` and `spaces/`, and never from `lean/` or `.env`; pilot transcripts contain proofs, so the pilot view is local by design.
 
 ## Layout
 

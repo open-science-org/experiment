@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Experiment viewer</title>
+<title>OSO experiment</title>
 <style>
   :root {
     --bg: #f6f5f2; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #8a8983; --line: #e1e0db;
@@ -20,7 +20,7 @@
   h1 { font-size: 18px; margin: 0; }
   .tabs button { border: 0; background: none; font: inherit; font-size: 14px; color: var(--ink-2); padding: 6px 2px; margin-right: 18px; cursor: pointer; border-bottom: 2px solid transparent; }
   .tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--s1); font-weight: 700; }
-  main { padding: 16px 20px 40px; max-width: 1500px; margin: 0 auto; }
+  main { padding: 16px 20px 40px; max-width: 1500px; min-width: 0; }
   .bar { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; }
   .bar label { font-size: 13px; color: var(--ink-2); display: flex; gap: 6px; align-items: center; }
   select, input, button.btn { font: inherit; font-size: 13px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
@@ -74,21 +74,68 @@
   pre { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; font-size: 12px; overflow: auto; white-space: pre-wrap; word-break: break-word; }
   pre.err { border-color: var(--bad); }
   .hidden { display: none !important; }
+  .app { display: grid; grid-template-columns: 210px minmax(0, 1fr); min-height: calc(100vh - 53px); }
+  @media (max-width: 800px) { .app { grid-template-columns: 1fr; } nav.side { position: static; display: flex; flex-wrap: wrap; border-right: 0; border-bottom: 1px solid var(--line); } }
+  nav.side { background: var(--surface); border-right: 1px solid var(--line); padding: 14px 10px; position: sticky; top: 0; align-self: start; height: calc(100vh - 53px); overflow: auto; }
+  nav.side a { display: block; padding: 7px 10px; border-radius: 6px; color: var(--ink-2); text-decoration: none; font-size: 14px; }
+  nav.side a.sub { padding-left: 22px; font-size: 13px; }
+  nav.side a[aria-current="page"] { background: var(--bg); color: var(--ink); font-weight: 700; }
+  nav.side a:hover { color: var(--ink); }
+  nav.side .group { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .04em; margin: 14px 10px 4px; }
+  a { color: var(--s1); }
+  .lede { font-size: 15px; line-height: 1.55; max-width: 900px; margin: 0 0 16px; }
+  h2.section { font-size: 16px; margin: 22px 0 10px; }
+  .fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+  .field { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; text-decoration: none; color: var(--ink); display: block; }
+  .field:hover { border-color: var(--s1); }
+  .field h3 { margin: 0 0 4px; font-size: 15px; }
+  .chip { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 10px; border: 1px solid var(--line); margin-bottom: 8px; }
+  .chip.ahead { border-color: var(--s1); color: var(--s1); }
+  .pair { display: grid; grid-template-columns: 92px 1fr 52px; gap: 4px 8px; align-items: center; font-size: 12px; color: var(--ink-2); margin-top: 6px; }
+  .pair .b { height: 10px; border-radius: 0 4px 4px 0; min-width: 2px; }
+  .pair .oso { background: var(--s1); } .pair .trad { background: var(--s2); }
+  .pair .n { font-variant-numeric: tabular-nums; color: var(--ink); text-align: right; }
+  .doc { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 18px 24px; max-width: 1100px; line-height: 1.55; font-size: 14px; overflow-wrap: anywhere; }
+  .doc h1 { font-size: 22px; margin-top: 0; } .doc h2 { font-size: 17px; margin-top: 28px; } .doc h3 { font-size: 15px; }
+  .doc img { max-width: 100%; height: auto; display: block; margin: 10px 0; }
+  .doc table { border-collapse: collapse; font-size: 13px; margin: 10px 0; display: block; overflow-x: auto; }
+  .doc th, .doc td { border-bottom: 1px solid var(--line); padding: 5px 9px; text-align: left; vertical-align: top; }
+  .doc th { color: var(--ink-2); font-weight: 400; }
+  .doc blockquote { margin: 0; padding: 2px 14px; border-left: 3px solid var(--line); color: var(--ink-2); }
+  .doc code { background: var(--bg); padding: 1px 4px; border-radius: 4px; font-size: 12.5px; }
+  .doc pre code { padding: 0; background: none; }
+  .crumbs { font-size: 13px; color: var(--ink-2); margin-bottom: 10px; }
+  .list a { display: block; padding: 8px 12px; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--ink); background: var(--surface); }
+  .list a:hover { color: var(--s1); }
+  .list { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; max-width: 900px; }
   .note { font-size: 12px; color: var(--ink-2); margin: 0 0 12px; }
 </style>
 </head>
 <body>
 <header>
-  <h1>Experiment viewer</h1>
-  <nav class="tabs" role="tablist">
-    <button role="tab" id="tab-sim" aria-selected="true">Simulated communities</button>
-    <button role="tab" id="tab-pilot" aria-selected="false">Lean pilot</button>
-  </nav>
+  <h1>OSO experiment</h1>
+  <span class="muted">Does open science research beat traditional research for the same money?</span>
 </header>
-
+<div class="app">
+<nav class="side" aria-label="Sections">
+  <a href="#/">Overview</a>
+  <div class="group">Simulated fields</div>
+  <div id="nav-fields"></div>
+  <a href="#/replay">Replay a community</a>
+  <div class="group">Real agents</div>
+  <a href="#/pilot">Lean pilot</a>
+  <div id="nav-pilot"></div>
+  <div class="group">Everything else</div>
+  <a href="#/experiments">Saved experiments</a>
+  <a href="#/doc/docs/simulator.md">How the simulator works</a>
+</nav>
 <main>
+  <section id="view-overview" class="hidden"></section>
+  <section id="view-doc" class="hidden"><div class="crumbs" id="doc-crumbs"></div><article class="doc" id="doc-body"></article></section>
+  <section id="view-experiments" class="hidden"></section>
+
   <!-- Simulation playback -->
-  <section id="view-sim">
+  <section id="view-sim" class="hidden">
     <div class="bar">
       <label>Field <select id="sim-space"></select></label>
       <label>Seed <input id="sim-seed" type="number" min="1" value="1" style="width:70px"></label>
@@ -127,8 +174,11 @@
     </div>
     <div class="cards" id="pilot-cards"></div>
     <div class="grid"><table class="pilot" id="pilot-grid"></table></div>
+    <h2 class="section">Run summaries</h2>
+    <div class="list" id="pilot-summaries"></div>
   </section>
 </main>
+</div>
 
 <aside class="drawer" id="drawer" aria-label="Attempt transcript">
   <button class="btn" id="drawer-close" style="float:right">Close</button>
@@ -141,12 +191,83 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 const api = (path) => fetch(path).then(async (r) => { const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText); return j; });
 const money = (x) => '$' + (x < 0.1 ? x.toFixed(3) : x.toFixed(2));
 
-// Tabs
-for (const [tab, view] of [['tab-sim', 'view-sim'], ['tab-pilot', 'view-pilot']]) {
-  $(tab).onclick = () => {
-    for (const [t, v] of [['tab-sim', 'view-sim'], ['tab-pilot', 'view-pilot']]) { $(t).setAttribute('aria-selected', t === tab); $(v).classList.toggle('hidden', v !== view); }
-    if (view === 'view-pilot' && !pilot.loadedList) loadRunList();
-  };
+const VIEWS = ['view-overview', 'view-doc', 'view-experiments', 'view-sim', 'view-pilot'];
+const show = (view) => { for (const v of VIEWS) $(v).classList.toggle('hidden', v !== view); window.scrollTo(0, 0); };
+const params = () => new URLSearchParams(location.hash.split('?')[1] ?? '');
+let OV = null;
+const overviewData = async () => (OV ??= await api('/api/overview'));
+
+async function route() {
+  const path = location.hash.slice(1).split('?')[0] || '/';
+  for (const a of document.querySelectorAll('nav.side a')) a.toggleAttribute('aria-current', a.getAttribute('href') === '#' + path || (path.startsWith('/doc/reports/') && a.getAttribute('href') === '#' + path));
+  for (const a of document.querySelectorAll('nav.side a')) if (a.hasAttribute('aria-current')) a.setAttribute('aria-current', 'page');
+  if (path === '/') { show('view-overview'); return drawOverview(); }
+  if (path.startsWith('/doc/')) { show('view-doc'); return openDoc(path.slice(5)); }
+  if (path === '/experiments') { show('view-experiments'); return drawExperiments(); }
+  if (path === '/replay') { show('view-sim'); return enterReplay(); }
+  if (path === '/pilot') { show('view-pilot'); if (!pilot.loadedList) loadRunList(); return drawPilotSummaries(); }
+  show('view-overview'); drawOverview();
+}
+window.addEventListener('hashchange', route);
+
+async function openDoc(path) {
+  $('doc-body').innerHTML = '<p class="muted">Loading…</p>';
+  try {
+    const d = await api('/api/doc?path=' + encodeURIComponent(path));
+    const field = /^reports\/([^/]+)\/report\.md$/.exec(d.path);
+    $('doc-crumbs').innerHTML = field ? `<a href="#/replay?space=${field[1]}">Replay this field round by round →</a>` : `<span class="muted">${esc(d.path)}</span>`;
+    $('doc-body').innerHTML = d.html;
+    // Headings get ids like GitHub's, so in-page links (#what-this-shows-…) scroll instead of navigating.
+    const slug = (t) => t.toLowerCase().trim().replace(/[^\p{L}\p{N}\s-]/gu, '').replace(/\s/g, '-');
+    for (const h of $('doc-body').querySelectorAll('h1,h2,h3,h4')) h.id = slug(h.textContent);
+    for (const a of $('doc-body').querySelectorAll('a[href^="#"]:not([href^="#/"])')) {
+      const id = decodeURIComponent(a.getAttribute('href').slice(1));
+      a.onclick = (e) => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); };
+    }
+  } catch (e) { $('doc-body').innerHTML = `<p>${esc(e.message)}</p>`; }
+}
+
+async function drawOverview() {
+  const ov = await overviewData();
+  const f1 = (x) => (Number.isFinite(x) ? x.toFixed(1) : '–');
+  const fields = ov.fields.map((h) => {
+    const m = (h.sensitivity ?? []).filter((x) => x.group === 'market');
+    const lead = m.length ? `${f1(Math.min(...m.map((x) => x.min)))} to ${f1(Math.max(...m.map((x) => x.max)))} levels` : '–';
+    const bar = (label, v, max, cls) => `<span>${label}</span><div class="b ${cls}" style="width:${(100 * v / max).toFixed(1)}%"></div><span class="n">${f1(v)}</span>`;
+    return `<a class="field" href="#/doc/reports/${h.id}/report.md"><span class="chip ${h.verdict === 'OSO ahead' ? 'ahead' : ''}">${esc(h.verdict)}</span><h3>${esc(h.title)}</h3><div class="muted">${esc(h.summary)}</div>
+      <div class="pair">${bar('OSO level', h.oso.frontier, h.maxLevel, 'oso')}${bar('traditional', h.traditional.frontier, h.maxLevel, 'trad')}</div>
+      <div class="muted" style="margin-top:8px">Hardest level reached, of ${h.maxLevel}. Targets solved: ${f1(h.oso.targetsSolved)} vs ${f1(h.traditional.targetsSolved)} of ${h.targets}. OSO's lead as market parameters vary: ${lead}.</div></a>`;
+  }).join('');
+  const comp = ov.comparison ? ov.comparison.html.replace(/<h1>.*?<\/h1>/, '') : '<p class="muted">No pilot comparison yet.</p>';
+  $('view-overview').innerHTML = `
+    <p class="lede">Communities of research agents get the same field, agents and budget, under two sets of rules. <b>Traditional:</b> work is published only when it is finished, and nothing flows back to the work it built on. <b>OSO:</b> results are published as they are found, and part of each result's value flows back to what it built on. The <a href="https://github.com/open-science-org/OSO/blob/master/docs/demo-model.md" target="_blank" rel="noopener">specification</a> defines the model once.</p>
+    <h2 class="section">Simulated fields</h2>
+    <p class="note">Simulations with guessed parameters: they show how the rules play out if a field works as described, not that it does. Click a field for its full report.</p>
+    <div class="fields">${fields || '<p class="muted">No reports yet: npm run sim -- report all.</p>'}</div>
+    <div class="legend" style="margin-top:8px"><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s1)"/></svg>OSO (results published at once)</span><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s2)"/></svg>traditional</span></div>
+    <h2 class="section">Real agents: the Lean pilot</h2>
+    <p class="note">Models prove the problem set's posted targets, alone or with the lemmas they rest on, and Lean checks every proof. <a href="#/pilot">Watch or replay the runs →</a></p>
+    <article class="doc">${comp}</article>`;
+}
+
+async function drawExperiments() {
+  const ov = await overviewData();
+  $('view-experiments').innerHTML = `<p class="lede">Every saved experiment, with its configuration, the commit that produced it and one line per run.</p>
+    <div class="list">${ov.experiments.map((e) => `<a href="#/doc/results/${e.id}/summary.md">${esc(e.title)}</a>`).join('')}<a href="#/doc/results/LOG.md"><b>The log of every saved run</b></a></div>`;
+}
+
+async function drawPilotSummaries() {
+  const ov = await overviewData();
+  $('pilot-summaries').innerHTML = ov.pilot.map((p) => `<a href="#/doc/results/pilot/${p.id}/summary.md">${esc(p.title)}</a>`).join('') || '<p class="muted" style="padding:8px 12px">No summaries yet.</p>';
+}
+
+let replayReady = false;
+async function enterReplay() {
+  if (!replayReady) { replayReady = true; await initReplay(); }
+  else {
+    const h = params();
+    if (h.get('space') && h.get('space') !== $('sim-space').value) { $('sim-space').value = h.get('space'); loadSim(); }
+  }
 }
 
 /* ------------------------------------------------------------------ Simulation playback */
@@ -271,7 +392,7 @@ async function loadSim() {
     const runs = await Promise.all([$('sim-left').value, $('sim-right').value].map((setting) => api(`/api/sim?space=${encodeURIComponent(space)}&setting=${setting}&seed=${seed}`)));
     sim.panes = runs.map((run, i) => ({ run, snaps: snapshots(run), el: $(i ? 'pane-right' : 'pane-left'), lay: layout(run.world) }));
     sim.max = Math.max(...sim.panes.map((p) => p.snaps.length - 1));
-    const want = Number(new URLSearchParams(location.hash.slice(1)).get('round'));
+    const want = Number(params().get('round'));
     sim.round = Number.isFinite(want) ? Math.min(sim.max, want) : 0;
     $('sim-scrub').max = sim.max;
     drawSim();
@@ -293,7 +414,7 @@ $('sim-next').onclick = () => { stopSim(); sim.round = Math.min(sim.max, sim.rou
 $('sim-scrub').oninput = (e) => { stopSim(); sim.round = Number(e.target.value); drawSim(); };
 $('sim-load').onclick = loadSim;
 
-(async () => {
+async function initReplay() {
   legend();
   const [spaces, settings] = await Promise.all([api('/api/spaces'), api('/api/settings')]);
   $('sim-space').innerHTML = spaces.map((s) => `<option value="${s.id}">${esc(s.title)}</option>`).join('');
@@ -301,10 +422,18 @@ $('sim-load').onclick = loadSim;
   $('sim-left').innerHTML = $('sim-right').innerHTML = opts;
   $('sim-left').value = 'traditional'; $('sim-right').value = 'oso';
   if (spaces.some((s) => s.id === 'drug-discovery')) $('sim-space').value = 'drug-discovery';
-  const h = new URLSearchParams(location.hash.slice(1));
+  const h = params();
   for (const [k, id] of [['space', 'sim-space'], ['seed', 'sim-seed'], ['left', 'sim-left'], ['right', 'sim-right']]) if (h.get(k)) $(id).value = h.get(k);
-  loadSim();
-  if (h.has('pilot')) $('tab-pilot').click();
+  await loadSim();
+}
+
+// Navigation: one entry per field report, and boot.
+(async () => {
+  const ov = await overviewData();
+  $('nav-fields').innerHTML = ov.fields.sort((a, b) => a.title.localeCompare(b.title)).map((h) => `<a class="sub" href="#/doc/reports/${h.id}/report.md">${esc(h.title)}</a>`).join('');
+  const comp = ov.pilot.find((p) => p.id.startsWith('panel-20'));
+  if (comp) $('nav-pilot').innerHTML = `<a class="sub" href="#/doc/results/pilot/${comp.id}/summary.md">Models compared</a>`;
+  route();
 })();
 
 /* ------------------------------------------------------------------ Lean pilot playback */

@@ -3,7 +3,9 @@
 // fact. It listens on this machine only: pilot transcripts contain proofs, which are private.
 import { createServer } from 'node:http';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, extname, join, normalize, relative } from 'node:path';
+import { marked } from 'marked';
+import { ROOT, REPORTS_DIR, RESULTS_DIR } from '../paths.ts';
 import { loadScenario, expandPaths } from '../engine/config.ts';
 import { traceRun } from '../engine/model.ts';
 import { preset } from '../experiments/experiment.ts';
@@ -11,6 +13,50 @@ import { loadSpace, spaceIds, withCalibratedBudget, type Space } from '../spaces
 import { LEAN_DIR, leanAvailable, loadTasks } from '../lean/tasks.ts';
 
 const PORT = Number(process.env.PORT ?? 8791);
+/** Folders the viewer may serve files and documents from. Never lean/ (private) or .env. */
+const PUBLIC_DIRS = ['reports', 'results', 'docs', 'worlds', 'config', 'spaces'];
+const TYPES: Record<string, string> = { '.svg': 'image/svg+xml', '.png': 'image/png', '.json': 'application/json', '.md': 'text/plain; charset=utf-8', '.yaml': 'text/plain; charset=utf-8', '.jsonl': 'text/plain; charset=utf-8', '.py': 'text/plain; charset=utf-8' };
+
+/** A repository path, if it is inside a public folder. */
+function publicPath(path: string): string | null {
+  const rel = normalize(path).replace(/^(\.\.\/)+/, '');
+  if (rel.startsWith('/') || rel.includes('..') || !PUBLIC_DIRS.includes(rel.split('/')[0])) return null;
+  const full = join(ROOT, rel);
+  return existsSync(full) ? full : null;
+}
+
+/** A Markdown document rendered to HTML, with images and links pointing back into the viewer. */
+function doc(path: string): { path: string; title: string; html: string } {
+  const full = publicPath(path);
+  if (!full || !full.endsWith('.md')) throw new Error(`no such document: ${path}`);
+  const md = readFileSync(full, 'utf8');
+  const base = dirname(relative(ROOT, full));
+  const resolve = (href: string) => normalize(join(base, href));
+  let html = marked.parse(md, { async: false }) as string;
+  html = html.replace(/(src|href)="([^"#:]+?)(#[^"]*)?"/g, (m, attr, href, hash = '') => {
+    if (/^(https?:|mailto:|\/)/.test(href)) return m;
+    const target = resolve(href);
+    if (!publicPath(target)) return `${attr}="#" data-missing="${target}"`;
+    if (attr === 'href' && target.endsWith('.md')) return `href="#/doc/${target}"`;
+    return `${attr}="/files/${target}${hash}"`;
+  });
+  html = html.replace(/<a href="(https?:[^"]+)"/g, '<a href="$1" target="_blank" rel="noopener"');
+  return { path: relative(ROOT, full), title: /^# (.+)$/m.exec(md)?.[1] ?? path, html };
+}
+
+/** Headline numbers of every field's report, for the overview. */
+function overview() {
+  const ids = new Set(spaceIds());
+  const fields = existsSync(REPORTS_DIR) ? readdirSync(REPORTS_DIR).filter((d) => ids.has(d) && existsSync(join(REPORTS_DIR, d, 'data.json')))
+    .map((d) => JSON.parse(readFileSync(join(REPORTS_DIR, d, 'data.json'), 'utf8')).headline) : [];
+  const pilotDir = join(RESULTS_DIR, 'pilot');
+  const pilot = existsSync(pilotDir) ? readdirSync(pilotDir).filter((d) => !d.startsWith('stub-') && existsSync(join(pilotDir, d, 'summary.md')))
+    .map((d) => ({ id: d, title: (/^# (.+)$/m.exec(readFileSync(join(pilotDir, d, 'summary.md'), 'utf8'))?.[1] ?? d).replace(/^Lean pilot: /, ''), modified: statSync(join(pilotDir, d, 'summary.md')).mtimeMs })) : [];
+  const experiments = readdirSync(RESULTS_DIR).filter((d) => existsSync(join(RESULTS_DIR, d, 'summary.md')))
+    .map((d) => ({ id: d, title: (/^# (.+)$/m.exec(readFileSync(join(RESULTS_DIR, d, 'summary.md'), 'utf8'))?.[1] ?? d) }));
+  const comparison = pilot.filter((p) => p.id.startsWith('panel-20')).sort((a, b) => b.modified - a.modified)[0];
+  return { fields, pilot: pilot.sort((a, b) => b.modified - a.modified), experiments, comparison: comparison ? doc(`results/pilot/${comparison.id}/summary.md`) : null };
+}
 const PAGE = new URL('./index.html', import.meta.url).pathname;
 const SETTINGS: Record<string, string> = { traditional: 'Traditional', oso: 'OSO (immediate)', osoChoice: 'OSO (choice)', creditOnly: 'Flow-back, finished-only', sharingOnly: 'No flow-back, immediate', traditionalChoice: 'No flow-back, choice' };
 
@@ -69,10 +115,17 @@ const server = createServer((req, res) => {
   const url = new URL(req.url ?? '/', `http://127.0.0.1:${PORT}`);
   const send = (status: number, body: unknown, type = 'application/json') => {
     res.writeHead(status, { 'Content-Type': type, 'Cache-Control': 'no-store' });
-    res.end(type === 'application/json' ? JSON.stringify(body) : body);
+    res.end(type === 'application/json' ? JSON.stringify(body) : (body as string | Buffer));
   };
   try {
     if (url.pathname === '/') return send(200, readFileSync(PAGE, 'utf8'), 'text/html; charset=utf-8');
+    if (url.pathname === '/api/overview') return send(200, overview());
+    if (url.pathname === '/api/doc') return send(200, doc(url.searchParams.get('path') ?? ''));
+    if (url.pathname.startsWith('/files/')) {
+      const full = publicPath(decodeURIComponent(url.pathname.slice('/files/'.length)));
+      if (!full || statSync(full).isDirectory()) return send(404, { error: 'not found' });
+      return send(200, (extname(full) === '.png' ? readFileSync(full) : readFileSync(full, 'utf8')), TYPES[extname(full)] ?? 'text/plain; charset=utf-8');
+    }
     if (url.pathname === '/api/spaces') return send(200, spaceIds().map((id) => ({ id, title: loadSpace(id).spec.title })));
     if (url.pathname === '/api/settings') return send(200, SETTINGS);
     if (url.pathname === '/api/sim') return send(200, sim(url.searchParams.get('space') ?? 'abstract-field', url.searchParams.get('setting') ?? 'oso', Number(url.searchParams.get('seed') ?? 1)));
