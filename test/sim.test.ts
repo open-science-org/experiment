@@ -295,7 +295,7 @@ test('the designer turns a design into a valid experiment and rejects bad design
   const design = await import('../src/viewer/design.ts');
   const d = { id: 'designer-test', title: 'T', space: 'solid-state-battery', settings: ['traditional', 'oso'], vary: [{ path: 'rules.screen', values: [0, 0.9] }], columns: ['frontier'], seeds: 3 };
   const c = design.checkExperiment(d);
-  assert.ok(c.ok, c.error);
+  assert.ok(c.ok, c.error ?? '');
   assert.equal(c.rows, 4);
   assert.equal(c.runs, 12);
   const spec = design.experimentFor(d);
@@ -307,4 +307,10 @@ test('the designer turns a design into a valid experiment and rejects bad design
   const f = design.checkField(readFileSync(new URL('../spaces/drug-discovery.yaml', import.meta.url), 'utf8'));
   assert.ok(f.ok && f.svg?.startsWith('<svg'));
   assert.equal(design.checkField('id: x\ntitle: y').ok, false);
+  // α belongs to the flow-back settings: varying it leaves the traditional row traditional.
+  const { expand } = await import('../src/experiments/experiment.ts');
+  const rows = expand(design.experimentFor({ ...d, settings: ['traditional', 'osoChoice'], vary: [{ path: 'rules.alpha', values: [0.2, 0.6] }], set: { 'rules.c': 0.3, 'rules.screen': 0.9 } }));
+  assert.equal(rows.length, 3);
+  assert.deepEqual(rows.map((r) => [r.scenario.rules.alpha, r.scenario.rules.c, r.scenario.rules.screen]), [[1, 0, 0.9], [0.2, 0.3, 0.9], [0.6, 0.3, 0.9]]);
+  assert.equal(design.checkExperiment({ ...d, set: { 'rules.screen': 3 } }).ok, false, 'out of range');
 });

@@ -121,6 +121,25 @@
   .vary { display: grid; grid-template-columns: minmax(200px, 320px) minmax(160px, 1fr); gap: 6px 10px; align-items: center; margin: 6px 0; }
   .vary .meaning { grid-column: 1 / -1; font-size: 12px; color: var(--ink-3); margin-top: -2px; }
   .preview svg { max-width: 100%; height: auto; }
+  .params-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 16px; align-items: start; margin: 10px 0; }
+  @media (max-width: 1100px) { .params-wrap { grid-template-columns: 1fr; } }
+  .pgroup { font-size: 12px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .04em; margin: 14px 0 4px; }
+  .param { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 6px 0; background: var(--bg); cursor: pointer; }
+  .param.sel { border-color: var(--s1); box-shadow: 0 0 0 1px var(--s1); }
+  .param .ptop { font-size: 13px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .param .ptop b { white-space: nowrap; }
+  .param .pctl { display: flex; gap: 10px; align-items: center; margin-top: 6px; flex-wrap: wrap; }
+  .param input[type=range] { min-width: 140px; }
+  .param input[type=number] { width: 86px; }
+  .param input.pvalues { flex: 1; min-width: 160px; }
+  .tag { font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 9px; border: 1px solid var(--s1); color: var(--s1); }
+  .tag.vary { border-color: var(--s2); color: var(--s2); }
+  .explainer { position: sticky; top: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; }
+  .explainer h3 { margin: 0 0 6px; font-size: 15px; }
+  .explainer p { font-size: 13px; line-height: 1.5; margin: 6px 0; }
+  .explainer svg { width: 100%; height: auto; display: block; margin: 6px 0; }
+  .explainer .cap { font-size: 12.5px; color: var(--ink-2); }
+  .setting-note { display: block; font-size: 11.5px; color: var(--ink-3); margin-left: 22px; }
   .note { font-size: 12px; color: var(--ink-2); margin: 0 0 12px; }
 </style>
 </head>
@@ -180,8 +199,15 @@
         <label>Name <input id="e-id" value="my-experiment" style="width:180px"></label>
         <label>Title <input id="e-title" value="" placeholder="What the experiment asks" style="width:320px"></label>
       </div>
-      <div><label>Compare these rule settings</label><div class="choice" id="e-settings"></div></div>
-      <div><label>Vary (optional): each varied parameter overrides the rule setting's own value</label><div id="e-vary"></div></div>
+      <div><label>Compare these rule settings</label><div class="choice" id="e-settings" style="align-items:flex-start"></div></div>
+      <div class="params-wrap">
+        <div>
+          <label>Parameters: start from the field's own values. Drag a slider or type a value to change it for every row, or tick <b>vary</b> to try several values (at most two parameters). Click a parameter to see what it does.</label>
+          <div class="row"><button class="btn" id="e-reset">Reset to the field's values</button><span class="muted" id="e-changed"></span></div>
+          <div id="e-params"></div>
+        </div>
+        <aside class="explainer" id="e-explain" aria-live="polite"></aside>
+      </div>
       <div><label>Measure</label><div class="choice" id="e-columns"></div></div>
       <div class="row"><label>Runs per row <input id="e-seeds" type="number" min="1" max="1000" value="50" style="width:80px"></label><span id="e-summary" class="muted"></span></div>
       <details><summary class="muted">Show the experiment file</summary><pre id="e-yaml"></pre></details>
@@ -385,16 +411,19 @@ async function enterDesign() {
     } catch (e) { $('f-job').classList.remove('hidden'); $('f-job').textContent = e.message; }
   };
   // Step 2
-  $('e-settings').innerHTML = Object.entries(D.opts.settings).map(([k, v]) => `<label><input type="checkbox" value="${k}" ${['traditional', 'oso', 'osoChoice'].includes(k) ? 'checked' : ''}> ${esc(v)}</label>`).join('');
-  const paramOpts = '<option value="">— nothing —</option>' + D.opts.parameters.map((p) => `<option value="${p.path}">${esc(p.label)}${p.group === 'market' ? ' (set by communities or funders)' : ''}</option>`).join('');
-  $('e-vary').innerHTML = [0, 1].map((i) => `<div class="vary"><select data-v="${i}" class="v-path">${paramOpts}</select><input data-v="${i}" class="v-values" placeholder="values, e.g. 0.2, 0.4, 0.6"><div class="meaning" id="v-meaning-${i}"></div></div>`).join('');
-  for (const sel of document.querySelectorAll('.v-path')) sel.onchange = () => {
-    const p = D.opts.parameters.find((x) => x.path === sel.value);
-    const i = sel.dataset.v;
-    document.querySelector(`.v-values[data-v="${i}"]`).value = p?.values.join(', ') ?? '';
-    $('v-meaning-' + i).textContent = p ? `${p.meaning} (${p.path})` : '';
-    designCheck();
+  const SETTING_NOTES = {
+    traditional: 'publish only finished work; nothing flows back',
+    oso: 'publish every result at once; value flows back',
+    osoChoice: 'value flows back; agents choose what to publish',
+    creditOnly: 'value flows back, but only finished work is published',
+    sharingOnly: 'publish at once, but nothing flows back',
+    traditionalChoice: 'agents choose what to publish; nothing flows back',
   };
+  $('e-settings').innerHTML = Object.entries(D.opts.settings).map(([k, v]) => `<label style="display:block"><input type="checkbox" value="${k}" ${['traditional', 'oso', 'osoChoice'].includes(k) ? 'checked' : ''}> ${esc(v)}<span class="setting-note">${esc(SETTING_NOTES[k] ?? '')}</span></label>`).join('');
+  if (params().get('param')) selected = params().get('param');
+  await loadFieldValues();
+  $('e-space').addEventListener('change', async () => { await loadFieldValues(); designCheck(); });
+  $('e-reset').onclick = () => { for (const p of D.opts.parameters) { P[p.path] = { value: D.field[p.path], vary: false, values: p.values.join(', ') }; } drawParams(); designCheck(); };
   $('e-columns').innerHTML = D.opts.columns.map((c) => `<label title="${esc(c.meaning)}"><input type="checkbox" value="${c.id}" ${D.opts.defaultColumns.includes(c.id) ? 'checked' : ''}> ${esc(c.meaning)}</label>`).join('');
   for (const el of document.querySelectorAll('#view-design .step:nth-of-type(2) input, #view-design .step:nth-of-type(2) select')) el.addEventListener('change', designCheck);
   $('e-id').addEventListener('input', designCheck);
@@ -425,11 +454,194 @@ async function checkField() {
   return c;
 }
 
+/* Parameters: their state, rows, and the explainer with its example tree. */
+const P = {};
+let selected = 'rules.alpha';
+
+async function loadFieldValues() {
+  D.field = await api('/api/design/field?id=' + encodeURIComponent($('e-space').value));
+  for (const p of D.opts.parameters) P[p.path] = { value: D.field[p.path], vary: P[p.path]?.vary ?? false, values: P[p.path]?.values ?? p.values.join(', ') };
+  const x = D.opts.parameters.find((p) => p.path === 'budget.X');
+  if (x) { x.max = Math.max(100, D.field['budget.X'] * 10); x.values = [0.5, 1, 2].map((k) => Math.round(D.field['budget.X'] * k)); P['budget.X'].values = x.values.join(', '); }
+  drawParams();
+}
+
+const fmtV = (p, v) => (p.integer ? String(Math.round(v)) : String(Number(v.toFixed(3))));
+
+function drawParams() {
+  const groups = [['market', 'Set by communities, funders or the protocol'], ['guess', 'Our guesses about agents and knowledge'], ['field', 'The field']];
+  const nVary = D.opts.parameters.filter((p) => P[p.path].vary).length;
+  $('e-params').innerHTML = groups.map(([g, title]) => `<div class="pgroup">${title}</div>` + D.opts.parameters.filter((p) => p.group === g).map((p) => {
+    const st = P[p.path], changed = !st.vary && st.value !== D.field[p.path];
+    return `<div class="param ${selected === p.path ? 'sel' : ''}" data-path="${p.path}" tabindex="0">
+      <div class="ptop"><b>${esc(p.label)}</b><span class="muted">${esc(p.short)}</span>${p.flowBack ? '<span class="muted">(OSO settings only)</span>' : ''}${changed ? '<span class="tag">changed</span>' : ''}${st.vary ? '<span class="tag vary">varied</span>' : ''}</div>
+      <div class="pctl">
+        <input type="range" min="${p.min}" max="${p.max}" step="${p.step}" value="${st.value}" ${st.vary ? 'disabled' : ''} aria-label="${esc(p.label)}">
+        <input type="number" min="${p.min}" max="${p.max}" step="${p.step}" value="${fmtV(p, st.value)}" ${st.vary ? 'disabled' : ''} aria-label="${esc(p.label)} value">
+        <span class="muted">field: ${fmtV(p, D.field[p.path])}</span>
+        <label><input type="checkbox" class="pvary" ${st.vary ? 'checked' : ''} ${!st.vary && nVary >= 2 ? 'disabled' : ''}> vary</label>
+        ${st.vary ? `<input class="pvalues" value="${esc(st.values)}" placeholder="values, separated by commas">` : ''}
+      </div></div>`;
+  }).join('')).join('');
+  const n = D.opts.parameters.filter((p) => !P[p.path].vary && P[p.path].value !== D.field[p.path]).length;
+  $('e-changed').textContent = n ? `${n} changed from the field's values` : '';
+  for (const row of $('e-params').querySelectorAll('.param')) {
+    const p = D.opts.parameters.find((x) => x.path === row.dataset.path);
+    const [range, num] = row.querySelectorAll('input[type=range], input[type=number]');
+    const pick = () => { if (selected !== p.path) { selected = p.path; for (const r of $('e-params').querySelectorAll('.param')) r.classList.toggle('sel', r === row); } explain(); };
+    row.addEventListener('click', pick);
+    row.addEventListener('focusin', pick);
+    const setV = (v, from) => {
+      if (!Number.isFinite(v)) return;
+      v = Math.min(p.max, Math.max(p.min, p.integer ? Math.round(v) : v));
+      P[p.path].value = v;
+      if (from !== range) range.value = v;
+      if (from !== num) num.value = fmtV(p, v);
+      explain();
+      designCheck();
+      const tagged = row.querySelector('.tag:not(.vary)'), changed = v !== D.field[p.path];
+      if (changed && !tagged) row.querySelector('.ptop').insertAdjacentHTML('beforeend', '<span class="tag">changed</span>');
+      if (!changed && tagged) tagged.remove();
+    };
+    range.addEventListener('input', () => setV(Number(range.value), range));
+    num.addEventListener('change', () => setV(Number(num.value), num));
+    row.querySelector('.pvary').addEventListener('change', (e) => { P[p.path].vary = e.target.checked; selected = p.path; drawParams(); designCheck(); });
+    row.querySelector('.pvalues')?.addEventListener('input', (e) => { P[p.path].values = e.target.value; designCheck(); });
+  }
+  explain();
+}
+
+/* The example tree: two foundations, two lemmas, one target. Weights are how much each result used each input. */
+const EX = {
+  nodes: { A1: [52, 52, 'A1'], A2: [52, 178, 'A2'], B: [190, 52, 'B'], C: [190, 178, 'C'], T: [330, 115, 'T'] },
+  edges: [['A1', 'B', 0.5], ['A2', 'B', 0.5], ['A2', 'C', 1], ['B', 'T', 0.6], ['C', 'T', 0.4]],
+};
+const RAMP = ['#cde2fb', '#9ec5f4', '#6da7ec', '#3987e5', '#256abf', '#184f95'];
+function exampleTree({ values = {}, labels = {}, notes = {}, max = 100, dashed = [], extra = '', height = 240 } = {}) {
+  let out = `<svg viewBox="0 0 400 ${height}" role="img" aria-label="Example research tree">`;
+  out += '<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/></marker></defs>';
+  for (const [a, b, w] of EX.edges) {
+    const [x1, y1] = EX.nodes[a], [x2, y2] = EX.nodes[b];
+    const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy), ux = dx / len, uy = dy / len;
+    out += `<line x1="${x1 + ux * 26}" y1="${y1 + uy * 26}" x2="${x2 - ux * 28}" y2="${y2 - uy * 28}" stroke="var(--ink-3)" stroke-width="1.4" marker-end="url(#arr)"/>`;
+    out += `<text x="${(x1 + x2) / 2}" y="${(y1 + y2) / 2 - 6}" text-anchor="middle" font-size="10" fill="var(--ink-3)">${Math.round(w * 100)}%</text>`;
+  }
+  for (const [id, [x, y, name]] of Object.entries(EX.nodes)) {
+    const v = values[id];
+    const k = v === undefined ? -1 : Math.min(RAMP.length - 1, Math.floor((v / max) * RAMP.length));
+    const fill = k < 0 ? 'var(--surface)' : RAMP[k], ink = k >= 3 ? '#fff' : '#0b0b0b';
+    out += id === 'T'
+      ? `<rect x="${x - 26}" y="${y - 24}" width="52" height="48" rx="10" fill="${fill}" stroke="var(--ink)" stroke-width="1.6" ${dashed.includes(id) ? 'stroke-dasharray="4 3"' : ''}/>`
+      : `<circle cx="${x}" cy="${y}" r="24" fill="${fill}" stroke="var(--ink-2)" stroke-width="1.4" ${dashed.includes(id) ? 'stroke-dasharray="4 3"' : ''}/>`;
+    out += `<text x="${x}" y="${y - (labels[id] !== undefined ? 3 : -4)}" text-anchor="middle" font-size="12" font-weight="700" fill="${k >= 0 ? ink : 'var(--ink)'}">${name}</text>`;
+    if (labels[id] !== undefined) out += `<text x="${x}" y="${y + 12}" text-anchor="middle" font-size="11" fill="${k >= 0 ? ink : 'var(--ink-2)'}">${esc(labels[id])}</text>`;
+    if (notes[id]) out += `<text x="${x}" y="${y + (id === 'T' ? 40 : 38)}" text-anchor="middle" font-size="10.5" fill="var(--ink-2)">${esc(notes[id])}</text>`;
+  }
+  return out + extra + '</svg>';
+}
+const bars = (rows, unit = '') => {
+  const max = Math.max(1e-9, ...rows.map((r) => r[1]));
+  return `<svg viewBox="0 0 400 ${rows.length * 30 + 10}" role="img" aria-label="Bars">` + rows.map(([label, v, cls], i) => `<text x="0" y="${i * 30 + 22}" font-size="12" fill="var(--ink)">${esc(label)}</text><rect x="150" y="${i * 30 + 9}" width="${(150 * v / max).toFixed(1)}" height="16" rx="3" fill="${cls ?? 'var(--s1)'}"/><text x="${156 + 150 * v / max}" y="${i * 30 + 22}" font-size="12" fill="var(--ink)">${Number(v.toFixed(2))}${unit}</text>`).join('') + '</svg>';
+};
+const val = (path) => P[path]?.value ?? D.field?.[path];
+const r0 = (x) => (Math.abs(x) >= 10 ? x.toFixed(0) : x.toFixed(1));
+
+/** For each parameter: an example of what it does, at the slider's value. */
+const EXPLAIN = {
+  'rules.alpha': (a) => {
+    const vB = 100 * (1 - a) * 0.6, vC = 100 * (1 - a) * 0.4;
+    const v = { T: 100 * a, B: vB * a, C: vC * a, A1: vB * (1 - a) * 0.5, A2: vB * (1 - a) * 0.5 + vC * (1 - a) };
+    return { svg: exampleTree({ values: v, labels: Object.fromEntries(Object.entries(v).map(([k, x]) => [k, r0(x)])), notes: { T: 'target: bounty 100' } }),
+      cap: `A bounty of 100 for target T. At α = ${a}, T's authors keep ${r0(v.T)}; ${r0(100 - v.T)} flows back: B and C keep α of what reaches them and pass the rest on, split by the percentages on the arrows. A1 and A2 build on nothing, so they keep all they get. ${a >= 1 ? 'At α = 1 nothing flows back: this is traditional research.' : ''}` };
+  },
+  'rules.c': (c) => {
+    const a = val('rules.alpha'), m = 10, toB = m * c * 0.6, toC = m * c * 0.4;
+    const v = { T: m * (1 - c), B: toB * a, C: toC * a, A1: toB * (1 - a) * 0.5, A2: toB * (1 - a) * 0.5 + toC * (1 - a) };
+    return { svg: exampleTree({ values: v, max: 10, labels: Object.fromEntries(Object.entries(v).map(([k, x]) => [k, x.toFixed(2)])), notes: { T: 'new result: mints 10' } }),
+      cap: `T has just been validated and mints 10 tokens. At c = ${c}, T's authors get ${(m * (1 - c)).toFixed(1)} and ${(m * c).toFixed(1)} goes to what T built on (B 60%, C 40%), flowing on down at α = ${a}. So B, C and their foundations earn as soon as someone builds on them, not only when a bounty is won.` };
+  },
+  'rules.mint': (m) => ({ svg: exampleTree({ values: { A1: m, A2: m, B: m, C: m, T: m }, max: 5, labels: { A1: `+${m}`, A2: `+${m}`, B: `+${m}`, C: `+${m}`, T: `+${m}` }, notes: { T: 'plus its bounty' } }),
+    cap: `Every validated result mints ${m} tokens for its authors (less the cited share c under OSO rules). Five results here: ${(5 * m).toFixed(1)} tokens in all, before any bounty. A trivial result also earns ${m} if the validation screen lets it through, which is what gaming agents chase.` }),
+  'rules.screen': (th) => {
+    const n = 10, rej = Math.round(th * n), m = val('rules.mint');
+    let extra = '';
+    for (let i = 0; i < n; i++) {
+      const x = 22 + i * 37, y = 268, bad = i < rej;
+      extra += `<rect x="${x - 13}" y="${y - 13}" width="26" height="26" rx="5" fill="var(--surface)" stroke="var(--ink-3)" stroke-dasharray="3 2"/>` + (bad ? `<path d="M${x - 8},${y - 8} L${x + 8},${y + 8} M${x + 8},${y - 8} L${x - 8},${y + 8}" stroke="var(--bad)" stroke-width="2"/>` : `<text x="${x}" y="${y + 4}" text-anchor="middle" font-size="10" fill="var(--ink)">+${m}</text>`);
+    }
+    extra += `<text x="200" y="300" text-anchor="middle" font-size="11" fill="var(--ink-2)">ten trivial submissions</text>`;
+    return { svg: exampleTree({ extra, height: 310 }), cap: `A gaming agent submits trivial results that add nothing to the tree. At θ = ${th}, validators reject about ${rej} of 10 (✕); the other ${n - rej} earn the mint (${m} each) like real results.` };
+  },
+  'budget.allocation.rho': (rho) => {
+    const e = [0, 10, 30], tot = 40, per = 30;
+    const c = e.map((x) => per * ((1 - rho) / 3 + rho * x / tot));
+    return { svg: bars([['agent 1 (earned 0)', c[0]], ['agent 2 (earned 10)', c[1]], ['agent 3 (earned 30)', c[2]]], ' compute'),
+      cap: `30 compute to give out this round, to three agents who recently earned 0, 10 and 30. At ρ = ${rho}, ${Math.round((1 - rho) * 100)}% is split equally and ${Math.round(rho * 100)}% by earnings. High ρ funds whoever is winning, like a few big labs; under traditional rules that concentrates hidden work in few hands.` };
+  },
+  'budget.X': (X) => ({ svg: exampleTree({ notes: { T: 'target' } }), cap: `${X} compute for the whole run. Each attempt at a result costs the agent its cost per attempt (1 for most). The field's own budget, ${D.field['budget.X']}, is the smallest at which OSO solves about 90% of its targets; less makes the race tighter for both communities, more lets both finish.` }),
+  'behaviour.psi': (psi) => decision(val('behaviour.kappa'), psi),
+  'behaviour.kappa': (k) => decision(k, val('behaviour.psi')),
+  'behaviour.perceptionNoise': (sg) => {
+    const opts = [['B', 10], ['C', 8], ['trivial', 4]], q = 0.5, w = sg * (1 - q);
+    let svg = '<svg viewBox="0 0 400 130" role="img" aria-label="Perceived values">';
+    opts.forEach(([n, v], i) => {
+      const y = 25 + i * 38, x = (z) => 110 + z * 13;
+      svg += `<text x="0" y="${y + 5}" font-size="12" fill="var(--ink)">${n}: worth ${v}</text><line x1="${x(Math.max(0, v * (1 - w)))}" x2="${x(Math.min(20, v * (1 + w)))}" y1="${y}" y2="${y}" stroke="var(--s1)" stroke-width="8" stroke-opacity=".35" stroke-linecap="round"/><circle cx="${x(v)}" cy="${y}" r="5" fill="var(--s1)"/>`;
+    });
+    svg += '<text x="110" y="125" font-size="10.5" fill="var(--ink-3)">0</text><text x="370" y="125" font-size="10.5" fill="var(--ink-3)">20</text></svg>';
+    return { svg, cap: `What an agent sees when choosing: each option's true value (dot) and the range it may be seen as (bar, one standard deviation, for an agent of average insight). At σ₀ = ${sg}, values are misread by about ±${Math.round(w * 100)}%, so the agent sometimes picks a worse option.` };
+  },
+  'behaviour.policy.tau': (tau) => {
+    const v = [10, 8, 4], best = 10, ws = v.map((x) => Math.exp((x - best) / Math.max(1e-9, tau * best))), s = ws.reduce((a, b) => a + b, 0), eps = 0.05;
+    const p = ws.map((w) => (1 - eps) * w / s + eps / 3);
+    return { svg: bars([['B (worth 10)', p[0] * 100], ['C (worth 8)', p[1] * 100], ['trivial (worth 4)', p[2] * 100]], '%'),
+      cap: `Chance of choosing each of three options worth 10, 8 and 4. At τ = ${tau}, the best is chosen ${Math.round(p[0] * 100)}% of the time. Near 0 agents almost always take the best; higher τ spreads attempts, as a real community's variety does. 5% of choices are random either way.` };
+  },
+  'attribution.noise': (n) => {
+    const seen = { B: Math.max(0, 0.6 * (1 + n * 0.8)), C: Math.max(0, 0.4 * (1 - n * 0.8)) }, t = seen.B + seen.C;
+    return { svg: exampleTree({ values: { B: 100 * seen.B / t, C: 100 * seen.C / t }, labels: { B: `${Math.round(100 * seen.B / t)}%`, C: `${Math.round(100 * seen.C / t)}%` }, notes: { T: 'true: B 60%, C 40%' } }),
+      cap: `T really used B for 60% and C for 40%, and flow-back should be split that way. With attribution error ${n}, the ledger's estimate can be off: in this example it records B ${Math.round(100 * seen.B / t)}% and C ${Math.round(100 * seen.C / t)}%, so part of the value meant for C goes to B. In Lean the weights are exact (error 0).` };
+  },
+  'knowledge.absorbCost': (k) => {
+    const n = Math.min(3, Math.floor(1 / Math.max(1e-9, k))), left = Math.max(0, 1 - n * k);
+    return { svg: exampleTree({ values: { A1: 60, A2: 60, B: 60 }, labels: { A1: 'new', A2: 'new', B: 'new' }, notes: { C: 'not yet published' } }),
+      cap: `Three results were just published. An agent with 1 compute this round pays ${k} to take up each before it can build on it: ${k === 0 ? 'free, so it takes up all three and keeps its whole compute for attempts' : `it can take up ${n} and has ${left.toFixed(2)} left for attempts`}. This is the cost of reading a crowded literature; it falls hardest on open, fast-sharing communities.` };
+  },
+  'knowledge.errorRate': (e) => ({ svg: exampleTree({ values: { A2: 20, B: 70 }, labels: { B: 'wrong?' }, notes: { T: 'checked', B: `wrong with chance ${e}` }, dashed: ['B'] }),
+    cap: `Each proof is wrong with chance ${e}. If B is wrong, so is anything built on it; agents who took up B carry the error. When someone proves T on top of a wrong B, T's check fails: T is rejected and B is retracted. Sharing spreads wrong results further and faster, which is the main risk of sharing.` }),
+  'success.p0': (p0) => pChances(p0, val('success.eta')),
+  'success.eta': (eta) => pChances(val('success.p0'), eta),
+  'agents.mix.gamer': (g) => ({ svg: exampleTree({ notes: { T: 'target' } }), cap: `${g} gaming agent${g === 1 ? '' : 's'} in the community, in addition to the others. A gaming agent submits trivial results to collect the mint; the validation screen θ (now ${val('rules.screen')}) decides how often that pays.` }),
+};
+function decision(kappa, psi) {
+  const a = val('rules.alpha'), c = val('rules.c'), m = val('rules.mint');
+  const flow = 100 * (1 - a) * 0.6 * a;
+  const gain = m * (1 - c) + 0.8 * flow * kappa / 10;
+  const risk = a * 60 * 0.5 * psi / 10;
+  return { svg: exampleTree({ values: { A1: 40, A2: 40, B: 80 }, labels: { B: 'hidden' }, notes: { B: 'proved by agent', T: 'bounty 100' }, dashed: ['B'] }) + bars([['gain from sharing B', gain], ['risk of being scooped', risk, 'var(--s2)']]),
+    cap: `An agent has proved lemma B and is working on target T; under the choice settings it decides whether to publish B now. Sharing earns the mint now plus the value that will flow back to B if others build on it (scaled by κ = ${kappa}); the risk is a rival using B to win T first (scaled by ψ = ${psi}). Here it would ${gain >= risk ? '<b>publish B</b>' : '<b>keep B hidden</b>'}. A simplified, illustrative version of the simulator's rule, with α = ${a} and c = ${c}.` };
+}
+function pChances(p0, eta) {
+  const p = (l) => p0 * eta ** (l - 1);
+  return { svg: exampleTree({ values: { A1: 100 * p(1), A2: 100 * p(1), B: 100 * p(2), C: 100 * p(2), T: 100 * p(3) }, labels: { A1: `${Math.round(100 * p(1))}%`, A2: `${Math.round(100 * p(1))}%`, B: `${Math.round(100 * p(2))}%`, C: `${Math.round(100 * p(2))}%`, T: `${(100 * p(3)).toFixed(1)}%` }, notes: { A1: 'level 1', B: 'level 2', T: 'level 3' } }),
+    cap: `Chance that one attempt succeeds: p₀ = ${p0} at level 1, times η = ${eta} for each level up. A level-3 result takes about ${Math.round(1 / Math.max(1e-9, p(3)))} attempts on average, and only once its inputs are known: under traditional rules every agent has to prove those inputs itself.` };
+}
+
+function explain() {
+  const p = D.opts.parameters.find((x) => x.path === selected);
+  if (!p) return;
+  const st = P[p.path];
+  const v = st.vary ? Number(String(st.values).split(',')[0]) : st.value;
+  const ex = EXPLAIN[p.path]?.(Number.isFinite(v) ? v : D.field[p.path]) ?? { svg: '', cap: '' };
+  $('e-explain').innerHTML = `<h3>${esc(p.label)}</h3><p>${esc(p.explain)}</p>${ex.svg}<p class="cap">${ex.cap}</p>${st.vary ? `<p class="cap">Varied: the example shows the first value, ${esc(String(st.values).split(',')[0])}.</p>` : ''}${ex.svg.includes('Example research tree') ? '<p class="cap muted">Example tree:' A1 and A2 are foundations, B and C lemmas, T a target; arrows point from a result to what builds on it, labelled with how much it was used.</p>' : ''}`;
+}
+
 function currentDesign() {
   return {
     id: $('e-id').value.trim(), title: $('e-title').value.trim(), space: $('e-space').value,
     settings: [...$('e-settings').querySelectorAll('input:checked')].map((i) => i.value),
-    vary: [0, 1].map((i) => ({ path: document.querySelector(`.v-path[data-v="${i}"]`).value, values: document.querySelector(`.v-values[data-v="${i}"]`).value.split(',').map((x) => x.trim()).filter(Boolean).map(Number).filter(Number.isFinite) })).filter((v) => v.path),
+    set: Object.fromEntries(D.opts.parameters.filter((p) => !P[p.path].vary && P[p.path].value !== D.field[p.path]).map((p) => [p.path, P[p.path].value])),
+    vary: D.opts.parameters.filter((p) => P[p.path].vary).map((p) => ({ path: p.path, values: P[p.path].values.split(',').map((x) => x.trim()).filter(Boolean).map(Number).filter(Number.isFinite) })),
     columns: [...$('e-columns').querySelectorAll('input:checked')].map((i) => i.value),
     seeds: Number($('e-seeds').value),
   };

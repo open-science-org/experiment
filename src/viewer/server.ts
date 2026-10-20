@@ -142,6 +142,7 @@ const server = createServer(async (req, res) => {
       return send(404, { error: 'not found' });
     }
     if (url.pathname === '/api/design/options') return send(200, design.options());
+    if (url.pathname === '/api/design/field') return send(200, design.fieldValues(url.searchParams.get('id') ?? ''));
     if (url.pathname === '/api/spaces/yaml') return send(200, { yaml: design.fieldYaml(url.searchParams.get('id') ?? '') });
     if (url.pathname === '/api/jobs') return send(200, design.listJobs());
     if (url.pathname.startsWith('/api/jobs/')) return send(200, design.getJob(url.pathname.slice('/api/jobs/'.length)));

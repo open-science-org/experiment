@@ -8,7 +8,8 @@ import { parse, stringify } from 'yaml';
 import { COLUMNS } from '../engine/measures.ts';
 import { Rng } from '../engine/rng.ts';
 import { worlds } from '../engine/world.ts';
-import { expand, type ExperimentSpec } from '../experiments/experiment.ts';
+import { expand, type ExperimentSpec, type Level } from '../experiments/experiment.ts';
+import { expandPaths, getPath, merge } from '../engine/config.ts';
 import { EXPERIMENTS_DIR, ROOT, SPACES_DIR } from '../paths.ts';
 import { SENSITIVITY } from '../report/battery.ts';
 import { worldFigure } from '../report/figures.ts';
@@ -20,15 +21,81 @@ export const SETTINGS: Record<string, string> = {
   creditOnly: 'Flow-back, finished-only', sharingOnly: 'No flow-back, immediate', traditionalChoice: 'No flow-back, choice',
 };
 
-/** Parameters the designer offers to vary: the report's sensitivity set plus a few more. */
-const PARAMETERS = [
-  ...SENSITIVITY.map((p) => ({ path: p.path, label: p.label, meaning: p.meaning, values: p.values, group: p.group })),
-  { path: 'knowledge.absorbCost', label: 'cost to absorb a result', meaning: 'compute an agent spends to take up each published result', values: [0, 0.25, 0.5, 1], group: 'guess' },
-  { path: 'knowledge.errorRate', label: 'chance a proof is wrong', meaning: 'wrong results spread to what builds on them; targets catch them', values: [0, 0.05, 0.1, 0.2], group: 'guess' },
-  { path: 'budget.X', label: 'total budget X', meaning: 'total compute for the whole community', values: [], group: 'market' },
-  { path: 'success.eta', label: 'η, difficulty per level', meaning: 'success chance falls by this factor per level (lower: steeper)', values: [0.4, 0.5, 0.6, 0.7], group: 'guess' },
-  { path: 'agents.mix.gamer', label: 'gaming agents', meaning: 'how many agents farm trivial results for the mint', values: [0, 1, 2, 4], group: 'guess' },
+export interface Parameter {
+  path: string;
+  label: string;
+  /** One line: what it is. */
+  short: string;
+  /** A paragraph: what it does in a run, and why it matters. */
+  explain: string;
+  group: 'market' | 'guess' | 'field';
+  min: number; max: number; step: number;
+  integer?: boolean;
+  /** α and c exist only under OSO's flow-back rules: they never change the traditional settings. */
+  flowBack?: boolean;
+  /** Values suggested when the parameter is varied. */
+  values: number[];
+}
+
+/** Every parameter the designer offers, with its range and a plain explanation. */
+export const PARAMETERS: Parameter[] = [
+  { path: 'rules.alpha', label: 'α, retention', group: 'market', min: 0.05, max: 1, step: 0.05, flowBack: true, values: [0.2, 0.4, 0.6, 0.8],
+    short: 'share of the value reaching a result that its authors keep',
+    explain: 'When value reaches a result, from a bounty or from later work, its authors keep α of it. The rest flows back to the results it built on, split by how much it used each, and on down the tree. Lower α pays foundational work more, which is what is meant to make agents share it. Only the OSO settings have flow-back; traditional rules are α = 1.' },
+  { path: 'rules.c', label: 'c, cited share of the mint', group: 'market', min: 0, max: 0.6, step: 0.05, flowBack: true, values: [0, 0.15, 0.3, 0.5],
+    short: 'share of each new mint paid to the results it built on',
+    explain: 'Every validated result mints tokens. Its authors get 1 − c; the other c goes to the results it built on and flows on down from there. So a result earns each time someone builds on it, long before any bounty is won. Traditional rules are c = 0.' },
+  { path: 'rules.mint', label: 'mint per result', group: 'market', min: 0, max: 5, step: 0.25, values: [0, 0.5, 1, 2],
+    short: 'tokens created for each validated result',
+    explain: 'Paid to a result\'s authors (and, through c, to what it built on) when it is published. It pays for progress along the way, not only for prizes; it is also what gaming agents chase with trivial results. Bounties are a few units for the easiest target and double with each level.' },
+  { path: 'rules.screen', label: 'θ, validation screen', group: 'market', min: 0, max: 1, step: 0.05, values: [0, 0.5, 0.9],
+    short: 'chance validators reject a trivial result',
+    explain: 'A trivial result adds nothing; it is submitted only to collect the mint. Validators reject it with chance θ. At low θ gaming pays, and under rules where compute follows earnings a gaming agent can capture much of the budget.' },
+  { path: 'budget.allocation.rho', label: 'ρ, compute follows earnings', group: 'market', min: 0, max: 1, step: 0.05, values: [0, 0.5, 1],
+    short: 'share of each round\'s compute given by recent earnings',
+    explain: 'Each round, funders split the compute: 1 − ρ equally among agents, ρ in proportion to what each earned recently. High ρ concentrates money on whoever is winning, like funding a few big labs; ρ = 0 shares it equally.' },
+  { path: 'budget.X', label: 'total budget', group: 'market', min: 10, max: 100000, step: 10, integer: true, values: [],
+    short: 'all the compute the community gets for the whole run',
+    explain: 'Each attempt costs the agent its cost per attempt (1 for most agents, less for cheap explorers). Every field\'s budget is set so OSO solves about 90% of its targets; less makes the race tighter, more lets both communities finish.' },
+  { path: 'behaviour.psi', label: 'ψ, scoop risk', group: 'guess', min: 0, max: 0.95, step: 0.05, values: [0, 0.25, 0.5, 0.75],
+    short: 'how likely agents think a shared lemma lets a rival win the target',
+    explain: 'An agent that may choose whether to share a lemma weighs what sharing earns (the mint now, plus the value that will flow back if others build on it) against the risk that a rival uses it to reach the target first. ψ scales that risk. It matters only in the settings where agents choose.' },
+  { path: 'behaviour.kappa', label: 'κ, value of being used', group: 'guess', min: 0, max: 5, step: 0.25, values: [0, 1, 2, 4],
+    short: 'how much agents think publishing raises a lemma\'s use',
+    explain: 'The other side of the sharing decision: how much an agent expects publishing to increase the value that later flows back to its lemma. Higher κ makes sharing look more attractive.' },
+  { path: 'behaviour.perceptionNoise', label: 'σ₀, perception noise', group: 'guess', min: 0, max: 3, step: 0.1, values: [0, 0.5, 1, 2],
+    short: 'how noisily agents see the value of what they could attempt',
+    explain: 'Agents judge each result they could attempt by its expected value, seen with noise of this size. At 0 they see exactly; higher, they misjudge more often and spread effort onto worse options.' },
+  { path: 'behaviour.policy.tau', label: 'τ, choice randomness', group: 'guess', min: 0.01, max: 2, step: 0.01, values: [0.05, 0.3, 1],
+    short: 'how loosely agents follow their best option',
+    explain: 'Agents choose among the results they could attempt with a softmax rule: near τ = 0 they almost always take the best-looking one; higher τ spreads attempts over good-enough options, more like a real community\'s variety.' },
+  { path: 'attribution.noise', label: 'attribution error', group: 'guess', min: 0, max: 1, step: 0.05, values: [0, 0.1, 0.3, 0.6],
+    short: 'error in the ledger\'s weights of what each result built on',
+    explain: 'Flow-back is split by how much a result used each thing it built on. In Lean these weights are exact; elsewhere they are estimated. With error, part of the flow-back goes to the wrong results, which weakens the incentive to do foundational work.' },
+  { path: 'knowledge.absorbCost', label: 'cost to absorb a result', group: 'guess', min: 0, max: 2, step: 0.05, values: [0, 0.25, 0.5, 1],
+    short: 'compute an agent spends to take up each published result',
+    explain: 'Before building on a published result, an agent must read and understand it. At 0 sharing is free; at 1, taking up a result costs as much as an attempt. This is the main cost of an open, crowded literature.' },
+  { path: 'knowledge.errorRate', label: 'chance a proof is wrong', group: 'guess', min: 0, max: 0.5, step: 0.01, values: [0, 0.05, 0.1, 0.2],
+    short: 'some results are wrong, and wrongness spreads',
+    explain: 'With this chance a proof is wrong, and so is anything built on a wrong result. A target\'s check catches it: the target is rejected and the wrong results it rested on are retracted. Shared wrong results spread further, so this is the main risk of sharing.' },
+  { path: 'success.p0', label: 'p₀, chance at level 1', group: 'field', min: 0.05, max: 1, step: 0.05, values: [0.3, 0.5, 0.8],
+    short: 'chance an attempt at a level-1 result succeeds',
+    explain: 'Each attempt succeeds with a chance that depends on the result\'s level: p₀ at level 1, then multiplied by η for each level up. A field that lists its results one by one may set some chances directly; those ignore p₀ and η.' },
+  { path: 'success.eta', label: 'η, difficulty per level', group: 'field', min: 0.2, max: 0.95, step: 0.05, values: [0.4, 0.5, 0.6, 0.7],
+    short: 'how much harder each level is than the one below',
+    explain: 'A result at level ℓ succeeds with chance p₀ · η^(ℓ − 1) per attempt. Lower η makes deep results much harder, so building on others\' work matters more.' },
+  { path: 'agents.mix.gamer', label: 'gaming agents', group: 'field', min: 0, max: 6, step: 1, integer: true, values: [0, 1, 2, 4],
+    short: 'how many agents farm trivial results for the mint',
+    explain: 'A gaming agent submits trivial results to collect the mint, and the validation screen θ is what stops it. Adding gaming agents adds to the community: the others stay.' },
 ];
+
+/** The values a field uses for every parameter (α and c as under OSO's rules). */
+export function fieldValues(id: string): Record<string, number> {
+  const { space } = withCalibratedBudget(loadSpace(id));
+  const sc = space.scenario as unknown as Record<string, unknown>;
+  const osoRules = (parse(readFileSync(join(ROOT, 'config', 'presets.yaml'), 'utf8')) as Record<string, { rules: Record<string, number> }>).osoChoice.rules;
+  return Object.fromEntries(PARAMETERS.map((p) => [p.path, p.flowBack ? osoRules[p.path.split('.')[1]] : Number(getPath(sc, p.path) ?? 0)]));
+}
 
 const COLUMN_INFO: Record<string, string> = {
   frontier: 'hardest level published', deepestProved: 'deepest level proved by anyone', reachTarget: 'share of runs reaching the main level',
@@ -43,6 +110,7 @@ export function options() {
   return {
     settings: SETTINGS,
     parameters: PARAMETERS,
+    flowBackSettings: FLOW_BACK,
     columns: Object.keys(COLUMNS).map((id) => ({ id, meaning: COLUMN_INFO[id] ?? id })),
     defaultColumns: ['frontier', 'reachTarget', 'cost', 'targetsSolved', 'sharing'],
     template: spaceToYaml({
@@ -93,30 +161,67 @@ export interface Design {
   title: string;
   space: string;
   settings: string[];
+  /** Fixed values that differ from the field's own. */
+  set?: Record<string, number>;
   vary: { path: string; values: number[] }[];
   columns: string[];
   seeds: number;
 }
 
-/** The experiment file a design stands for: the field's settings, then a rule setting, then each varied parameter. */
+/** The settings with OSO's flow-back (α < 1, c > 0); only these take α and c. */
+const FLOW_BACK = ['oso', 'osoChoice', 'creditOnly'];
+
+/**
+ * The experiment file a design stands for. Rows: each rule setting, then each varied parameter.
+ * α and c belong to the flow-back settings only: fixing or varying them changes those rows and leaves
+ * the traditional ones as they are.
+ */
 export function experimentFor(d: Design): ExperimentSpec {
-  if (!ID.test(d.id)) throw new Error('the experiment id must be kebab-case (a-z, 0-9, hyphens)');
+  if (!ID.test(d.id)) throw new Error('the experiment name must be kebab-case (a-z, 0-9, hyphens)');
   if (!d.settings.length) throw new Error('choose at least one rule setting');
   for (const s of d.settings) if (!SETTINGS[s]) throw new Error(`unknown setting ${s}`);
   if (!(d.seeds >= 1 && d.seeds <= 1000)) throw new Error('runs per row must be between 1 and 1000');
+  const param = (path: string) => {
+    const p = PARAMETERS.find((x) => x.path === path);
+    if (!p) throw new Error(`unknown parameter ${path}`);
+    return p;
+  };
   const { space } = withCalibratedBudget(loadSpace(d.space));
-  const label = (path: string) => PARAMETERS.find((p) => p.path === path)?.label ?? path;
+  const fixed = Object.entries(d.set ?? {});
+  for (const [path, v] of fixed) {
+    const p = param(path);
+    if (!Number.isFinite(v) || v < p.min || v > p.max) throw new Error(`${p.label} must be between ${p.min} and ${p.max}`);
+  }
   const varied = d.vary.filter((v) => v.path && v.values.length);
+  if (varied.length > 2) throw new Error('vary at most two parameters');
+  for (const v of varied) {
+    const p = param(v.path);
+    for (const x of v.values) if (!Number.isFinite(x) || x < p.min || x > p.max) throw new Error(`${p.label}: ${x} is outside ${p.min} to ${p.max}`);
+  }
+  const fixedFlow = Object.fromEntries(fixed.filter(([path]) => param(path).flowBack));
+  const fixedOther = Object.fromEntries(fixed.filter(([path]) => !param(path).flowBack));
+  const variedFlow = varied.filter((v) => param(v.path).flowBack);
+  const variedOther = varied.filter((v) => !param(v.path).flowBack);
+  // Flow-back settings × every combination of varied α and c; other settings once.
+  let combos: { label: string; set: Record<string, number> }[] = [{ label: '', set: {} }];
+  for (const v of variedFlow) {
+    const name = param(v.path).label.split(',')[0];
+    combos = combos.flatMap((c) => v.values.map((x) => ({ label: `${c.label}, ${name} = ${x}`, set: { ...c.set, [v.path]: x } })));
+  }
+  const levels: Level[] = d.settings.flatMap((s) => (FLOW_BACK.includes(s)
+    ? combos.map((c) => ({ label: SETTINGS[s] + c.label, preset: s, ...(Object.keys(fixedFlow).length || Object.keys(c.set).length ? { set: { ...fixedFlow, ...c.set } } : {}) }))
+    : [{ label: SETTINGS[s], preset: s }]));
+  const changed = fixed.map(([path, v]) => `${param(path).label} = ${v}`);
   return {
     id: d.id,
     title: d.title || d.id,
-    description: `Designed in the app on the field "${space.spec.title}" (spaces/${d.space}.yaml): ${d.settings.map((s) => SETTINGS[s]).join(' vs ')}${varied.length ? `, varying ${varied.map((v) => label(v.path)).join(' and ')}` : ''}. A varied parameter overrides the rule setting's own value.`,
+    description: `Designed in the app on the field "${space.spec.title}" (spaces/${d.space}.yaml): ${d.settings.map((s) => SETTINGS[s]).join(' vs ')}${varied.length ? `, varying ${varied.map((v) => param(v.path).label).join(' and ')}` : ''}${changed.length ? `; with ${changed.join(', ')}` : ''}. α and c apply to the OSO (flow-back) settings only.`,
     seeds: d.seeds,
     ...(space.spec.scenarioFile ? { scenario: space.spec.scenarioFile } : {}),
-    set: space.spec.scenario ?? {},
+    set: merge(expandPaths(space.spec.scenario ?? {}), expandPaths(fixedOther)) as Record<string, unknown>,
     factors: [
-      { name: 'setting', levels: d.settings.map((s) => ({ label: SETTINGS[s], preset: s })) },
-      ...varied.map((v) => ({ name: label(v.path), path: v.path, values: v.values })),
+      { name: 'setting', levels },
+      ...variedOther.map((v) => ({ name: param(v.path).label, path: v.path, values: v.values })),
     ],
     columns: d.columns.length ? d.columns : options().defaultColumns,
   };
