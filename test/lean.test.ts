@@ -74,3 +74,21 @@ test('with Lean: an attempt repairs a rejected proof using the error messages', 
   assert.equal(r.turns.length, 2);
   assert.match(seen[1], /Lean rejected the proof/);
 });
+
+test('a lemma declaration splits into name, statement and proof', async () => {
+  const { parseLemma } = await import('../src/lean/community.ts');
+  assert.deepEqual(parseLemma('theorem foo (n : Nat) : n + 0 = n := by simp'), { name: 'foo', signature: '(n : Nat) : n + 0 = n', proof: ':= by simp' });
+  assert.equal(parseLemma('theorem foo : ∀ n, P n\n  | 0 => h0\n  | n + 1 => hs')?.proof, '  | 0 => h0\n  | n + 1 => hs');
+  assert.equal(parseLemma('def foo := 1'), null);
+});
+
+test('with Lean: communities run, and under OSO results are shared while traditional labs duplicate', { skip: !leanAvailable() }, async () => {
+  const { runCommunity, referenceAgent } = await import('../src/lean/community.ts');
+  const base = { agents: ['a', 'b', 'c'], budget: 0.12, rounds: 12, repairs: 0, alpha: 0.8, c: 0.15, mint: 1, effort: 'low' as const, allowGrind: true };
+  const run = (rules: 'traditional' | 'oso') => runCommunity({ ...base, rules }, (com, i) => referenceAgent(com, i), () => 0.01, `test-community-${rules}`, () => {});
+  const [trad, oso] = [await run('traditional'), await run('oso')];
+  assert.ok(oso.library.filter((e) => !e.public).length < trad.library.filter((e) => !e.public).length, 'OSO publishes; traditional keeps lemmas private');
+  const solved = (r: typeof oso) => new Set(r.actions.filter((a) => a.kind === 'target' && a.ok).map((a) => a.target)).size;
+  assert.ok(solved(oso) >= solved(trad));
+  assert.ok(oso.earnings.some((e) => e > 0));
+});
