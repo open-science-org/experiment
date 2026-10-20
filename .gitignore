@@ -1,5 +1,13 @@
 node_modules/
 .DS_Store
-# The Lean problem set stays out of git until we decide where the reference proofs live
-# (they would give agents the answers).
-lean/
+# Lean problem set: the reference proofs, the lemma DAG, the notes on them, and agents' transcripts
+# would give agents the answers, so they stay out of git until the experiment (lean/README.md).
+lean/.lake/
+lean/.pilot/
+lean/Reference/
+lean/Reference.lean
+lean/reference-dag.md
+lean/NOTES.md
+lean/runs/
+# Stub runs of the pilot only test the pipeline.
+results/pilot/stub-*/

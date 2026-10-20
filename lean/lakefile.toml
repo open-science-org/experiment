@@ -1,0 +1,8 @@
+name = "oso-problems"
+defaultTargets = ["Problems", "Reference"]
+
+[[lean_lib]]
+name = "Problems"
+
+[[lean_lib]]
+name = "Reference"

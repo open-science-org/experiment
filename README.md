@@ -58,6 +58,27 @@ npm test                                        # the tests
 
 The [simulator doc](docs/simulator.md) explains everything in detail: the simple model and its exact check, the default setup, configuration and plugins, the measures, the saved results, and the limits. Saved results are listed in [results/LOG.md](results/LOG.md).
 
+## The Lean pilot
+
+The simulator's success chances are guesses. The pilot measures them: a real agent (Claude) attempts every theorem of the [Lean problem set](lean/README.md), and Lean decides.
+
+```sh
+npm run pilot -- selftest                       # every reference proof through the checker
+npm run pilot -- calibrate --dry-run            # how many attempts and calls a run makes
+npm run pilot -- calibrate --stub --attempts 1  # the whole pipeline, with reference proofs as the "agent"
+npm run pilot -- calibrate                      # the real run; needs ANTHROPIC_API_KEY
+npm run pilot -- world <run>                    # measured chances -> worlds/lean-measured.json + a space
+```
+
+- **An attempt** is a first proof plus up to three repairs, each sent back with Lean's error messages.
+- **Two conditions:**
+  - *library*: every theorem, with the theorems it rests on given as its library;
+  - *alone*: each posted target with an empty library. This tests whether the targets really need their lemmas.
+- **The checker** ([src/lean/checker.ts](src/lean/checker.ts)) writes a file that imports only the public definitions and states the agent's library as axioms. Each axiom is a theorem the reference proofs prove, so this is sound, and the agent cannot reach any lemma it was not given. `#print axioms` then lists exactly which library theorems a proof used: that is both the soundness check and the attribution. The screen bans `grind`, `sorry`, `native_decide`, search tactics, commands that run code, and new declarations. Each check takes about 0.3 seconds.
+- **The self-test passes:** all 42 reference proofs are accepted with `grind` allowed, and for each one the theorems it uses match the reference tree exactly. Nine need `grind`, so with it banned, agents have to find other proofs for those.
+- **What gets published:** transcripts contain proofs, so they stay in `lean/runs/`, which is private. The public summary in `results/pilot/<run>/` uses only anonymous ids.
+- **The model:** `claude-opus-5-5` with adaptive thinking at effort `high`; `--model` and `--effort` change it. Server-side fallbacks are on: if the model declines, the API retries on a fallback model.
+
 ## Layout
 
 | Path | Contents |
@@ -70,9 +91,10 @@ The [simulator doc](docs/simulator.md) explains everything in detail: the simple
 | [docs/](docs/) | The simulator in detail |
 | [worlds/](worlds/) | Data for worlds read from files, such as the Lean reference tree |
 | [vendor/oso-ledger/](vendor/oso-ledger/) | A pinned copy of the [app](https://github.com/open-science-org/app)'s ledger. The tests check that the simulator's waterfall pays exactly what the real ledger pays; `npm run sync-ledger` refreshes it |
+| [lean/](lean/) | The Lean problem set (public part) |
 | [test/](test/) | Tests |
 
-The Lean problem set, where agents will prove real theorems, is being prepared in `lean/` and is not yet published.
+The Lean problem set is in `lean/`: its definitions and targets are public, and its reference proofs are private.
 
 ## Related
 
