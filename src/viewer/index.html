@@ -469,7 +469,7 @@ async function enterCommunity() {
   }
   const runs = await api('/api/community/runs');
   const keep = $('c-run').value;
-  $('c-run').innerHTML = runs.map((r) => `<option value="${esc(r.id)}">${esc(r.id)} · ${r.actions} actions${r.live ? ' · live' : ''}</option>`).join('') || '<option>No community runs yet</option>';
+  $('c-run').innerHTML = runs.map((r) => `<option value="${esc(r.id)}">${r.id.startsWith('stub-') ? 'Practice run, no AI (stand-ins replay our reference proofs)' : `${esc(r.id)} · real AI labs`} · ${r.actions} actions${r.live ? ' · live' : ''}</option>`).join('') || '<option>No community runs yet</option>';
   if (keep && runs.some((r) => r.id === keep)) $('c-run').value = keep;
   else { const real = runs.find((r) => r.live && !r.id.startsWith('stub-')) ?? runs.find((r) => !r.id.startsWith('stub-')); if (real) $('c-run').value = real.id; }
   loadCommunity();
