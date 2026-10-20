@@ -53,12 +53,19 @@ export function openRouterChat(settings: ModelSettings): Chat {
       ],
     };
     for (let tryNo = 1; ; tryNo++) {
-      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', 'X-Title': 'OSO experiment: Lean pilot' },
-        body: JSON.stringify(body),
-        signal: AbortSignal.timeout(15 * 60_000),
-      });
+      let res: Response;
+      try {
+        res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', 'X-Title': 'OSO experiment: Lean pilot' },
+          body: JSON.stringify(body),
+          signal: AbortSignal.timeout(15 * 60_000),
+        });
+      } catch (e) {
+        // A dropped connection (network change, sleep, provider reset): wait and try again.
+        if (tryNo < 4) { await new Promise((ok) => setTimeout(ok, 15_000 * tryNo)); continue; }
+        throw e;
+      }
       if ((res.status === 429 || res.status >= 500) && tryNo < 4) {
         await new Promise((ok) => setTimeout(ok, 5000 * tryNo));
         continue;
