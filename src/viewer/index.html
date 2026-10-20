@@ -94,6 +94,9 @@
   .pair { display: grid; grid-template-columns: 92px 1fr 52px; gap: 4px 8px; align-items: center; font-size: 12px; color: var(--ink-2); margin-top: 6px; }
   .pair .b { height: 10px; border-radius: 0 4px 4px 0; min-width: 2px; }
   .pair .oso { background: var(--s1); } .pair .trad { background: var(--s2); }
+  .findings { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--s1); border-radius: 8px; padding: 12px 16px; margin: 6px 0 12px; max-width: 1100px; }
+  .findings ul { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.55; }
+  .findings li { margin: 4px 0; }
   .pair .n { font-variant-numeric: tabular-nums; color: var(--ink); text-align: right; }
   .doc { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 18px 24px; max-width: 1100px; line-height: 1.55; font-size: 14px; overflow-wrap: anywhere; }
   .doc h1 { font-size: 22px; margin-top: 0; } .doc h2 { font-size: 17px; margin-top: 28px; } .doc h3 { font-size: 15px; }
@@ -322,7 +325,24 @@ async function drawOverview() {
       <div class="pair">${bar('OSO level', h.oso.frontier, h.maxLevel, 'oso')}${bar('traditional', h.traditional.frontier, h.maxLevel, 'trad')}</div>
       <div class="muted" style="margin-top:8px">Hardest level reached, of ${h.maxLevel}. Targets solved: ${f1(h.oso.targetsSolved)} vs ${f1(h.traditional.targetsSolved)} of ${h.targets}. OSO's lead as market parameters vary: ${lead}.</div></a>`;
   }).join('');
-  const comp = ov.comparison ? ov.comparison.html.replace(/<h1>.*?<\/h1>/, '') : '<p class="muted">No pilot comparison yet.</p>';
+  const md = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\*(.+?)\*/g, '<i>$1</i>');
+  const cd = ov.comparisonData;
+  const k = (x) => (x == null ? '–' : x >= 1000 ? (x / 1000).toFixed(1) + 'k' : String(Math.round(x)));
+  const pct = (p) => (p.attempts ? Math.round(100 * p.proved / p.attempts) : NaN);
+  const models = cd ? cd.models.map((m) => {
+    const name = m.model.split('/').pop();
+    const ratio = m.library.tokensPerProof && m.alone.tokensPerProof ? (m.alone.tokensPerProof / m.library.tokensPerProof).toFixed(1) : null;
+    const bar = (label, p, cls) => `<span>${label}</span><div class="b ${cls}" style="width:${p.attempts ? (100 * p.proved / p.attempts).toFixed(1) : 0}%"></div><span class="n">${p.attempts ? `${p.proved}/${p.attempts}` : '–'}</span>`;
+    const verdict = m.alone.attempts && m.alone.proved === m.alone.attempts ? 'proved every target alone' : m.needsLemmas.length ? `needed the lemmas for ${m.needsLemmas.join(', ')}` : 'lemmas did not decide any target';
+    return `<div class="field"><span class="chip ${m.needsLemmas.length ? 'ahead' : ''}">${esc(verdict)}</span><h3>${esc(name)}</h3>
+      <div class="pair">${bar('with lemmas', m.library, 'oso')}${bar('alone', m.alone, 'trad')}</div>
+      <div class="muted" style="margin-top:8px">Attempts that proved their target (8 targets × 2 attempts). Per proof: ${k(m.library.tokensPerProof)} output tokens with lemmas${ratio ? `, ${k(m.alone.tokensPerProof)} alone (${ratio}× more)` : ''}; $${m.library.costPerProof?.toFixed(3) ?? '–'} with lemmas${m.alone.costPerProof ? `, $${m.alone.costPerProof.toFixed(3)} alone` : ''}.${m.missingAlone.length ? ` Not run alone: ${m.missingAlone.join(', ')}.` : ''}</div></div>`;
+  }).join('') : '';
+  const comp = cd ? `<div class="findings"><ul>${cd.headline.map((h) => `<li>${md(h)}</li>`).join('')}</ul></div>
+      <div class="fields">${models}</div>
+      <div class="legend" style="margin-top:8px"><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s1)"/></svg>with the lemmas the target rests on</span><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s2)"/></svg>alone</span></div>
+      <p class="note"><a href="#/doc/${esc(ov.comparisonPath)}">Every target and model, with notes →</a></p>`
+    : ov.comparison ? `<article class="doc">${ov.comparison.html.replace(/<h1>.*?<\/h1>/, '')}</article>` : '<p class="muted">No pilot comparison yet.</p>';
   $('view-overview').innerHTML = `
     <p class="lede">Communities of research agents get the same field, agents and budget, under two sets of rules. <b>Traditional:</b> work is published only when it is finished, and nothing flows back to the work it built on. <b>OSO:</b> results are published as they are found, and part of each result's value flows back to what it built on. The <a href="https://github.com/open-science-org/OSO/blob/master/docs/demo-model.md" target="_blank" rel="noopener">specification</a> defines the model once.</p>
     <h2 class="section">Simulated fields</h2>
@@ -330,8 +350,8 @@ async function drawOverview() {
     <div class="fields">${fields || '<p class="muted">No reports yet: npm run sim -- report all.</p>'}</div>
     <div class="legend" style="margin-top:8px"><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s1)"/></svg>OSO (results published at once)</span><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s2)"/></svg>traditional</span></div>
     <h2 class="section">Real agents: the Lean pilot</h2>
-    <p class="note">Models prove the problem set's posted targets, alone or with the lemmas they rest on, and Lean checks every proof. <a href="#/pilot">Watch or replay the runs →</a></p>
-    <article class="doc">${comp}</article>`;
+    <p class="note">Five AI models tried to prove the problem set's 8 posted targets, alone or given the lemmas each target rests on; Lean checked every proof. The question: do shared lemmas make results reachable that are not reachable alone, or only cheaper? <a href="#/pilot">Watch or replay the runs →</a></p>
+    ${comp}`;
 }
 
 async function drawExperiments() {

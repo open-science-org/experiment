@@ -56,7 +56,8 @@ function overview() {
   const experiments = readdirSync(RESULTS_DIR).filter((d) => existsSync(join(RESULTS_DIR, d, 'summary.md')))
     .map((d) => ({ id: d, title: (/^# (.+)$/m.exec(readFileSync(join(RESULTS_DIR, d, 'summary.md'), 'utf8'))?.[1] ?? d) }));
   const comparison = pilot.filter((p) => p.id.startsWith('panel-20')).sort((a, b) => b.modified - a.modified)[0];
-  return { fields, pilot: pilot.sort((a, b) => b.modified - a.modified), experiments, comparison: comparison ? doc(`results/pilot/${comparison.id}/summary.md`) : null };
+  const comparisonData = comparison && existsSync(join(pilotDir, comparison.id, 'data.json')) ? JSON.parse(readFileSync(join(pilotDir, comparison.id, 'data.json'), 'utf8')) : null;
+  return { fields, pilot: pilot.sort((a, b) => b.modified - a.modified), experiments, comparison: comparison ? doc(`results/pilot/${comparison.id}/summary.md`) : null, comparisonData, comparisonPath: comparison ? `results/pilot/${comparison.id}/summary.md` : null };
 }
 const PAGE = new URL('./index.html', import.meta.url).pathname;
 const SETTINGS: Record<string, string> = { traditional: 'Traditional', oso: 'OSO (immediate)', osoChoice: 'OSO (choice)', creditOnly: 'Flow-back, finished-only', sharingOnly: 'No flow-back, immediate', traditionalChoice: 'No flow-back, choice' };

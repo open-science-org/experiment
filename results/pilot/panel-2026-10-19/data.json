@@ -1,0 +1,129 @@
+{
+ "id": "panel-2026-10-19",
+ "title": "five models on the posted targets (2026-10-19)",
+ "runs": [
+  "panel-claude-opus-5.5",
+  "panel-claude-sonnet-5.5",
+  "panel-gpt-5.6-terra",
+  "panel-gemini-3.8-flash",
+  "panel-deepseek-v4.1-flash"
+ ],
+ "attempts": 2,
+ "repairs": 3,
+ "allowGrind": false,
+ "effort": "high",
+ "headline": [
+  "**Lemmas made targets reachable for 3 of 5 models.** gpt-5.6-terra: X1; gemini-3.8-flash: X1, A5; deepseek-v4.1-flash: A3 were proved with their lemmas but never alone.",
+  "**claude-opus-5.5 and claude-sonnet-5.5 proved every target alone,** so for them the lemmas save cost but are not needed.",
+  "**With the lemmas, a proof took 1.4 to 6.6 times fewer output tokens** than without, across models (tokens, not dollars: OpenRouter sends a model's calls to providers with different prices).",
+  "**Cheapest with lemmas: deepseek-v4.1-flash,** at $0.008 per proof (75% of attempts proved)."
+ ],
+ "models": [
+  {
+   "model": "anthropic/claude-opus-5.5",
+   "runId": "panel-claude-opus-5.5",
+   "library": {
+    "proved": 16,
+    "attempts": 16,
+    "costPerProof": 0.04219150000000001,
+    "tokensPerProof": 1698.5
+   },
+   "alone": {
+    "proved": 16,
+    "attempts": 16,
+    "costPerProof": 0.23766075000000003,
+    "tokensPerProof": 10431.25
+   },
+   "needsLemmas": [],
+   "missingAlone": [],
+   "cost": 4.477636
+  },
+  {
+   "model": "anthropic/claude-sonnet-5.5",
+   "runId": "panel-claude-sonnet-5.5",
+   "library": {
+    "proved": 16,
+    "attempts": 16,
+    "costPerProof": 0.021897125000000003,
+    "tokensPerProof": 1435.25
+   },
+   "alone": {
+    "proved": 16,
+    "attempts": 16,
+    "costPerProof": 0.12454025,
+    "tokensPerProof": 9522.1875
+   },
+   "needsLemmas": [],
+   "missingAlone": [],
+   "cost": 2.342998
+  },
+  {
+   "model": "openai/gpt-5.6-terra",
+   "runId": "panel-gpt-5.6-terra",
+   "library": {
+    "proved": 16,
+    "attempts": 16,
+    "costPerProof": 0.068092,
+    "tokensPerProof": 4904.3125
+   },
+   "alone": {
+    "proved": 11,
+    "attempts": 16,
+    "costPerProof": 0.1601173272727273,
+    "tokensPerProof": 11331.636363636364
+   },
+   "needsLemmas": [
+    "X1"
+   ],
+   "missingAlone": [],
+   "cost": 4.2685262999999996
+  },
+  {
+   "model": "google/gemini-3.8-flash",
+   "runId": "panel-gemini-3.8-flash",
+   "library": {
+    "proved": 14,
+    "attempts": 16,
+    "costPerProof": 0.12766548214285714,
+    "tokensPerProof": 27645.5
+   },
+   "alone": {
+    "proved": 11,
+    "attempts": 16,
+    "costPerProof": 0.16978547045454545,
+    "tokensPerProof": 39392.818181818184
+   },
+   "needsLemmas": [
+    "X1",
+    "A5"
+   ],
+   "missingAlone": [],
+   "cost": 6.085791825
+  },
+  {
+   "model": "deepseek/deepseek-v4.1-flash",
+   "runId": "panel-deepseek-v4.1-flash",
+   "library": {
+    "proved": 12,
+    "attempts": 16,
+    "costPerProof": 0.00781903225,
+    "tokensPerProof": 21479.833333333332
+   },
+   "alone": {
+    "proved": 4,
+    "attempts": 10,
+    "costPerProof": 0.0009048589999999999,
+    "tokensPerProof": 58785
+   },
+   "needsLemmas": [
+    "A3"
+   ],
+   "missingAlone": [
+    "B5",
+    "X2",
+    "A5"
+   ],
+   "cost": 0.5499196354000001
+  }
+ ]
+}

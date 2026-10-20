@@ -264,9 +264,47 @@ export function writeComparison(id: string, runIds: string[], title: string): st
     ...Object.fromEntries(runs.map((r, i) => [models[i].split('/').pop()!,
       `${cell(r.records.filter((x) => x.publicId === t && x.condition === 'alone'))} alone · ${cell(r.records.filter((x) => x.publicId === t && x.condition === 'library'))} with`])),
   }));
+  // The headline, computed from the data: per model, success and cost with and without lemmas, and
+  // the targets the lemmas made reachable (proved with them, never alone).
+  const models_ = runs.map((r) => {
+    const recs = r.records.filter((x) => x.posted);
+    const lib = recs.filter((x) => x.condition === 'library'), alone = recs.filter((x) => x.condition === 'alone');
+    const okCost = (rs: Record_[]) => { const ok = rs.filter((x) => x.ok); return ok.length ? ok.reduce((a, x) => a + (x.usage.cost ?? 0), 0) / ok.length : null; };
+    // Tokens do not depend on which provider served a call (prices differ between providers).
+    const okTokens = (rs: Record_[]) => { const ok = rs.filter((x) => x.ok); return ok.length ? ok.reduce((a, x) => a + x.usage.output, 0) / ok.length : null; };
+    const tids = [...new Set(recs.map((x) => x.publicId))];
+    const needs = tids.filter((t) => {
+      const a = alone.filter((x) => x.publicId === t), l = lib.filter((x) => x.publicId === t);
+      return a.length > 0 && !a.some((x) => x.ok) && l.some((x) => x.ok);
+    });
+    const missing = tids.filter((t) => !alone.some((x) => x.publicId === t));
+    return {
+      model: r.opts.model.model, runId: r.runId,
+      library: { proved: lib.filter((x) => x.ok).length, attempts: lib.length, costPerProof: okCost(lib), tokensPerProof: okTokens(lib) },
+      alone: { proved: alone.filter((x) => x.ok).length, attempts: alone.length, costPerProof: okCost(alone), tokensPerProof: okTokens(alone) },
+      needsLemmas: needs.sort((a, b) => depth.get(a)! - depth.get(b)!), missingAlone: missing,
+      cost: r.records.reduce((a, x) => a + (x.usage.cost ?? 0), 0),
+    };
+  });
+  const rate = (x: { proved: number; attempts: number }) => (x.attempts ? x.proved / x.attempts : NaN);
+  const allAlone = models_.filter((m) => m.alone.attempts > 0 && m.alone.proved === m.alone.attempts);
+  const helped = models_.filter((m) => m.needsLemmas.length);
+  const savings = models_.filter((m) => m.library.tokensPerProof && m.alone.tokensPerProof && m.alone.attempts >= 4).map((m) => m.alone.tokensPerProof! / m.library.tokensPerProof!);
+  const cheapest = [...models_].filter((m) => m.library.costPerProof !== null).sort((a, b) => a.library.costPerProof! - b.library.costPerProof!)[0];
+  const short = (m: string) => m.split('/').pop()!;
+  const headline = [
+    `**Lemmas made targets reachable for ${helped.length} of ${models_.length} models.** ${helped.length ? helped.map((m) => `${short(m.model)}: ${m.needsLemmas.join(', ')}`).join('; ') + ' were proved with their lemmas but never alone.' : ''}`.trim(),
+    allAlone.length ? `**${allAlone.map((m) => short(m.model)).join(' and ')} proved every target alone,** so for ${allAlone.length > 1 ? 'them' : 'it'} the lemmas save cost but are not needed.` : '',
+    savings.length ? `**With the lemmas, a proof took ${Math.min(...savings).toFixed(1)} to ${Math.max(...savings).toFixed(1)} times fewer output tokens** than without, across models (tokens, not dollars: OpenRouter sends a model's calls to providers with different prices).` : '',
+    cheapest ? `**Cheapest with lemmas: ${short(cheapest.model)},** at $${cheapest.library.costPerProof!.toFixed(3)} per proof (${Math.round(100 * rate(cheapest.library))}% of attempts proved).` : '',
+  ].filter(Boolean);
   const r0 = runs[0].opts;
   const md = `# Lean pilot: ${title}
 
+## Headline
+
+${headline.map((h) => `- ${h}`).join('\n')}
+${models_.some((m) => m.missingAlone.length) ? `\n*Missing: ${models_.filter((m) => m.missingAlone.length).map((m) => `${short(m.model)} alone on ${m.missingAlone.join(', ')}`).join('; ')} (see the notes).*\n` : ''}
 Each model attempted every posted target alone (no library) and with the theorems it rests on (library), ${r0.attempts} attempts each. One attempt is a proof plus up to ${r0.repairs} repairs on Lean's errors; reasoning effort ${r0.model.effort}; \`grind\` ${r0.allowGrind ? 'allowed' : 'banned'}. All models were called through OpenRouter, which reports each call's cost.
 
 ## By model
@@ -282,5 +320,6 @@ A target a model proves alone does not need its lemmas, for that model: shared l
   const dir = join(RESULTS_DIR, 'pilot', id);
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, 'summary.md'), md);
+  writeFileSync(join(dir, 'data.json'), JSON.stringify({ id, title, runs: runIds, attempts: r0.attempts, repairs: r0.repairs, allowGrind: r0.allowGrind, effort: r0.model.effort, headline, models: models_ }, null, 1) + '\n');
   return dir;
 }
