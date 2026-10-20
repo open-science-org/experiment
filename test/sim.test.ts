@@ -314,3 +314,11 @@ test('the designer turns a design into a valid experiment and rejects bad design
   assert.deepEqual(rows.map((r) => [r.scenario.rules.alpha, r.scenario.rules.c, r.scenario.rules.screen]), [[1, 0, 0.9], [0.2, 0.3, 0.9], [0.6, 0.3, 0.9]]);
   assert.equal(design.checkExperiment({ ...d, set: { 'rules.screen': 3 } }).ok, false, 'out of range');
 });
+
+test("the app's page script parses", async () => {
+  const { Script } = await import('node:vm');
+  const html = readFileSync(new URL('../src/viewer/index.html', import.meta.url), 'utf8');
+  const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1] ?? '';
+  assert.ok(script.length > 1000);
+  assert.doesNotThrow(() => new Script(script), 'syntax error in src/viewer/index.html');
+});

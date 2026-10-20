@@ -633,7 +633,7 @@ function explain() {
   const st = P[p.path];
   const v = st.vary ? Number(String(st.values).split(',')[0]) : st.value;
   const ex = EXPLAIN[p.path]?.(Number.isFinite(v) ? v : D.field[p.path]) ?? { svg: '', cap: '' };
-  $('e-explain').innerHTML = `<h3>${esc(p.label)}</h3><p>${esc(p.explain)}</p>${ex.svg}<p class="cap">${ex.cap}</p>${st.vary ? `<p class="cap">Varied: the example shows the first value, ${esc(String(st.values).split(',')[0])}.</p>` : ''}${ex.svg.includes('Example research tree') ? '<p class="cap muted">Example tree:' A1 and A2 are foundations, B and C lemmas, T a target; arrows point from a result to what builds on it, labelled with how much it was used.</p>' : ''}`;
+  $('e-explain').innerHTML = `<h3>${esc(p.label)}</h3><p>${esc(p.explain)}</p>${ex.svg}<p class="cap">${ex.cap}</p>${st.vary ? `<p class="cap">Varied: the example shows the first value, ${esc(String(st.values).split(',')[0])}.</p>` : ''}${ex.svg.includes('Example research tree') ? '<p class="cap muted">Example tree: A1 and A2 are foundations, B and C lemmas, T a target; arrows point from a result to what builds on it, labelled with how much it was used.</p>' : ''}`;
 }
 
 function currentDesign() {
