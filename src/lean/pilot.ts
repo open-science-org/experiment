@@ -323,7 +323,7 @@ export function writeComparison(id: string, runIds: string[], title: string): st
       title: `${short(m.model)}: targets proved for the money`,
       subtitle: 'Cumulative, working up the tree. The lemmas\' own cost is not counted.',
       xLabel: 'Dollars spent', yLabel: 'Targets proved',
-      series: [{ name: 'With lemmas', slot: 1, points: lib }, { name: 'Alone', slot: 2, points: alone }],
+      series: [{ name: 'With lemmas', slot: 2, points: lib }, { name: 'Alone', slot: 1, points: alone }],
       x: [0, top], y: [0, T], xTicks: [0, top / 4, top / 2, (3 * top) / 4, top], yTicks: Array.from({ length: T + 1 }, (_, i) => i).filter((i) => T <= 8 || i % 2 === 0),
       format: { x: (v) => `$${Number.isInteger(v) ? v : v.toFixed(2)}`, y: (v) => String(Math.round(v)) },
     }));

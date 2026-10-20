@@ -1,0 +1,566 @@
+{
+  "experiment": "funding-rule-gamer",
+  "date": "2026-10-20",
+  "commit": "45faf29",
+  "dirty": true,
+  "command": "npm run sim -- funding-rule-gamer --seeds 100 --save",
+  "seeds": 100,
+  "overrides": {},
+  "config": {
+    "experiment": {
+      "id": "funding-rule-gamer",
+      "title": "Is the funding-rule effect a gamer effect? Drug discovery",
+      "description": "Traditional and OSO (immediate) on the drug-discovery field, as compute follows earnings (ρ) from 0 to 1, with and without the gaming agent. With ρ = 1 under traditional rules, the first agent to earn takes all the compute; the gamer earns first, from trivial results, and then does all the research.",
+      "seeds": 100,
+      "scenario": "default",
+      "set": {
+        "world": {
+          "kind": "layered",
+          "levels": 6,
+          "width": 9,
+          "maxPrereqs": 2,
+          "skipProb": 0.1,
+          "areas": 3,
+          "areaStickiness": 0.85,
+          "targets": [
+            {
+              "level": 6,
+              "count": 3
+            }
+          ],
+          "bountyBase": 2,
+          "bountyGrowth": 3
+        },
+        "success": {
+          "p0": 0.6,
+          "eta": 0.45
+        },
+        "measures": {
+          "targetLevel": 5
+        },
+        "budget": {
+          "X": 1240,
+          "rounds": 103,
+          "perAgentPerRound": null
+        }
+      },
+      "factors": [
+        {
+          "name": "gaming agent",
+          "path": "agents.mix.gamer",
+          "values": [
+            1,
+            0
+          ]
+        },
+        {
+          "name": "ρ",
+          "path": "budget.allocation.rho",
+          "values": [
+            0,
+            0.5,
+            1
+          ]
+        },
+        {
+          "name": "setting",
+          "levels": [
+            {
+              "label": "Traditional",
+              "preset": "traditional"
+            },
+            {
+              "label": "OSO (immediate)",
+              "preset": "oso"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        "frontier",
+        "targetsSolved",
+        "cost",
+        "gamerShare"
+      ]
+    },
+    "base": {
+      "world": {
+        "kind": "layered",
+        "levels": 6,
+        "width": 9,
+        "maxPrereqs": 2,
+        "skipProb": 0.1,
+        "areas": 3,
+        "areaStickiness": 0.85,
+        "targets": [
+          {
+            "level": 6,
+            "count": 3
+          }
+        ],
+        "bountyBase": 2,
+        "bountyGrowth": 3
+      },
+      "success": {
+        "p0": 0.6,
+        "eta": 0.45,
+        "oracle": {
+          "kind": "chance"
+        }
+      },
+      "attribution": {
+        "noise": 0
+      },
+      "agents": {
+        "archetypes": {
+          "plain": {
+            "skill": 1,
+            "conjecture": 1,
+            "cost": 1,
+            "horizon": 1,
+            "risk": 0,
+            "reuse": 1,
+            "sharing": 0,
+            "gaming": 0,
+            "specialist": false
+          },
+          "foundation": {
+            "skill": 1,
+            "conjecture": 0.7,
+            "cost": 1,
+            "horizon": 0.98,
+            "risk": 0.2,
+            "reuse": 0.9,
+            "sharing": 0.5,
+            "gaming": 0,
+            "specialist": false
+          },
+          "racer": {
+            "skill": 1,
+            "conjecture": 0.5,
+            "cost": 1,
+            "horizon": 0.85,
+            "risk": -0.2,
+            "reuse": 0.6,
+            "sharing": 0,
+            "gaming": 0,
+            "specialist": false
+          },
+          "explorer": {
+            "skill": 0.5,
+            "conjecture": 0.3,
+            "cost": 0.3,
+            "horizon": 0.95,
+            "risk": 0,
+            "reuse": 0.8,
+            "sharing": 0.2,
+            "gaming": 0,
+            "specialist": false
+          },
+          "specialist": {
+            "skill": 1,
+            "conjecture": 0.6,
+            "cost": 1,
+            "horizon": 0.95,
+            "risk": 0,
+            "reuse": 0.8,
+            "sharing": 0.2,
+            "gaming": 0,
+            "specialist": true
+          },
+          "freeRider": {
+            "skill": 0.8,
+            "conjecture": 0.5,
+            "cost": 1,
+            "horizon": 0.9,
+            "risk": 0,
+            "reuse": 1,
+            "sharing": -1,
+            "gaming": 0,
+            "specialist": false
+          },
+          "gamer": {
+            "skill": 0.8,
+            "conjecture": 0.3,
+            "cost": 0.5,
+            "horizon": 0.9,
+            "risk": 0,
+            "reuse": 0.8,
+            "sharing": 0,
+            "gaming": 0.6,
+            "specialist": false
+          }
+        },
+        "mix": {
+          "foundation": 3,
+          "racer": 3,
+          "explorer": 2,
+          "specialist": 2,
+          "freeRider": 1,
+          "gamer": 1
+        },
+        "specialist": {
+          "boost": 1.6,
+          "penalty": 0.4
+        },
+        "deciders": {}
+      },
+      "rules": {
+        "alpha": 1,
+        "c": 0,
+        "mint": 1,
+        "screen": 0.5,
+        "publishFailures": false,
+        "visibility": {
+          "kind": "finished-only"
+        }
+      },
+      "knowledge": {
+        "absorbCost": 0,
+        "errorRate": 0
+      },
+      "budget": {
+        "X": 1240,
+        "rounds": 103,
+        "perAgentPerRound": null,
+        "stopWhenSolved": true,
+        "allocation": {
+          "kind": "earnings-share",
+          "rho": 0.5,
+          "smoothing": 0.7
+        }
+      },
+      "behaviour": {
+        "decider": {
+          "kind": "formula"
+        },
+        "policy": {
+          "kind": "softmax",
+          "tau": 0.3,
+          "epsilon": 0.05
+        },
+        "perceptionNoise": 1,
+        "kappa": 1,
+        "psi": 0.5,
+        "roundsPerLevel": 5
+      },
+      "measures": {
+        "targetLevel": 5
+      }
+    },
+    "rows": [
+      {
+        "labels": {
+          "gaming agent": 1,
+          "ρ": 0,
+          "setting": "Traditional"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "gamer": 1
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0
+            }
+          },
+          "rules": {
+            "alpha": 1,
+            "c": 0,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "gaming agent": 1,
+          "ρ": 0,
+          "setting": "OSO (immediate)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "gamer": 1
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "immediate"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "gaming agent": 1,
+          "ρ": 0.5,
+          "setting": "Traditional"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "gamer": 1
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5
+            }
+          },
+          "rules": {
+            "alpha": 1,
+            "c": 0,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "gaming agent": 1,
+          "ρ": 0.5,
+          "setting": "OSO (immediate)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "gamer": 1
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "immediate"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "gaming agent": 1,
+          "ρ": 1,
+          "setting": "Traditional"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "gamer": 1
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 1
+            }
+          },
+          "rules": {
+            "alpha": 1,
+            "c": 0,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "gaming agent": 1,
+          "ρ": 1,
+          "setting": "OSO (immediate)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "gamer": 1
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 1
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "immediate"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "gaming agent": 0,
+          "ρ": 0,
+          "setting": "Traditional"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "gamer": 0
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0
+            }
+          },
+          "rules": {
+            "alpha": 1,
+            "c": 0,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "gaming agent": 0,
+          "ρ": 0,
+          "setting": "OSO (immediate)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "gamer": 0
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "immediate"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "gaming agent": 0,
+          "ρ": 0.5,
+          "setting": "Traditional"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "gamer": 0
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5
+            }
+          },
+          "rules": {
+            "alpha": 1,
+            "c": 0,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "gaming agent": 0,
+          "ρ": 0.5,
+          "setting": "OSO (immediate)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "gamer": 0
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "immediate"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "gaming agent": 0,
+          "ρ": 1,
+          "setting": "Traditional"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "gamer": 0
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 1
+            }
+          },
+          "rules": {
+            "alpha": 1,
+            "c": 0,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "gaming agent": 0,
+          "ρ": 1,
+          "setting": "OSO (immediate)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "gamer": 0
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 1
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "immediate"
+            }
+          }
+        }
+      }
+    ]
+  }
+}

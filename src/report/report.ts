@@ -153,8 +153,8 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
     subtitle: `Mean hardest level published, by compute spent (${seeds} runs per setting). Higher is better.`,
     xLabel: 'Compute spent', yLabel: 'Hardest level published',
     series: [
-      { name: 'OSO (immediate)', slot: 1, points: frontierCurve(curveRuns('OSO (immediate)'), X) },
-      { name: 'Traditional', slot: 2, points: frontierCurve(curveRuns('Traditional'), X) },
+      { name: 'OSO (immediate)', slot: 2, points: frontierCurve(curveRuns('OSO (immediate)'), X) },
+      { name: 'Traditional', slot: 1, points: frontierCurve(curveRuns('Traditional'), X) },
       { name: 'OSO (choice)', slot: 3, points: frontierCurve(curveRuns('OSO (choice)'), X) },
     ],
     x: [0, X], y: [0, world.levels],
@@ -221,7 +221,10 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
     'OSO targets': f1(q.oso.targetsSolved), 'traditional targets': f1(q.trad.targetsSolved), 'results shared': pct(q.oso.sharing),
   })));
   const gridTable = GRID.alpha.map((a) => ({ 'α \\ c': a, ...Object.fromEntries(GRID.c.map((c) => { const g = gridCell(a, c); return [cFmt(c), `${pct(g.sharing)} · ${f1(g.frontier)}`]; })) }));
-  const sensitivityLine = `Across the tested values of the parameters a market or community sets, OSO's lead (agents choosing what to share) runs from **${marketMin.min >= 0 ? '+' : ''}${f1(marketMin.min)}** to **+${f1(Math.max(...market.map((x) => x.max)))}** levels. The smallest lead, at ${marketMin.p.label} = ${worst.value}, is ${worstText}. The lead is most sensitive to **${mostSensitive.p.label}**.`;
+  const gamerNote = mostSensitive.p.id === 'rho' && (scenario.agents.mix.gamer ?? 0) > 0
+    ? ' Why ρ matters so much here: under traditional rules, when compute follows earnings, the first agent to earn takes the compute. In this community that is the gaming agent, which earns early from trivial results and then, holding all the compute, does the research too. Without a gaming agent the effect disappears (see the funding-rule-gamer experiment).'
+    : '';
+  const sensitivityLine = `Across the tested values of the parameters a market or community sets, OSO's lead (agents choosing what to share) runs from **${marketMin.min >= 0 ? '+' : ''}${f1(marketMin.min)}** to **+${f1(Math.max(...market.map((x) => x.max)))}** levels. The smallest lead, at ${marketMin.p.label} = ${worst.value}, is ${worstText}. The lead is most sensitive to **${mostSensitive.p.label}**.${gamerNote}`;
 
   const { commit, dirty } = git();
   const date = new Date().toISOString().slice(0, 10);

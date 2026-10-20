@@ -401,7 +401,7 @@ export function writeCommunityComparison(id: string, runs: { runId: string; resu
     title: `Targets solved for the money: ${who}, OSO vs traditional`,
     subtitle: `Same agents and budget ($${maxX.toFixed(2)} at list prices); Lean checks every proof.`,
     xLabel: 'Dollars spent by the community', yLabel: 'Targets solved',
-    series: curves.map((c) => ({ name: label(c.result.opts.rules), slot: c.result.opts.rules === 'oso' ? 1 : 2, points: c.pts })) as never,
+    series: curves.map((c) => ({ name: label(c.result.opts.rules), slot: c.result.opts.rules === 'oso' ? 2 : 1, points: c.pts })) as never,
     x: [0, maxX], y: [0, 8], xTicks: [0, maxX / 4, maxX / 2, (3 * maxX) / 4, maxX], yTicks: [0, 2, 4, 6, 8],
     format: { x: (v) => `$${v.toFixed(2)}`, y: (v) => String(v) },
   }));

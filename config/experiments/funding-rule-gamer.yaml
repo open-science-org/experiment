@@ -1,0 +1,25 @@
+id: funding-rule-gamer
+title: Is the funding-rule effect a gamer effect? Drug discovery
+description: >-
+  Traditional and OSO (immediate) on the drug-discovery field, as compute follows earnings (ρ) from 0
+  to 1, with and without the gaming agent. With ρ = 1 under traditional rules, the first agent to earn
+  takes all the compute; the gamer earns first, from trivial results, and then does all the research.
+seeds: 100
+scenario: default
+set:
+  world: { kind: layered, levels: 6, width: 9, maxPrereqs: 2, skipProb: 0.1, areas: 3, areaStickiness: 0.85, targets: [{ level: 6, count: 3 }], bountyBase: 2, bountyGrowth: 3 }
+  success: { p0: 0.6, eta: 0.45 }
+  measures: { targetLevel: 5 }
+  budget: { X: 1240, rounds: 103, perAgentPerRound: null }
+factors:
+  - name: gaming agent
+    path: agents.mix.gamer
+    values: [1, 0]
+  - name: ρ
+    path: budget.allocation.rho
+    values: [0, 0.5, 1]
+  - name: setting
+    levels:
+      - { label: Traditional, preset: traditional }
+      - { label: OSO (immediate), preset: oso }
+columns: [frontier, targetsSolved, cost, gamerShare]

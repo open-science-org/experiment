@@ -93,7 +93,8 @@
   .chip.ahead { border-color: var(--s1); color: var(--s1); }
   .pair { display: grid; grid-template-columns: 92px 1fr 52px; gap: 4px 8px; align-items: center; font-size: 12px; color: var(--ink-2); margin-top: 6px; }
   .pair .b { height: 10px; border-radius: 0 4px 4px 0; min-width: 2px; }
-  .pair .oso { background: var(--s1); } .pair .trad { background: var(--s2); }
+  /* OSO is always orange, traditional always blue. */
+  .pair .oso { background: var(--s2); } .pair .trad { background: var(--s1); }
   .findings { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--s1); border-radius: 8px; padding: 12px 16px; margin: 6px 0 12px; max-width: 1100px; }
   .findings ul { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.55; }
   .findings li { margin: 4px 0; }
@@ -383,7 +384,7 @@ async function drawOverview() {
   }).join('') : '';
   const comp = cd ? `<div class="findings"><ul>${cd.headline.map((h) => `<li>${md(h)}</li>`).join('')}</ul></div>
       <div class="fields">${models}</div>
-      <div class="legend" style="margin-top:8px"><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s1)"/></svg>with the lemmas the target rests on</span><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s2)"/></svg>alone</span></div>
+      <div class="legend" style="margin-top:8px"><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s2)"/></svg>with the lemmas the target rests on (as under OSO)</span><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s1)"/></svg>alone (as under traditional rules)</span></div>
       <p class="note">The charts show targets proved as each model spends, working up the tree, alone and with the lemmas. The lemmas' own cost is not counted: they show what a prover saves when the lemmas are already published. The real comparison of communities, traditional against OSO with real agents, is the next step. <a href="#/doc/${esc(ov.comparisonPath)}">Every target and model, with notes →</a></p>`
     : ov.comparison ? `<article class="doc">${ov.comparison.html.replace(/<h1>.*?<\/h1>/, '')}</article>` : '<p class="muted">No pilot comparison yet.</p>';
   $('view-overview').innerHTML = `
@@ -391,7 +392,7 @@ async function drawOverview() {
     <h2 class="section">Simulated fields</h2>
     <p class="note">Simulations with guessed parameters: they show how the rules play out if a field works as described, not that it does. Click a field for its full report.</p>
     <div class="fields">${fields || '<p class="muted">No reports yet: npm run sim -- report all.</p>'}</div>
-    <div class="legend" style="margin-top:8px"><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s1)"/></svg>OSO (results published at once)</span><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s2)"/></svg>traditional</span></div>
+    <div class="legend" style="margin-top:8px"><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s2)"/></svg>OSO (results published at once)</span><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s1)"/></svg>traditional</span></div>
     <h2 class="section">Real agents: the Lean pilot</h2>
     <p class="note">Five AI models tried to prove the problem set's 8 posted targets, alone or given the lemmas each target rests on; Lean checked every proof. The question: do shared lemmas make results reachable that are not reachable alone, or only cheaper? <a href="#/pilot">Watch or replay the runs →</a></p>
     ${comp}`;
@@ -512,7 +513,7 @@ function drawCommunity() {
   for (const k of [0, 0.25, 0.5, 0.75, 1]) svg += `<text x="${sx(budget * k)}" y="${top + ph + 16}" text-anchor="middle" font-size="11" fill="var(--ink-2)">$${(budget * k).toFixed(2)}</text>`;
   svg += `<text x="${l + pw / 2}" y="${H - 6}" text-anchor="middle" font-size="11" fill="var(--ink-2)">Dollars spent by the community (list prices)</text>`;
   const ends = [];
-  for (const [k, color, name] of [['traditional', 'var(--s2)', 'Traditional'], ['oso', 'var(--s1)', 'OSO']]) {
+  for (const [k, color, name] of [['traditional', 'var(--s1)', 'Traditional'], ['oso', 'var(--s2)', 'OSO']]) {
     if (!C.run[k]) continue;
     const pts = curve(sideActs(k));
     let d = ''; pts.forEach(([x, y], i) => { const px = sx(x), py = sy(y); d += i ? ` H${px.toFixed(1)} V${py.toFixed(1)}` : `M${px.toFixed(1)} ${py.toFixed(1)}`; });

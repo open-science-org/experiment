@@ -118,7 +118,7 @@ const COLUMN_INFO: Record<string, string> = {
   speed: 'rounds to reach the main level', cost: 'compute to reach the main level', spend: 'compute spent', productivity: 'results per 100 compute',
   breadth: 'share of targets solved', waste: 'share of compute on results no target needed', credit: 'how well bounty pay matches contribution',
   sharing: 'share of intermediate results published at once', hoarded: 'results proved but never published', reuse: 'how often published results were built on',
-  duplicates: 'proofs of already-published results', targetsSolved: 'targets solved', gamerShare: "the gamer's share of compute",
+  duplicates: 'proofs of already-published results', targetsSolved: 'targets solved', gamerShare: "the gamer's share of all pay",
   trivialSpend: 'compute spent on trivial results', rejected: 'targets rejected for resting on wrong results', retracted: 'results retracted as wrong', absorbSpend: 'compute spent absorbing published results',
 };
 
