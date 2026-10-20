@@ -27,11 +27,11 @@
   }
  },
  "totals": {
-  "input": 752517,
-  "output": 762121,
-  "cacheRead": 32710,
+  "input": 1315676,
+  "output": 1354999,
+  "cacheRead": 237181,
   "cacheWrite": 0,
-  "cost": 3.42479475
+  "cost": 6.085791825
  },
  "byDepth": [
   {
@@ -69,10 +69,10 @@
   {
    "depth": 5,
    "theorems": 2,
-   "attempts": 3,
-   "proved": 3,
+   "attempts": 4,
+   "proved": 4,
    "rate": 1,
-   "tokens": 25823.666666666668
+   "tokens": 49823.5
   },
   {
    "depth": 7,
@@ -121,6 +121,18 @@
    "outputTokens": 39420.5
   },
   {
+   "id": "X1",
+   "depth": 3,
+   "area": "cross",
+   "posted": "X1",
+   "condition": "alone",
+   "attempts": 2,
+   "proved": 0,
+   "meanTurns": 4,
+   "tokens": 174191,
+   "outputTokens": 69339.5
+  },
+  {
    "id": "B3",
    "depth": 4,
    "area": "B",
@@ -131,6 +143,42 @@
    "meanTurns": 1,
    "tokens": 28717.5,
    "outputTokens": 27395.5
+  },
+  {
+   "id": "B5",
+   "depth": 5,
+   "area": "B",
+   "posted": "B5",
+   "condition": "alone",
+   "attempts": 2,
+   "proved": 1,
+   "meanTurns": 3.5,
+   "tokens": 131998.5,
+   "outputTokens": 74762
+  },
+  {
+   "id": "X2",
+   "depth": 5,
+   "area": "cross",
+   "posted": "X2",
+   "condition": "alone",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 3,
+   "tokens": 126174.5,
+   "outputTokens": 49155.5
+  },
+  {
+   "id": "A5",
+   "depth": 7,
+   "area": "A",
+   "posted": "A5",
+   "condition": "alone",
+   "attempts": 2,
+   "proved": 0,
+   "meanTurns": 4,
+   "tokens": 186978.5,
+   "outputTokens": 79821.5
   },
   {
    "id": "C3",
@@ -210,11 +258,11 @@
    "area": "cross",
    "posted": "X2",
    "condition": "library",
-   "attempts": 1,
-   "proved": 1,
-   "meanTurns": 2,
-   "tokens": 67495,
-   "outputTokens": 33002
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 2.5,
+   "tokens": 94659,
+   "outputTokens": 39861.5
   },
   {
    "id": "A5",

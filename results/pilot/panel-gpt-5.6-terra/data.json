@@ -27,11 +27,11 @@
   }
  },
  "totals": {
-  "input": 214276,
-  "output": 269838,
-  "cacheRead": 293604,
+  "input": 241552,
+  "output": 300142,
+  "cacheRead": 315259,
   "cacheWrite": 0,
-  "cost": 3.8323617999999993
+  "cost": 4.2685262999999996
  },
  "byDepth": [
   {
@@ -174,11 +174,11 @@
    "area": "A",
    "posted": "A5",
    "condition": "alone",
-   "attempts": 1,
-   "proved": 0,
-   "meanTurns": 4,
-   "tokens": 52727,
-   "outputTokens": 13295
+   "attempts": 2,
+   "proved": 1,
+   "meanTurns": 3.5,
+   "tokens": 65981,
+   "outputTokens": 21799.5
   },
   {
    "id": "C3",

@@ -5,7 +5,7 @@ How hard each theorem of the Lean problem set is for a real agent.
 - **Agent:** `openai/gpt-5.6-terra` via openrouter, reasoning effort high. One attempt is a first proof plus up to 3 repairs on Lean's error messages.
 - **Rules:** Lean 4.35 core only; `grind` banned; the checker accepts a proof only if it uses nothing beyond the library given and Lean's standard axioms.
 - **Conditions:** *library*: the theorems it rests on in the reference tree are given; *alone*: posted targets with an empty library.
-- **Attempts:** 31; tokens in 214.3k (plus 293.6k cached), out 269.8k; cost $3.83 ($0.124 per attempt).
+- **Attempts:** 32; tokens in 241.6k (plus 315.3k cached), out 300.1k; cost $4.27 ($0.133 per attempt).
 
 Theorem ids are the anonymous ids of [worlds/lean-reference.json](../../../worlds/lean-reference.json); statements and proofs are private until the experiment.
 
@@ -31,7 +31,7 @@ Theorem ids are the anonymous ids of [worlds/lean-reference.json](../../../world
 | B3 | 4 | 2/2 | 2/2 |
 | B5 | 5 | 1/2 | 2/2 |
 | X2 | 5 | 2/2 | 2/2 |
-| A5 | 7 | 0/1 | 2/2 |
+| A5 | 7 | 1/2 | 2/2 |
 
 A target proved alone in most attempts is too easy: its lemmas are not needed.
 
@@ -46,7 +46,7 @@ A target proved alone in most attempts is too easy: its lemmas are not needed.
 | B3 | 4 | B | alone | 2/2 | 2.5 | 27.7k |
 | B5 | 5 | B | alone | 1/2 | 3.5 | 63.3k |
 | X2 | 5 | cross | alone | 2/2 | 1.5 | 13.6k |
-| A5 | 7 | A | alone | 0/1 | 4.0 | 52.7k |
+| A5 | 7 | A | alone | 1/2 | 3.5 | 66.0k |
 | C3 | 1 | C | library | 2/2 | 3.0 | 19.9k |
 | A3 | 2 | A | library | 2/2 | 1.0 | 5.2k |
 | C4 | 3 | C | library | 2/2 | 1.0 | 1.9k |
