@@ -88,6 +88,9 @@ if (cmd === 'community') {
     repairsByLab: cfg.repairsByLab as number[] | undefined,
     effortByLab: cfg.effortByLab as ('low' | 'medium' | 'high')[] | undefined,
     reuseByLab: cfg.reuseByLab as boolean[] | undefined,
+    conjectures: (cfg.conjectures as string[] | undefined) ?? (value('conjectures', '') ? value('conjectures', '').split(',') : []),
+    conjectureBounty: Number(pick('conjectureBounty', '1')),
+    counted: (cfg.counted as string[] | undefined) ?? (value('counted', '') ? value('counted', '').split(',') : []),
   };
   const rules = pick('rules', 'traditional,oso').split(',') as ('traditional' | 'oso')[];
   console.log(`${rules.length} communities × ${agents.length} labs × $${base.budget} = $${(rules.length * agents.length * base.budget).toFixed(2)} at most, at list prices; up to ${base.rounds} rounds.`);
@@ -96,10 +99,28 @@ if (cmd === 'community') {
   const prices = stub ? null : await listPrices([...new Set(agents)]);
   const price = (m: string, u: { input: number; output: number; cacheRead: number }) => (prices ? (u.input + u.cacheRead) * prices[m].input + u.output * prices[m].output : 0.01);
   const id = pick('run', `${stub ? 'stub-' : ''}community-${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}`);
+  const repeats = Number(pick('repeats', '1'));
+  const chat = (com: import('./community.ts').Community, i: number) => (stub ? referenceAgent(com, i) : openRouterChat({ provider: 'openrouter', model: agents[i], effort: base.effortByLab?.[i] ?? base.effort, maxTokens: 32_000 }));
+  if (repeats > 1) {
+    // A series: both communities, run after run, then one summary on the measure fixed in advance.
+    const { writeRaceSeries } = await import('./community.ts');
+    const pairs = [];
+    for (let k = 1; k <= repeats; k++) {
+      const out: Record<string, import('./community.ts').CommunityResult> = {};
+      for (const r of rules) {
+        console.log(`\nRun ${k} of ${repeats}, ${r === 'oso' ? 'OSO' : 'Traditional'} community:`);
+        out[r] = await runCommunity({ ...base, rules: r }, chat, price, `${id}-r${k}-${r}`);
+      }
+      pairs.push({ rep: k, traditional: out.traditional, oso: out.oso });
+      writeRaceSeries(id, pairs, String(cfg.design ?? value('design', 'A series of races with the same labs and budget on both sides.')));
+    }
+    console.log(`\nSummary: results/community/${id}/summary.md`);
+    process.exit(0);
+  }
   const results = [];
   for (const r of rules) {
     console.log(`\n${r === 'oso' ? 'OSO' : 'Traditional'} community:`);
-    const result = await runCommunity({ ...base, rules: r }, (com, i) => (stub ? referenceAgent(com, i) : openRouterChat({ provider: 'openrouter', model: agents[i], effort: base.effortByLab?.[i] ?? base.effort, maxTokens: 32_000 })), price, `${id}-${r}`);
+    const result = await runCommunity({ ...base, rules: r }, chat, price, `${id}-${r}`);
     results.push({ runId: `${id}-${r}`, result });
   }
   const dir = writeCommunityComparison(id, results, stub ? 'This is a pipeline test: the labs play from the reference proofs.' : '', stub);

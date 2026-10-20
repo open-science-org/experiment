@@ -37,6 +37,11 @@ export interface CommunityOptions {
   /** Each lab's persona: its name and the instructions its features produce (empty: none). */
   personas?: string[];
   personaNames?: string[];
+  /** Posted conjectures: intermediate results the community wants proved, each with a small bounty (by public id). */
+  conjectures?: string[];
+  conjectureBounty?: number;
+  /** The targets the result is judged on (public ids); all if empty. */
+  counted?: string[];
   /** Enforced persona features, per lab: repairs per action, reasoning effort, and whether it sees others' results. */
   repairsByLab?: number[];
   effortByLab?: ('low' | 'medium' | 'high')[];
@@ -58,11 +63,13 @@ export interface Entry {
   uses: string[];
   /** One basic tactic proves it: it may be cited, but it earns no mint. */
   trivial?: boolean;
+  /** Posted conjecture id, if it is one. */
+  conjecture?: string;
 }
 
 export interface Action {
   round: number; agent: number; model: string;
-  kind: 'target' | 'lemma' | 'pass' | 'none';
+  kind: 'target' | 'conjecture' | 'lemma' | 'pass' | 'none';
   target?: string; name?: string; signature?: string;
   ok: boolean; reason?: string; turns: number;
   /** The library entry an accepted action created, and the results its proof used. */
@@ -104,6 +111,8 @@ export function parseLemma(code: string): { name: string; signature: string; pro
 export class Community {
   opts: CommunityOptions;
   targets: Task[];
+  /** Posted conjectures, with neutral ids (K1, K2, …) so the summary names no hidden lemma. */
+  conjectures: (Task & { cid: string })[];
   library: Entry[] = [];
   /** Earnings by agent. */
   earnings: number[];
@@ -115,7 +124,13 @@ export class Community {
 
   constructor(opts: CommunityOptions) {
     this.opts = opts;
-    this.targets = loadTasks().filter((t) => t.posted);
+    const tasks = loadTasks();
+    this.targets = tasks.filter((t) => t.posted);
+    this.conjectures = (opts.conjectures ?? []).map((id, k) => {
+      const t = tasks.find((x) => x.publicId === id);
+      if (!t || t.posted) throw new Error(`conjecture ${id} is not a lemma of the problem set`);
+      return { ...t, cid: `K${k + 1}` };
+    });
     this.earnings = opts.agents.map(() => 0);
     this.spent = opts.agents.map(() => 0);
     const ref = parseReference();
@@ -124,6 +139,7 @@ export class Community {
 
   bounty(t: Task) { return 4 * 2 ** (t.depth - 1); }
   solved(id: string) { return this.library.find((e) => e.target === id); }
+  provedConjecture(cid: string) { return this.library.find((e) => e.conjecture === cid); }
   /** What agent i can see and cite: everything published, and its own private results. */
   visible(i: number) {
     const reuse = this.opts.reuseByLab?.[i] ?? true;
@@ -156,6 +172,7 @@ export class Community {
     this.earnings[e.author] += mint * (1 - c);
     for (const u of used) this.pay(u, (mint * c) / used.length);
     if (e.target) this.pay(e, this.bounty(this.targets.find((t) => t.publicId === e.target)!));
+    if (e.conjecture && !e.trivial) this.pay(e, this.opts.conjectureBounty ?? 1);
   }
   /** Traditional rules: a solved target is published with every private result it rests on. */
   publishBundle(e: Entry, round: number) {
@@ -196,7 +213,7 @@ Proof rules: core lemmas and tactics such as simp, omega, decide, induction, cas
 
 Each turn, take exactly one action, and reply with exactly one \`\`\`lean code block:
 - To prove a posted target, start your reply with the line ACTION: target <ID>, and give the proof that completes \`theorem attempt <statement>\` (starting with := or with | match arms).
-- To state and prove a new lemma, start with ACTION: lemma, and give the whole declaration: \`theorem <name> <statement> := <proof>\`. Choose lemmas that bring a target within reach.
+${this.conjectures.length ? `- To prove a posted conjecture, start your reply with the line ACTION: conjecture <ID>, and give the proof that completes \`theorem attempt <statement>\` (starting with := or with | match arms). A conjecture is an intermediate result the community wants; it earns a bounty of ${o.conjectureBounty ?? 1} when it is published, and can then be cited by the name shown.\n` : ''}- To state and prove a new lemma, start with ACTION: lemma, and give the whole declaration: \`theorem <name> <statement> := <proof>\`. Choose lemmas that bring a target within reach.
 - If nothing seems worth your budget, reply ACTION: pass. You stop for the rest of the run and keep what you have not spent.${persona ? `\n\n${persona}` : ''}`;
   }
 
@@ -208,12 +225,17 @@ Each turn, take exactly one action, and reply with exactly one \`\`\`lean code b
       const status = s ? (s.public || s.author === i ? `solved by lab ${s.author + 1}` : 'open') : 'open';
       return `${t.publicId} (bounty ${this.bounty(t)}, ${status}): theorem attempt ${norm(t.signature)}${t.ns === 'OSO.M2' ? '   -- stated inside namespace M2' : ''}`;
     });
+    const conj = this.conjectures.map((k) => {
+      const e = this.provedConjecture(k.cid);
+      const status = e ? (e.public ? `proved by lab ${e.author + 1}: cite it as ${e.name}` : e.author === i ? `proved by you (private): cite it as ${e.name}` : 'open') : 'open';
+      return `${k.cid} (${status}): theorem attempt ${norm(k.signature)}`;
+    });
     return `Round ${round}. Your earnings so far: ${this.earnings[i].toFixed(1)}. Budget left: $${Math.max(0, this.opts.budget - this.spent[i]).toFixed(3)}.
 
 Posted targets:
 ${targets.join('\n')}
 
-Library you can cite:
+${conj.length ? `Posted conjectures:\n${conj.join('\n')}\n\n` : ''}Library you can cite:
 ${lib.length ? '```lean\n' + lib.map(fmt).join('\n') + '\n```' : '(empty)'}
 
 Take one action.`;
@@ -235,12 +257,32 @@ Take one action.`;
       this.spent[i] += price(reply.usage);
       const text = reply.text;
       if (/ACTION:\s*pass\b/i.test(text)) { kind = 'pass'; reason = 'passed'; this.passed.add(i); transcript.push({ text, proof: null, errors: [] }); break; }
-      const action = /ACTION:\s*(target|lemma)\s*([A-Za-z0-9-]*)/i.exec(text);
+      const action = /ACTION:\s*(target|conjecture|lemma)\s*([A-Za-z0-9-]*)/i.exec(text);
       const code = [...text.matchAll(/```(?:lean4?|)\s*\n([\s\S]*?)```/g)].map((m) => m[1].replace(/\s+$/, '')).pop() ?? null;
       let errors: string[] = [];
       if (reply.stop === 'refusal') { reason = 'declined'; transcript.push({ text, proof: null, errors: ['declined'] }); break; }
       if (!action || !code) errors = ['Start with ACTION: target <ID> or ACTION: lemma, then one ```lean code block.'];
-      else if (action[1].toLowerCase() === 'target') {
+      else if (action[1].toLowerCase() === 'conjecture') {
+        kind = 'conjecture'; target = action[2].toUpperCase();
+        const k = this.conjectures.find((x) => x.cid === target);
+        if (!k) errors = [`There is no conjecture ${target}.`];
+        else {
+          const visibleDone = this.provedConjecture(k.cid);
+          if (visibleDone && (visibleDone.public || visibleDone.author === i)) errors = [`${k.cid} is already proved: cite it as ${visibleDone.name}.`];
+          else {
+            const r = await check(k, code.replace(/^\s*theorem\s+attempt\b[\s\S]*?(?=:=|\n\s*\|)/, ''), { library: this.checkLibrary(i), allowGrind: this.opts.allowGrind });
+            errors = r.errors;
+            if (r.ok) {
+              ok = true;
+              const hidden = this.library.find((e) => e.conjecture === k.cid && e.author !== i);
+              if (hidden) reason = `duplicate of lab ${hidden.author + 1}'s private result`;
+              const e: Entry = { name: this.uniqueName(`conj_${k.cid}`), ns: k.ns, signature: k.signature, author: i, conjecture: k.cid, public: false, round, uses: r.uses.filter((u) => !FREE.includes(u)) };
+              this.library.push(e);
+              if (this.opts.rules === 'oso') this.publish(e, round);
+            }
+          }
+        }
+      } else if (action[1].toLowerCase() === 'target') {
         kind = 'target'; target = action[2].toUpperCase();
         const t = this.targets.find((x) => x.publicId === target);
         if (!t) errors = [`There is no target ${target}.`];
@@ -326,8 +368,10 @@ export function referenceAgent(com: Community, i: number): Chat {
       const e = visible.find((x) => x.signature === tasks.find((t) => t.name === u)?.signature);
       if (e && e.name !== short) proof = proof.replace(new RegExp(`(?<![\\w.])${short}(?![\\w'])`, 'g'), e.name);
     }
+    const conj = com.conjectures.find((k) => k.name === next.name);
     const text = next.posted
       ? `ACTION: target ${next.publicId}\n\`\`\`lean\n${proof}\n\`\`\``
+      : conj ? `ACTION: conjecture ${conj.cid}\n\`\`\`lean\n${proof}\n\`\`\``
       : `ACTION: lemma\n\`\`\`lean\ntheorem ${next.short} ${next.signature} ${proof.trimStart().startsWith('|') ? '\n' + proof : proof}\n\`\`\``;
     return { text, content: text, usage, stop: 'end_turn' };
   };
@@ -349,7 +393,7 @@ export async function runCommunity(opts: CommunityOptions, chatFor: (com: Commun
     await Promise.all(active.map((i) => com.act(i, round, chats[i], (u) => price(opts.agents[i], u), (a) => {
       appendFileSync(file, JSON.stringify(a) + '\n');
       const solved = com.targets.filter((t) => com.solved(t.publicId)).length;
-      log(`  round ${round} · lab ${i + 1} (${a.model.split('/').pop()}): ${a.kind === 'target' ? `target ${a.target}` : a.kind === 'lemma' ? `lemma ${a.name ?? '?'}` : a.kind === 'pass' ? 'passed' : 'no action'} ${a.ok ? 'accepted' : 'failed'}${a.reason ? ` (${a.reason})` : ''} · $${a.listCost.toFixed(3)} · ${solved}/8 targets solved`);
+      log(`  round ${round} · lab ${i + 1} (${a.model.split('/').pop()}): ${a.kind === 'target' ? `target ${a.target}` : a.kind === 'conjecture' ? `conjecture ${a.target}` : a.kind === 'lemma' ? `lemma ${a.name ?? '?'}` : a.kind === 'pass' ? 'passed' : 'no action'} ${a.ok ? 'accepted' : 'failed'}${a.reason ? ` (${a.reason})` : ''} · $${a.listCost.toFixed(3)} · ${solved}/8 targets solved`);
     }).catch((e) => log(`  round ${round} · lab ${i + 1}: error ${(e as Error).message}`))));
   }
   const result: CommunityResult = { opts, actions: com.actions, library: com.library, earnings: com.earnings, spent: com.spent };
@@ -365,14 +409,18 @@ export function readCommunity(runId: string): CommunityResult {
 
 
 /** Targets solved by community spend, in the order actions finished. */
+/** The targets a result is judged on. */
+export const countedOf = (r: CommunityResult) => (r.opts.counted?.length ? r.opts.counted : loadTasks().filter((t) => t.posted).map((t) => t.publicId));
+
 export function progress(r: CommunityResult): [number, number][] {
+  const counted = new Set(countedOf(r));
   const acts = [...r.actions].sort((a, b) => a.t - b.t);
   const solved = new Set<string>();
   let spent = 0;
   const pts: [number, number][] = [[0, 0]];
   for (const a of acts) {
     spent += a.listCost;
-    if (a.kind === 'target' && a.ok && a.target) solved.add(a.target);
+    if (a.kind === 'target' && a.ok && a.target && counted.has(a.target)) solved.add(a.target);
     pts.push([spent, solved.size]);
   }
   return pts;
@@ -385,6 +433,11 @@ export function stats(r: CommunityResult) {
   return {
     rules: r.opts.rules,
     targetsSolved: solved.size,
+    countedSolved: [...solved].filter((t) => countedOf(r).includes(t!)).length,
+    counted: countedOf(r).length,
+    conjecturesProved: new Set(r.actions.filter((a) => a.kind === 'conjecture' && a.ok).map((a) => a.target)).size,
+    /** Accepted results whose proof used another lab's result: the community building on itself. */
+    builtOnOthers: r.library.filter((e) => e.uses.some((u) => { const x = r.library.find((y) => `${y.ns}.${y.name}` === u); return x && x.author !== e.author; })).length,
     deepestTarget: deepest,
     spent: r.spent.reduce((a, b) => a + b, 0),
     budget: r.opts.budget * r.opts.agents.length,
@@ -446,5 +499,96 @@ Runs: ${runs.map((x) => x.runId).join(', ')}. Transcripts (with proofs) are priv
 `;
   writeFileSync(join(dir, 'summary.md'), md);
   writeFileSync(join(dir, 'data.json'), JSON.stringify({ id, runs: runs.map((x) => x.runId), stats: curves.map((c) => c.st), curves: curves.map((c) => ({ rules: c.result.opts.rules, points: c.pts })) }, null, 1) + '\n');
+  return dir;
+}
+
+/* ------------------------------------------------------------------------- A series of repeated races */
+
+export interface Pair { rep: number; traditional: CommunityResult; oso: CommunityResult }
+
+/**
+ * Several races with the same design, summarized on the measure fixed in advance: counted targets
+ * solved for the same budget, mean and spread over runs; verdict against two standard errors.
+ */
+export function writeRaceSeries(id: string, pairs: Pair[], design: string): string {
+  const dir = join(RESULTS_DIR, 'community', id);
+  mkdirSync(join(dir, 'figures'), { recursive: true });
+  const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length);
+  const sd = (xs: number[]) => { const m = mean(xs); return Math.sqrt(xs.reduce((a, b) => a + (b - m) ** 2, 0) / Math.max(1, xs.length - 1)); };
+  const side = (k: Rules) => pairs.map((p) => stats(p[k]));
+  const T = side('traditional'), O = side('oso');
+  const counted = countedOf(pairs[0].oso);
+  const m = (xs: { [k: string]: unknown }[], key: string) => mean(xs.map((x) => Number(x[key])));
+  const se = (xs: number[]) => (xs.length > 1 ? sd(xs) / Math.sqrt(xs.length) : Infinity);
+  const tC = T.map((x) => x.countedSolved), oC = O.map((x) => x.countedSolved);
+  const diff = mean(oC) - mean(tC), margin = 2 * Math.hypot(se(oC), se(tC));
+  const verdict = pairs.length < 2 ? 'one run per side: no verdict'
+    : diff > margin ? 'OSO ahead' : diff < -margin ? 'traditional ahead' : 'no clear difference';
+  // Chart: every run's curve, thin; OSO orange, traditional blue.
+  const budget = pairs[0].oso.opts.budget * pairs[0].oso.opts.agents.length;
+  const W = 760, H = 380, l = 56, rt = 170, tp = 70, bt = 48, pw = W - l - rt, ph = H - tp - bt, Y = counted.length;
+  const sx = (x: number) => l + (x / budget) * pw, sy = (y: number) => tp + ph - (y / Math.max(1, Y)) * ph;
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Counted targets solved for the money, every run"><style>
+  .bg{fill:#fcfcfb} text{fill:#0b0b0b;font-family:Helvetica,Arial,sans-serif} .s{fill:#52514e;font-size:12px} .g{stroke:#e6e5e1} .o{stroke:#eb6834} .t{stroke:#2a78d6} .of{fill:#eb6834} .tf{fill:#2a78d6}
+  @media (prefers-color-scheme: dark){.bg{fill:#1a1a19} text{fill:#fff} .s{fill:#c3c2b7} .g{stroke:#34332f} .o{stroke:#d95926} .t{stroke:#3987e5} .of{fill:#d95926} .tf{fill:#3987e5}}</style>
+  <rect class="bg" width="${W}" height="${H}" rx="8"/><text x="${l}" y="28" font-size="16" font-weight="700">Counted targets solved for the money: ${pairs.length} race${pairs.length > 1 ? 's' : ''} per side</text>
+  <text class="s" x="${l}" y="48">Each line is one community's run. OSO orange, traditional blue. Same labs, personas and budget on both sides.</text>`;
+  for (let y = 0; y <= Y; y++) svg += `<line class="g" x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}"/><text class="s" x="${l - 8}" y="${sy(y) + 4}" text-anchor="end">${y}</text>`;
+  for (const k of [0, 0.25, 0.5, 0.75, 1]) svg += `<text class="s" x="${sx(budget * k)}" y="${tp + ph + 18}" text-anchor="middle">$${(budget * k).toFixed(2)}</text>`;
+  svg += `<text class="s" x="${l + pw / 2}" y="${H - 10}" text-anchor="middle">Dollars spent by the community (list prices)</text>`;
+  for (const p of pairs) for (const k of ['traditional', 'oso'] as Rules[]) {
+    const pts = progress(p[k]);
+    let d = ''; pts.forEach(([x, y], i) => { d += i ? ` H${sx(x).toFixed(1)} V${sy(y).toFixed(1)}` : `M${sx(x).toFixed(1)} ${sy(y).toFixed(1)}`; });
+    svg += `<path d="${d}" fill="none" class="${k === 'oso' ? 'o' : 't'}" stroke-width="1.8" stroke-opacity="0.6"><title>${k === 'oso' ? 'OSO' : 'Traditional'}, run ${p.rep}: ${pts.at(-1)![1]} for $${pts.at(-1)![0].toFixed(2)}</title></path>`;
+  }
+  const ends: [number, string, string][] = [[sy(mean(oC)), `OSO: ${mean(oC).toFixed(1)} on average`, 'of'], [sy(mean(tC)), `Traditional: ${mean(tC).toFixed(1)}`, 'tf']];
+  ends.sort((a, b) => a[0] - b[0]); if (ends[1][0] - ends[0][0] < 16) ends[1][0] = ends[0][0] + 16;
+  for (const [y, t, c] of ends) svg += `<circle class="${c}" cx="${l + pw + 10}" cy="${y}" r="4"/><text x="${l + pw + 18}" y="${y + 4}" font-size="12" font-weight="700">${t}</text>`;
+  writeFileSync(join(dir, 'figures', 'progress.svg'), svg + '</svg>');
+
+  const f1 = (x: number) => x.toFixed(1), f2 = (x: number) => x.toFixed(2);
+  const ms = (xs: number[]) => `${f1(mean(xs))} ± ${f1(sd(xs))}`;
+  const rows = [['traditional', T], ['oso', O]].map(([k, S]) => {
+    const st = S as ReturnType<typeof stats>[];
+    return `| ${k === 'oso' ? 'OSO' : 'Traditional'} | ${ms(st.map((x) => x.countedSolved))} of ${counted.length} | ${ms(st.map((x) => x.targetsSolved))} of 8 | $${f2(m(st, 'spent'))} | ${ms(st.map((x) => x.conjecturesProved))} | ${ms(st.map((x) => x.lemmasDuplicate))} | ${ms(st.map((x) => x.builtOnOthers))} |`;
+  });
+  const perRun = pairs.map((p, n) => `| ${p.rep} | ${T[n].countedSolved} | $${f2(T[n].spent)} | ${O[n].countedSolved} | $${f2(O[n].spent)} | ${T[n].lemmasDuplicate} | ${O[n].lemmasDuplicate} | ${O[n].builtOnOthers} |`);
+  const o = pairs[0].oso.opts;
+  const md = `# Real agents, OSO vs traditional: ${id}
+
+**${verdict === 'OSO ahead' ? `For the same money, the OSO communities solved more of the counted targets: ${f1(mean(oC))} against ${f1(mean(tC))} on average over ${pairs.length} runs each.`
+    : verdict === 'traditional ahead' ? `For the same money, the traditional communities solved more of the counted targets: ${f1(mean(tC))} against ${f1(mean(oC))} on average over ${pairs.length} runs each.`
+    : verdict === 'no clear difference' ? `No clear difference: the OSO communities solved ${f1(mean(oC))} of the counted targets and the traditional ones ${f1(mean(tC))}, on average over ${pairs.length} runs each.`
+    : `One run per side: OSO ${f1(mean(oC))}, traditional ${f1(mean(tC))} counted targets; too few runs for a verdict.`}**
+
+The verdict compares the mean number of counted targets solved against two standard errors. The measure and the design were fixed before the runs.
+
+![Counted targets solved for the money](figures/progress.svg)
+
+| rules | counted targets solved | all targets | spent (mean) | conjectures proved | duplicated work | built on another lab's result |
+| --- | --- | --- | --- | --- | --- | --- |
+${rows.join('\n')}
+
+Values are mean ± standard deviation over runs.
+
+## The design, fixed in advance
+
+${design}
+
+- **Counted targets:** ${counted.join(', ')}. The others are warm-ups: solved, they are reported but do not count.
+- **Labs:** ${o.agents.map((mdl, i) => `lab ${i + 1}: \`${mdl}\`${o.personaNames?.[i] ? ` as ${o.personaNames[i]}` : ''}`).join('; ')}. The same labs and personas on both sides.
+- **Budget:** $${o.budget} per lab at list prices; up to ${o.rounds} rounds. **Posted conjectures:** ${o.conjectures?.length ?? 0}, bounty ${o.conjectureBounty ?? 1} each; their ids (K1, …) are neutral, and their statements are given to the labs but not listed here.
+- **Rules:** traditional: results private until their lab proves a target, then published with it; OSO: everything published at once, α = ${o.alpha}, c = ${o.c}, mint ${o.mint}.
+
+## Every run
+
+| run | traditional: counted | spent | OSO: counted | spent | traditional duplicated | OSO duplicated | OSO built on others |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+${perRun.join('\n')}
+
+Transcripts, with every proof, are private.
+`;
+  writeFileSync(join(dir, 'summary.md'), md);
+  writeFileSync(join(dir, 'data.json'), JSON.stringify({ id, verdict, counted, runs: pairs.map((p, n) => ({ rep: p.rep, traditional: T[n], oso: O[n] })) }, null, 1) + '\n');
   return dir;
 }
