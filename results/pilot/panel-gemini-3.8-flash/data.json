@@ -1,0 +1,232 @@
+{
+ "runId": "panel-gemini-3.8-flash",
+ "options": {
+  "attempts": 2,
+  "repairs": 3,
+  "concurrency": 8,
+  "allowGrind": false,
+  "conditions": [
+   "library",
+   "alone"
+  ],
+  "only": [
+   "C3",
+   "A3",
+   "C4",
+   "X1",
+   "B3",
+   "B5",
+   "X2",
+   "A5"
+  ],
+  "model": {
+   "provider": "openrouter",
+   "model": "google/gemini-3.8-flash",
+   "effort": "high",
+   "maxTokens": 32000
+  }
+ },
+ "totals": {
+  "input": 752517,
+  "output": 762121,
+  "cacheRead": 32710,
+  "cacheWrite": 0,
+  "cost": 3.42479475
+ },
+ "byDepth": [
+  {
+   "depth": 1,
+   "theorems": 1,
+   "attempts": 2,
+   "proved": 2,
+   "rate": 1,
+   "tokens": 69645
+  },
+  {
+   "depth": 2,
+   "theorems": 1,
+   "attempts": 2,
+   "proved": 2,
+   "rate": 1,
+   "tokens": 48515.5
+  },
+  {
+   "depth": 3,
+   "theorems": 2,
+   "attempts": 4,
+   "proved": 3,
+   "rate": 0.75,
+   "tokens": 106279
+  },
+  {
+   "depth": 4,
+   "theorems": 1,
+   "attempts": 2,
+   "proved": 2,
+   "rate": 1,
+   "tokens": 5079
+  },
+  {
+   "depth": 5,
+   "theorems": 2,
+   "attempts": 3,
+   "proved": 3,
+   "rate": 1,
+   "tokens": 25823.666666666668
+  },
+  {
+   "depth": 7,
+   "theorems": 1,
+   "attempts": 2,
+   "proved": 1,
+   "rate": 0.5,
+   "tokens": 168244.5
+  }
+ ],
+ "theorems": [
+  {
+   "id": "C3",
+   "depth": 1,
+   "area": "C",
+   "posted": "C3",
+   "condition": "alone",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 1.5,
+   "tokens": 52064,
+   "outputTokens": 34305
+  },
+  {
+   "id": "A3",
+   "depth": 2,
+   "area": "A",
+   "posted": "A3",
+   "condition": "alone",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 2.5,
+   "tokens": 92767,
+   "outputTokens": 39322.5
+  },
+  {
+   "id": "C4",
+   "depth": 3,
+   "area": "C",
+   "posted": "C4",
+   "condition": "alone",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 1.5,
+   "tokens": 57348,
+   "outputTokens": 39420.5
+  },
+  {
+   "id": "B3",
+   "depth": 4,
+   "area": "B",
+   "posted": "B3",
+   "condition": "alone",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 1,
+   "tokens": 28717.5,
+   "outputTokens": 27395.5
+  },
+  {
+   "id": "C3",
+   "depth": 1,
+   "area": "C",
+   "posted": "C3",
+   "condition": "library",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 2,
+   "tokens": 69645,
+   "outputTokens": 35109.5
+  },
+  {
+   "id": "A3",
+   "depth": 2,
+   "area": "A",
+   "posted": "A3",
+   "condition": "library",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 1.5,
+   "tokens": 48515.5,
+   "outputTokens": 30434.5
+  },
+  {
+   "id": "C4",
+   "depth": 3,
+   "area": "C",
+   "posted": "C4",
+   "condition": "library",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 1,
+   "tokens": 24544,
+   "outputTokens": 23102
+  },
+  {
+   "id": "X1",
+   "depth": 3,
+   "area": "cross",
+   "posted": "X1",
+   "condition": "library",
+   "attempts": 2,
+   "proved": 1,
+   "meanTurns": 4,
+   "tokens": 188014,
+   "outputTokens": 75885.5
+  },
+  {
+   "id": "B3",
+   "depth": 4,
+   "area": "B",
+   "posted": "B3",
+   "condition": "library",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 1,
+   "tokens": 5079,
+   "outputTokens": 3620
+  },
+  {
+   "id": "B5",
+   "depth": 5,
+   "area": "B",
+   "posted": "B5",
+   "condition": "library",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 1,
+   "tokens": 4988,
+   "outputTokens": 3146
+  },
+  {
+   "id": "X2",
+   "depth": 5,
+   "area": "cross",
+   "posted": "X2",
+   "condition": "library",
+   "attempts": 1,
+   "proved": 1,
+   "meanTurns": 2,
+   "tokens": 67495,
+   "outputTokens": 33002
+  },
+  {
+   "id": "A5",
+   "depth": 7,
+   "area": "A",
+   "posted": "A5",
+   "condition": "library",
+   "attempts": 2,
+   "proved": 1,
+   "meanTurns": 3.5,
+   "tokens": 168244.5,
+   "outputTokens": 52818.5
+  }
+ ]
+}

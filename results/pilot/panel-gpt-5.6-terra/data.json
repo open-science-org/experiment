@@ -1,0 +1,280 @@
+{
+ "runId": "panel-gpt-5.6-terra",
+ "options": {
+  "attempts": 2,
+  "repairs": 3,
+  "concurrency": 8,
+  "allowGrind": false,
+  "conditions": [
+   "library",
+   "alone"
+  ],
+  "only": [
+   "C3",
+   "A3",
+   "C4",
+   "X1",
+   "B3",
+   "B5",
+   "X2",
+   "A5"
+  ],
+  "model": {
+   "provider": "openrouter",
+   "model": "openai/gpt-5.6-terra",
+   "effort": "high",
+   "maxTokens": 32000
+  }
+ },
+ "totals": {
+  "input": 214276,
+  "output": 269838,
+  "cacheRead": 293604,
+  "cacheWrite": 0,
+  "cost": 3.8323617999999993
+ },
+ "byDepth": [
+  {
+   "depth": 1,
+   "theorems": 1,
+   "attempts": 2,
+   "proved": 2,
+   "rate": 1,
+   "tokens": 19934
+  },
+  {
+   "depth": 2,
+   "theorems": 1,
+   "attempts": 2,
+   "proved": 2,
+   "rate": 1,
+   "tokens": 5216
+  },
+  {
+   "depth": 3,
+   "theorems": 2,
+   "attempts": 4,
+   "proved": 4,
+   "rate": 1,
+   "tokens": 24150.25
+  },
+  {
+   "depth": 4,
+   "theorems": 1,
+   "attempts": 2,
+   "proved": 2,
+   "rate": 1,
+   "tokens": 2535.5
+  },
+  {
+   "depth": 5,
+   "theorems": 2,
+   "attempts": 4,
+   "proved": 4,
+   "rate": 1,
+   "tokens": 4348.5
+  },
+  {
+   "depth": 7,
+   "theorems": 1,
+   "attempts": 2,
+   "proved": 2,
+   "rate": 1,
+   "tokens": 21021
+  }
+ ],
+ "theorems": [
+  {
+   "id": "C3",
+   "depth": 1,
+   "area": "C",
+   "posted": "C3",
+   "condition": "alone",
+   "attempts": 2,
+   "proved": 1,
+   "meanTurns": 3,
+   "tokens": 34914,
+   "outputTokens": 11491.5
+  },
+  {
+   "id": "A3",
+   "depth": 2,
+   "area": "A",
+   "posted": "A3",
+   "condition": "alone",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 2.5,
+   "tokens": 33841,
+   "outputTokens": 13144
+  },
+  {
+   "id": "C4",
+   "depth": 3,
+   "area": "C",
+   "posted": "C4",
+   "condition": "alone",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 1.5,
+   "tokens": 10142,
+   "outputTokens": 5285.5
+  },
+  {
+   "id": "X1",
+   "depth": 3,
+   "area": "cross",
+   "posted": "X1",
+   "condition": "alone",
+   "attempts": 2,
+   "proved": 0,
+   "meanTurns": 4,
+   "tokens": 73240.5,
+   "outputTokens": 20957
+  },
+  {
+   "id": "B3",
+   "depth": 4,
+   "area": "B",
+   "posted": "B3",
+   "condition": "alone",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 2.5,
+   "tokens": 27694,
+   "outputTokens": 9603
+  },
+  {
+   "id": "B5",
+   "depth": 5,
+   "area": "B",
+   "posted": "B5",
+   "condition": "alone",
+   "attempts": 2,
+   "proved": 1,
+   "meanTurns": 3.5,
+   "tokens": 63338.5,
+   "outputTokens": 20655.5
+  },
+  {
+   "id": "X2",
+   "depth": 5,
+   "area": "cross",
+   "posted": "X2",
+   "condition": "alone",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 1.5,
+   "tokens": 13621.5,
+   "outputTokens": 7900.5
+  },
+  {
+   "id": "A5",
+   "depth": 7,
+   "area": "A",
+   "posted": "A5",
+   "condition": "alone",
+   "attempts": 1,
+   "proved": 0,
+   "meanTurns": 4,
+   "tokens": 52727,
+   "outputTokens": 13295
+  },
+  {
+   "id": "C3",
+   "depth": 1,
+   "area": "C",
+   "posted": "C3",
+   "condition": "library",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 3,
+   "tokens": 19934,
+   "outputTokens": 6862
+  },
+  {
+   "id": "A3",
+   "depth": 2,
+   "area": "A",
+   "posted": "A3",
+   "condition": "library",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 1,
+   "tokens": 5216,
+   "outputTokens": 3894
+  },
+  {
+   "id": "C4",
+   "depth": 3,
+   "area": "C",
+   "posted": "C4",
+   "condition": "library",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 1,
+   "tokens": 1896.5,
+   "outputTokens": 517.5
+  },
+  {
+   "id": "X1",
+   "depth": 3,
+   "area": "cross",
+   "posted": "X1",
+   "condition": "library",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 3.5,
+   "tokens": 46404,
+   "outputTokens": 14977
+  },
+  {
+   "id": "B3",
+   "depth": 4,
+   "area": "B",
+   "posted": "B3",
+   "condition": "library",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 1.5,
+   "tokens": 2535.5,
+   "outputTokens": 307.5
+  },
+  {
+   "id": "B5",
+   "depth": 5,
+   "area": "B",
+   "posted": "B5",
+   "condition": "library",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 1,
+   "tokens": 2208.5,
+   "outputTokens": 419.5
+  },
+  {
+   "id": "X2",
+   "depth": 5,
+   "area": "cross",
+   "posted": "X2",
+   "condition": "library",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 1,
+   "tokens": 6488.5,
+   "outputTokens": 4844.5
+  },
+  {
+   "id": "A5",
+   "depth": 7,
+   "area": "A",
+   "posted": "A5",
+   "condition": "library",
+   "attempts": 2,
+   "proved": 2,
+   "meanTurns": 2.5,
+   "tokens": 21021,
+   "outputTokens": 7412.5
+  }
+ ]
+}

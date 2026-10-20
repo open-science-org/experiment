@@ -70,7 +70,7 @@ if (cmd === 'calibrate') {
 }
 
 if (cmd === 'compare') {
-  const [, id, ...runIds] = args.filter((a) => !a.startsWith('--'));
+  const [, id, ...runIds] = args.filter((a, i) => !a.startsWith('--') && !args[i - 1]?.startsWith('--'));
   if (!id || !runIds.length) throw new Error('usage: npm run pilot -- compare <id> <run> <run> ...');
   console.log(`${writeComparison(id, runIds, value('title', 'models compared'))}/summary.md`);
   process.exit(0);
