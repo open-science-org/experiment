@@ -77,7 +77,7 @@ npm run pilot -- world <run>                    # measured chances -> worlds/lea
 - **The checker** ([src/lean/checker.ts](src/lean/checker.ts)) writes a file that imports only the public definitions and states the agent's library as axioms. Each axiom is a theorem the reference proofs prove, so this is sound, and the agent cannot reach any lemma it was not given. `#print axioms` then lists exactly which library theorems a proof used: that is both the soundness check and the attribution. The screen bans `grind`, `sorry`, `native_decide`, search tactics, commands that run code, and new declarations. Each check takes about 0.3 seconds.
 - **The self-test passes:** all 42 reference proofs are accepted with `grind` allowed, and for each one the theorems it uses match the reference tree exactly. Nine need `grind`, so with it banned, agents have to find other proofs for those.
 - **What gets published:** transcripts contain proofs, so they stay in `lean/runs/`, which is private. The public summary in `results/pilot/<run>/` uses only anonymous ids.
-- **The model:** `claude-opus-5-5` with adaptive thinking at effort `high`; `--model` and `--effort` change it. Server-side fallbacks are on: if the model declines, the API retries on a fallback model.
+- **The model:** Claude Opus 5.5 at effort `high`, through whichever key is in `.env`, which Git ignores. With `ANTHROPIC_API_KEY`, it calls Anthropic directly (adaptive thinking, with server-side fallbacks on). With `OPENROUTER_API_KEY`, it goes through OpenRouter, which also serves GPT, Gemini and open models (`--model`); OpenRouter reports each call's cost, so the summary gives dollars.
 
 ## Layout
 

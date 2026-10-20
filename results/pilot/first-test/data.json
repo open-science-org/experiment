@@ -1,0 +1,144 @@
+{
+ "runId": "first-test",
+ "options": {
+  "attempts": 1,
+  "repairs": 3,
+  "concurrency": 4,
+  "allowGrind": false,
+  "conditions": [
+   "library",
+   "alone"
+  ],
+  "only": [
+   "A3",
+   "C4",
+   "X1",
+   "B-02"
+  ],
+  "model": {
+   "provider": "openrouter",
+   "model": "anthropic/claude-opus-5.5",
+   "effort": "high",
+   "maxTokens": 32000
+  }
+ },
+ "totals": {
+  "input": 17103,
+  "output": 33555,
+  "cacheRead": 0,
+  "cacheWrite": 0,
+  "cost": 0.7395120000000001
+ },
+ "byDepth": [
+  {
+   "depth": 1,
+   "theorems": 1,
+   "attempts": 1,
+   "proved": 1,
+   "rate": 1,
+   "tokens": 2863
+  },
+  {
+   "depth": 2,
+   "theorems": 1,
+   "attempts": 1,
+   "proved": 1,
+   "rate": 1,
+   "tokens": 12560
+  },
+  {
+   "depth": 3,
+   "theorems": 2,
+   "attempts": 2,
+   "proved": 2,
+   "rate": 1,
+   "tokens": 5019.5
+  }
+ ],
+ "theorems": [
+  {
+   "id": "A3",
+   "depth": 2,
+   "area": "A",
+   "posted": "A3",
+   "condition": "alone",
+   "attempts": 1,
+   "proved": 1,
+   "meanTurns": 1,
+   "tokens": 10955,
+   "outputTokens": 9209
+  },
+  {
+   "id": "C4",
+   "depth": 3,
+   "area": "C",
+   "posted": "C4",
+   "condition": "alone",
+   "attempts": 1,
+   "proved": 1,
+   "meanTurns": 1,
+   "tokens": 4785,
+   "outputTokens": 3030
+  },
+  {
+   "id": "X1",
+   "depth": 3,
+   "area": "cross",
+   "posted": "X1",
+   "condition": "alone",
+   "attempts": 1,
+   "proved": 1,
+   "meanTurns": 1,
+   "tokens": 9456,
+   "outputTokens": 7690
+  },
+  {
+   "id": "B-02",
+   "depth": 1,
+   "area": "B",
+   "posted": "",
+   "condition": "library",
+   "attempts": 1,
+   "proved": 1,
+   "meanTurns": 1,
+   "tokens": 2863,
+   "outputTokens": 1107
+  },
+  {
+   "id": "A3",
+   "depth": 2,
+   "area": "A",
+   "posted": "A3",
+   "condition": "library",
+   "attempts": 1,
+   "proved": 1,
+   "meanTurns": 2,
+   "tokens": 12560,
+   "outputTokens": 6297
+  },
+  {
+   "id": "C4",
+   "depth": 3,
+   "area": "C",
+   "posted": "C4",
+   "condition": "library",
+   "attempts": 1,
+   "proved": 1,
+   "meanTurns": 1,
+   "tokens": 2722,
+   "outputTokens": 836
+  },
+  {
+   "id": "X1",
+   "depth": 3,
+   "area": "cross",
+   "posted": "X1",
+   "condition": "library",
+   "attempts": 1,
+   "proved": 1,
+   "meanTurns": 1,
+   "tokens": 7317,
+   "outputTokens": 5386
+  }
+ ]
+}

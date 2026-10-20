@@ -63,7 +63,7 @@ export function referenceChat(tasks: Task[]): Chat {
 export interface Record_ {
   publicId: string; name: string; depth: number; area: string; posted: string; condition: Condition; k: number;
   ok: boolean; failure?: string; turns: number; uses: string[];
-  usage: { input: number; output: number; cacheRead: number; cacheWrite: number };
+  usage: { input: number; output: number; cacheRead: number; cacheWrite: number; cost?: number };
   checkSeconds: number; seconds: number;
   transcript: AttemptResult['turns'];
 }
@@ -97,7 +97,7 @@ export async function runPilot(opts: PilotOptions, chat: Chat, runId: string, lo
       const rec: Record_ = {
         publicId: job.task.publicId, name: job.task.name, depth: job.task.depth, area: job.task.area, posted: job.task.posted,
         condition: job.condition, k: job.k, ok: result.ok, failure: result.failure, turns: result.turns.length, uses: result.uses,
-        usage: { input: sum((u) => u.input), output: sum((u) => u.output), cacheRead: sum((u) => u.cacheRead), cacheWrite: sum((u) => u.cacheWrite) },
+        usage: { input: sum((u) => u.input), output: sum((u) => u.output), cacheRead: sum((u) => u.cacheRead), cacheWrite: sum((u) => u.cacheWrite), cost: sum((u) => u.cost ?? 0) },
         checkSeconds: result.turns.reduce((a, t) => a + (t.check?.seconds ?? 0), 0), seconds: (Date.now() - t0) / 1000,
         transcript: result.turns,
       };
@@ -130,7 +130,7 @@ export function writeSummary(runId: string, records: Record_[], opts: PilotOptio
     const n = ps.reduce((a, p) => a + p.attempts, 0), s = ps.reduce((a, p) => a + p.proved, 0);
     return { depth: d, theorems: ps.length, attempts: n, proved: s, rate: s / n, tokens: ps.reduce((a, p) => a + p.tokens * p.attempts, 0) / n };
   });
-  const totals = records.reduce((a, r) => ({ input: a.input + r.usage.input, output: a.output + r.usage.output, cacheRead: a.cacheRead + r.usage.cacheRead, cacheWrite: a.cacheWrite + r.usage.cacheWrite }), { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 });
+  const totals = records.reduce((a, r) => ({ input: a.input + r.usage.input, output: a.output + r.usage.output, cacheRead: a.cacheRead + r.usage.cacheRead, cacheWrite: a.cacheWrite + r.usage.cacheWrite, cost: a.cost + (r.usage.cost ?? 0) }), { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, cost: 0 });
   const pct = (x: number) => `${Math.round(x * 100)}%`;
   const k = (x: number) => `${(x / 1000).toFixed(1)}k`;
   const table = (rows: Record<string, unknown>[]) => {
@@ -142,10 +142,10 @@ export function writeSummary(runId: string, records: Record_[], opts: PilotOptio
 
 How hard each theorem of the Lean problem set is for a real agent. ${note}
 
-- **Agent:** \`${opts.model.model}\`, adaptive thinking, effort ${opts.model.effort}. One attempt is a first proof plus up to ${opts.repairs} repairs on Lean's error messages.
+- **Agent:** \`${opts.model.model}\` via ${opts.model.provider ?? 'anthropic'}, reasoning effort ${opts.model.effort}. One attempt is a first proof plus up to ${opts.repairs} repairs on Lean's error messages.
 - **Rules:** Lean 4.35 core only; \`grind\` ${opts.allowGrind ? 'allowed' : 'banned'}; the checker accepts a proof only if it uses nothing beyond the library given and Lean's standard axioms.
 - **Conditions:** *library*: the theorems it rests on in the reference tree are given; *alone*: posted targets with an empty library.
-- **Attempts:** ${records.length}; tokens in ${k(totals.input)} (plus ${k(totals.cacheRead)} cached), out ${k(totals.output)}.
+- **Attempts:** ${records.length}; tokens in ${k(totals.input)} (plus ${k(totals.cacheRead)} cached), out ${k(totals.output)}${totals.cost ? `; cost $${totals.cost.toFixed(2)} ($${(totals.cost / Math.max(1, records.length)).toFixed(3)} per attempt)` : ''}.
 
 Theorem ids are the anonymous ids of [worlds/lean-reference.json](../../../worlds/lean-reference.json); statements and proofs are private until the experiment.
 

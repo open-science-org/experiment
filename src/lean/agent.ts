@@ -5,15 +5,83 @@ import Anthropic from '@anthropic-ai/sdk';
 import { check, type CheckOptions, type CheckResult } from './checker.ts';
 import { definitions, type Task } from './tasks.ts';
 
-export interface Usage { input: number; output: number; cacheRead: number; cacheWrite: number }
+export interface Usage { input: number; output: number; cacheRead: number; cacheWrite: number; /** Dollars, when the provider reports it. */ cost?: number }
 export interface Turn { proof: string | null; check: CheckResult | null; usage: Usage; stop: string }
 
 /** One model call: the conversation so far → the reply's text, the raw content to send back, usage. */
 export type Chat = (system: string, messages: { role: 'user' | 'assistant'; content: unknown }[]) =>
   Promise<{ text: string; content: unknown; usage: Usage; stop: string }>;
 
-export interface ModelSettings { model: string; effort: 'low' | 'medium' | 'high' | 'max'; maxTokens: number }
-export const DEFAULT_MODEL: ModelSettings = { model: 'claude-opus-5-5', effort: 'high', maxTokens: 32_000 };
+export type Provider = 'anthropic' | 'openrouter';
+export interface ModelSettings { provider: Provider; model: string; effort: 'low' | 'medium' | 'high' | 'max'; maxTokens: number }
+export const DEFAULT_MODELS: Record<Provider, string> = { anthropic: 'claude-opus-5-5', openrouter: 'anthropic/claude-opus-5.5' };
+export const DEFAULT_MODEL: ModelSettings = { provider: 'anthropic', model: DEFAULT_MODELS.anthropic, effort: 'high', maxTokens: 32_000 };
+
+/** The provider whose key is set: Anthropic first, then OpenRouter. */
+export function defaultProvider(): Provider | null {
+  if (process.env.ANTHROPIC_API_KEY) return 'anthropic';
+  if (process.env.OPENROUTER_API_KEY) return 'openrouter';
+  return null;
+}
+
+export function chatFor(settings: ModelSettings): Chat {
+  return settings.provider === 'openrouter' ? openRouterChat(settings) : claudeChat(settings);
+}
+
+/**
+ * OpenRouter's chat API, for any model it serves (Claude, GPT, Gemini, open models). Reasoning is
+ * requested at the same effort, and passed back between turns so the model keeps its earlier thinking.
+ */
+export function openRouterChat(settings: ModelSettings): Chat {
+  const key = process.env.OPENROUTER_API_KEY;
+  if (!key) throw new Error('OPENROUTER_API_KEY is not set');
+  return async (system, messages) => {
+    const body = {
+      model: settings.model,
+      max_tokens: settings.maxTokens,
+      reasoning: { effort: settings.effort === 'max' ? 'high' : settings.effort },
+      usage: { include: true },
+      messages: [
+        { role: 'system', content: system },
+        ...messages.map((m) => {
+          if (m.role === 'assistant' && m.content && typeof m.content === 'object') {
+            const c = m.content as { text: string; reasoning_details?: unknown };
+            return { role: 'assistant', content: c.text, ...(c.reasoning_details ? { reasoning_details: c.reasoning_details } : {}) };
+          }
+          return { role: m.role, content: String(m.content) };
+        }),
+      ],
+    };
+    for (let tryNo = 1; ; tryNo++) {
+      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', 'X-Title': 'OSO experiment: Lean pilot' },
+        body: JSON.stringify(body),
+        signal: AbortSignal.timeout(15 * 60_000),
+      });
+      if ((res.status === 429 || res.status >= 500) && tryNo < 4) {
+        await new Promise((ok) => setTimeout(ok, 5000 * tryNo));
+        continue;
+      }
+      const json = await res.json() as {
+        error?: { message: string };
+        choices?: { message: { content: string | null; reasoning_details?: unknown }; finish_reason: string }[];
+        usage?: { prompt_tokens: number; completion_tokens: number; prompt_tokens_details?: { cached_tokens?: number }; cost?: number };
+      };
+      if (!res.ok || json.error || !json.choices?.length) throw new Error(`OpenRouter ${res.status}: ${json.error?.message ?? 'no reply'}`);
+      const choice = json.choices[0];
+      const text = choice.message.content ?? '';
+      const u = json.usage;
+      const cached = u?.prompt_tokens_details?.cached_tokens ?? 0;
+      return {
+        text,
+        content: { text, reasoning_details: choice.message.reasoning_details },
+        usage: { input: (u?.prompt_tokens ?? 0) - cached, output: u?.completion_tokens ?? 0, cacheRead: cached, cacheWrite: 0, cost: u?.cost },
+        stop: choice.finish_reason === 'content_filter' ? 'refusal' : choice.finish_reason,
+      };
+    }
+  };
+}
 
 export function claudeChat(settings: ModelSettings = DEFAULT_MODEL): Chat {
   const client = new Anthropic();

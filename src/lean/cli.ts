@@ -6,11 +6,12 @@
 //     --attempts N (3)  --repairs N (3)  --concurrency N (4)
 //     --only A3,B-02,...          some theorems only
 //     --conditions library,alone  which conditions (both)
-//     --model NAME  --effort low|medium|high|max   --grind (allow grind)
+//     --provider anthropic|openrouter (whichever key is set)  --model NAME  --effort low|medium|high|max
+//     --grind (allow grind)
 //     --run ID                    resume or name a run (default: today's date and time)
 //   summary <run>                 rewrite the public summary of a run
 //   world <run>                   write worlds/lean-measured.json and spaces/lean-measured.yaml
-import { claudeChat, DEFAULT_MODEL } from './agent.ts';
+import { chatFor, DEFAULT_MODEL, DEFAULT_MODELS, defaultProvider, type Provider } from './agent.ts';
 import { estimate, readRun, referenceChat, runPilot, writeMeasuredWorld, writeSummary, type Condition, type PilotOptions } from './pilot.ts';
 import { selftest } from './selftest.ts';
 import { leanAvailable, loadTasks } from './tasks.ts';
@@ -45,18 +46,23 @@ if (cmd === 'calibrate') {
     allowGrind: flag('grind'),
     conditions: value('conditions', 'library,alone').split(',') as Condition[],
     only: value('only', '').split(',').filter(Boolean),
-    model: { ...DEFAULT_MODEL, model: value('model', DEFAULT_MODEL.model), effort: value('effort', DEFAULT_MODEL.effort) as PilotOptions['model']['effort'] },
+    model: (() => {
+      const provider = value('provider', defaultProvider() ?? 'anthropic') as Provider;
+      return { ...DEFAULT_MODEL, provider, model: value('model', DEFAULT_MODELS[provider]), effort: value('effort', DEFAULT_MODEL.effort) as PilotOptions['model']['effort'] };
+    })(),
   };
   const e = estimate(opts);
   console.log(`${e.attempts} attempts; at most ${e.maxCalls} model calls; first prompts about ${Math.round(e.firstPromptTokens / 1000)}k tokens in all (repairs and thinking add more).`);
   if (flag('dry-run')) process.exit(0);
   const stub = flag('stub');
-  if (!stub && !process.env.ANTHROPIC_API_KEY) {
-    console.error('Set ANTHROPIC_API_KEY to run with a model (or use --dry-run or --stub).');
+  const keyVar = opts.model.provider === 'openrouter' ? 'OPENROUTER_API_KEY' : 'ANTHROPIC_API_KEY';
+  if (!stub && !process.env[keyVar]) {
+    console.error(`Set ${keyVar} in .env to run with ${opts.model.provider} (or use --dry-run or --stub).`);
     process.exit(1);
   }
+  if (!stub) console.log(`Agent: ${opts.model.model} via ${opts.model.provider}, effort ${opts.model.effort}.`);
   const runId = value('run', `${stub ? 'stub-' : ''}${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}`);
-  const records = await runPilot(opts, stub ? referenceChat(loadTasks()) : claudeChat(opts.model), runId);
+  const records = await runPilot(opts, stub ? referenceChat(loadTasks()) : chatFor(opts.model), runId);
   const dir = writeSummary(runId, records, opts, stub ? 'This is a pipeline test: the "agent" answers with the reference proofs.' : '');
   console.log(`\n${records.filter((r) => r.ok).length}/${records.length} attempts proved. Summary: ${dir}/summary.md; transcripts (private): lean/runs/${runId}/`);
   process.exit(0);
