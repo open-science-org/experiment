@@ -13,7 +13,27 @@ export type Chat = (system: string, messages: { role: 'user' | 'assistant'; cont
   Promise<{ text: string; content: unknown; usage: Usage; stop: string }>;
 
 export type Provider = 'anthropic' | 'openrouter';
-export interface ModelSettings { provider: Provider; model: string; effort: 'low' | 'medium' | 'high' | 'max'; maxTokens: number }
+export interface ModelSettings {
+  provider: Provider; model: string; effort: 'low' | 'medium' | 'high' | 'max'; maxTokens: number;
+  /** OpenRouter only: use only companies that cost at most this many times the cheapest one, for our kind of work. Default 2. */
+  priceCap?: number;
+}
+
+/** Our calls produce about 4 output tokens per input token (race-cheap: 23M out, 5M in), so output price matters most. */
+const OUTPUT_PER_INPUT = 4;
+
+/**
+ * The companies OpenRouter may use for a model: those that support reasoning and long enough replies,
+ * cost at most `cap` times the cheapest for our mix of input and output, cheapest first. Fetched once per model.
+ */
+const ranked = new Map<string, Promise<{ tag: string; name: string; perM: number }[]>>();
+export function companiesFor(model: string, cap: number, maxTokens: number) {
+  if (!ranked.has(model)) ranked.set(model, fetch(`https://openrouter.ai/api/v1/models/${model}/endpoints`).then((r) => r.json()).then((d: { data?: { endpoints: { tag: string; provider_name: string; pricing: { prompt: string; completion: string }; supported_parameters?: string[]; max_completion_tokens?: number | null }[] } }) =>
+    (d.data?.endpoints ?? []).filter((e) => e.supported_parameters?.includes('reasoning') && (e.max_completion_tokens ?? Infinity) >= maxTokens)
+      .map((e) => ({ tag: e.tag, name: e.provider_name, perM: (Number(e.pricing.prompt) + OUTPUT_PER_INPUT * Number(e.pricing.completion)) * 1e6 / (1 + OUTPUT_PER_INPUT) }))
+      .sort((a, b) => a.perM - b.perM)).catch(() => []));
+  return ranked.get(model)!.then((xs) => xs.filter((x) => x.perM <= cap * (xs[0]?.perM ?? 0)));
+}
 export const DEFAULT_MODELS: Record<Provider, string> = { anthropic: 'claude-opus-5-5', openrouter: 'anthropic/claude-opus-5.5' };
 export const DEFAULT_MODEL: ModelSettings = { provider: 'anthropic', model: DEFAULT_MODELS.anthropic, effort: 'high', maxTokens: 32_000 };
 
@@ -36,14 +56,16 @@ export function openRouterChat(settings: ModelSettings): Chat {
   const key = process.env.OPENROUTER_API_KEY;
   if (!key) throw new Error('OPENROUTER_API_KEY is not set');
   return async (system, messages) => {
+    const cap = settings.priceCap ?? 2, allowed = await companiesFor(settings.model, cap, settings.maxTokens);
     const body = {
       model: settings.model,
       max_tokens: settings.maxTokens,
       reasoning: { effort: settings.effort === 'max' ? 'high' : settings.effort },
       usage: { include: true },
-      // Cheapest company first, others only if it fails. By default OpenRouter spreads calls across
-      // companies, and in October 2026 that cost about 5.6x the listed (cheapest) price.
-      provider: { sort: 'price' },
+      // By default OpenRouter spreads calls across companies; in October 2026 that cost about 5.6x the listed price.
+      // Only companies within the cap, cheapest first for our mix of input and output (OpenRouter's own
+      // 'price' sort weighs input most); if none of them can serve, the call fails instead of costing more.
+      provider: allowed.length ? { order: allowed.map((x) => x.tag), only: allowed.map((x) => x.tag) } : { sort: 'price' },
       messages: [
         { role: 'system', content: system },
         ...messages.map((m) => {
@@ -79,7 +101,7 @@ export function openRouterChat(settings: ModelSettings): Chat {
         choices?: { message: { content: string | null; reasoning_details?: unknown }; finish_reason: string }[];
         usage?: { prompt_tokens: number; completion_tokens: number; prompt_tokens_details?: { cached_tokens?: number }; cost?: number };
       };
-      if (!res.ok || json.error || !json.choices?.length) throw new Error(`OpenRouter ${res.status}: ${json.error?.message ?? 'no reply'}`);
+      if (!res.ok || json.error || !json.choices?.length) throw new Error(`OpenRouter ${res.status}: ${json.error?.message ?? 'no reply'}${res.status === 404 && allowed.length ? ` (none of the companies within the price cap could serve it: ${allowed.map((x) => x.name).join(', ')})` : ''}`);
       const choice = json.choices[0];
       const text = choice.message.content ?? '';
       const u = json.usage;
