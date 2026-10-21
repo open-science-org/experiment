@@ -12,6 +12,7 @@ import { preset } from '../experiments/experiment.ts';
 import { loadSpace, spaceIds, withCalibratedBudget, type Space } from '../spaces/spaces.ts';
 import { LEAN_DIR, leanAvailable, loadTasks } from '../lean/tasks.ts';
 import * as design from './design.ts';
+import { allCards } from '../card.ts';
 
 const PORT = Number(process.env.PORT ?? 8791);
 /** Folders the viewer may serve files and documents from. Never lean/ (private) or .env. */
@@ -57,7 +58,7 @@ function overview() {
     .map((d) => ({ id: d, title: (/^# (.+)$/m.exec(readFileSync(join(RESULTS_DIR, d, 'summary.md'), 'utf8'))?.[1] ?? d) }));
   const comparison = pilot.filter((p) => p.id.startsWith('panel-20')).sort((a, b) => b.modified - a.modified)[0];
   const comparisonData = comparison && existsSync(join(pilotDir, comparison.id, 'data.json')) ? JSON.parse(readFileSync(join(pilotDir, comparison.id, 'data.json'), 'utf8')) : null;
-  return { fields, pilot: pilot.sort((a, b) => b.modified - a.modified), experiments, comparison: comparison ? doc(`results/pilot/${comparison.id}/summary.md`) : null, comparisonData, comparisonPath: comparison ? `results/pilot/${comparison.id}/summary.md` : null };
+  return { fields, pilot: pilot.sort((a, b) => b.modified - a.modified), experiments, comparison: comparison ? doc(`results/pilot/${comparison.id}/summary.md`) : null, comparisonData, comparisonPath: comparison ? `results/pilot/${comparison.id}/summary.md` : null, cards: allCards() };
 }
 const PAGE = new URL('./index.html', import.meta.url).pathname;
 const SETTINGS: Record<string, string> = { traditional: 'Traditional', oso: 'OSO (immediate)', osoChoice: 'OSO (choice)', creditOnly: 'Flow-back, finished-only', sharingOnly: 'No flow-back, immediate', traditionalChoice: 'No flow-back, choice' };
@@ -194,11 +195,13 @@ const server = createServer(async (req, res) => {
       if (url.pathname === '/api/experiments/check') return send(200, design.checkExperiment(b.design as design.Design));
       if (url.pathname === '/api/experiments/run') return job(design.runExperimentJob(b.design as design.Design, b.overwrite === true));
       if (url.pathname === '/api/persona/text') return send(200, { text: design.personaText(b.persona as design.Persona) });
+      if (url.pathname === '/api/race/series') return job(design.buildSeriesJob(String(b.id ?? '')));
       if (url.pathname === '/api/community/start') return job(design.startRaceJob(b.design as design.RaceDesign));
       if (url.pathname === '/api/reports/build') return job(design.buildReportJob(String(b.space ?? ''), Number(b.seeds ?? 100)));
       return send(404, { error: 'not found' });
     }
     if (url.pathname === '/api/design/options') return send(200, design.options());
+    if (url.pathname === '/api/race/suggest') return send(200, design.suggestCounted(url.searchParams.get('model') ?? ''));
     if (url.pathname === '/api/design/agents') return send(200, design.fieldAgents(url.searchParams.get('id') ?? ''));
     if (url.pathname === '/api/models') return send(200, await models());
     if (url.pathname === '/api/balance') return send(200, await balance());

@@ -2,9 +2,10 @@
 // Heavy work (reports, experiments) runs as a child process of the command line, so results are
 // saved exactly as `npm run sim` saves them; drafting a field with a model runs in this process.
 import { spawn } from 'node:child_process';
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, openSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse, stringify } from 'yaml';
+import { loadTasks } from '../lean/tasks.ts';
 import { COLUMNS } from '../engine/measures.ts';
 import { Rng } from '../engine/rng.ts';
 import { worlds } from '../engine/world.ts';
@@ -367,8 +368,49 @@ export function personaText(p: Persona): string {
   return out.join(' ');
 }
 
-/** A race: labs (each a model and a persona), the budget per lab, rounds, and which rules. */
-export interface RaceDesign { id: string; labs: { model: string; persona: Persona }[]; budget: number; rounds: number; rules: ('traditional' | 'oso')[] }
+/**
+ * A race, designed in advance: labs (each a model and a persona), the budget per lab, rounds, which rules;
+ * the question, the counted targets, which lemmas to post as conjectures, and how many runs per side.
+ */
+export interface RaceDesign {
+  id: string; labs: { model: string; persona: Persona }[]; budget: number; rounds: number; rules: ('traditional' | 'oso')[];
+  question?: string; counted?: string[]; conjectures?: 'none' | 'direct' | 'all'; repeats?: number;
+}
+
+/** Posted conjectures for a design: the lemmas the counted targets use directly, or every lemma they rest on (public ids). */
+export function conjecturesFor(counted: string[], mode: RaceDesign['conjectures']): string[] {
+  if (!mode || mode === 'none') return [];
+  const tasks = loadTasks();
+  const id = new Map(tasks.map((t) => [t.name, t.publicId]));
+  const by = new Map(tasks.map((t) => [t.publicId, t]));
+  const out = new Set<string>();
+  for (const c of counted) {
+    const t = by.get(c);
+    if (!t) continue;
+    for (const u of mode === 'all' ? t.ancestors : t.uses) {
+      const p = id.get(u);
+      if (p && !by.get(p)!.posted) out.add(p);
+    }
+  }
+  return [...out];
+}
+
+/** From the model pilot: per posted target, how often a model proved it alone and with its lemmas, and the suggested counted targets. */
+export function suggestCounted(model: string) {
+  const dir = join(ROOT, 'lean', 'runs');
+  const runs = existsSync(dir) ? readdirSync(dir).filter((d) => d.startsWith('panel-') && existsSync(join(dir, d, 'options.json')) && existsSync(join(dir, d, 'attempts.jsonl'))) : [];
+  const run = runs.find((d) => JSON.parse(readFileSync(join(dir, d, 'options.json'), 'utf8')).model?.model === model);
+  if (!run) return { model, run: null, targets: [], counted: [] };
+  const recs = readFileSync(join(dir, run, 'attempts.jsonl'), 'utf8').trim().split('\n').filter(Boolean).map((l) => JSON.parse(l) as { publicId: string; posted: string; condition: string; ok: boolean });
+  const targets = loadTasks().filter((t) => t.posted).map((t) => {
+    const rs = recs.filter((r) => r.publicId === t.publicId);
+    const cell = (c: string) => { const x = rs.filter((r) => r.condition === c); return { proved: x.filter((r) => r.ok).length, attempts: x.length }; };
+    return { id: t.publicId, depth: t.depth, alone: cell('alone'), library: cell('library') };
+  });
+  // Counted: proved with lemmas at least once, never alone; the rest are warm-ups or out of reach.
+  const counted = targets.filter((t) => t.alone.attempts > 0 && t.alone.proved === 0 && t.library.proved > 0).map((t) => t.id);
+  return { model, run, targets, counted };
+}
 
 /** Starts a race of real AI labs (spends money: the page confirms the maximum first). */
 export function startRaceJob(d: RaceDesign): Job {
@@ -383,7 +425,18 @@ export function startRaceJob(d: RaceDesign): Job {
   }
   if (!d.rules.length || d.rules.some((r) => r !== 'traditional' && r !== 'oso')) throw new Error('choose traditional, OSO or both');
   for (const l of d.labs) if (!/^[\w.-]+\/[\w.:-]+$/.test(l.model)) throw new Error(`bad model id ${l.model}`);
+  const repeats = Math.round(d.repeats ?? 1);
+  if (!(repeats >= 1 && repeats <= 10)) throw new Error('between 1 and 10 runs per side');
+  const posted = loadTasks().filter((t) => t.posted).map((t) => t.publicId);
+  const counted = (d.counted ?? []).filter((c) => posted.includes(c));
+  const conjectures = conjecturesFor(counted.length ? counted : posted, d.conjectures);
   const config = {
+    question: d.question || 'For the same money, does an OSO community of AI labs solve more of the counted targets than a traditional one?',
+    compare: 'traditional rules and OSO rules',
+    fixed: `${d.labs.length} labs (${d.labs.map((l) => `${l.model.split('/').pop()} as ${l.persona.name}`).join('; ')}), $${d.budget} each, ${conjectures.length} posted conjectures, up to ${d.rounds} rounds`,
+    caveats: [] as string[],
+    counted, conjectures, conjectureBounty: 1,
+    design: `Designed in the app on ${new Date().toISOString().slice(0, 10)}, before the runs.`,
     agents: d.labs.map((l) => l.model),
     personaNames: d.labs.map((l) => l.persona.name),
     personas: d.labs.map((l) => personaText(l.persona)),
@@ -392,10 +445,38 @@ export function startRaceJob(d: RaceDesign): Job {
     reuseByLab: d.labs.map((l) => l.persona.reuse),
     budget: d.budget, rounds: d.rounds, rules: d.rules, run: d.id,
   };
-  const file = join(ROOT, 'lean', 'runs', `${d.id}.config.json`);
+  const runsDir = join(ROOT, 'lean', 'runs');
+  const file = join(runsDir, `${d.id}.config.json`);
+  if (existsSync(file)) throw new Error(`a race called "${d.id}" exists already; choose another name`);
   writeFileSync(file, JSON.stringify(config, null, 1));
-  const max = d.budget * d.labs.length * d.rules.length;
-  return cliJob('race', `Race: ${d.id} (at most $${max.toFixed(2)})`, ['community', '--config', file], () => ({ run: d.id, doc: `results/community/${d.id}/summary.md` }), 'src/lean/cli.ts');
+  const max = d.budget * d.labs.length * d.rules.length * repeats;
+  // Every community runs as its own detached process, kept awake, so a long race survives this app
+  // restarting; when all have ended, the series card is built.
+  const job = newJob('race', `Race: ${d.id}, ${repeats} run${repeats > 1 ? 's' : ''} per side (at most $${max.toFixed(2)})`);
+  let open = 0;
+  for (let k = 1; k <= repeats; k++) for (const r of d.rules) {
+    const run = `${d.id}-r${k}`;
+    const out = openSync(join(runsDir, `${run}-${r}.log`), 'a');
+    const child = spawn('caffeinate', ['-i', '-m', process.execPath, '--env-file-if-exists=.env', 'src/lean/cli.ts', 'community', '--config', file, '--rules', r, '--run', run], { cwd: ROOT, detached: true, stdio: ['ignore', out, out] });
+    child.unref();
+    open++;
+    job.log.push(`started run ${k}, ${r === 'oso' ? 'OSO' : 'traditional'} (log: lean/runs/${run}-${r}.log)`);
+    child.on('close', (code) => {
+      job.log.push(`run ${k}, ${r === 'oso' ? 'OSO' : 'traditional'}: ${code === 0 ? 'finished' : `stopped (code ${code})`}`);
+      if (--open === 0) {
+        const s = spawn(process.execPath, ['--env-file-if-exists=.env', 'src/lean/cli.ts', 'series', d.id], { cwd: ROOT });
+        s.stdout.on('data', (b: Buffer) => job.log.push(b.toString().trim()));
+        s.on('close', (c2) => { job.endedAt = Date.now(); job.status = c2 === 0 ? 'done' : 'failed'; job.result = { run: d.id, doc: `results/community/${d.id}/summary.md` }; });
+      }
+    });
+  }
+  return job;
+}
+
+/** Builds a race series' card from whatever runs have finished (also after this app restarted). */
+export function buildSeriesJob(id: string): Job {
+  if (!ID.test(id)) throw new Error('bad race name');
+  return cliJob('series', `Card for ${id}`, ['series', id], () => ({ doc: `results/community/${id}/summary.md` }), 'src/lean/cli.ts');
 }
 
 export function runExperimentJob(d: Design, overwrite = false): Job {

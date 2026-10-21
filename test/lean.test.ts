@@ -95,3 +95,14 @@ test('with Lean: communities run, and under OSO results are shared while traditi
   assert.ok(solved(oso) >= solved(trad));
   assert.ok(oso.earnings.some((e) => e > 0));
 });
+
+test('with Lean: race designs suggest counted targets from the pilot and post their lemmas as conjectures', { skip: !leanAvailable() }, async () => {
+  const design = await import('../src/viewer/design.ts');
+  const direct = design.conjecturesFor(['A3'], 'direct');
+  const all = design.conjecturesFor(['A5'], 'all');
+  assert.ok(direct.length >= 1 && direct.every((id) => /^[ABCX]-\d\d$/.test(id)), 'lemmas only, by public id');
+  assert.ok(all.length > design.conjecturesFor(['A5'], 'direct').length, 'every lemma a target rests on includes its direct ones and more');
+  assert.deepEqual(design.conjecturesFor(['A3'], 'none'), []);
+  const s = design.suggestCounted('no-such/model');
+  assert.equal(s.run, null);
+});

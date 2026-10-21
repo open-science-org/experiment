@@ -195,6 +195,12 @@
       <p class="note">A lab has two separate parts. <b>Model</b>: its brain, which sets how capable it is and what each step costs. <b>Persona</b>: its behaviour, set by features. <i>Instructed</i> features are written into the lab's instructions (shown under each lab, exactly as the lab will read them); <i>enforced</i> features are set by the harness, whatever the model does. The same persona can run on different models, and the same model under different personas, so a result can be traced to the brain or to the behaviour. Both communities get exactly the same labs and budget.</p>
       <div class="labs" id="r-labs"></div>
       <div class="row"><button class="btn" id="r-add">Add a lab</button></div>
+      <div class="row"><label>Question <input id="r-question" style="width:560px" placeholder="One sentence, decided before the run"></label></div>
+      <div><label>Counted targets: the race is judged on these, decided before it runs. <a href="#" id="r-suggest">Suggest from the pilot</a> <span class="muted" id="r-suggest-note"></span></label><div class="choice" id="r-counted"></div></div>
+      <div class="row">
+        <label>Post as conjectures <select id="r-conj"><option value="none">nothing</option><option value="direct" selected>the lemmas the counted targets use directly</option><option value="all">every lemma they rest on</option></select></label>
+        <label>Runs per side <input id="r-repeats" type="number" min="1" max="10" value="3" style="width:60px"></label>
+      </div>
       <div class="row">
         <label>Budget per lab, $ <input id="r-budget" type="number" min="0.05" max="20" step="0.05" value="0.5" style="width:80px"></label>
         <label>Rounds <input id="r-rounds" type="number" min="1" max="200" value="30" style="width:70px"></label>
@@ -203,8 +209,9 @@
       </div>
       <div class="row"><button class="btn primary" id="r-start">Start the race</button><span id="r-cost" class="muted"></span></div>
       <div id="r-job" class="joblog hidden" aria-live="polite"></div>
+      <article id="r-card" class="doc hidden" style="margin-top:10px"></article>
     </details>
-    <div class="bar"><label>Run <select id="c-run"></select></label><span id="c-live" class="live hidden">● live</span>
+    <div class="bar"><label>Run <select id="c-run"></select></label><span id="c-live" class="live hidden">● live</span><span id="c-card"></span>
       <button class="btn" id="c-first" aria-label="Start">⏮</button><button class="btn primary" id="c-play">▶ Replay</button>
       <label>Speed <select id="c-speed"><option value="20">×20</option><option value="60" selected>×60</option><option value="240">×240</option></select></label>
       <input type="range" id="c-scrub" min="0" max="0" value="0" aria-label="Time"><span class="clock" id="c-clock"></span>
@@ -393,10 +400,13 @@ async function drawOverview() {
       <div class="pair">${bar('with lemmas', m.library, 'oso')}${bar('alone', m.alone, 'trad')}</div>
       <div class="muted" style="margin-top:8px">Attempts that proved their target (8 targets × 2 attempts). Per proof: ${k(m.library.tokensPerProof)} output tokens with lemmas${ratio ? `, ${k(m.alone.tokensPerProof)} alone (${ratio}× more)` : ''}; $${m.library.costPerProof?.toFixed(3) ?? '–'} with lemmas${m.alone.costPerProof ? `, $${m.alone.costPerProof.toFixed(3)} alone` : ''}.${m.missingAlone.length ? ` Not run alone: ${m.missingAlone.join(', ')}.` : ''}</div>${chart}</div>`;
   }).join('') : '';
+  const cardBlock = (c) => `<div class="field" style="cursor:default"><span class="chip ${/^(OSO|For the same money, the OSO)/.test(c.answer) ? 'ahead' : ''}">${esc(c.kind)} · ${esc(c.date)}</span><h3><a href="#/doc/${esc(c.page)}">${esc(c.title)}</a></h3><p style="margin:4px 0"><b>Q:</b> ${esc(c.design.question)}</p><p style="margin:4px 0"><b>A:</b> ${esc(c.answer)}</p><div class="muted">${esc(c.design.runs)}${c.cost ? ' · ' + esc(c.cost) : ''}</div></div>`;
+  const races = ov.cards.filter((c) => c.kind === 'race').length ? `<div class="fields">${ov.cards.filter((c) => c.kind === 'race').map(cardBlock).join('')}</div>` : '';
+  const sims = ov.cards.filter((c) => c.kind === 'simulation').slice(0, 6);
   const comp = cd ? `<div class="findings"><ul>${cd.headline.map((h) => `<li>${md(h)}</li>`).join('')}</ul></div>
       <div class="fields">${models}</div>
       <div class="legend" style="margin-top:8px"><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s2)"/></svg>with the lemmas the target rests on (as under OSO)</span><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s1)"/></svg>alone (as under traditional rules)</span></div>
-      <p class="note">The charts show targets proved as each model spends, working up the tree, alone and with the lemmas. The lemmas' own cost is not counted: they show what a prover saves when the lemmas are already published. The real comparison of communities, traditional against OSO with real agents, is the next step. <a href="#/doc/${esc(ov.comparisonPath)}">Every target and model, with notes →</a></p>`
+      <p class="note">The charts show targets proved as each model spends, working up the tree, alone and with the lemmas. The lemmas' own cost is not counted: they show what a prover saves when the lemmas are already published. The races of whole communities are above. <a href="#/doc/${esc(ov.comparisonPath)}">Every target and model, with notes →</a></p>`
     : ov.comparison ? `<article class="doc">${ov.comparison.html.replace(/<h1>.*?<\/h1>/, '')}</article>` : '<p class="muted">No pilot comparison yet.</p>';
   $('view-overview').innerHTML = `
     <p class="lede">Communities of research agents get the same field, agents and budget, under two sets of rules. <b>Traditional:</b> work is published only when it is finished, and nothing flows back to the work it built on. <b>OSO:</b> results are published as they are found, and part of each result's value flows back to what it built on. The <a href="https://github.com/open-science-org/OSO/blob/master/docs/demo-model.md" target="_blank" rel="noopener">specification</a> defines the model once.</p>
@@ -404,9 +414,14 @@ async function drawOverview() {
     <p class="note">Simulations with guessed parameters: they show how the rules play out if a field works as described, not that it does. Click a field for its full report.</p>
     <div class="fields">${fields || '<p class="muted">No reports yet: npm run sim -- report all.</p>'}</div>
     <div class="legend" style="margin-top:8px"><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s2)"/></svg>OSO (results published at once)</span><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s1)"/></svg>traditional</span></div>
+    <h2 class="section">Real agents: OSO vs traditional races</h2>
+    ${races || '<p class="muted">No races yet.</p>'}
     <h2 class="section">Real agents: the Lean pilot</h2>
     <p class="note">Five AI models tried to prove the problem set's 8 posted targets, alone or given the lemmas each target rests on; Lean checked every proof. The question: do shared lemmas make results reachable that are not reachable alone, or only cheaper? <a href="#/pilot">Watch or replay the runs →</a></p>
-    ${comp}`;
+    ${comp}
+    <h2 class="section">Simulation experiments</h2>
+    <div class="fields">${sims.map(cardBlock).join('')}</div>
+    <p class="note"><a href="#/experiments">Every experiment, with its question and answer →</a></p>`;
 }
 
 async function drawExperiments() {
@@ -430,7 +445,18 @@ async function initRace() {
   const preset = (n) => ({ ...R.personas.find((p) => p.name === n) });
   R.labs = [['deepseek/deepseek-v4.1-flash', 'Foundation builder'], ['google/gemini-3.8-flash', 'Target racer'], ['openai/gpt-5.6-terra', 'Neutral'], ['deepseek/deepseek-v4.1-flash', 'Cheap explorer']].map(([model, p]) => ({ model, persona: preset(p) }));
   drawLabs();
-  for (const id of ['r-budget', 'r-rounds', 'r-trad', 'r-oso']) $(id).addEventListener('input', raceCost);
+  for (const id of ['r-budget', 'r-rounds', 'r-trad', 'r-oso', 'r-repeats']) $(id).addEventListener('input', raceCost);
+  const posted = ['C3', 'A3', 'C4', 'X1', 'B3', 'B5', 'X2', 'A5'];
+  $('r-counted').innerHTML = posted.map((t) => `<label><input type="checkbox" value="${t}"> ${t} <span class="muted" id="r-stat-${t}"></span></label>`).join('');
+  $('r-suggest').onclick = async (e) => {
+    e.preventDefault();
+    const model = R.labs[0]?.model;
+    const sg = await api('/api/race/suggest?model=' + encodeURIComponent(model));
+    if (!sg.run) { $('r-suggest-note').textContent = `no pilot data for ${model}`; return; }
+    for (const t of sg.targets) { const el = $('r-stat-' + t.id); if (el) el.textContent = `alone ${t.alone.proved}/${t.alone.attempts} · with lemmas ${t.library.proved}/${t.library.attempts}`; }
+    for (const box of $('r-counted').querySelectorAll('input')) box.checked = sg.counted.includes(box.value);
+    $('r-suggest-note').textContent = `${model.split('/').pop()}: counted are the targets it never proved alone but did with lemmas (${sg.counted.join(', ') || 'none'}).`;
+  };
   $('r-add').onclick = () => { R.labs.push({ model: R.labs.at(-1)?.model ?? 'deepseek/deepseek-v4.1-flash', persona: preset('Neutral') }); drawLabs(); };
   $('r-start').onclick = startRace;
 }
@@ -478,22 +504,31 @@ async function told(i) {
   } catch {}
 }
 function raceDesign() {
-  return { id: $('r-id').value.trim(), labs: R.labs.map((l) => ({ model: l.model, persona: l.persona })), budget: Number($('r-budget').value), rounds: Number($('r-rounds').value), rules: [['r-trad', 'traditional'], ['r-oso', 'oso']].filter(([id]) => $(id).checked).map(([, r]) => r) };
+  return {
+    id: $('r-id').value.trim(), labs: R.labs.map((l) => ({ model: l.model, persona: l.persona })), budget: Number($('r-budget').value), rounds: Number($('r-rounds').value),
+    rules: [['r-trad', 'traditional'], ['r-oso', 'oso']].filter(([id]) => $(id).checked).map(([, r]) => r),
+    question: $('r-question').value.trim(), counted: [...$('r-counted').querySelectorAll('input:checked')].map((i) => i.value),
+    conjectures: $('r-conj').value, repeats: Number($('r-repeats').value),
+  };
 }
 async function raceCost() {
-  const d = raceDesign(), max = d.budget * d.labs.length * d.rules.length;
+  const d = raceDesign(), max = d.budget * d.labs.length * d.rules.length * d.repeats;
   let bal = '';
   try { const b = await api('/api/balance'); if (b.ok && b.remaining != null) bal = ` Your OpenRouter key has $${b.remaining.toFixed(2)} left.`; } catch {}
-  $('r-cost').textContent = `At most $${max.toFixed(2)} at list prices (${d.labs.length} labs × $${d.budget} × ${d.rules.length} communit${d.rules.length === 1 ? 'y' : 'ies'}).${bal}`;
+  $('r-cost').textContent = `At most $${max.toFixed(2)} at list prices (${d.labs.length} labs × $${d.budget} × ${d.rules.length} communit${d.rules.length === 1 ? 'y' : 'ies'} × ${d.repeats} run${d.repeats > 1 ? 's' : ''}).${bal}`;
   return max;
 }
 async function startRace() {
   const d = raceDesign(), max = await raceCost();
   if (!confirm(`Start "${d.id}"? It can spend up to $${max.toFixed(2)} of your OpenRouter credit.`)) return;
   try {
+    if (!d.counted.length && !confirm('No counted targets chosen: the race will be judged on all 8. Continue?')) return;
     const j = await post('/api/community/start', { design: d });
-    follow(j.job, $('r-job'), () => enterCommunity());
-    setTimeout(() => enterCommunity().then(() => { $('c-run').value = d.id; loadCommunity(); }), 5000);
+    follow(j.job, $('r-job'), async (job) => {
+      enterCommunity();
+      if (job.status === 'done') { const c = await api('/api/doc?path=' + encodeURIComponent(job.result.doc)); $('r-card').innerHTML = c.html; $('r-card').classList.remove('hidden'); OV = null; }
+    });
+    setTimeout(() => enterCommunity().then(() => { $('c-run').value = `${d.id}-r1`; loadCommunity(); }), 5000);
   } catch (e) { $('r-job').classList.remove('hidden'); $('r-job').textContent = e.message; }
 }
 
@@ -529,6 +564,11 @@ async function loadCommunity() {
   const acts = ['traditional', 'oso'].flatMap((k) => C.run[k]?.actions ?? []);
   const live = ['traditional', 'oso'].some((k) => C.run[k] && !C.run[k].finished);
   $('c-live').classList.toggle('hidden', !live);
+  // The card for this race, or for the series it belongs to; or a button to build it once runs have ended.
+  const series = /^(.*)-r\d+$/.exec(id)?.[1];
+  const cardId = (OV ?? await overviewData()).cards.find((c) => c.kind === 'race' && (c.id === id || c.id === series))?.id;
+  $('c-card').innerHTML = cardId ? ` <a href="#/doc/results/community/${esc(cardId)}/summary.md">Read the card →</a>` : series && !live ? ` <button class="btn" id="c-build">Build the card for ${esc(series)}</button>` : '';
+  if ($('c-build')) $('c-build').onclick = async () => { const j = await post('/api/race/series', { id: series }); follow(j.job, $('r-job'), () => { OV = null; loadCommunity(); }); $('race').open = true; };
   C.t0 = acts.length ? Math.min(...acts.map((a) => a.t)) - 1000 : Date.now();
   C.t1 = Math.max(C.t0 + 1000, ...acts.map((a) => a.t), live ? Date.now() : 0);
   if ($('c-follow').checked) C.now = C.t1;
