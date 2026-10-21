@@ -32,5 +32,6 @@
   "One run per side: no verdict either way.",
   "One OSO run stopped partway and was rerun from the start."
  ],
- "page": "results/community/community-2026-10-20b/summary.md"
+ "page": "results/community/community-2026-10-20b/summary.md",
+ "chart": "results/community/community-2026-10-20b/figures/progress.svg"
 }

@@ -31,5 +31,6 @@
   "OSO's lead as the market-set parameters vary: 0.3 to 4.4 levels.",
   "Stage difficulties and bounties are illustrative, not industry figures."
  ],
- "page": "reports/drug-discovery/card.md"
+ "page": "reports/drug-discovery/card.md",
+ "chart": "reports/drug-discovery/figures/frontier.svg"
 }

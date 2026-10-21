@@ -4,6 +4,8 @@
 
 **Answer:** No clear difference: OSO 2.0, traditional 1.6 targets that count (5 runs each).
 
+![Cheap AI models, OSO vs traditional](figures/progress.svg)
+
 | rules | targets that count | all targets | spent | work done twice | used another lab's result |
 | --- | --- | --- | --- | --- | --- |
 | Traditional | 1.6 ± 0.5 of 4 | 4.2 ± 0.8 of 8 | $0.34 | 20.4 ± 15.3 | 0.0 ± 0.0 |
@@ -18,7 +20,6 @@
 
 <details><summary>Details</summary>
 
-![Counted targets solved for the money](figures/progress.svg)
 
 **Exploratory** (not fixed in advance): mean spend at which a run had k counted targets solved.
 

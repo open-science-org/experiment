@@ -9,7 +9,7 @@ import { RESULTS_DIR, ROOT, SPACES_DIR } from '../paths.ts';
 import { attempt, systemPrompt, taskPrompt, type AttemptResult, type Chat, type ModelSettings } from './agent.ts';
 import { libraryFor, referenceProof } from './selftest.ts';
 import { LEAN_DIR, loadTasks, type Task } from './tasks.ts';
-import { lineChart } from '../report/figures.ts';
+import { barChart, lineChart } from '../report/figures.ts';
 import { writeCard } from '../card.ts';
 import { existsSync as exists } from 'node:fs';
 
@@ -356,6 +356,14 @@ ${table(perTarget)}
 
 A target a model proves alone does not need its lemmas, for that model: shared lemmas then save cost, but do not make the result reachable. Ids are the anonymous ids of [worlds/lean-reference.json](../../../worlds/lean-reference.json). Runs: ${runIds.map((r) => `[${r}](../${r}/summary.md)`).join(', ')}.
 `;
+  writeFileSync(join(dir, 'figures', 'models.svg'), barChart({
+    title: 'Targets solved, with help and alone (share of tries)',
+    bars: models_.flatMap((m) => [
+      { label: `${short(m.model)}, with help`, value: m.library.attempts ? m.library.proved / m.library.attempts : 0, slot: 2 as const, text: `${m.library.proved}/${m.library.attempts}` },
+      { label: `${short(m.model)}, alone`, value: m.alone.attempts ? m.alone.proved / m.alone.attempts : 0, slot: 1 as const, text: `${m.alone.proved}/${m.alone.attempts}` },
+    ]),
+    max: 1, legend: [{ name: 'with help (as under OSO)', slot: 2 }, { name: 'alone (as under traditional)', slot: 1 }],
+  }));
   const notesFile = join(dir, 'notes.md');
   const notes = exists(notesFile) ? readFileSync(notesFile, 'utf8').trim() : '';
   const plain = (t: string) => t.replace(/\*\*/g, '');
@@ -376,6 +384,7 @@ A target a model proves alone does not need its lemmas, for that model: shared l
     caveats: ['The helper results were given, not found: this measures how much they help, not whether a model would think of them.', 'Only a few tries per target: the rates are rough.'],
     cost: `$${models_.reduce((a, m) => a + m.cost, 0).toFixed(2)}`,
     page: `results/pilot/${id}/summary.md`,
+    chart: `results/pilot/${id}/figures/models.svg`,
   }, md.replace(/^# .*\n/, '') + (notes ? `\n## Notes\n\n${notes}\n` : ''));
   writeFileSync(join(dir, 'data.json'), JSON.stringify({ id, title, runs: runIds, attempts: r0.attempts, repairs: r0.repairs, allowGrind: r0.allowGrind, effort: r0.model.effort, headline, models: models_, curves }, null, 1) + '\n');
   return dir;

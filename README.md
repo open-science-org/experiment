@@ -96,7 +96,7 @@ Four pages:
 - **Results:** every experiment as a short card (question, answer). Click one for its details.
 - **New:** one form. Pick who does the work: **simulated agents** (chance decides each attempt; free, thousands of runs) or **AI models** (Lean checks each proof; costs money, a few runs). Then the question, what to compare, and the runs. Everything else is under *More options*.
 - **Live:** tests with AI models as they run, simulation replays, and every attempt by the AI models.
-- **Fields:** the fields, their reports, and adding a new one.
+- **Topics:** the research topics, their reports, and adding a new one.
 
 The app runs on this machine only, and never shows `lean/` (the private answers) or `.env`.
 

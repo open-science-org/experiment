@@ -2,7 +2,7 @@
 // design, caveats) and one index of all of them (results/README.md). The design is declared before the
 // run; the answer is computed from the declared measure, never written by hand.
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 import { REPORTS_DIR, RESULTS_DIR, ROOT } from './paths.ts';
 
 /** What every experiment declares before it runs. */
@@ -32,6 +32,8 @@ export interface Card {
   cost?: string;
   /** Path of the card's own page, from the repository root. */
   page: string;
+  /** One comparison chart (an SVG, path from the repository root). */
+  chart?: string;
 }
 
 const table = (rows: Record<string, string | number>[]) => {
@@ -49,7 +51,7 @@ export function cardMarkdown(c: Card, details = ''): string {
 
 **Answer:** ${c.answer}
 
-${table(c.table)}
+${c.chart ? `![${c.title}](${relative(dirname(join(ROOT, c.page)), join(ROOT, c.chart)).replace(/\\/g, '/')})\n\n` : ''}${table(c.table)}
 
 **Design** (fixed before the run): compared ${c.design.compare} · held the same: ${c.design.fixed} · measure: ${c.design.measure}, ${c.design.better} is better · ${c.design.runs}.${c.cost ? ` Cost: ${c.cost}.` : ''}
 

@@ -18,11 +18,12 @@
   .c3 { stroke: var(--s3); } .f3 { fill: var(--s3); }
   .dot { stroke: var(--surface); stroke-width: 2; }
   .label { font-size: 12px; font-weight: 700; }
+  .t1 { fill: var(--s1); } .t2 { fill: var(--s2); } .t3 { fill: var(--s3); }
 </style><rect class="bg" width="760" height="420" rx="8"/>
 <text class="title" x="64" y="30">Targets solved for the money: real agents, OSO vs traditional</text>
 <text class="sub" x="64" y="50">Same agents and budget ($1.60 at list prices); Lean checks every proof.</text>
-<line class="line c1" x1="64" y1="70" x2="82" y2="70"/><text class="tick" x="88" y="74">Traditional</text>
-<line class="line c2" x1="170.6" y1="70" x2="188.6" y2="70"/><text class="tick" x="194.6" y="74">OSO</text>
+<line class="line c1" x1="64" y1="70" x2="82" y2="70"/><text class="label t1" x="88" y="74">Traditional</text>
+<line class="line c2" x1="170.6" y1="70" x2="188.6" y2="70"/><text class="label t2" x="194.6" y="74">OSO</text>
 <line class="grid" x1="64" x2="570" y1="364" y2="364"/>
 <text class="tick" x="56" y="368" text-anchor="end">0</text>
 <line class="grid" x1="64" x2="570" y1="296" y2="296"/>
@@ -45,6 +46,6 @@
 <circle class="dot f1" cx="302.9" cy="228.0" r="4.5"><title>Traditional: 4 at dollars spent by the community $0.76</title></circle>
 <path class="line c2" d="M64.0 364.0 L76.8 364.0 L110.5 330.0 L112.0 330.0 L114.3 330.0 L125.7 330.0 L153.1 330.0 L154.1 296.0 L156.8 296.0 L167.6 296.0 L182.0 296.0 L184.3 296.0 L187.3 296.0 L196.5 296.0 L248.5 296.0 L250.8 296.0 L253.7 296.0 L269.2 296.0 L272.9 296.0 L276.5 296.0 L285.8 296.0 L286.3 296.0 L290.0 296.0 L302.6 296.0 L305.7 296.0 L316.0 296.0 L318.0 296.0 L325.8 296.0 L328.8 296.0 L342.3 296.0 L345.2 296.0 L355.3 296.0 L358.7 296.0 L367.4 296.0 L371.1 296.0 L374.8 296.0 L378.0 296.0 L380.1 296.0 L380.6 296.0 L382.0 262.0 L384.0 262.0 L385.8 262.0 L388.2 228.0 L391.5 228.0 L393.3 228.0"/>
 <circle class="dot f2" cx="393.3" cy="228.0" r="4.5"><title>OSO: 4 at dollars spent by the community $1.04</title></circle>
-<text class="label" x="405.3040545608" y="232">Traditional: 4</text>
-<text class="label" x="405.3040545608" y="248">OSO: 4</text>
+<text class="label t1" x="405.3040545608" y="232">Traditional: 4</text>
+<text class="label t2" x="405.3040545608" y="248">OSO: 4</text>
 </svg>

@@ -4,6 +4,8 @@
 
 **Answer:** Best: gaming agent 1, ρ 0, OSO, 6.0 (5 more tie). Best traditional: gaming agent 1, ρ 1, Traditional, 5.7. Clear difference.
 
+![Is the funding-rule effect a gamer effect? Drug discovery](figures/compare.svg)
+
 | gaming agent | ρ | setting | frontier | targets solved | cost | gamer share of pay |
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | 0 | Traditional | 0.6 ± 1.8 | 0.1 ± 0.3 | 965 ± 166 | 0.91 |
@@ -45,6 +47,6 @@ Values are mean ± standard deviation over runs.
 | 0 | 1 | Traditional | 1.0 ± 2.3 | 0.3 ± 0.8 | 1000 ± 187 | – |
 | 0 | 1 | OSO (immediate) | 6.0 ± 0.1 | 2.4 ± 1.1 | 186 ± 86 | – |
 
-Code: commit `9b5ec21` (with uncommitted changes). Experiment: [config/experiments/funding-rule-gamer.yaml](../../config/experiments/funding-rule-gamer.yaml). Command: `npm run sim -- funding-rule-gamer --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `7434f7c` (with uncommitted changes). Experiment: [config/experiments/funding-rule-gamer.yaml](../../config/experiments/funding-rule-gamer.yaml). Command: `npm run sim -- funding-rule-gamer --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

@@ -504,7 +504,8 @@ Runs: ${runs.map((x) => x.runId).join(', ')}. Transcripts (with proofs) are priv
     answer: verdict.replace(/\*\*/g, ''), table: rows.map((r) => ({ rules: r.rules, 'targets solved': r['targets solved'], spent: r.spent, 'lemmas accepted': r['lemmas accepted'], 'duplicated work': r['duplicated work'] })),
     caveats: ['One run per side: no verdict either way.', ...(note ? [note] : [])],
     page: `results/community/${id}/summary.md`,
-  }, md.replace(/^# .*\n/, ''));
+    chart: `results/community/${id}/figures/progress.svg`,
+  }, md.replace(/^# .*\n/, '').replace(/!\[[^\]]*\]\(figures\/progress\.svg\)\n*/, ''));
   else writeFileSync(join(dir, 'summary.md'), md);
   writeFileSync(join(dir, 'data.json'), JSON.stringify({ id, runs: runs.map((x) => x.runId), stats: curves.map((c) => c.st), curves: curves.map((c) => ({ rules: c.result.opts.rules, points: c.pts })) }, null, 1) + '\n');
   return dir;
@@ -518,7 +519,7 @@ export interface Pair { rep: number; traditional: CommunityResult; oso: Communit
  * Several races with the same design, summarized on the measure fixed in advance: counted targets
  * solved for the same budget, mean and spread over runs; verdict against two standard errors.
  */
-export interface RaceDesign { title?: string; question?: string; compare?: string; fixed?: string; caveats?: string[]; prose?: string }
+export interface RaceDesign { title?: string; question?: string; compare?: string; fixed?: string; caveats?: string[]; prose?: string; primary?: { kind: 'spendTo'; k: number } }
 
 /** Spend at which a run first had k counted targets solved (null if never). */
 function spendTo(r: CommunityResult, k: number): number | null {
@@ -540,8 +541,18 @@ export function writeRaceSeries(id: string, pairs: Pair[], designIn: string | Ra
   const se = (xs: number[]) => (xs.length > 1 ? sd(xs) / Math.sqrt(xs.length) : Infinity);
   const tC = T.map((x) => x.countedSolved), oC = O.map((x) => x.countedSolved);
   const diff = mean(oC) - mean(tC), margin = 2 * Math.hypot(se(oC), se(tC));
-  const verdict = pairs.length < 2 ? 'one run per side: no verdict'
+  let verdict = pairs.length < 2 ? 'one run per side: no verdict'
     : diff > margin ? 'OSO ahead' : diff < -margin ? 'traditional ahead' : 'no clear difference';
+  // Main measure, when declared: money spent to solve k targets that count (a run that never does counts as its whole budget).
+  const primaryK = dsg.primary?.kind === 'spendTo' ? dsg.primary.k : null;
+  const budgetOf = (r: CommunityResult) => r.opts.budget * r.opts.agents.length;
+  const spendK = (side: Rules) => pairs.map((p) => spendTo(p[side], primaryK ?? 1) ?? budgetOf(p[side]));
+  const reachedK = (side: Rules) => pairs.filter((p) => spendTo(p[side], primaryK ?? 1) !== null).length;
+  const tS = spendK('traditional'), oS = spendK('oso');
+  if (primaryK !== null && pairs.length > 1) {
+    const d = mean(tS) - mean(oS), mg = 2 * Math.hypot(se(oS), se(tS));
+    verdict = d > mg ? 'OSO ahead' : d < -mg ? 'traditional ahead' : 'no clear difference';
+  }
   // Chart: every run's curve, thin; OSO orange, traditional blue.
   const budget = pairs[0].oso.opts.budget * pairs[0].oso.opts.agents.length;
   const W = 760, H = 380, l = 56, rt = 170, tp = 70, bt = 48, pw = W - l - rt, ph = H - tp - bt, Y = counted.length;
@@ -549,8 +560,8 @@ export function writeRaceSeries(id: string, pairs: Pair[], designIn: string | Ra
   let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Counted targets solved for the money, every run"><style>
   .bg{fill:#fcfcfb} text{fill:#0b0b0b;font-family:Helvetica,Arial,sans-serif} .s{fill:#52514e;font-size:12px} .g{stroke:#e6e5e1} .o{stroke:#eb6834} .t{stroke:#2a78d6} .of{fill:#eb6834} .tf{fill:#2a78d6}
   @media (prefers-color-scheme: dark){.bg{fill:#1a1a19} text{fill:#fff} .s{fill:#c3c2b7} .g{stroke:#34332f} .o{stroke:#d95926} .t{stroke:#3987e5} .of{fill:#d95926} .tf{fill:#3987e5}}</style>
-  <rect class="bg" width="${W}" height="${H}" rx="8"/><text x="${l}" y="28" font-size="16" font-weight="700">Counted targets solved for the money: ${pairs.length} race${pairs.length > 1 ? 's' : ''} per side</text>
-  <text class="s" x="${l}" y="48">Each line is one community's run. OSO orange, traditional blue. Same labs, personas and budget on both sides.</text>`;
+  <rect class="bg" width="${W}" height="${H}" rx="8"/><text x="${l}" y="28" font-size="16" font-weight="700">Targets that count, by money spent (${pairs.length} run${pairs.length > 1 ? 's' : ''} per side)</text>
+  <rect class="of" x="${l}" y="40" width="12" height="10" rx="2"/><text class="of" x="${l + 17}" y="49" font-size="12" font-weight="700">OSO</text><rect class="tf" x="${l + 60}" y="40" width="12" height="10" rx="2"/><text class="tf" x="${l + 77}" y="49" font-size="12" font-weight="700">Traditional</text><text class="s" x="${l + 160}" y="49">each line is one run</text>`;
   for (let y = 0; y <= Y; y++) svg += `<line class="g" x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}"/><text class="s" x="${l - 8}" y="${sy(y) + 4}" text-anchor="end">${y}</text>`;
   for (const k of [0, 0.25, 0.5, 0.75, 1]) svg += `<text class="s" x="${sx(budget * k)}" y="${tp + ph + 18}" text-anchor="middle">$${(budget * k).toFixed(2)}</text>`;
   svg += `<text class="s" x="${l + pw / 2}" y="${H - 10}" text-anchor="middle">Dollars spent by the community (list prices)</text>`;
@@ -561,7 +572,7 @@ export function writeRaceSeries(id: string, pairs: Pair[], designIn: string | Ra
   }
   const ends: [number, string, string][] = [[sy(mean(oC)), `OSO: ${mean(oC).toFixed(1)} on average`, 'of'], [sy(mean(tC)), `Traditional: ${mean(tC).toFixed(1)}`, 'tf']];
   ends.sort((a, b) => a[0] - b[0]); if (ends[1][0] - ends[0][0] < 16) ends[1][0] = ends[0][0] + 16;
-  for (const [y, t, c] of ends) svg += `<circle class="${c}" cx="${l + pw + 10}" cy="${y}" r="4"/><text x="${l + pw + 18}" y="${y + 4}" font-size="12" font-weight="700">${t}</text>`;
+  for (const [y, t, c] of ends) svg += `<circle class="${c}" cx="${l + pw + 10}" cy="${y}" r="4"/><text class="${c}" x="${l + pw + 18}" y="${y + 4}" font-size="12" font-weight="700">${t}</text>`;
   writeFileSync(join(dir, 'figures', 'progress.svg'), svg + '</svg>');
 
   const f1 = (x: number) => x.toFixed(1), f2 = (x: number) => x.toFixed(2);
@@ -616,19 +627,23 @@ Transcripts, with every proof, are private.
     return { 'counted targets': k, traditional: cell('traditional'), OSO: cell('oso') };
   }).filter((r) => r.traditional !== 'never' || r.OSO !== 'never');
   const budgetUse = (m(T, 'spent') + m(O, 'spent')) / 2 / budget;
-  const answer = md.split('\n').find((l) => l.startsWith('**'))!.replace(/\*\*/g, '');
+  const money = (x: number) => `$${x.toFixed(2)}`;
+  const answer = primaryK === null ? md.split('\n').find((l) => l.startsWith('**'))!.replace(/\*\*/g, '')
+    : `${verdict === 'OSO ahead' ? 'OSO ahead' : verdict === 'traditional ahead' ? 'Traditional ahead' : verdict === 'no clear difference' ? 'No clear difference' : 'One run per side'}: OSO solved ${primaryK} targets that count for ${money(mean(oS))} on average, traditional for ${money(mean(tS))} (${reachedK('oso')} and ${reachedK('traditional')} of ${pairs.length} runs got there).`;
   writeCard(dir, {
     id, kind: 'race', date: new Date().toISOString().slice(0, 10), title: dsg.title ?? `AI models, OSO vs traditional (${id})`,
     design: {
       question: dsg.question ?? 'For the same money, does an OSO community of AI labs solve more of the counted targets than a traditional one?',
       compare: dsg.compare ?? 'traditional rules and OSO rules',
       fixed: dsg.fixed ?? `the same ${o.agents.length} labs and personas, $${o.budget} each, ${o.conjectures?.length ?? 0} posted conjectures`,
-      measure: `targets solved, counting ${counted.join(', ')}`, better: 'higher', runs: `${pairs.length} run${pairs.length > 1 ? 's' : ''} per side`,
+      measure: primaryK === null ? `targets solved, counting ${counted.join(', ')}` : `money spent to solve ${primaryK} of the targets that count (${counted.join(', ')}); a run that never does counts as its whole budget`,
+      better: primaryK === null ? 'higher' : 'lower', runs: `${pairs.length} run${pairs.length > 1 ? 's' : ''} per side`,
     },
     answer,
     table: [['Traditional', T], ['OSO', O]].map(([name, S]) => {
       const st = S as ReturnType<typeof stats>[];
-      return { rules: name as string, 'targets that count': `${ms(st.map((x) => x.countedSolved))} of ${counted.length}`, 'all targets': `${ms(st.map((x) => x.targetsSolved))} of 8`, spent: `$${f2(m(st, 'spent'))}`, 'work done twice': ms(st.map((x) => x.lemmasDuplicate)), "used another lab's result": ms(st.map((x) => x.builtOnOthers)) };
+      const sp = name === 'OSO' ? oS : tS;
+      return { rules: name as string, ...(primaryK !== null ? { [`money to ${primaryK} targets`]: `$${f2(mean(sp))} ± ${f2(sd(sp))}` } : {}), 'targets that count': `${ms(st.map((x) => x.countedSolved))} of ${counted.length}`, 'all targets': `${ms(st.map((x) => x.targetsSolved))} of 8`, spent: `$${f2(m(st, 'spent'))}`, 'work done twice': ms(st.map((x) => x.lemmasDuplicate)), "used another lab's result": ms(st.map((x) => x.builtOnOthers)) };
     }),
     caveats: [
       ...(dsg.caveats ?? []),
@@ -637,8 +652,8 @@ Transcripts, with every proof, are private.
     ],
     cost: `$${(T.reduce((a, x) => a + x.spent, 0) + O.reduce((a, x) => a + x.spent, 0)).toFixed(2)} at list prices`,
     page: `results/community/${id}/summary.md`,
-  }, `![Counted targets solved for the money](figures/progress.svg)
-
+    chart: `results/community/${id}/figures/progress.svg`,
+  }, `
 **Exploratory** (not fixed in advance): mean spend at which a run had k counted targets solved.
 
 ${[`| ${Object.keys(explore[0] ?? { k: 1 }).join(' | ')} |`, `| ${Object.keys(explore[0] ?? { k: 1 }).map(() => '---').join(' | ')} |`, ...explore.map((r) => `| ${Object.values(r).join(' | ')} |`)].join('\n')}

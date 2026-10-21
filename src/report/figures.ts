@@ -23,6 +23,7 @@ const STYLE = `
   .c3 { stroke: var(--s3); } .f3 { fill: var(--s3); }
   .dot { stroke: var(--surface); stroke-width: 2; }
   .label { font-size: 12px; font-weight: 700; }
+  .t1 { fill: var(--s1); } .t2 { fill: var(--s2); } .t3 { fill: var(--s3); }
 `;
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -69,7 +70,8 @@ export function lineChart(c: LineChart): string {
   // Legend, one row above the plot.
   let lx = left;
   for (const s of c.series) {
-    out.push(`<line class="line c${s.slot}" x1="${lx}" y1="70" x2="${lx + 18}" y2="70"/><text class="tick" x="${lx + 24}" y="74">${esc(s.name)}</text>`);
+    // The legend is in each series' colour, like its line.
+    out.push(`<line class="line c${s.slot}" x1="${lx}" y1="70" x2="${lx + 18}" y2="70"/><text class="label t${s.slot}" x="${lx + 24}" y="74">${esc(s.name)}</text>`);
     lx += 34 + s.name.length * 6.6;
   }
   for (const t of c.yTicks) {
@@ -100,7 +102,7 @@ export function lineChart(c: LineChart): string {
   for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 16) ends[i].y = ends[i - 1].y + 16;
   const labelX = Math.max(...ends.map((e) => sx(e.last[0]))) + 12;
   for (const e of ends) {
-    out.push(`<text class="label" x="${labelX}" y="${e.y + 4}">${esc(e.s.name)}: ${esc(fy(e.last[1]))}</text>`);
+    out.push(`<text class="label t${e.s.slot}" x="${labelX}" y="${e.y + 4}">${esc(e.s.name)}: ${esc(fy(e.last[1]))}</text>`);
   }
   out.push('</svg>');
   return out.join('\n');
@@ -267,6 +269,37 @@ export function heatmap(c: {
       out.push(`<text x="${x + cell / 2}" y="${y + cell / 2 + (c.note ? 0 : 5)}" text-anchor="middle" style="fill:${ink};font-size:14px;font-weight:700">${esc(c.format(v))}</text>`);
       if (c.note) out.push(`<text x="${x + cell / 2}" y="${y + cell / 2 + 17}" text-anchor="middle" style="fill:${ink};font-size:10px">${esc(c.note(r, k))}</text>`);
     });
+  });
+  out.push('</svg>');
+  return out.join('\n');
+}
+
+export interface Bar { label: string; value: number; slot: 1 | 2 | 3 | 0; text?: string }
+
+/**
+ * Horizontal bars for a comparison: OSO rows orange (slot 2), traditional blue (slot 1), others grey;
+ * each value printed at the end of its bar, and a legend in colour.
+ */
+export function barChart(c: { title: string; bars: Bar[]; max?: number; format?: (v: number) => string; legend?: { name: string; slot: 1 | 2 | 3 | 0 }[] }): string {
+  const fmt = c.format ?? ((v: number) => v.toFixed(1));
+  const W = 620, rowH = 26, left = 230, right = 70, top = c.legend?.length ? 58 : 40, pw = W - left - right;
+  const H = top + c.bars.length * rowH + 14;
+  const max = c.max ?? Math.max(1e-9, ...c.bars.map((b) => b.value));
+  const fill = (slot: number) => (slot ? `var(--s${slot})` : 'var(--dead)');
+  const out: string[] = [];
+  out.push(`<svg xmlns="http://www.w3.org/2000/svg" class="viz" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${esc(c.title)}">`);
+  out.push(`<style>${STYLE}</style><rect class="bg" width="${W}" height="${H}" rx="8"/>`);
+  out.push(`<text class="title" x="16" y="26">${esc(c.title)}</text>`);
+  let lx = 16;
+  for (const l of c.legend ?? []) {
+    out.push(`<rect x="${lx}" y="38" width="12" height="10" rx="2" style="fill:${fill(l.slot)}"/><text class="label ${l.slot ? `t${l.slot}` : ''}" x="${lx + 17}" y="47">${esc(l.name)}</text>`);
+    lx += 30 + l.name.length * 7;
+  }
+  c.bars.forEach((b, i) => {
+    const y = top + i * rowH, w = Math.max(2, (b.value / max) * pw);
+    out.push(`<text class="tick" x="${left - 8}" y="${y + 15}" text-anchor="end">${esc(b.label.length > 34 ? b.label.slice(0, 33) + '…' : b.label)}</text>`);
+    out.push(`<rect x="${left}" y="${y + 4}" width="${w.toFixed(1)}" height="16" rx="3" style="fill:${fill(b.slot)}"><title>${esc(`${b.label}: ${b.text ?? fmt(b.value)}`)}</title></rect>`);
+    out.push(`<text class="label ${b.slot ? `t${b.slot}` : ''}" x="${left + w + 6}" y="${y + 16}">${esc(b.text ?? fmt(b.value))}</text>`);
   });
   out.push('</svg>');
   return out.join('\n');

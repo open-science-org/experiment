@@ -1,4 +1,5 @@
 {
+ "chart": "results/lean-tree/figures/compare.svg",
  "id": "lean-tree",
  "kind": "simulation",
  "date": "2026-10-21",

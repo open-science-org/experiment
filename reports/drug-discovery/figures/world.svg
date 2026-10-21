@@ -18,6 +18,7 @@
   .c3 { stroke: var(--s3); } .f3 { fill: var(--s3); }
   .dot { stroke: var(--surface); stroke-width: 2; }
   .label { font-size: 12px; font-weight: 700; }
+  .t1 { fill: var(--s1); } .t2 { fill: var(--s2); } .t3 { fill: var(--s3); }
 </style><rect class="bg" width="830" height="536" rx="8"/>
 <text class="title" x="20" y="30">The research tree: Early-stage drug discovery</text>
 <text class="sub" x="20" y="50">54 results · 3 targets · 33 dead ends · columns are levels (deeper to the right); lines join a result to what it builds on</text>

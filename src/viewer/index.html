@@ -171,6 +171,8 @@
   .chips .btn[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
   .res { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
   .res h3 { margin: 4px 0 6px; font-size: 15px; }
+  .glance { display: grid; grid-template-columns: repeat(auto-fit, minmax(520px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .glance .res { text-decoration: none; color: var(--ink); }
   .res .q { color: var(--ink-2); font-size: 13px; margin: 0 0 6px; }
   .res .a { font-size: 14px; margin: 0; }
   .res .meta { color: var(--ink-3); font-size: 12px; margin-top: 8px; }
@@ -186,7 +188,7 @@
   <a href="#/">Results</a>
   <a href="#/new">New</a>
   <a href="#/live">Live</a>
-  <a href="#/fields">Fields</a>
+  <a href="#/topics">Topics</a>
 </nav>
 <main>
   <!-- Results: every experiment as a short card -->
@@ -203,8 +205,8 @@
         <label><input type="radio" name="who" value="ai"> AI models <span class="info" title="Real AI models try to prove real theorems. Lean checks each proof. Costs money: a few runs.">ⓘ</span></label>
       </div>
       <div class="row">
-        <label id="n-field-sim">Field <select id="e-space"></select></label>
-        <span id="n-field-ai" class="hidden">Field: <b>Lean problems</b> <span class="info" title="8 theorems to prove, each with a reward. Lean checks every proof.">ⓘ</span></span>
+        <label id="n-field-sim">Topic <select id="e-space"></select></label>
+        <span id="n-field-ai" class="hidden">Topic: <b>Lean problems</b> <span class="info" title="8 theorems to prove, each with a reward. Lean checks every proof.">ⓘ</span></span>
         <label id="n-measure-sim">Measure <select id="e-measure"></select></label>
         <span id="n-measure-ai" class="hidden">Measure: <b>targets solved</b></span>
         <label id="n-runs-sim">Runs <input id="e-seeds" type="number" min="1" max="1000" value="50" style="width:70px"></label>
@@ -300,7 +302,7 @@
   <!-- Fields -->
   <section id="view-fields" class="hidden">
     <div class="fields" id="fields-list"></div>
-    <details class="step" style="margin-top:14px"><summary><b>Add a field</b></summary>
+    <details class="step" style="margin-top:14px"><summary><b>Add a topic</b></summary>
       <div class="choice" role="radiogroup">
         <label><input type="radio" name="fmode" value="describe" checked> Describe it</label>
         <label><input type="radio" name="fmode" value="edit"> Write the file</label>
@@ -353,7 +355,7 @@ async function route() {
   if (path.startsWith('/doc/')) { show('view-doc'); return openDoc(path.slice(5)); }
   if (path === '/new') { show('view-new'); return enterNew(); }
   if (path === '/live') { show('view-live'); return showTab(params().get('tab') ?? 'ai'); }
-  if (path === '/fields') { show('view-fields'); return enterFields(); }
+  if (path === '/topics' || path === '/fields') { show('view-fields'); return enterFields(); }
   show('view-overview'); drawResults();
 }
 window.addEventListener('hashchange', route);
@@ -376,7 +378,7 @@ async function openDoc(path) {
   } catch (e) { $('doc-body').innerHTML = `<p>${esc(e.message)}</p>`; }
 }
 
-const KIND = { race: 'AI models', 'model pilot': 'AI models', 'field report': 'Field', simulation: 'Simulation' };
+const KIND = { race: 'AI models', 'model pilot': 'AI models', 'field report': 'Topic', simulation: 'Simulation' };
 let resultsFilter = 'all';
 async function drawResults() {
   OV = null;
@@ -384,9 +386,28 @@ async function drawResults() {
   const order = { race: 0, 'model pilot': 1, 'field report': 2, simulation: 3 };
   const cards = [...ov.cards].sort((a, b) => order[a.kind] - order[b.kind] || b.date.localeCompare(a.date));
   const shown = cards.filter((c) => resultsFilter === 'all' || KIND[c.kind] === resultsFilter);
+  // At a glance: three comparisons. Every topic (OSO orange, traditional blue), the latest AI test, the AI models alone and with help.
+  const topics = ov.fields.sort((a, b) => a.title.localeCompare(b.title));
+  const tW = 560, rowH = 40, tl = 170, tpw = tW - tl - 60;
+  let tsvg = `<svg viewBox="0 0 ${tW} ${44 + topics.length * rowH}" role="img" aria-label="Hardest level reached, by topic" style="width:100%;height:auto"><text x="12" y="20" font-size="14" font-weight="700" fill="var(--ink)">Hardest level reached, by topic</text>
+    <rect x="12" y="28" width="12" height="10" rx="2" fill="var(--s2)"/><text x="29" y="37" font-size="12" font-weight="700" fill="var(--s2)">OSO</text><rect x="70" y="28" width="12" height="10" rx="2" fill="var(--s1)"/><text x="87" y="37" font-size="12" font-weight="700" fill="var(--s1)">Traditional</text>`;
+  topics.forEach((h, i) => {
+    const y = 48 + i * rowH, bw = (v) => Math.max(2, (v / h.maxLevel) * tpw);
+    tsvg += `<text x="${tl - 8}" y="${y + 15}" text-anchor="end" font-size="12" fill="var(--ink)">${esc(h.title.replace(/^(An?|The) /, ''))}</text>
+      <rect x="${tl}" y="${y + 2}" width="${bw(h.oso.frontier)}" height="14" rx="3" fill="var(--s2)"><title>OSO ${h.oso.frontier.toFixed(1)} of ${h.maxLevel}</title></rect><text x="${tl + bw(h.oso.frontier) + 5}" y="${y + 13}" font-size="11" font-weight="700" fill="var(--s2)">${h.oso.frontier.toFixed(1)}</text>
+      <rect x="${tl}" y="${y + 18}" width="${bw(h.traditional.frontier)}" height="14" rx="3" fill="var(--s1)"><title>Traditional ${h.traditional.frontier.toFixed(1)} of ${h.maxLevel}</title></rect><text x="${tl + bw(h.traditional.frontier) + 5}" y="${y + 29}" font-size="11" font-weight="700" fill="var(--s1)">${h.traditional.frontier.toFixed(1)}</text>`;
+  });
+  tsvg += '</svg>';
+  const race = cards.find((c) => c.kind === 'race' && c.chart), models = cards.find((c) => c.kind === 'model pilot' && c.chart);
+  const glance = [
+    `<div class="res">${tsvg}<div class="meta">Simulations. <a href="#/topics">All topics →</a></div></div>`,
+    race ? `<a class="res" href="#/doc/${esc(race.page)}"><img src="/files/${esc(race.chart)}" alt="${esc(race.title)}" style="width:100%"><div class="meta">${esc(race.title)}</div></a>` : '',
+    models ? `<a class="res" href="#/doc/${esc(models.page)}"><img src="/files/${esc(models.chart)}" alt="${esc(models.title)}" style="width:100%"><div class="meta">${esc(models.title)}</div></a>` : '',
+  ].join('');
   const chip = (f) => `<button class="btn" data-f="${f}" aria-pressed="${resultsFilter === f}">${f === 'all' ? 'All' : f}</button>`;
   $('view-overview').innerHTML = `
-    <div class="chips">${['all', 'AI models', 'Field', 'Simulation'].map(chip).join('')}</div>
+    <div class="glance">${glance}</div>
+    <div class="chips">${['all', 'AI models', 'Topic', 'Simulation'].map(chip).join('')}</div>
     <div class="fields">${shown.map((c) => `<a class="res field" href="#/doc/${esc(c.page)}">
       <span class="chip ${/^(OSO|Best on [^:]+: OSO)/.test(c.answer) ? 'ahead' : ''}">${esc(KIND[c.kind])}</span>
       <h3>${esc(c.title.replace(/^(Real agents, OSO vs traditional|Lean pilot): /, ''))}</h3>
@@ -584,6 +605,7 @@ function drawCommunity() {
   for (const y of [0, 2, 4, 6, 8]) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"/><text x="${l - 8}" y="${sy(y) + 4}" text-anchor="end" font-size="11" fill="var(--ink-2)">${y}</text>`;
   for (const k of [0, 0.25, 0.5, 0.75, 1]) svg += `<text x="${sx(budget * k)}" y="${top + ph + 16}" text-anchor="middle" font-size="11" fill="var(--ink-2)">$${(budget * k).toFixed(2)}</text>`;
   svg += `<text x="${l + pw / 2}" y="${H - 6}" text-anchor="middle" font-size="11" fill="var(--ink-2)">Money spent</text>`;
+  svg += `<rect x="${l + 230}" y="10" width="12" height="10" rx="2" fill="var(--s2)"/><text x="${l + 247}" y="19" font-size="12" font-weight="700" fill="var(--s2)">OSO</text><rect x="${l + 290}" y="10" width="12" height="10" rx="2" fill="var(--s1)"/><text x="${l + 307}" y="19" font-size="12" font-weight="700" fill="var(--s1)">Traditional</text>`;
   const ends = [];
   for (const [k, color, name] of [['traditional', 'var(--s1)', 'Traditional'], ['oso', 'var(--s2)', 'OSO']]) {
     if (!C.run[k]) continue;
@@ -591,10 +613,10 @@ function drawCommunity() {
     let d = ''; pts.forEach(([x, y], i) => { const px = sx(x), py = sy(y); d += i ? ` H${px.toFixed(1)} V${py.toFixed(1)}` : `M${px.toFixed(1)} ${py.toFixed(1)}`; });
     const [lx, ly] = pts.at(-1);
     svg += `<path d="${d}" fill="none" stroke="${color}" stroke-width="2.2"/><circle cx="${sx(lx)}" cy="${sy(ly)}" r="4.5" fill="${color}"/>`;
-    ends.push([sy(ly), `${name}: ${ly} for $${lx.toFixed(2)}`]);
+    ends.push([sy(ly), `${name}: ${ly} for $${lx.toFixed(2)}`, color]);
   }
   ends.sort((a, b) => a[0] - b[0]); for (let i = 1; i < ends.length; i++) if (ends[i][0] - ends[i - 1][0] < 16) ends[i][0] = ends[i - 1][0] + 16;
-  for (const [y, t] of ends) svg += `<text x="${l + pw + 10}" y="${y + 4}" font-size="12" font-weight="700" fill="var(--ink)">${esc(t)}</text>`;
+  for (const [y, t, color] of ends) svg += `<text x="${l + pw + 10}" y="${y + 4}" font-size="12" font-weight="700" fill="${color}">${esc(t)}</text>`;
   $('c-chart').innerHTML = svg + '</svg>';
   for (const k of ['traditional', 'oso']) drawSide(k, sideActs(k));
 }

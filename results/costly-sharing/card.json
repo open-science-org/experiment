@@ -1,4 +1,5 @@
 {
+ "chart": "results/costly-sharing/figures/compare.svg",
  "id": "costly-sharing",
  "kind": "simulation",
  "date": "2026-10-21",

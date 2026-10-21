@@ -1,4 +1,5 @@
 {
+ "chart": "results/funding-rule-drug-discovery/figures/compare.svg",
  "id": "funding-rule-drug-discovery",
  "kind": "simulation",
  "date": "2026-10-21",

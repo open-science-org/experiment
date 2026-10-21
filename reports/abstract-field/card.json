@@ -30,5 +30,6 @@
   "A simulation with guessed parameters: it shows how the rules play out if the field works as described.",
   "OSO's lead as the market-set parameters vary: 0.3 to 1.9 levels."
  ],
- "page": "reports/abstract-field/card.md"
+ "page": "reports/abstract-field/card.md",
+ "chart": "reports/abstract-field/figures/frontier.svg"
 }

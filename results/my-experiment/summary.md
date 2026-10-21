@@ -4,6 +4,8 @@
 
 **Answer:** Best: OSO, 6.9. Best traditional: Traditional, 4.1. Clear difference.
 
+![my-experiment](figures/compare.svg)
+
 | setting | frontier | reach L7 | cost | sharing |
 | --- | --- | --- | --- | --- |
 | Traditional | 4.1 ± 1.2 | 0.00 | – | 0.00 ± 0.01 |
@@ -29,6 +31,6 @@ Values are mean ± standard deviation over runs.
 | OSO (choice) | 5.0 ± 0.8 | 0.04 | 1100 ± 34 | 0.20 ± 0.08 | 3.0 ± 0.8 |
 | Flow-back, finished-only | 4.2 ± 1.1 | 0.02 | 1145 ± 0 | 0.00 ± 0.00 | 2.6 ± 0.8 |
 
-Code: commit `9b5ec21` (with uncommitted changes). Experiment: [config/experiments/my-experiment.yaml](../../config/experiments/my-experiment.yaml). Command: `npm run sim -- my-experiment --seeds 50 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `7434f7c` (with uncommitted changes). Experiment: [config/experiments/my-experiment.yaml](../../config/experiments/my-experiment.yaml). Command: `npm run sim -- my-experiment --seeds 50 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

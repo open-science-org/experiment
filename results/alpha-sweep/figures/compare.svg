@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="viz" viewBox="0 0 620 332" width="620" height="332" role="img" aria-label="share of results published at once">
+<style>
+  .viz { --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --grid: #e6e5e1;
+         --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --dead: #c9c7c0; }
+  @media (prefers-color-scheme: dark) {
+    .viz { --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --grid: #34332f;
+           --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --dead: #4a4945; }
+  }
+  .bg { fill: var(--surface); }
+  text { fill: var(--ink); font-family: Helvetica, Arial, sans-serif; }
+  .title { font-size: 16px; font-weight: 700; }
+  .sub, .tick, .axis { fill: var(--ink-2); font-size: 12px; }
+  .grid { stroke: var(--grid); stroke-width: 1; }
+  .base { stroke: var(--ink-2); stroke-width: 1; }
+  .line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .c1 { stroke: var(--s1); } .f1 { fill: var(--s1); }
+  .c2 { stroke: var(--s2); } .f2 { fill: var(--s2); }
+  .c3 { stroke: var(--s3); } .f3 { fill: var(--s3); }
+  .dot { stroke: var(--surface); stroke-width: 2; }
+  .label { font-size: 12px; font-weight: 700; }
+  .t1 { fill: var(--s1); } .t2 { fill: var(--s2); } .t3 { fill: var(--s3); }
+</style><rect class="bg" width="620" height="332" rx="8"/>
+<text class="title" x="16" y="26">share of results published at once</text>
+<rect x="16" y="38" width="12" height="10" rx="2" style="fill:var(--s2)"/><text class="label t2" x="33" y="47">OSO</text>
+<rect x="67" y="38" width="12" height="10" rx="2" style="fill:var(--s1)"/><text class="label t1" x="84" y="47">Traditional</text>
+<rect x="174" y="38" width="12" height="10" rx="2" style="fill:var(--dead)"/><text class="label " x="191" y="47">other</text>
+<text class="tick" x="222" y="73" text-anchor="end">α 0.1</text>
+<rect x="230" y="62" width="320.0" height="16" rx="3" style="fill:var(--dead)"><title>α 0.1: 0.77</title></rect>
+<text class="label " x="556" y="74">0.77</text>
+<text class="tick" x="222" y="99" text-anchor="end">α 0.2</text>
+<rect x="230" y="88" width="261.7" height="16" rx="3" style="fill:var(--dead)"><title>α 0.2: 0.63</title></rect>
+<text class="label " x="497.7497020464646" y="100">0.63</text>
+<text class="tick" x="222" y="125" text-anchor="end">α 0.3</text>
+<rect x="230" y="114" width="195.0" height="16" rx="3" style="fill:var(--dead)"><title>α 0.3: 0.47</title></rect>
+<text class="label " x="431.0408452012429" y="126">0.47</text>
+<text class="tick" x="222" y="151" text-anchor="end">α 0.4</text>
+<rect x="230" y="140" width="140.1" height="16" rx="3" style="fill:var(--dead)"><title>α 0.4: 0.34</title></rect>
+<text class="label " x="376.06603372509113" y="152">0.34</text>
+<text class="tick" x="222" y="177" text-anchor="end">α 0.5</text>
+<rect x="230" y="166" width="117.1" height="16" rx="3" style="fill:var(--dead)"><title>α 0.5: 0.28</title></rect>
+<text class="label " x="353.11909480266024" y="178">0.28</text>
+<text class="tick" x="222" y="203" text-anchor="end">α 0.6</text>
+<rect x="230" y="192" width="103.8" height="16" rx="3" style="fill:var(--dead)"><title>α 0.6: 0.25</title></rect>
+<text class="label " x="339.7545342897314" y="204">0.25</text>
+<text class="tick" x="222" y="229" text-anchor="end">α 0.7</text>
+<rect x="230" y="218" width="99.2" height="16" rx="3" style="fill:var(--dead)"><title>α 0.7: 0.24</title></rect>
+<text class="label " x="335.17962553315886" y="230">0.24</text>
+<text class="tick" x="222" y="255" text-anchor="end">α 1</text>
+<rect x="230" y="244" width="93.7" height="16" rx="3" style="fill:var(--dead)"><title>α 1: 0.23</title></rect>
+<text class="label " x="329.74923416154456" y="256">0.23</text>
+<text class="tick" x="222" y="281" text-anchor="end">α 0.9</text>
+<rect x="230" y="270" width="93.5" height="16" rx="3" style="fill:var(--dead)"><title>α 0.9: 0.23</title></rect>
+<text class="label " x="329.5326316972925" y="282">0.23</text>
+<text class="tick" x="222" y="307" text-anchor="end">α 0.8</text>
+<rect x="230" y="296" width="92.6" height="16" rx="3" style="fill:var(--dead)"><title>α 0.8: 0.22</title></rect>
+<text class="label " x="328.5633154847979" y="308">0.22</text>
+</svg>

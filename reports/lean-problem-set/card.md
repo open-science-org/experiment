@@ -4,6 +4,8 @@
 
 **Answer:** OSO ahead: level 7.0 against 4.4 of 7; targets 8.0 against 4.8 of 8.
 
+![The Lean problem set](figures/frontier.svg)
+
 | rules | hardest level | targets solved | cost to level 5 |
 | --- | --- | --- | --- |
 | Traditional | 4.4 of 7 | 4.8 of 8 | 303 |

@@ -4,6 +4,8 @@
 
 **Answer:** OSO ahead: level 5.0 against 2.0 of 5; targets 1.9 against 0.6 of 2.
 
+![A solid-state battery](figures/frontier.svg)
+
 | rules | hardest level | targets solved | cost to level 5 |
 | --- | --- | --- | --- |
 | Traditional | 2.0 of 5 | 0.6 of 2 | 222 |

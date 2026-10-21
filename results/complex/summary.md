@@ -4,6 +4,8 @@
 
 **Answer:** Best: free and correct, OSO, 7.0 (1 more tie). Best traditional: free and correct, Traditional, 5.6. Clear difference.
 
+![All together on the Lean tree: learning, shared failures, costly and fallible sharing](figures/compare.svg)
+
 | knowledge | setting | frontier | reach L5 | speed | cost |
 | --- | --- | --- | --- | --- | --- |
 | free and correct | Traditional | 5.6 ± 1.4 | 0.81 | 30 ± 7 | 294 ± 67 |
@@ -37,6 +39,6 @@ Values are mean ± standard deviation over runs.
 | costly and fallible | OSO + public failures | 6.9 ± 0.4 | 1.00 | 16 ± 7 | 158 ± 65 | 259 ± 80 | 7.9 ± 0.5 | 0.42 ± 0.07 | 2.1 ± 1.7 | 3.5 ± 3.1 | 0.91 ± 0.08 | 0.88 ± 0.11 |
 | costly and fallible | OSO (choice) | 5.4 ± 1.3 | 0.78 | 27 ± 9 | 261 ± 86 | 352 ± 77 | 6.2 ± 1.6 | 0.25 ± 0.09 | 1.4 ± 1.1 | 2.2 ± 2.5 | 0.41 ± 0.06 | 0.90 ± 0.08 |
 
-Code: commit `9b5ec21` (with uncommitted changes). Experiment: [config/experiments/complex.yaml](../../config/experiments/complex.yaml). Command: `npm run sim -- complex --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `7434f7c` (with uncommitted changes). Experiment: [config/experiments/complex.yaml](../../config/experiments/complex.yaml). Command: `npm run sim -- complex --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

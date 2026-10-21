@@ -4,6 +4,8 @@
 
 **Answer:** Best: OSO, 7.9 (1 more tie). Best traditional: Traditional, 5.7. Clear difference.
 
+![The six rule settings on the default world](figures/compare.svg)
+
 | setting | frontier | reach L7 | speed | cost |
 | --- | --- | --- | --- | --- |
 | Traditional | 5.7 ± 1.2 | 0.35 | 96 ± 16 | 957 ± 161 |
@@ -33,6 +35,6 @@ Values are mean ± standard deviation over runs.
 | No flow-back, choice | 6.0 ± 0.9 | 0.35 | 100 ± 16 | 990 ± 159 | 1195 ± 2 | 3.5 ± 0.6 | 0.59 ± 0.13 | 0.66 ± 0.07 | 0.88 ± 0.12 | 0.23 ± 0.08 | 0.21 ± 0.10 | 0.92 | 0.30 ± 0.02 |
 | OSO (choice) | 6.3 ± 1.0 | 0.43 | 96 ± 19 | 959 ± 186 | 1193 ± 11 | 3.7 ± 0.7 | 0.63 ± 0.15 | 0.68 ± 0.09 | 0.87 ± 0.11 | 0.22 ± 0.09 | 0.18 ± 0.12 | 0.91 | 0.30 ± 0.02 |
 
-Code: commit `9b5ec21` (with uncommitted changes). Experiment: [config/experiments/settings.yaml](../../config/experiments/settings.yaml). Command: `npm run sim -- settings --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `7434f7c` (with uncommitted changes). Experiment: [config/experiments/settings.yaml](../../config/experiments/settings.yaml). Command: `npm run sim -- settings --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

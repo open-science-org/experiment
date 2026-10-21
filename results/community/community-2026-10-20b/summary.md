@@ -4,6 +4,8 @@
 
 **Answer:** Both communities solved 4 targets for the same money.
 
+![First AI test, OSO vs traditional](figures/progress.svg)
+
 | rules | targets solved | spent | lemmas accepted | duplicated work |
 | --- | --- | --- | --- | --- |
 | Traditional | 4 of 8 | $0.76 of $1.60 | 0 | 1 |
@@ -19,8 +21,6 @@
 
 
 **Both communities solved 4 targets for the same money.** One OSO run stopped partway and was rerun from the start.
-
-![Targets solved for the money](figures/progress.svg)
 
 | rules | targets solved | deepest target | spent | actions | lemmas accepted | duplicated work | trivial | failed attempts | never published |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |

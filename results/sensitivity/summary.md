@@ -4,6 +4,8 @@
 
 **Answer:** Best: no compute loop (ρ = 0), OSO, 8.0 (3 more tie). Best traditional: no gamer, Traditional, 7.0. Clear difference.
 
+![How much the traditional-vs-OSO gap depends on the gamer and the compute loop](figures/compare.svg)
+
 | variant | setting | frontier | reach L7 | speed | cost |
 | --- | --- | --- | --- | --- | --- |
 | default (ρ = 0.5, θ = 0.5) | Traditional | 5.7 ± 1.2 | 0.35 | 96 ± 16 | 957 ± 161 |
@@ -37,6 +39,6 @@ Values are mean ± standard deviation over runs.
 | no gamer | Traditional | 7.0 ± 1.2 | 0.77 | 84 ± 21 | 840 ± 210 | 1123 ± 130 | 3.7 ± 1.3 | 0.80 ± 0.18 | 0.58 ± 0.11 | 0.95 ± 0.09 | 0.00 ± 0.01 | 0.34 ± 0.15 | – | 0.00 ± 0.00 |
 | no gamer | OSO (immediate) | 8.0 ± 0.1 | 1.00 | 42 ± 13 | 412 ± 133 | 766 ± 195 | 8.7 ± 1.9 | 0.99 ± 0.06 | 0.80 ± 0.06 | 0.60 ± 0.08 | 1.00 ± 0.00 | 0.00 ± 0.00 | – | 0.00 ± 0.00 |
 
-Code: commit `9b5ec21` (with uncommitted changes). Experiment: [config/experiments/sensitivity.yaml](../../config/experiments/sensitivity.yaml). Command: `npm run sim -- sensitivity --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `7434f7c` (with uncommitted changes). Experiment: [config/experiments/sensitivity.yaml](../../config/experiments/sensitivity.yaml). Command: `npm run sim -- sensitivity --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

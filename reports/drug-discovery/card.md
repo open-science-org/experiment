@@ -4,6 +4,8 @@
 
 **Answer:** OSO ahead: level 6.0 against 2.7 of 6; targets 2.8 against 0.7 of 3.
 
+![Early-stage drug discovery](figures/frontier.svg)
+
 | rules | hardest level | targets solved | cost to level 5 |
 | --- | --- | --- | --- |
 | Traditional | 2.7 of 6 | 0.7 of 3 | 847 |

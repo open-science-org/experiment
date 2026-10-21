@@ -393,6 +393,7 @@ The space is [spaces/${spec.id}.yaml](../../spaces/${spec.id}.yaml)${spec.source
     ],
     caveats: ['A simulation with guessed parameters: it shows how the rules play out if the field works as described.', `OSO's lead as the market-set parameters vary: ${f1(marketMin.min)} to ${f1(Math.max(...market.map((x) => x.max)))} levels.`, ...(spec.notes ? [spec.notes] : [])],
     page: `reports/${spec.id}/card.md`,
+    chart: `reports/${spec.id}/figures/frontier.svg`,
   }, `The full report: [report.md](report.md).`, 'card.md');
   writeIndex(root);
   return headline;

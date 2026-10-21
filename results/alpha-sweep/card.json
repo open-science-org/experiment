@@ -1,4 +1,5 @@
 {
+ "chart": "results/alpha-sweep/figures/compare.svg",
  "id": "alpha-sweep",
  "kind": "simulation",
  "date": "2026-10-21",

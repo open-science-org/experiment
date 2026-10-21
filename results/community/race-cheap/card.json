@@ -37,5 +37,6 @@
   "Values are mean ± standard deviation over runs."
  ],
  "cost": "$3.10 at list prices",
- "page": "results/community/race-cheap/summary.md"
+ "page": "results/community/race-cheap/summary.md",
+ "chart": "results/community/race-cheap/figures/progress.svg"
 }

@@ -31,5 +31,6 @@
   "OSO's lead as the market-set parameters vary: 0.1 to 3.0 levels.",
   "The structure is a simplified sketch, and the success chances follow the default model by depth; neither is from the battery literature."
  ],
- "page": "reports/solid-state-battery/card.md"
+ "page": "reports/solid-state-battery/card.md",
+ "chart": "reports/solid-state-battery/figures/frontier.svg"
 }

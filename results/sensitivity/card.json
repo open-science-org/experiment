@@ -1,4 +1,5 @@
 {
+ "chart": "results/sensitivity/figures/compare.svg",
  "id": "sensitivity",
  "kind": "simulation",
  "date": "2026-10-21",

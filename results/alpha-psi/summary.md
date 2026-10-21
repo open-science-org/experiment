@@ -4,6 +4,8 @@
 
 **Answer:** Best: ψ 0.1, α 0.1, c 0, 0.9.
 
+![Where sharing becomes rational: α × scoop risk ψ × cited share c](figures/compare.svg)
+
 | ψ | α | c | sharing | frontier | reach L7 | speed |
 | --- | --- | --- | --- | --- | --- | --- |
 | 0.5 | 1 | 0 | 0.23 ± 0.08 | 6.0 ± 0.9 | 0.35 | 100 ± 16 |
@@ -75,6 +77,6 @@ Values are mean ± standard deviation over runs.
 | 0.1 | 0.1 | 0 | 7.9 ± 0.3 | 1.00 | 51 ± 14 | 510 ± 136 | 926 ± 200 | 7.3 ± 1.6 | 0.97 ± 0.08 | 0.87 ± 0.04 | 0.75 ± 0.06 | 0.94 ± 0.03 | 0.00 ± 0.00 |
 | 0.1 | 0.1 | 0.15 | 7.9 ± 0.3 | 1.00 | 51 ± 15 | 503 ± 153 | 897 ± 213 | 7.6 ± 2.0 | 0.97 ± 0.08 | 0.86 ± 0.04 | 0.76 ± 0.06 | 0.92 ± 0.04 | 0.00 ± 0.01 |
 
-Code: commit `9b5ec21` (with uncommitted changes). Experiment: [config/experiments/alpha-psi.yaml](../../config/experiments/alpha-psi.yaml). Command: `npm run sim -- alpha-psi --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `7434f7c` (with uncommitted changes). Experiment: [config/experiments/alpha-psi.yaml](../../config/experiments/alpha-psi.yaml). Command: `npm run sim -- alpha-psi --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

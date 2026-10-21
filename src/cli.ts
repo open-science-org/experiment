@@ -13,6 +13,7 @@
 //   npm run sim -- check <space>                    validate a space file and test-run it
 //   npm run sim -- report <space | all> [--seeds N] run the canonical experiments and write the report
 import { compareRows, writeCard, type Card } from './card.ts';
+import { barChart } from './report/figures.ts';
 import { CODE_PATHS, EXPERIMENTS_DIR, RESULTS_DIR, ROOT, SPACES_DIR } from './paths.ts';
 import { execSync } from 'node:child_process';
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -179,7 +180,27 @@ function simulationCard(spec: ExperimentSpec, out: Output, n: number, date: stri
   const support = (spec.columns ?? DEFAULT_COLUMNS).filter((c) => c !== measure).slice(0, 3);
   const keyCols = spec.analysis ? Object.keys(out.table[0] ?? {}) : [...Object.keys(out.rows[0]?.labels ?? {}), ...(measure ? [header(measure)] : []), ...support.map(header)];
   const short = out.table.map((r) => Object.fromEntries(keyCols.map((c) => [c, r[c] ?? ''])));
+  // One comparison chart: the main measure for each row, OSO orange, traditional blue, others grey.
+  let chart: string | undefined;
+  if (measure && VALUES[measure]) {
+    const rows = out.rows.map((row, i) => {
+      const xs = out.results[i].map(VALUES[measure]!).filter((v): v is number => v !== null);
+      return { label: label(row), value: xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0 };
+    }).sort((a, b) => (better === 'higher' ? b.value - a.value : a.value - b.value));
+    const trad = rows.find((r) => /(^|, )Traditional\b/.test(r.label));
+    const shown = rows.length > 12 ? [...rows.slice(0, 10), ...(trad && !rows.slice(0, 10).includes(trad) ? [trad] : [])] : rows;
+    const slot = (l: string) => (/(^|, )Traditional\b/.test(l) ? 1 : /\bOSO\b/.test(l) ? 2 : 0) as 0 | 1 | 2;
+    mkdirSync(join(resultsDir, spec.id, 'figures'), { recursive: true });
+    writeFileSync(join(resultsDir, spec.id, 'figures', 'compare.svg'), barChart({
+      title: `${(MEASURE_NAMES[measure] ?? header(measure)).replace(/^./, (c) => c.toUpperCase())}${rows.length > shown.length ? ` (best ${shown.length} of ${rows.length})` : ''}`,
+      bars: shown.map((r) => ({ label: r.label, value: r.value, slot: slot(r.label) })),
+      format: (v) => (v < 10 ? v.toFixed(2).replace(/0$/, '') : v.toFixed(0)),
+      legend: [{ name: 'OSO', slot: 2 }, { name: 'Traditional', slot: 1 }, { name: 'other', slot: 0 }],
+    }));
+    chart = `results/${spec.id}/figures/compare.svg`;
+  }
   return {
+    chart,
     id: spec.id, kind: 'simulation', date, title: spec.title,
     design: {
       question: spec.question ?? spec.title,

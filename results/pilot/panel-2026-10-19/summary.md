@@ -4,6 +4,8 @@
 
 **Answer:** With help, 3 of 5 models solved targets they never solved alone (gpt-5.6-terra, gemini-3.8-flash, deepseek-v4.1-flash). claude-opus-5.5 and claude-sonnet-5.5 solved everything alone.
 
+![Five AI models: alone or with help](figures/models.svg)
+
 | model | with help | alone | needed help for | tokens per proof, with help / alone |
 | --- | --- | --- | --- | --- |
 | claude-opus-5.5 | 16/16 | 16/16 | – | 1.7k / 10.4k |

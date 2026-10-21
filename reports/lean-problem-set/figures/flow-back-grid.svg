@@ -18,6 +18,7 @@
   .c3 { stroke: var(--s3); } .f3 { fill: var(--s3); }
   .dot { stroke: var(--surface); stroke-width: 2; }
   .label { font-size: 12px; font-weight: 700; }
+  .t1 { fill: var(--s1); } .t2 { fill: var(--s2); } .t3 { fill: var(--s3); }
 </style><rect class="bg" width="560" height="540" rx="8"/>
 <text class="title" x="20" y="30">The flow-back levers together</text>
 <text class="sub" x="20" y="50">Share of intermediate results agents choose to publish; below it, the hardest level reached.</text>

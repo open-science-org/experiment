@@ -4,6 +4,8 @@
 
 **Answer:** OSO ahead: level 7.9 against 5.7 of 8; targets 6.9 against 4.2 of 7.
 
+![An abstract research field](figures/frontier.svg)
+
 | rules | hardest level | targets solved | cost to level 7 |
 | --- | --- | --- | --- |
 | Traditional | 5.7 of 8 | 4.2 of 7 | 957 |

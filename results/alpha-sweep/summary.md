@@ -4,6 +4,8 @@
 
 **Answer:** Best: α 0.1, 0.8.
 
+![α sweep under agent's-choice visibility](figures/compare.svg)
+
 | α | sharing | frontier | reach L7 | speed |
 | --- | --- | --- | --- | --- |
 | 1 | 0.23 ± 0.08 | 6.0 ± 0.9 | 0.35 | 100 ± 16 |
@@ -41,6 +43,6 @@ Values are mean ± standard deviation over runs.
 | 0.2 | 7.6 ± 0.5 | 0.98 | 74 ± 20 | 731 ± 202 | 1104 ± 146 | 5.6 ± 1.1 | 0.85 ± 0.16 | 0.83 ± 0.06 | 0.85 ± 0.04 | 0.63 ± 0.10 | 0.01 ± 0.03 |
 | 0.1 | 7.8 ± 0.4 | 1.00 | 60 ± 16 | 596 ± 164 | 1018 ± 188 | 6.5 ± 1.3 | 0.93 ± 0.12 | 0.86 ± 0.04 | 0.74 ± 0.06 | 0.77 ± 0.07 | 0.00 ± 0.01 |
 
-Code: commit `9b5ec21` (with uncommitted changes). Experiment: [config/experiments/alpha-sweep.yaml](../../config/experiments/alpha-sweep.yaml). Command: `npm run sim -- alpha-sweep --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `7434f7c` (with uncommitted changes). Experiment: [config/experiments/alpha-sweep.yaml](../../config/experiments/alpha-sweep.yaml). Command: `npm run sim -- alpha-sweep --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

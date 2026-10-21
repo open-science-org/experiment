@@ -1,4 +1,5 @@
 {
+ "chart": "results/my-experiment/figures/compare.svg",
  "id": "my-experiment",
  "kind": "simulation",
  "date": "2026-10-21",

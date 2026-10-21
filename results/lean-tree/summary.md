@@ -4,6 +4,8 @@
 
 **Answer:** Best: OSO, 7.0 (1 more tie). Best traditional: Traditional, 4.4. Clear difference.
 
+![The six rule settings on the Lean problem set's reference tree](figures/compare.svg)
+
 | setting | frontier | reach L5 | speed | cost |
 | --- | --- | --- | --- | --- |
 | Traditional | 4.4 ± 1.2 | 0.44 | 31 ± 7 | 303 ± 66 |
@@ -33,6 +35,6 @@ Values are mean ± standard deviation over runs.
 | No flow-back, choice | 4.9 ± 1.2 | 0.67 | 31 ± 7 | 301 ± 74 | 386 ± 33 | 5.9 ± 1.4 | 0.73 ± 0.18 | 0.59 ± 0.13 | 0.84 ± 0.09 | 0.35 ± 0.05 | 0.68 |
 | OSO (choice) | 5.2 ± 1.2 | 0.76 | 28 ± 8 | 273 ± 77 | 372 ± 54 | 6.3 ± 1.3 | 0.79 ± 0.17 | 0.62 ± 0.13 | 0.84 ± 0.08 | 0.42 ± 0.06 | 0.53 |
 
-Code: commit `9b5ec21` (with uncommitted changes). Experiment: [config/experiments/lean-tree.yaml](../../config/experiments/lean-tree.yaml). Command: `npm run sim -- lean-tree --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `7434f7c` (with uncommitted changes). Experiment: [config/experiments/lean-tree.yaml](../../config/experiments/lean-tree.yaml). Command: `npm run sim -- lean-tree --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

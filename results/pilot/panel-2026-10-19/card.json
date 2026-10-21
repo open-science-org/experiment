@@ -54,5 +54,6 @@
   "Only a few tries per target: the rates are rough."
  ],
  "cost": "$18.09",
- "page": "results/pilot/panel-2026-10-19/summary.md"
+ "page": "results/pilot/panel-2026-10-19/summary.md",
+ "chart": "results/pilot/panel-2026-10-19/figures/models.svg"
 }
