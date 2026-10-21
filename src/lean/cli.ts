@@ -143,7 +143,8 @@ if (cmd === 'series') {
   }
   if (!pairs.length) throw new Error(`no finished pair of races for ${arg}`);
   const cfgFile = join(LEAN_DIR, 'runs', `${arg}.config.json`);
-  const design = existsSync(cfgFile) ? String((JSON.parse(readFileSync(cfgFile, 'utf8')) as { design?: string }).design ?? '') : '';
+  const c = existsSync(cfgFile) ? JSON.parse(readFileSync(cfgFile, 'utf8')) as { design?: string; question?: string; compare?: string; fixed?: string; caveats?: string[] } : {};
+  const design = { prose: c.design, question: c.question, compare: c.compare, fixed: c.fixed, caveats: c.caveats };
   console.log(`${pairs.length} finished pair(s): ${writeRaceSeries(arg, pairs, design)}/summary.md`);
   process.exit(0);
 }

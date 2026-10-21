@@ -8,6 +8,10 @@
   {
    "rules": "traditional",
    "targetsSolved": 4,
+   "countedSolved": 4,
+   "counted": 8,
+   "conjecturesProved": 0,
+   "builtOnOthers": 0,
    "deepestTarget": 5,
    "spent": 0.7553575235200001,
    "budget": 1.6,
@@ -28,6 +32,10 @@
   {
    "rules": "oso",
    "targetsSolved": 4,
+   "countedSolved": 4,
+   "counted": 8,
+   "conjecturesProved": 0,
+   "builtOnOthers": 1,
    "deepestTarget": 5,
    "spent": 1.0412776428800001,
    "budget": 1.6,

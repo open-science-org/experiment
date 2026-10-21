@@ -4,6 +4,11 @@ description: >-
   The Lean reference tree; every agent learns from failure (learning oracle, gain 0.1). Knowledge is
   either free and always correct, or costly (absorbCost 0.25) and fallible (errorRate 0.05). OSO is
   run with and without publishing failed attempts.
+question: "With learning, shared failures, and costly, fallible sharing all on, does OSO still lead?"
+compare: "the rule settings, with every optional mechanism on"
+fixed: "the Lean tree, agents and budget"
+measure: frontier
+better: higher
 seeds: 100
 scenario: lean-tree
 set:

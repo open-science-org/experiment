@@ -14,3 +14,5 @@ results/pilot/stub-*/
 # Secrets (API keys): never commit.
 .env
 results/community/stub-*/
+# Single races that are part of a series: the series card covers them.
+results/community/*-r[0-9]*/

@@ -1,14 +1,32 @@
 # α sweep under agent's-choice visibility
 
+**Question:** Does flow-back make agents choose to share?
+
+**Answer:** Best on share of results published at once: α 0.1, 0.8.
+
+| α | sharing | frontier | reach L7 | speed |
+| --- | --- | --- | --- | --- |
+| 1 | 0.23 ± 0.08 | 6.0 ± 0.9 | 0.35 | 100 ± 16 |
+| 0.9 | 0.23 ± 0.08 | 6.3 ± 0.8 | 0.44 | 97 ± 15 |
+| 0.8 | 0.22 ± 0.09 | 6.3 ± 1.0 | 0.43 | 96 ± 19 |
+| 0.7 | 0.24 ± 0.09 | 6.4 ± 0.9 | 0.50 | 99 ± 17 |
+| 0.6 | 0.25 ± 0.09 | 6.4 ± 0.9 | 0.48 | 98 ± 17 |
+| 0.5 | 0.28 ± 0.09 | 6.7 ± 0.8 | 0.63 | 91 ± 19 |
+| 0.4 | 0.34 ± 0.10 | 6.9 ± 0.7 | 0.73 | 95 ± 16 |
+| 0.3 | 0.47 ± 0.11 | 7.2 ± 0.7 | 0.86 | 89 ± 20 |
+| 0.2 | 0.63 ± 0.10 | 7.6 ± 0.5 | 0.98 | 74 ± 20 |
+| 0.1 | 0.77 ± 0.07 | 7.8 ± 0.4 | 1.00 | 60 ± 16 |
+
+**Design** (fixed before the run): compared α from 1 (traditional) down to 0.1, agents choosing what to publish · held the same: the field, agents and budget · measure: share of results published at once, higher is better · 100 runs per row.
+
+**Caveats:**
+- A simulation with guessed parameters: it shows how the rules play out, not that they work.
+
+<details><summary>Details</summary>
+
 Agents choose whether to publish each lemma (section 2.5 of docs/simulator.md). α from 1 (traditional) down to 0.1, with c = 0.15 (c = 0 at α = 1). Default scoop risk ψ = 0.5.
 
-- **Date:** 2026-10-17
-- **Code:** commit `d369863`
-- **Experiment:** [config/experiments/alpha-sweep.yaml](../../config/experiments/alpha-sweep.yaml)
-- **Command:** `npm run sim -- alpha-sweep --seeds 100 --save`
-- **Runs:** 1000 (100 seeds per row), in `runs.jsonl`; the full configuration in `config.json`
-
-Values are mean ± standard deviation over seeds.
+Values are mean ± standard deviation over runs.
 
 | α | frontier | reach L7 | speed | cost | spend | results per 100 | breadth | waste | credit | sharing | hoarded |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -22,3 +40,7 @@ Values are mean ± standard deviation over seeds.
 | 0.3 | 7.2 ± 0.7 | 0.86 | 89 ± 20 | 882 ± 202 | 1167 ± 65 | 4.7 ± 0.7 | 0.74 ± 0.18 | 0.80 ± 0.07 | 0.89 ± 0.04 | 0.47 ± 0.11 | 0.04 ± 0.06 |
 | 0.2 | 7.6 ± 0.5 | 0.98 | 74 ± 20 | 731 ± 202 | 1104 ± 146 | 5.6 ± 1.1 | 0.85 ± 0.16 | 0.83 ± 0.06 | 0.85 ± 0.04 | 0.63 ± 0.10 | 0.01 ± 0.03 |
 | 0.1 | 7.8 ± 0.4 | 1.00 | 60 ± 16 | 596 ± 164 | 1018 ± 188 | 6.5 ± 1.3 | 0.93 ± 0.12 | 0.86 ± 0.04 | 0.74 ± 0.06 | 0.77 ± 0.07 | 0.00 ± 0.01 |
+
+Code: commit `023509e` (with uncommitted changes). Experiment: [config/experiments/alpha-sweep.yaml](../../config/experiments/alpha-sweep.yaml). Command: `npm run sim -- alpha-sweep --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+
+</details>

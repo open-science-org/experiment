@@ -4,6 +4,11 @@ description: >-
   Traditional research (α = 1, c = 0, finished-only), OSO (α = 0.8, c = 0.15) with immediate and with
   agent's-choice visibility, and the mixed corners. Same world parameters, agents and budget in every
   setting; each seed gives the same world and agents across settings.
+question: "On the default field, which rule setting gets furthest for the same budget?"
+compare: "the six rule settings"
+fixed: "the field, 12 agents and the budget"
+measure: frontier
+better: higher
 seeds: 100
 factors:
   - name: setting

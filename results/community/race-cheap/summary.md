@@ -1,17 +1,31 @@
 # Real agents, OSO vs traditional: race-cheap
 
-**No clear difference: the OSO communities solved 2.0 of the counted targets and the traditional ones 1.6, on average over 5 runs each.**
+**Question:** With the cheapest model, does an OSO community of AI labs solve more of the hard targets than a traditional one, for the same money?
 
-The verdict compares the mean number of counted targets solved against two standard errors. The measure and the design were fixed before the runs.
+**Answer:** No clear difference: the OSO communities solved 2.0 of the counted targets and the traditional ones 1.6, on average over 5 runs each.
+
+| rules | counted targets | all targets | spent | duplicated work | built on others |
+| --- | --- | --- | --- | --- | --- |
+| Traditional | 1.6 ± 0.5 of 4 | 4.2 ± 0.8 of 8 | $0.34 | 20.4 ± 15.3 | 0.0 ± 0.0 |
+| OSO | 2.0 ± 0.0 of 4 | 5.2 ± 0.4 of 8 | $0.28 | 2.4 ± 0.9 | 6.4 ± 0.5 |
+
+**Design** (fixed before the run): compared traditional rules and OSO rules · held the same: four DeepSeek V4.1 Flash labs (two foundation builders, a target racer, a neutral lab), $0.15 each, 12 posted conjectures, up to 30 rounds · measure: counted targets solved (A3, X2, B5, A5), higher is better · 5 runs per side. Cost: $3.10 at list prices.
+
+**Caveats:**
+- Counted targets: those DeepSeek never proved alone in the pilot but did with lemmas; neither side reached B5 or A5.
+- One model and one small problem set; 4 traditional actions were lost to dropped connections, none on the OSO side.
+- Budgets were not binding: the communities spent 52% of theirs on average, because labs passed.
+
+<details><summary>Details</summary>
 
 ![Counted targets solved for the money](figures/progress.svg)
 
-| rules | counted targets solved | all targets | spent (mean) | conjectures proved | duplicated work | built on another lab's result |
-| --- | --- | --- | --- | --- | --- | --- |
-| Traditional | 1.6 ± 0.5 of 4 | 4.2 ± 0.8 of 8 | $0.34 | 6.0 ± 0.7 | 20.4 ± 15.3 | 0.0 ± 0.0 |
-| OSO | 2.0 ± 0.0 of 4 | 5.2 ± 0.4 of 8 | $0.28 | 7.2 ± 0.8 | 2.4 ± 0.9 | 6.4 ± 0.5 |
+**Exploratory** (not fixed in advance): mean spend at which a run had k counted targets solved.
 
-Values are mean ± standard deviation over runs.
+| counted targets | traditional | OSO |
+| --- | --- | --- |
+| 1 | $0.13 (5 of 5 runs) | $0.05 (5 of 5 runs) |
+| 2 | $0.24 (3 of 5 runs) | $0.13 (5 of 5 runs) |
 
 ## The design, fixed in advance
 
@@ -34,17 +48,5 @@ Fixed before the runs (2026-10-20). Model: DeepSeek V4.1 Flash for every lab, so
 
 Transcripts, with every proof, are private.
 
-## Exploratory (not fixed in advance)
 
-These measures were looked at after the runs, so they are evidence to test next, not results.
-
-| Spend to reach… | Traditional | OSO |
-| --- | --- | --- |
-| the 1st counted target | $0.13 on average (5 of 5 runs) | $0.05 (5 of 5) |
-| the 2nd counted target | $0.24 on average, in 3 of 5 runs; never in the other 2 | $0.13, in 5 of 5 |
-
-- **Which counted targets:** both sides solved only A3 and X2; neither solved B5 or A5 in any run. OSO solved both in every run; traditional solved both in 3 runs and one in 2.
-- **Duplicated work:** traditional labs re-proved results another lab already held privately 20 times per run on average (6 to 42); OSO 2.4.
-- **Building on each other:** OSO labs built on another lab's result about 6 times per run; traditional labs never could.
-- **Lost actions:** 4 actions in the traditional communities failed on dropped connections (retried, then lost); none in OSO. That slightly disadvantages traditional.
-- **Budgets were not binding:** both sides spent about half their $0.60, because labs passed when they saw nothing worth their budget. So the comparison is effectively what the same labs achieved, and at what cost, rather than who ran out of money first.
+</details>

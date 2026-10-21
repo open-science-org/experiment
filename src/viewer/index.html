@@ -105,6 +105,7 @@
   .doc table { border-collapse: collapse; font-size: 13px; margin: 10px 0; display: block; overflow-x: auto; }
   .doc th, .doc td { border-bottom: 1px solid var(--line); padding: 5px 9px; text-align: left; vertical-align: top; }
   .doc th { color: var(--ink-2); font-weight: 400; }
+  .doc td:nth-child(-n+2), .doc th:nth-child(-n+2) { white-space: nowrap; }
   .doc blockquote { margin: 0; padding: 2px 14px; border-left: 3px solid var(--line); color: var(--ink-2); }
   .doc code { background: var(--bg); padding: 1px 4px; border-radius: 4px; font-size: 12.5px; }
   .doc pre code { padding: 0; background: none; }
@@ -242,7 +243,11 @@
       <div class="row">
         <label>Field <select id="e-space"></select></label>
         <label>Name <input id="e-id" value="my-experiment" style="width:180px"></label>
-        <label>Title <input id="e-title" value="" placeholder="What the experiment asks" style="width:320px"></label>
+        <label>Title <input id="e-title" value="" placeholder="A short name" style="width:220px"></label>
+      </div>
+      <div class="row">
+        <label>Question <input id="e-question" value="" placeholder="One sentence: what this experiment answers" style="width:520px"></label>
+        <label>Main measure <select id="e-measure"></select></label>
       </div>
       <div><label>Compare these rule settings</label><div class="choice" id="e-settings" style="align-items:flex-start"></div></div>
       <div class="params-wrap">
@@ -405,9 +410,9 @@ async function drawOverview() {
 }
 
 async function drawExperiments() {
-  const ov = await overviewData();
-  $('view-experiments').innerHTML = `<p class="lede">Every saved experiment, with its configuration, the commit that produced it and one line per run.</p>
-    <div class="list">${ov.experiments.map((e) => `<a href="#/doc/results/${e.id}/summary.md">${esc(e.title)}</a>`).join('')}<a href="#/doc/results/LOG.md"><b>The log of every saved run</b></a></div>`;
+  // One index of every experiment (results/README.md): question, computed answer, cost; each links to its card.
+  const d = await api('/api/doc?path=results/README.md');
+  $('view-experiments').innerHTML = `<article class="doc">${d.html}</article>`;
 }
 
 async function drawPilotSummaries() {
@@ -697,6 +702,8 @@ async function enterDesign() {
     drawAgents(); designCheck();
   };
   $('e-reset').onclick = () => { for (const p of D.opts.parameters) { P[p.path] = { value: D.field[p.path], vary: false, values: p.values.join(', ') }; } drawParams(); designCheck(); };
+  $('e-measure').innerHTML = D.opts.columns.map((c) => `<option value="${c.id}" ${c.id === 'frontier' ? 'selected' : ''}>${esc(c.meaning)}</option>`).join('');
+  for (const id of ['e-measure', 'e-question']) $(id).addEventListener('change', designCheck);
   $('e-columns').innerHTML = D.opts.columns.map((c) => `<label title="${esc(c.meaning)}"><input type="checkbox" value="${c.id}" ${D.opts.defaultColumns.includes(c.id) ? 'checked' : ''}> ${esc(c.meaning)}</label>`).join('');
   for (const el of document.querySelectorAll('#view-design .step:nth-of-type(2) input, #view-design .step:nth-of-type(2) select')) el.addEventListener('change', designCheck);
   $('e-id').addEventListener('input', designCheck);
@@ -945,7 +952,7 @@ function explain() {
 
 function currentDesign() {
   return {
-    id: $('e-id').value.trim(), title: $('e-title').value.trim(), space: $('e-space').value,
+    id: $('e-id').value.trim(), title: $('e-title').value.trim(), question: $('e-question').value.trim(), measure: $('e-measure').value, space: $('e-space').value,
     settings: [...$('e-settings').querySelectorAll('input:checked')].map((i) => i.value),
     set: Object.fromEntries(D.opts.parameters.filter((p) => !P[p.path].vary && P[p.path].value !== D.field[p.path]).map((p) => [p.path, P[p.path].value])),
     vary: D.opts.parameters.filter((p) => P[p.path].vary).map((p) => ({ path: p.path, values: P[p.path].values.split(',').map((x) => x.trim()).filter(Boolean).map(Number).filter(Number.isFinite) })),

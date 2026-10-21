@@ -1,0 +1,69 @@
+{
+ "id": "failures",
+ "kind": "simulation",
+ "date": "2026-10-21",
+ "title": "Learning from failure: own failures vs. shared failures",
+ "design": {
+  "question": "Does making failed attempts public help, and under which rules?",
+  "compare": "own failures or shared failures, under each rule setting",
+  "fixed": "the Lean tree, agents and budget",
+  "measure": "hardest level published",
+  "better": "higher",
+  "runs": "100 runs per row"
+ },
+ "answer": "Best on hardest level published: OSO (immediate), learn from own, 8.0 (tied with OSO (immediate), learn from all (public)). Best traditional: Traditional, learn from all (public), 7.6; a clear difference.",
+ "table": [
+  {
+   "setting": "Traditional",
+   "failures": "no learning",
+   "frontier": "5.7 ± 1.2",
+   "reach L7": "0.35",
+   "speed": "96 ± 16",
+   "cost": "957 ± 161"
+  },
+  {
+   "setting": "Traditional",
+   "failures": "learn from own",
+   "frontier": "7.4 ± 0.7",
+   "reach L7": "0.96",
+   "speed": "87 ± 17",
+   "cost": "865 ± 171"
+  },
+  {
+   "setting": "Traditional",
+   "failures": "learn from all (public)",
+   "frontier": "7.6 ± 0.6",
+   "reach L7": "0.98",
+   "speed": "82 ± 17",
+   "cost": "810 ± 171"
+  },
+  {
+   "setting": "OSO (immediate)",
+   "failures": "no learning",
+   "frontier": "7.9 ± 0.2",
+   "reach L7": "1.00",
+   "speed": "49 ± 14",
+   "cost": "485 ± 141"
+  },
+  {
+   "setting": "OSO (immediate)",
+   "failures": "learn from own",
+   "frontier": "8.0 ± 0.0",
+   "reach L7": "1.00",
+   "speed": "37 ± 10",
+   "cost": "367 ± 96"
+  },
+  {
+   "setting": "OSO (immediate)",
+   "failures": "learn from all (public)",
+   "frontier": "8.0 ± 0.0",
+   "reach L7": "1.00",
+   "speed": "29 ± 6",
+   "cost": "284 ± 64"
+  }
+ ],
+ "caveats": [
+  "A simulation with guessed parameters: it shows how the rules play out, not that they work."
+ ],
+ "page": "results/failures/summary.md"
+}

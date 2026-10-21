@@ -10,6 +10,8 @@ import { attempt, systemPrompt, taskPrompt, type AttemptResult, type Chat, type 
 import { libraryFor, referenceProof } from './selftest.ts';
 import { LEAN_DIR, loadTasks, type Task } from './tasks.ts';
 import { lineChart } from '../report/figures.ts';
+import { writeCard } from '../card.ts';
+import { existsSync as exists } from 'node:fs';
 
 export type Condition = 'library' | 'alone';
 
@@ -354,7 +356,27 @@ ${table(perTarget)}
 
 A target a model proves alone does not need its lemmas, for that model: shared lemmas then save cost, but do not make the result reachable. Ids are the anonymous ids of [worlds/lean-reference.json](../../../worlds/lean-reference.json). Runs: ${runIds.map((r) => `[${r}](../${r}/summary.md)`).join(', ')}.
 `;
-  writeFileSync(join(dir, 'summary.md'), md);
+  const notesFile = join(dir, 'notes.md');
+  const notes = exists(notesFile) ? readFileSync(notesFile, 'utf8').trim() : '';
+  const plain = (t: string) => t.replace(/\*\*/g, '');
+  writeCard(dir, {
+    id, kind: 'model pilot', date: new Date().toISOString().slice(0, 10), title: `Lean pilot: ${title}`,
+    design: {
+      question: 'Do shared lemmas make targets reachable that a model cannot prove alone?',
+      compare: 'each model alone, and given the lemmas each target rests on',
+      fixed: `the 8 posted targets, ${r0.attempts} attempts each, up to ${r0.repairs} repairs, reasoning effort ${r0.model.effort}, grind ${r0.allowGrind ? 'allowed' : 'banned'}`,
+      measure: 'targets proved with lemmas but never alone', better: 'higher', runs: `${r0.attempts} attempts per target and condition`,
+    },
+    answer: plain(headline[0] ?? ''),
+    table: models_.map((m) => ({
+      model: short(m.model), 'with lemmas': `${m.library.proved}/${m.library.attempts}`, alone: `${m.alone.proved}/${m.alone.attempts}`,
+      'needed the lemmas for': m.needsLemmas.join(', ') || '–',
+      'tokens per proof, with / alone': m.library.tokensPerProof && m.alone.tokensPerProof ? `${(m.library.tokensPerProof / 1000).toFixed(1)}k / ${(m.alone.tokensPerProof / 1000).toFixed(1)}k` : '–',
+    })),
+    caveats: [plain(headline[1] ?? ''), 'Lemma statements are given, not found: this measures how much lemmas help, not whether labs would think of them.', 'A few attempts per cell: rates are rough.'].filter(Boolean),
+    cost: `$${models_.reduce((a, m) => a + m.cost, 0).toFixed(2)}`,
+    page: `results/pilot/${id}/summary.md`,
+  }, md.replace(/^# .*\n/, '') + (notes ? `\n## Notes\n\n${notes}\n` : ''));
   writeFileSync(join(dir, 'data.json'), JSON.stringify({ id, title, runs: runIds, attempts: r0.attempts, repairs: r0.repairs, allowGrind: r0.allowGrind, effort: r0.model.effort, headline, models: models_, curves }, null, 1) + '\n');
   return dir;
 }

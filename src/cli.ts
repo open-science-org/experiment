@@ -12,13 +12,14 @@
 //   npm run sim -- new "<description>" [--report]   write a space with Claude, check it, calibrate its budget
 //   npm run sim -- check <space>                    validate a space file and test-run it
 //   npm run sim -- report <space | all> [--seeds N] run the canonical experiments and write the report
+import { compareRows, writeCard, type Card } from './card.ts';
 import { CODE_PATHS, EXPERIMENTS_DIR, RESULTS_DIR, ROOT, SPACES_DIR } from './paths.ts';
 import { execSync } from 'node:child_process';
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { loadExperiment, runExperiment, analyses, type ExperimentSpec, type Output } from './experiments/experiment.ts';
+import { DEFAULT_COLUMNS, loadExperiment, runExperiment, analyses, type ExperimentSpec, type Output } from './experiments/experiment.ts';
 import { deciders } from './engine/deciders.ts';
-import { COLUMNS } from './engine/measures.ts';
+import { COLUMNS, MEASURE_NAMES, VALUES } from './engine/measures.ts';
 import { oracles } from './engine/oracles.ts';
 import { allocations, policies, visibilities } from './engine/rules.ts';
 import { worlds } from './engine/world.ts';
@@ -148,23 +149,14 @@ function runOne(spec: ExperimentSpec) {
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, 'config.json'), JSON.stringify({ experiment: spec.id, date, commit, dirty, command, seeds: n, overrides: sets, config: out.config }, null, 2) + '\n');
   writeFileSync(join(dir, 'runs.jsonl'), out.runs.map((r) => JSON.stringify(r)).join('\n') + '\n');
-  writeFileSync(join(dir, 'summary.md'), [
-    `# ${spec.title}`,
-    '',
+  writeCard(dir, simulationCard(spec, out, n, date), [
     spec.description,
     '',
-    `- **Date:** ${date}`,
-    `- **Code:** commit \`${commit}\`${dirty ? ' (with uncommitted changes to the simulator)' : ''}`,
-    `- **Experiment:** [config/experiments/${spec.id}.yaml](../../config/experiments/${spec.id}.yaml)`,
-    `- **Command:** \`${command}\``,
-    `- **Runs:** ${out.runs.length} (${n} seeds per row), in \`runs.jsonl\`; the full configuration in \`config.json\``,
-    '',
-    spec.analysis === 'simple-chain-exact'
-      ? 'Values are mean ± standard error, so they can be compared with the exact values.'
-      : 'Values are mean ± standard deviation over seeds.',
+    spec.analysis === 'simple-chain-exact' ? 'Values are mean ± standard error, so they can be compared with the exact values.' : 'Values are mean ± standard deviation over runs.',
     '',
     markdownTable(out.table),
     '',
+    `Code: commit \`${commit}\`${dirty ? ' (with uncommitted changes)' : ''}. Experiment: [config/experiments/${spec.id}.yaml](../../config/experiments/${spec.id}.yaml). Command: \`${command}\`. Every run: \`runs.jsonl\`; every parameter: \`config.json\`.`,
   ].join('\n'));
   const log = join(resultsDir, 'LOG.md');
   if (!existsSync(log)) {
@@ -172,6 +164,34 @@ function runOne(spec: ExperimentSpec) {
   }
   appendFileSync(log, `| ${date} | [${spec.id}](${spec.id}/summary.md) | \`${commit}\`${dirty ? ' (uncommitted changes)' : ''} | ${n} | \`${command}\` |\n`);
   console.log(`Saved to results/${spec.id}/ (commit ${commit}${dirty ? ', uncommitted changes' : ''}).`);
+}
+
+/** A saved simulation's card: the declared design, and the answer on its measure. */
+function simulationCard(spec: ExperimentSpec, out: Output, n: number, date: string): Card {
+  const measure = spec.measure ?? (spec.analysis ? undefined : (spec.columns ?? DEFAULT_COLUMNS)[0]);
+  // Text labels stand alone ("OSO (immediate)"); numbers carry their factor's name ("α 0.4").
+  const label = (row: Output['rows'][number]) => Object.entries(row.labels).map(([k, v]) => (typeof v === 'number' ? `${k} ${v}` : String(v))).join(', ') || 'all';
+  const header = (id: string) => COLUMNS[id]?.header(out.rows[0].scenario) ?? id;
+  const better = spec.better ?? (measure && ['cost', 'speed', 'waste', 'duplicates', 'spend', 'gamerShare', 'trivialSpend', 'rejected', 'retracted', 'absorbSpend', 'hoarded'].includes(measure) ? 'lower' : 'higher');
+  const answer = measure && VALUES[measure]
+    ? compareRows(out.rows.map((row, i) => ({ label: label(row), values: out.results[i].map(VALUES[measure]!).filter((v): v is number => v !== null) })), better, MEASURE_NAMES[measure] ?? header(measure))
+    : 'See the table: this experiment checks the model against exact values.';
+  const support = (spec.columns ?? DEFAULT_COLUMNS).filter((c) => c !== measure).slice(0, 3);
+  const keyCols = spec.analysis ? Object.keys(out.table[0] ?? {}) : [...Object.keys(out.rows[0]?.labels ?? {}), ...(measure ? [header(measure)] : []), ...support.map(header)];
+  const short = out.table.map((r) => Object.fromEntries(keyCols.map((c) => [c, r[c] ?? ''])));
+  return {
+    id: spec.id, kind: 'simulation', date, title: spec.title,
+    design: {
+      question: spec.question ?? spec.title,
+      compare: spec.compare ?? ((spec.factors ?? []).map((f) => f.name).join(' × ') || 'one setting'),
+      fixed: spec.fixed ?? 'the field, agents and budget',
+      measure: measure ? MEASURE_NAMES[measure] ?? header(measure) : 'agreement with the exact values',
+      better,
+      runs: `${n} runs per row`,
+    },
+    answer, table: short, caveats: spec.caveats ?? ['A simulation with guessed parameters: it shows how the rules play out, not that they work.'],
+    page: `results/${spec.id}/summary.md`,
+  };
 }
 
 const specs = target === 'all' ? experimentIds.map(loadExperiment) : [loadExperiment(target)];

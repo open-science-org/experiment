@@ -1,7 +1,7 @@
 {
   "experiment": "my-experiment",
-  "date": "2026-10-20",
-  "commit": "136b5b1",
+  "date": "2026-10-21",
+  "commit": "023509e",
   "dirty": true,
   "command": "npm run sim -- my-experiment --seeds 50 --save",
   "seeds": 50,

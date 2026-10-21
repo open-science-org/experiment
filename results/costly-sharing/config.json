@@ -1,8 +1,8 @@
 {
   "experiment": "costly-sharing",
-  "date": "2026-10-17",
-  "commit": "3b82e1b",
-  "dirty": false,
+  "date": "2026-10-21",
+  "commit": "023509e",
+  "dirty": true,
   "command": "npm run sim -- costly-sharing --seeds 100 --save",
   "seeds": 100,
   "overrides": {},
@@ -11,6 +11,11 @@
       "id": "costly-sharing",
       "title": "Sharing isn't free: absorbing costs and wrong results",
       "description": "Taking up a published result costs `absorbCost` compute, and each proof is wrong with chance `errorRate`; results built on a wrong result are wrong, and a target check rejects them and retracts the wrong results. Where does OSO's advantage shrink or vanish? Default world.",
+      "question": "Does OSO's lead survive when absorbing results costs compute, or results are sometimes wrong?",
+      "compare": "absorb cost × error rate × traditional or OSO",
+      "fixed": "the field, agents and budget",
+      "measure": "frontier",
+      "better": "higher",
       "seeds": 100,
       "factors": [
         {

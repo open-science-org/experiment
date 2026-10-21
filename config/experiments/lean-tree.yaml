@@ -4,6 +4,11 @@ description: >-
   The same settings as `settings`, on the real shape of the Lean problem set (42 results in three
   areas plus cross-area results, 8 targets, bounties by depth) instead of a random tree, with X = 400.
   Success chances follow the default model by level until the Lean pilot measures them.
+question: "On the Lean problem set's tree, which rule setting gets furthest?"
+compare: "the six rule settings"
+fixed: "the Lean tree, 12 agents and the budget"
+measure: frontier
+better: higher
 seeds: 100
 scenario: lean-tree
 factors:

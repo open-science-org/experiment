@@ -1,0 +1,49 @@
+{
+ "id": "my-experiment",
+ "kind": "simulation",
+ "date": "2026-10-21",
+ "title": "my-experiment",
+ "design": {
+  "question": "my-experiment",
+  "compare": "setting",
+  "fixed": "the field, agents and budget",
+  "measure": "hardest level published",
+  "better": "higher",
+  "runs": "50 runs per row"
+ },
+ "answer": "Best on hardest level published: OSO (immediate), 6.9. Best traditional: Traditional, 4.1; a clear difference.",
+ "table": [
+  {
+   "setting": "Traditional",
+   "frontier": "4.1 ± 1.2",
+   "reach L7": "0.00",
+   "cost": "–",
+   "sharing": "0.00 ± 0.01"
+  },
+  {
+   "setting": "OSO (immediate)",
+   "frontier": "6.9 ± 0.7",
+   "reach L7": "0.74",
+   "cost": "833 ± 196",
+   "sharing": "1.00 ± 0.00"
+  },
+  {
+   "setting": "OSO (choice)",
+   "frontier": "5.0 ± 0.8",
+   "reach L7": "0.04",
+   "cost": "1100 ± 34",
+   "sharing": "0.20 ± 0.08"
+  },
+  {
+   "setting": "Flow-back, finished-only",
+   "frontier": "4.2 ± 1.1",
+   "reach L7": "0.02",
+   "cost": "1145 ± 0",
+   "sharing": "0.00 ± 0.00"
+  }
+ ],
+ "caveats": [
+  "A simulation with guessed parameters: it shows how the rules play out, not that they work."
+ ],
+ "page": "results/my-experiment/summary.md"
+}

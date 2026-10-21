@@ -1,14 +1,49 @@
 # Where sharing becomes rational: α × scoop risk ψ × cited share c
 
+**Question:** At which α, scoop risk ψ and cited share c does sharing become worth it to agents?
+
+**Answer:** Best on share of results published at once: ψ 0.1, α 0.1, c 0, 0.9.
+
+| ψ | α | c | sharing | frontier | reach L7 | speed |
+| --- | --- | --- | --- | --- | --- | --- |
+| 0.5 | 1 | 0 | 0.23 ± 0.08 | 6.0 ± 0.9 | 0.35 | 100 ± 16 |
+| 0.5 | 0.8 | 0 | 0.24 ± 0.09 | 6.4 ± 0.9 | 0.49 | 95 ± 18 |
+| 0.5 | 0.8 | 0.15 | 0.22 ± 0.09 | 6.3 ± 1.0 | 0.43 | 96 ± 19 |
+| 0.5 | 0.5 | 0 | 0.28 ± 0.09 | 6.5 ± 0.9 | 0.57 | 95 ± 18 |
+| 0.5 | 0.5 | 0.15 | 0.28 ± 0.09 | 6.7 ± 0.8 | 0.63 | 91 ± 19 |
+| 0.5 | 0.3 | 0 | 0.49 ± 0.12 | 7.2 ± 0.7 | 0.87 | 86 ± 19 |
+| 0.5 | 0.3 | 0.15 | 0.47 ± 0.11 | 7.2 ± 0.7 | 0.86 | 89 ± 20 |
+| 0.5 | 0.1 | 0 | 0.79 ± 0.07 | 7.8 ± 0.4 | 1.00 | 58 ± 16 |
+| 0.5 | 0.1 | 0.15 | 0.77 ± 0.07 | 7.8 ± 0.4 | 1.00 | 60 ± 16 |
+| 0.25 | 1 | 0 | 0.23 ± 0.08 | 6.0 ± 1.0 | 0.34 | 100 ± 16 |
+| 0.25 | 0.8 | 0 | 0.25 ± 0.09 | 6.4 ± 0.9 | 0.47 | 96 ± 17 |
+| 0.25 | 0.8 | 0.15 | 0.24 ± 0.09 | 6.3 ± 0.9 | 0.46 | 99 ± 17 |
+| 0.25 | 0.5 | 0 | 0.36 ± 0.11 | 6.9 ± 0.7 | 0.76 | 91 ± 16 |
+| 0.25 | 0.5 | 0.15 | 0.36 ± 0.10 | 6.9 ± 0.7 | 0.73 | 90 ± 20 |
+| 0.25 | 0.3 | 0 | 0.65 ± 0.10 | 7.6 ± 0.6 | 0.96 | 70 ± 20 |
+| 0.25 | 0.3 | 0.15 | 0.65 ± 0.09 | 7.6 ± 0.6 | 0.97 | 69 ± 19 |
+| 0.25 | 0.1 | 0 | 0.89 ± 0.05 | 7.9 ± 0.3 | 1.00 | 54 ± 15 |
+| 0.25 | 0.1 | 0.15 | 0.86 ± 0.06 | 7.9 ± 0.3 | 1.00 | 52 ± 14 |
+| 0.1 | 1 | 0 | 0.24 ± 0.08 | 6.1 ± 0.9 | 0.34 | 94 ± 17 |
+| 0.1 | 0.8 | 0 | 0.30 ± 0.09 | 6.7 ± 0.8 | 0.63 | 92 ± 18 |
+| 0.1 | 0.8 | 0.15 | 0.29 ± 0.09 | 6.6 ± 0.8 | 0.60 | 94 ± 16 |
+| 0.1 | 0.5 | 0 | 0.61 ± 0.10 | 7.7 ± 0.5 | 1.00 | 73 ± 19 |
+| 0.1 | 0.5 | 0.15 | 0.60 ± 0.10 | 7.6 ± 0.6 | 0.95 | 75 ± 19 |
+| 0.1 | 0.3 | 0 | 0.83 ± 0.06 | 7.9 ± 0.3 | 1.00 | 55 ± 18 |
+| 0.1 | 0.3 | 0.15 | 0.81 ± 0.06 | 7.9 ± 0.3 | 1.00 | 56 ± 16 |
+| 0.1 | 0.1 | 0 | 0.94 ± 0.03 | 7.9 ± 0.3 | 1.00 | 51 ± 14 |
+| 0.1 | 0.1 | 0.15 | 0.92 ± 0.04 | 7.9 ± 0.3 | 1.00 | 51 ± 15 |
+
+**Design** (fixed before the run): compared α × ψ × c, agents choosing what to publish · held the same: the field, agents and budget · measure: share of results published at once, higher is better · 100 runs per row.
+
+**Caveats:**
+- A simulation with guessed parameters: it shows how the rules play out, not that they work.
+
+<details><summary>Details</summary>
+
 Agent's-choice visibility. ψ is how much publishing a lemma raises a rival's chance of winning the target below it; c is the share of each mint paid to what a result built on.
 
-- **Date:** 2026-10-17
-- **Code:** commit `d369863`
-- **Experiment:** [config/experiments/alpha-psi.yaml](../../config/experiments/alpha-psi.yaml)
-- **Command:** `npm run sim -- alpha-psi --seeds 100 --save`
-- **Runs:** 2700 (100 seeds per row), in `runs.jsonl`; the full configuration in `config.json`
-
-Values are mean ± standard deviation over seeds.
+Values are mean ± standard deviation over runs.
 
 | ψ | α | c | frontier | reach L7 | speed | cost | spend | results per 100 | breadth | waste | credit | sharing | hoarded |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -39,3 +74,7 @@ Values are mean ± standard deviation over seeds.
 | 0.1 | 0.3 | 0.15 | 7.9 ± 0.3 | 1.00 | 56 ± 16 | 554 ± 160 | 947 ± 198 | 6.9 ± 1.4 | 0.96 ± 0.09 | 0.86 ± 0.04 | 0.88 ± 0.03 | 0.81 ± 0.06 | 0.00 ± 0.01 |
 | 0.1 | 0.1 | 0 | 7.9 ± 0.3 | 1.00 | 51 ± 14 | 510 ± 136 | 926 ± 200 | 7.3 ± 1.6 | 0.97 ± 0.08 | 0.87 ± 0.04 | 0.75 ± 0.06 | 0.94 ± 0.03 | 0.00 ± 0.00 |
 | 0.1 | 0.1 | 0.15 | 7.9 ± 0.3 | 1.00 | 51 ± 15 | 503 ± 153 | 897 ± 213 | 7.6 ± 2.0 | 0.97 ± 0.08 | 0.86 ± 0.04 | 0.76 ± 0.06 | 0.92 ± 0.04 | 0.00 ± 0.01 |
+
+Code: commit `023509e` (with uncommitted changes). Experiment: [config/experiments/alpha-psi.yaml](../../config/experiments/alpha-psi.yaml). Command: `npm run sim -- alpha-psi --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+
+</details>

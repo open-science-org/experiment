@@ -1,0 +1,59 @@
+{
+ "id": "panel-2026-10-19",
+ "kind": "model pilot",
+ "date": "2026-10-21",
+ "title": "Lean pilot: five models on the posted targets (2026-10-19)",
+ "design": {
+  "question": "Do shared lemmas make targets reachable that a model cannot prove alone?",
+  "compare": "each model alone, and given the lemmas each target rests on",
+  "fixed": "the 8 posted targets, 2 attempts each, up to 3 repairs, reasoning effort high, grind banned",
+  "measure": "targets proved with lemmas but never alone",
+  "better": "higher",
+  "runs": "2 attempts per target and condition"
+ },
+ "answer": "Lemmas made targets reachable for 3 of 5 models. gpt-5.6-terra: X1; gemini-3.8-flash: X1, A5; deepseek-v4.1-flash: A3, B5, X2, A5 were proved with their lemmas but never alone.",
+ "table": [
+  {
+   "model": "claude-opus-5.5",
+   "with lemmas": "16/16",
+   "alone": "16/16",
+   "needed the lemmas for": "–",
+   "tokens per proof, with / alone": "1.7k / 10.4k"
+  },
+  {
+   "model": "claude-sonnet-5.5",
+   "with lemmas": "16/16",
+   "alone": "16/16",
+   "needed the lemmas for": "–",
+   "tokens per proof, with / alone": "1.4k / 9.5k"
+  },
+  {
+   "model": "gpt-5.6-terra",
+   "with lemmas": "16/16",
+   "alone": "11/16",
+   "needed the lemmas for": "X1",
+   "tokens per proof, with / alone": "4.9k / 11.3k"
+  },
+  {
+   "model": "gemini-3.8-flash",
+   "with lemmas": "14/16",
+   "alone": "11/16",
+   "needed the lemmas for": "X1, A5",
+   "tokens per proof, with / alone": "27.6k / 39.4k"
+  },
+  {
+   "model": "deepseek-v4.1-flash",
+   "with lemmas": "12/16",
+   "alone": "4/16",
+   "needed the lemmas for": "A3, B5, X2, A5",
+   "tokens per proof, with / alone": "21.5k / 58.8k"
+  }
+ ],
+ "caveats": [
+  "claude-opus-5.5 and claude-sonnet-5.5 proved every target alone, so for them the lemmas save cost but are not needed.",
+  "Lemma statements are given, not found: this measures how much lemmas help, not whether labs would think of them.",
+  "A few attempts per cell: rates are rough."
+ ],
+ "cost": "$18.09",
+ "page": "results/pilot/panel-2026-10-19/summary.md"
+}

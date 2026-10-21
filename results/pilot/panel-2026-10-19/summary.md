@@ -1,5 +1,27 @@
 # Lean pilot: five models on the posted targets (2026-10-19)
 
+**Question:** Do shared lemmas make targets reachable that a model cannot prove alone?
+
+**Answer:** Lemmas made targets reachable for 3 of 5 models. gpt-5.6-terra: X1; gemini-3.8-flash: X1, A5; deepseek-v4.1-flash: A3, B5, X2, A5 were proved with their lemmas but never alone.
+
+| model | with lemmas | alone | needed the lemmas for | tokens per proof, with / alone |
+| --- | --- | --- | --- | --- |
+| claude-opus-5.5 | 16/16 | 16/16 | – | 1.7k / 10.4k |
+| claude-sonnet-5.5 | 16/16 | 16/16 | – | 1.4k / 9.5k |
+| gpt-5.6-terra | 16/16 | 11/16 | X1 | 4.9k / 11.3k |
+| gemini-3.8-flash | 14/16 | 11/16 | X1, A5 | 27.6k / 39.4k |
+| deepseek-v4.1-flash | 12/16 | 4/16 | A3, B5, X2, A5 | 21.5k / 58.8k |
+
+**Design** (fixed before the run): compared each model alone, and given the lemmas each target rests on · held the same: the 8 posted targets, 2 attempts each, up to 3 repairs, reasoning effort high, grind banned · measure: targets proved with lemmas but never alone, higher is better · 2 attempts per target and condition. Cost: $18.09.
+
+**Caveats:**
+- claude-opus-5.5 and claude-sonnet-5.5 proved every target alone, so for them the lemmas save cost but are not needed.
+- Lemma statements are given, not found: this measures how much lemmas help, not whether labs would think of them.
+- A few attempts per cell: rates are rough.
+
+<details><summary>Details</summary>
+
+
 ## Headline
 
 - **Lemmas made targets reachable for 3 of 5 models.** gpt-5.6-terra: X1; gemini-3.8-flash: X1, A5; deepseek-v4.1-flash: A3, B5, X2, A5 were proved with their lemmas but never alone.
@@ -51,3 +73,6 @@ A target a model proves alone does not need its lemmas, for that model: shared l
 - **Credit ran out once,** midway through the Gemini and DeepSeek runs; they were resumed where they stopped.
 - **Effort:** every model ran at reasoning effort `high` with 32,000 output tokens per turn. Gemini and DeepSeek sometimes used the whole allowance thinking; from the resumed runs on, the agent was told when its reply had been cut off.
 - **Costs vary by provider:** OpenRouter sends a model's calls to whichever provider serves it, at different prices (DeepSeek's calls cost from under $0.001 to $0.024 for similar output). Dollar figures are what was paid; comparisons of effort use output tokens.
+
+
+</details>

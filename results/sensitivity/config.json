@@ -1,8 +1,8 @@
 {
   "experiment": "sensitivity",
-  "date": "2026-10-17",
-  "commit": "d369863",
-  "dirty": false,
+  "date": "2026-10-21",
+  "commit": "023509e",
+  "dirty": true,
   "command": "npm run sim -- sensitivity --seeds 100 --save",
   "seeds": 100,
   "overrides": {},
@@ -11,6 +11,11 @@
       "id": "sensitivity",
       "title": "How much the traditional-vs-OSO gap depends on the gamer and the compute loop",
       "description": "Traditional and OSO (immediate) under four variants. Under traditional rules only target winners and spammers earn early, so the compute loop can hand the gaming agent most of the budget.",
+      "question": "How much of OSO's lead depends on the gaming agent and the compute loop?",
+      "compare": "traditional and OSO, under four variants",
+      "fixed": "the field and budget",
+      "measure": "frontier",
+      "better": "higher",
       "seeds": 100,
       "factors": [
         {
@@ -101,7 +106,10 @@
       },
       "success": {
         "p0": 0.5,
-        "eta": 0.6
+        "eta": 0.6,
+        "oracle": {
+          "kind": "chance"
+        }
       },
       "attribution": {
         "noise": 0
@@ -197,16 +205,22 @@
         "specialist": {
           "boost": 1.6,
           "penalty": 0.4
-        }
+        },
+        "deciders": {}
       },
       "rules": {
         "alpha": 1,
         "c": 0,
         "mint": 1,
         "screen": 0.5,
+        "publishFailures": false,
         "visibility": {
           "kind": "finished-only"
         }
+      },
+      "knowledge": {
+        "absorbCost": 0,
+        "errorRate": 0
       },
       "budget": {
         "X": 1200,
@@ -220,6 +234,9 @@
         }
       },
       "behaviour": {
+        "decider": {
+          "kind": "formula"
+        },
         "policy": {
           "kind": "softmax",
           "tau": 0.3,

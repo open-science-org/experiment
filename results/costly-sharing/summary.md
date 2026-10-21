@@ -1,14 +1,46 @@
 # Sharing isn't free: absorbing costs and wrong results
 
+**Question:** Does OSO's lead survive when absorbing results costs compute, or results are sometimes wrong?
+
+**Answer:** Best on hardest level published: OSO (immediate), absorb cost 0, error rate 0, 7.9. Best traditional: Traditional, absorb cost 0.5, error rate 0, 5.7; a clear difference.
+
+| setting | absorb cost | error rate | frontier | reach L7 | cost | spend |
+| --- | --- | --- | --- | --- | --- | --- |
+| Traditional | 0 | 0 | 5.7 ± 1.2 | 0.35 | 957 ± 161 | 1194 ± 11 |
+| Traditional | 0 | 0.05 | 5.1 ± 1.0 | 0.15 | 1061 ± 122 | 1194 ± 2 |
+| Traditional | 0 | 0.15 | 4.5 ± 0.9 | 0.02 | 989 ± 234 | 1194 ± 2 |
+| Traditional | 0.25 | 0 | 5.5 ± 1.1 | 0.27 | 975 ± 167 | 1194 ± 7 |
+| Traditional | 0.25 | 0.05 | 5.1 ± 1.0 | 0.12 | 954 ± 114 | 1195 ± 1 |
+| Traditional | 0.25 | 0.15 | 4.5 ± 0.9 | 0.01 | 895 ± 0 | 1195 ± 1 |
+| Traditional | 0.5 | 0 | 5.7 ± 1.1 | 0.35 | 996 ± 134 | 1193 ± 11 |
+| Traditional | 0.5 | 0.05 | 5.2 ± 1.0 | 0.15 | 976 ± 192 | 1192 ± 30 |
+| Traditional | 0.5 | 0.15 | 4.4 ± 1.0 | 0.01 | 585 ± 0 | 1192 ± 30 |
+| Traditional | 1 | 0 | 5.5 ± 1.1 | 0.30 | 1009 ± 170 | 1195 ± 2 |
+| Traditional | 1 | 0.05 | 5.2 ± 0.9 | 0.14 | 1008 ± 128 | 1194 ± 2 |
+| Traditional | 1 | 0.15 | 4.5 ± 1.0 | 0.03 | 1070 ± 74 | 1194 ± 2 |
+| OSO (immediate) | 0 | 0 | 7.9 ± 0.2 | 1.00 | 485 ± 141 | 849 ± 207 |
+| OSO (immediate) | 0 | 0.05 | 7.6 ± 0.5 | 1.00 | 568 ± 178 | 1061 ± 188 |
+| OSO (immediate) | 0 | 0.15 | 7.2 ± 0.5 | 0.96 | 629 ± 188 | 1183 ± 49 |
+| OSO (immediate) | 0.25 | 0 | 7.8 ± 0.4 | 1.00 | 627 ± 173 | 1020 ± 187 |
+| OSO (immediate) | 0.25 | 0.05 | 7.4 ± 0.5 | 0.99 | 675 ± 222 | 1121 ± 152 |
+| OSO (immediate) | 0.25 | 0.15 | 7.1 ± 0.5 | 0.92 | 781 ± 215 | 1192 ± 20 |
+| OSO (immediate) | 0.5 | 0 | 7.7 ± 0.5 | 0.99 | 626 ± 228 | 1007 ± 217 |
+| OSO (immediate) | 0.5 | 0.05 | 7.2 ± 0.6 | 0.92 | 679 ± 261 | 1128 ± 151 |
+| OSO (immediate) | 0.5 | 0.15 | 7.0 ± 0.6 | 0.84 | 759 ± 250 | 1188 ± 34 |
+| OSO (immediate) | 1 | 0 | 7.3 ± 0.7 | 0.87 | 663 ± 260 | 1076 ± 200 |
+| OSO (immediate) | 1 | 0.05 | 6.8 ± 0.7 | 0.72 | 695 ± 250 | 1182 ± 68 |
+| OSO (immediate) | 1 | 0.15 | 6.6 ± 0.6 | 0.62 | 744 ± 255 | 1186 ± 56 |
+
+**Design** (fixed before the run): compared absorb cost × error rate × traditional or OSO · held the same: the field, agents and budget · measure: hardest level published, higher is better · 100 runs per row.
+
+**Caveats:**
+- A simulation with guessed parameters: it shows how the rules play out, not that they work.
+
+<details><summary>Details</summary>
+
 Taking up a published result costs `absorbCost` compute, and each proof is wrong with chance `errorRate`; results built on a wrong result are wrong, and a target check rejects them and retracts the wrong results. Where does OSO's advantage shrink or vanish? Default world.
 
-- **Date:** 2026-10-17
-- **Code:** commit `3b82e1b`
-- **Experiment:** [config/experiments/costly-sharing.yaml](../../config/experiments/costly-sharing.yaml)
-- **Command:** `npm run sim -- costly-sharing --seeds 100 --save`
-- **Runs:** 2400 (100 seeds per row), in `runs.jsonl`; the full configuration in `config.json`
-
-Values are mean ± standard deviation over seeds.
+Values are mean ± standard deviation over runs.
 
 | setting | absorb cost | error rate | frontier | reach L7 | cost | spend | targets solved | absorb spend | rejected targets | retracted |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -36,3 +68,7 @@ Values are mean ± standard deviation over seeds.
 | OSO (immediate) | 1 | 0 | 7.3 ± 0.7 | 0.87 | 663 ± 260 | 1076 ± 200 | 5.4 ± 1.4 | 0.41 ± 0.03 | 0.0 ± 0.0 | 0.0 ± 0.0 |
 | OSO (immediate) | 1 | 0.05 | 6.8 ± 0.7 | 0.72 | 695 ± 250 | 1182 ± 68 | 4.3 ± 1.2 | 0.41 ± 0.03 | 2.5 ± 1.6 | 6.3 ± 5.5 |
 | OSO (immediate) | 1 | 0.15 | 6.6 ± 0.6 | 0.62 | 744 ± 255 | 1186 ± 56 | 3.4 ± 1.1 | 0.41 ± 0.02 | 5.5 ± 2.2 | 14.1 ± 6.9 |
+
+Code: commit `023509e` (with uncommitted changes). Experiment: [config/experiments/costly-sharing.yaml](../../config/experiments/costly-sharing.yaml). Command: `npm run sim -- costly-sharing --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+
+</details>

@@ -1,8 +1,8 @@
 {
   "experiment": "simple",
-  "date": "2026-10-17",
-  "commit": "d369863",
-  "dirty": false,
+  "date": "2026-10-21",
+  "commit": "023509e",
+  "dirty": true,
   "command": "npm run sim -- simple --seeds 1000 --save",
   "seeds": 1000,
   "overrides": {},
@@ -11,6 +11,9 @@
       "id": "simple",
       "title": "The simple model: one chain, shared vs. hidden progress",
       "description": "A single chain of 300 results, each with success chance p = 0.2 per attempt; N identical agents; X = 640 attempts in total, one per agent per round. Shared: every result is published and taken up at once. Hidden: nothing is published until the end of the chain, which no one reaches. Measure: the deepest result proved by anyone. The exact values come from src/experiments/analytic.ts.",
+      "question": "Does the simulator match the exact mathematics of shared against hidden progress?",
+      "compare": "progress shared or hidden, for communities of 1 to 16 agents",
+      "fixed": "one chain of results, chance 0.2 per attempt, 640 attempts",
       "seeds": 1000,
       "set": {
         "world": {
@@ -82,7 +85,10 @@
       },
       "success": {
         "p0": 0.2,
-        "eta": 1
+        "eta": 1,
+        "oracle": {
+          "kind": "chance"
+        }
       },
       "attribution": {
         "noise": 0
@@ -179,16 +185,22 @@
         "specialist": {
           "boost": 1.6,
           "penalty": 0.4
-        }
+        },
+        "deciders": {}
       },
       "rules": {
         "alpha": 1,
         "c": 0,
         "mint": 1,
         "screen": 0.5,
+        "publishFailures": false,
         "visibility": {
           "kind": "finished-only"
         }
+      },
+      "knowledge": {
+        "absorbCost": 0,
+        "errorRate": 0
       },
       "budget": {
         "X": 640,
@@ -202,6 +214,9 @@
         }
       },
       "behaviour": {
+        "decider": {
+          "kind": "formula"
+        },
         "policy": {
           "kind": "softmax",
           "tau": 0.3,

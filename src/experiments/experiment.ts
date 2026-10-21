@@ -35,6 +35,13 @@ export interface ExperimentSpec {
   columns?: string[];
   /** An analysis that builds its own table instead (see `analyses`). */
   analysis?: string;
+  /** Declared before running: the question, what differs and what is held the same, the main measure (a column id) and which way is better, and known caveats. */
+  question?: string;
+  compare?: string;
+  fixed?: string;
+  measure?: string;
+  better?: 'higher' | 'lower';
+  caveats?: string[];
 }
 
 export interface Row {
@@ -52,7 +59,7 @@ export interface Output {
   results: RunResult[][];
 }
 
-const SPEC_KEYS = ['id', 'title', 'description', 'seeds', 'firstSeed', 'scenario', 'set', 'factors', 'patches', 'exclude', 'columns', 'analysis'];
+const SPEC_KEYS = ['id', 'title', 'description', 'seeds', 'firstSeed', 'scenario', 'set', 'factors', 'patches', 'exclude', 'columns', 'analysis', 'question', 'compare', 'fixed', 'measure', 'better', 'caveats'];
 
 let presetCache: Record<string, Record<string, unknown>> | null = null;
 export function preset(name: string): Record<string, unknown> {

@@ -1,7 +1,7 @@
 {
   "experiment": "funding-rule-drug-discovery",
-  "date": "2026-10-20",
-  "commit": "980152f",
+  "date": "2026-10-21",
+  "commit": "023509e",
   "dirty": true,
   "command": "npm run sim -- funding-rule-drug-discovery --seeds 100 --save",
   "seeds": 100,
@@ -11,6 +11,11 @@
       "id": "funding-rule-drug-discovery",
       "title": "Does the funding rule decide the race? Drug discovery",
       "description": "Designed in the app on the field \"Early-stage drug discovery\" (spaces/drug-discovery.yaml): Traditional vs OSO (immediate) vs OSO (choice), varying ρ, compute follows earnings. A varied parameter overrides the rule setting's own value.",
+      "question": "Does the funding rule decide the race in drug discovery?",
+      "compare": "how far compute follows earnings (ρ), under three rule settings",
+      "fixed": "the drug-discovery field, agents and budget",
+      "measure": "frontier",
+      "better": "higher",
       "seeds": 100,
       "set": {
         "world": {

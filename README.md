@@ -79,6 +79,12 @@ npm run pilot -- world <run>                    # measured chances -> worlds/lea
 - **What gets published:** transcripts contain proofs, so they stay in `lean/runs/`, which is private. The public summary in `results/pilot/<run>/` uses only anonymous ids.
 - **The model:** Claude Opus 5.5 at effort `high`, through whichever key is in `.env`, which Git ignores. With `ANTHROPIC_API_KEY`, it calls Anthropic directly (adaptive thinking, with server-side fallbacks on). With `OPENROUTER_API_KEY`, it goes through OpenRouter, which also serves GPT, Gemini and open models (`--model`); OpenRouter reports each call's cost, so the summary gives dollars.
 
+## Experiments: designed, then summarized the same way
+
+Every experiment, of any kind, declares before it runs: the **question**, what is **compared**, what is **held the same**, the one **main measure** and which way is better, and how many **runs**. Its result is a short **card**: the question, the **answer** computed from that measure (best row against the best traditional row, judged against two standard errors), a small table, the design in one line, and at most three caveats; everything else is folded away under *Details*. Measures looked at after a run are labelled *exploratory*.
+
+[results/README.md](results/README.md) lists every experiment with its question and answer, newest first. It is rebuilt whenever a result is saved.
+
 ## The app: everything in one place
 
 ```sh

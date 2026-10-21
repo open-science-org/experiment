@@ -1,6 +1,24 @@
 # Real agents, OSO vs traditional: community-2026-10-20b
 
-**Both communities solved 4 targets for the same money.** The traditional and OSO communities ran one after the other on 2026-10-20; an earlier OSO run stopped partway (kept privately) and was rerun from the start.
+**Question:** For the same money, does an OSO community of AI labs solve more targets than a traditional one?
+
+**Answer:** Both communities solved 4 targets for the same money.
+
+| rules | targets solved | spent | lemmas accepted | duplicated work |
+| --- | --- | --- | --- | --- |
+| Traditional | 4 of 8 | $0.76 of $1.60 | 0 | 1 |
+| OSO | 4 of 8 | $1.04 of $1.60 | 3 | 1 |
+
+**Design** (fixed before the run): compared traditional rules and OSO rules · held the same: the same 4 labs, $0.4 each, no personas · measure: targets solved, higher is better · 1 run per side.
+
+**Caveats:**
+- One run per side: no verdict either way.
+- The two communities ran one after the other on 2026-10-20; an OSO run that stopped partway was rerun from the start.
+
+<details><summary>Details</summary>
+
+
+**Both communities solved 4 targets for the same money.** The two communities ran one after the other on 2026-10-20; an OSO run that stopped partway was rerun from the start.
 
 ![Targets solved for the money](figures/progress.svg)
 
@@ -16,3 +34,6 @@
 - **One run per setting:** results vary from run to run; several runs are needed before reading much into a difference.
 
 Runs: community-2026-10-20b-traditional, community-2026-10-20b-oso. Transcripts (with proofs) are private.
+
+
+</details>

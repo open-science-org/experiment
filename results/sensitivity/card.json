@@ -1,0 +1,85 @@
+{
+ "id": "sensitivity",
+ "kind": "simulation",
+ "date": "2026-10-21",
+ "title": "How much the traditional-vs-OSO gap depends on the gamer and the compute loop",
+ "design": {
+  "question": "How much of OSO's lead depends on the gaming agent and the compute loop?",
+  "compare": "traditional and OSO, under four variants",
+  "fixed": "the field and budget",
+  "measure": "hardest level published",
+  "better": "higher",
+  "runs": "100 runs per row"
+ },
+ "answer": "Best on hardest level published: no compute loop (ρ = 0), OSO (immediate), 8.0 (tied with no gamer, OSO (immediate) and strong screen (θ = 0.9), OSO (immediate) and 1 more). Best traditional: no gamer, Traditional, 7.0; a clear difference.",
+ "table": [
+  {
+   "variant": "default (ρ = 0.5, θ = 0.5)",
+   "setting": "Traditional",
+   "frontier": "5.7 ± 1.2",
+   "reach L7": "0.35",
+   "speed": "96 ± 16",
+   "cost": "957 ± 161"
+  },
+  {
+   "variant": "default (ρ = 0.5, θ = 0.5)",
+   "setting": "OSO (immediate)",
+   "frontier": "7.9 ± 0.2",
+   "reach L7": "1.00",
+   "speed": "49 ± 14",
+   "cost": "485 ± 141"
+  },
+  {
+   "variant": "no compute loop (ρ = 0)",
+   "setting": "Traditional",
+   "frontier": "4.6 ± 0.9",
+   "reach L7": "0.01",
+   "speed": "111 ± 0",
+   "cost": "1105 ± 0"
+  },
+  {
+   "variant": "no compute loop (ρ = 0)",
+   "setting": "OSO (immediate)",
+   "frontier": "8.0 ± 0.1",
+   "reach L7": "1.00",
+   "speed": "44 ± 11",
+   "cost": "432 ± 114"
+  },
+  {
+   "variant": "strong screen (θ = 0.9)",
+   "setting": "Traditional",
+   "frontier": "5.7 ± 1.1",
+   "reach L7": "0.32",
+   "speed": "97 ± 15",
+   "cost": "964 ± 151"
+  },
+  {
+   "variant": "strong screen (θ = 0.9)",
+   "setting": "OSO (immediate)",
+   "frontier": "8.0 ± 0.2",
+   "reach L7": "1.00",
+   "speed": "46 ± 13",
+   "cost": "456 ± 128"
+  },
+  {
+   "variant": "no gamer",
+   "setting": "Traditional",
+   "frontier": "7.0 ± 1.2",
+   "reach L7": "0.77",
+   "speed": "84 ± 21",
+   "cost": "840 ± 210"
+  },
+  {
+   "variant": "no gamer",
+   "setting": "OSO (immediate)",
+   "frontier": "8.0 ± 0.1",
+   "reach L7": "1.00",
+   "speed": "42 ± 13",
+   "cost": "412 ± 133"
+  }
+ ],
+ "caveats": [
+  "A simulation with guessed parameters: it shows how the rules play out, not that they work."
+ ],
+ "page": "results/sensitivity/summary.md"
+}

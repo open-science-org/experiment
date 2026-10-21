@@ -1,8 +1,8 @@
 {
   "experiment": "failures",
-  "date": "2026-10-17",
-  "commit": "3b82e1b",
-  "dirty": false,
+  "date": "2026-10-21",
+  "commit": "023509e",
+  "dirty": true,
   "command": "npm run sim -- failures --seeds 100 --save",
   "seeds": 100,
   "overrides": {},
@@ -11,6 +11,11 @@
       "id": "failures",
       "title": "Learning from failure: own failures vs. shared failures",
       "description": "With the learning oracle, each failed attempt raises the next chance on that result by 10% of p. With rules.publishFailures, failed attempts are public, so agents also learn from others' failures (sharedWeight = 1). Compared under traditional and OSO (immediate) rules on the default world.",
+      "question": "Does making failed attempts public help, and under which rules?",
+      "compare": "own failures or shared failures, under each rule setting",
+      "fixed": "the Lean tree, agents and budget",
+      "measure": "frontier",
+      "better": "higher",
       "seeds": 100,
       "factors": [
         {

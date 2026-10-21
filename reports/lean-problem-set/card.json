@@ -1,0 +1,35 @@
+{
+ "id": "lean-problem-set",
+ "kind": "field report",
+ "date": "2026-10-21",
+ "title": "The Lean problem set",
+ "design": {
+  "question": "For the same money, does OSO get further than traditional research in the Lean problem set?",
+  "compare": "the six rule settings, an α sweep, the parameters one by one, costly and fallible sharing",
+  "fixed": "the field, 12 agents and a budget of 400",
+  "measure": "hardest level reached",
+  "better": "higher",
+  "runs": "100 runs per setting"
+ },
+ "answer": "OSO ahead: level 7.0 against 4.4 of 7; targets 8.0 against 4.8 of 8.",
+ "table": [
+  {
+   "rules": "Traditional",
+   "hardest level": "4.4 of 7",
+   "targets solved": "4.8 of 8",
+   "cost to level 5": 303
+  },
+  {
+   "rules": "OSO",
+   "hardest level": "7.0 of 7",
+   "targets solved": "8.0 of 8",
+   "cost to level 5": 125
+  }
+ ],
+ "caveats": [
+  "A simulation with guessed parameters: it shows how the rules play out if the field works as described.",
+  "OSO's lead as the market-set parameters vary: 0.1 to 2.6 levels.",
+  "Theorem names are hidden; the tree is the route of our own reference proofs, and agents may find others."
+ ],
+ "page": "reports/lean-problem-set/card.md"
+}

@@ -1,0 +1,264 @@
+{
+ "id": "alpha-psi",
+ "kind": "simulation",
+ "date": "2026-10-21",
+ "title": "Where sharing becomes rational: α × scoop risk ψ × cited share c",
+ "design": {
+  "question": "At which α, scoop risk ψ and cited share c does sharing become worth it to agents?",
+  "compare": "α × ψ × c, agents choosing what to publish",
+  "fixed": "the field, agents and budget",
+  "measure": "share of results published at once",
+  "better": "higher",
+  "runs": "100 runs per row"
+ },
+ "answer": "Best on share of results published at once: ψ 0.1, α 0.1, c 0, 0.9.",
+ "table": [
+  {
+   "ψ": 0.5,
+   "α": 1,
+   "c": 0,
+   "sharing": "0.23 ± 0.08",
+   "frontier": "6.0 ± 0.9",
+   "reach L7": "0.35",
+   "speed": "100 ± 16"
+  },
+  {
+   "ψ": 0.5,
+   "α": 0.8,
+   "c": 0,
+   "sharing": "0.24 ± 0.09",
+   "frontier": "6.4 ± 0.9",
+   "reach L7": "0.49",
+   "speed": "95 ± 18"
+  },
+  {
+   "ψ": 0.5,
+   "α": 0.8,
+   "c": 0.15,
+   "sharing": "0.22 ± 0.09",
+   "frontier": "6.3 ± 1.0",
+   "reach L7": "0.43",
+   "speed": "96 ± 19"
+  },
+  {
+   "ψ": 0.5,
+   "α": 0.5,
+   "c": 0,
+   "sharing": "0.28 ± 0.09",
+   "frontier": "6.5 ± 0.9",
+   "reach L7": "0.57",
+   "speed": "95 ± 18"
+  },
+  {
+   "ψ": 0.5,
+   "α": 0.5,
+   "c": 0.15,
+   "sharing": "0.28 ± 0.09",
+   "frontier": "6.7 ± 0.8",
+   "reach L7": "0.63",
+   "speed": "91 ± 19"
+  },
+  {
+   "ψ": 0.5,
+   "α": 0.3,
+   "c": 0,
+   "sharing": "0.49 ± 0.12",
+   "frontier": "7.2 ± 0.7",
+   "reach L7": "0.87",
+   "speed": "86 ± 19"
+  },
+  {
+   "ψ": 0.5,
+   "α": 0.3,
+   "c": 0.15,
+   "sharing": "0.47 ± 0.11",
+   "frontier": "7.2 ± 0.7",
+   "reach L7": "0.86",
+   "speed": "89 ± 20"
+  },
+  {
+   "ψ": 0.5,
+   "α": 0.1,
+   "c": 0,
+   "sharing": "0.79 ± 0.07",
+   "frontier": "7.8 ± 0.4",
+   "reach L7": "1.00",
+   "speed": "58 ± 16"
+  },
+  {
+   "ψ": 0.5,
+   "α": 0.1,
+   "c": 0.15,
+   "sharing": "0.77 ± 0.07",
+   "frontier": "7.8 ± 0.4",
+   "reach L7": "1.00",
+   "speed": "60 ± 16"
+  },
+  {
+   "ψ": 0.25,
+   "α": 1,
+   "c": 0,
+   "sharing": "0.23 ± 0.08",
+   "frontier": "6.0 ± 1.0",
+   "reach L7": "0.34",
+   "speed": "100 ± 16"
+  },
+  {
+   "ψ": 0.25,
+   "α": 0.8,
+   "c": 0,
+   "sharing": "0.25 ± 0.09",
+   "frontier": "6.4 ± 0.9",
+   "reach L7": "0.47",
+   "speed": "96 ± 17"
+  },
+  {
+   "ψ": 0.25,
+   "α": 0.8,
+   "c": 0.15,
+   "sharing": "0.24 ± 0.09",
+   "frontier": "6.3 ± 0.9",
+   "reach L7": "0.46",
+   "speed": "99 ± 17"
+  },
+  {
+   "ψ": 0.25,
+   "α": 0.5,
+   "c": 0,
+   "sharing": "0.36 ± 0.11",
+   "frontier": "6.9 ± 0.7",
+   "reach L7": "0.76",
+   "speed": "91 ± 16"
+  },
+  {
+   "ψ": 0.25,
+   "α": 0.5,
+   "c": 0.15,
+   "sharing": "0.36 ± 0.10",
+   "frontier": "6.9 ± 0.7",
+   "reach L7": "0.73",
+   "speed": "90 ± 20"
+  },
+  {
+   "ψ": 0.25,
+   "α": 0.3,
+   "c": 0,
+   "sharing": "0.65 ± 0.10",
+   "frontier": "7.6 ± 0.6",
+   "reach L7": "0.96",
+   "speed": "70 ± 20"
+  },
+  {
+   "ψ": 0.25,
+   "α": 0.3,
+   "c": 0.15,
+   "sharing": "0.65 ± 0.09",
+   "frontier": "7.6 ± 0.6",
+   "reach L7": "0.97",
+   "speed": "69 ± 19"
+  },
+  {
+   "ψ": 0.25,
+   "α": 0.1,
+   "c": 0,
+   "sharing": "0.89 ± 0.05",
+   "frontier": "7.9 ± 0.3",
+   "reach L7": "1.00",
+   "speed": "54 ± 15"
+  },
+  {
+   "ψ": 0.25,
+   "α": 0.1,
+   "c": 0.15,
+   "sharing": "0.86 ± 0.06",
+   "frontier": "7.9 ± 0.3",
+   "reach L7": "1.00",
+   "speed": "52 ± 14"
+  },
+  {
+   "ψ": 0.1,
+   "α": 1,
+   "c": 0,
+   "sharing": "0.24 ± 0.08",
+   "frontier": "6.1 ± 0.9",
+   "reach L7": "0.34",
+   "speed": "94 ± 17"
+  },
+  {
+   "ψ": 0.1,
+   "α": 0.8,
+   "c": 0,
+   "sharing": "0.30 ± 0.09",
+   "frontier": "6.7 ± 0.8",
+   "reach L7": "0.63",
+   "speed": "92 ± 18"
+  },
+  {
+   "ψ": 0.1,
+   "α": 0.8,
+   "c": 0.15,
+   "sharing": "0.29 ± 0.09",
+   "frontier": "6.6 ± 0.8",
+   "reach L7": "0.60",
+   "speed": "94 ± 16"
+  },
+  {
+   "ψ": 0.1,
+   "α": 0.5,
+   "c": 0,
+   "sharing": "0.61 ± 0.10",
+   "frontier": "7.7 ± 0.5",
+   "reach L7": "1.00",
+   "speed": "73 ± 19"
+  },
+  {
+   "ψ": 0.1,
+   "α": 0.5,
+   "c": 0.15,
+   "sharing": "0.60 ± 0.10",
+   "frontier": "7.6 ± 0.6",
+   "reach L7": "0.95",
+   "speed": "75 ± 19"
+  },
+  {
+   "ψ": 0.1,
+   "α": 0.3,
+   "c": 0,
+   "sharing": "0.83 ± 0.06",
+   "frontier": "7.9 ± 0.3",
+   "reach L7": "1.00",
+   "speed": "55 ± 18"
+  },
+  {
+   "ψ": 0.1,
+   "α": 0.3,
+   "c": 0.15,
+   "sharing": "0.81 ± 0.06",
+   "frontier": "7.9 ± 0.3",
+   "reach L7": "1.00",
+   "speed": "56 ± 16"
+  },
+  {
+   "ψ": 0.1,
+   "α": 0.1,
+   "c": 0,
+   "sharing": "0.94 ± 0.03",
+   "frontier": "7.9 ± 0.3",
+   "reach L7": "1.00",
+   "speed": "51 ± 14"
+  },
+  {
+   "ψ": 0.1,
+   "α": 0.1,
+   "c": 0.15,
+   "sharing": "0.92 ± 0.04",
+   "frontier": "7.9 ± 0.3",
+   "reach L7": "1.00",
+   "speed": "51 ± 15"
+  }
+ ],
+ "caveats": [
+  "A simulation with guessed parameters: it shows how the rules play out, not that they work."
+ ],
+ "page": "results/alpha-psi/summary.md"
+}

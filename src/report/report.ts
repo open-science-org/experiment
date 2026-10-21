@@ -12,6 +12,7 @@ import { heatmap, lineChart, rangeChart, worldFigure, type RangeRow } from './fi
 import { mean, sd, type RunResult } from '../engine/measures.ts';
 import { Rng } from '../engine/rng.ts';
 import { spaceIds, spaceToYaml, withCalibratedBudget, type Space } from '../spaces/spaces.ts';
+import { writeCard } from '../card.ts';
 import { worlds } from '../engine/world.ts';
 
 import { CODE_PATHS, REPORTS_DIR, ROOT } from '../paths.ts';
@@ -377,6 +378,22 @@ The space is [spaces/${spec.id}.yaml](../../spaces/${spec.id}.yaml)${spec.source
     curves: Object.fromEntries(['Traditional', 'OSO (immediate)', 'OSO (choice)'].map((l) => [l, frontierCurve(curveRuns(l), X)])),
     world: { results: world.n, levels: world.levels, targets: T, deadEnds },
   }, null, 1) + '\n');
+  if (root === REPORTS_DIR) writeCard(outDir, {
+    id: spec.id, kind: 'field report', date, title: spec.title,
+    design: {
+      question: `For the same money, does OSO get further than traditional research in ${spec.title.replace(/^(An?|The) /, (m) => m.toLowerCase())}?`,
+      compare: 'the six rule settings, an α sweep, the parameters one by one, costly and fallible sharing',
+      fixed: `the field, ${Object.values(scenario.agents.mix).reduce((a, b) => a + b, 0)} agents and a budget of ${X}`,
+      measure: 'hardest level reached', better: 'higher', runs: `${seeds} runs per setting`,
+    },
+    answer: `${verdict === 'OSO ahead' ? 'OSO ahead' : verdict === 'traditional ahead' ? 'Traditional ahead' : 'No clear difference'}: level ${f1(oso.frontier)} against ${f1(trad.frontier)} of ${world.levels}; targets ${f1(oso.targetsSolved)} against ${f1(trad.targetsSolved)} of ${T}.`,
+    table: [
+      { rules: 'Traditional', 'hardest level': `${f1(trad.frontier)} of ${world.levels}`, 'targets solved': `${f1(trad.targetsSolved)} of ${T}`, [`cost to level ${L}`]: trad.reach > 0 ? Math.round(trad.cost) : 'never' },
+      { rules: 'OSO', 'hardest level': `${f1(oso.frontier)} of ${world.levels}`, 'targets solved': `${f1(oso.targetsSolved)} of ${T}`, [`cost to level ${L}`]: oso.reach > 0 ? Math.round(oso.cost) : 'never' },
+    ],
+    caveats: ['A simulation with guessed parameters: it shows how the rules play out if the field works as described.', `OSO's lead as the market-set parameters vary: ${f1(marketMin.min)} to ${f1(Math.max(...market.map((x) => x.max)))} levels.`, ...(spec.notes ? [spec.notes] : [])],
+    page: `reports/${spec.id}/card.md`,
+  }, `The full report: [report.md](report.md).`, 'card.md');
   writeIndex(root);
   return headline;
 }

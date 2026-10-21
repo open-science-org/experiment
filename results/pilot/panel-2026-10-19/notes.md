@@ -1,0 +1,5 @@
+- **A checker bug was fixed mid-run:** Lean errors tagged with a code (`error(lean.…)`) were not passed to the agent, so some repairs were made blind. The 12 attempts that received such feedback were set aside, kept privately as superseded, and rerun with the fix. The numbers above count only attempts whose feedback was complete.
+- **DeepSeek alone on B5, X2 and A5** was cut off twice by network interruptions and completed on 2026-10-20 (0 of 2 for each).
+- **Credit ran out once,** midway through the Gemini and DeepSeek runs; they were resumed where they stopped.
+- **Effort:** every model ran at reasoning effort `high` with 32,000 output tokens per turn. Gemini and DeepSeek sometimes used the whole allowance thinking; from the resumed runs on, the agent was told when its reply had been cut off.
+- **Costs vary by provider:** OpenRouter sends a model's calls to whichever provider serves it, at different prices (DeepSeek's calls cost from under $0.001 to $0.024 for similar output). Dollar figures are what was paid; comparisons of effort use output tokens.

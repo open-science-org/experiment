@@ -182,6 +182,9 @@ export interface Design {
   settings: string[];
   /** Fixed values that differ from the field's own. */
   set?: Record<string, number>;
+  /** Declared before running: the question and the main measure (a column id). */
+  question?: string;
+  measure?: string;
   /** The community, if changed: every kind's traits and how many of each (the whole mix). */
   agents?: { archetypes: Record<string, Record<string, number | boolean>>; mix: Record<string, number> };
   vary: { path: string; values: number[] }[];
@@ -265,6 +268,10 @@ export function experimentFor(d: Design): ExperimentSpec {
       ...variedOther.map((v) => ({ name: param(v.path).label, path: v.path, values: v.values })),
     ],
     columns: d.columns.length ? d.columns : options().defaultColumns,
+    question: d.question || d.title || `${d.settings.map((s) => SETTINGS[s]).join(' vs ')} on ${space.spec.title}: which gets furthest?`,
+    compare: `${d.settings.map((s) => SETTINGS[s]).join(', ')}${varied.length ? `, by ${varied.map((v) => param(v.path).label).join(' and ')}` : ''}`,
+    fixed: `the field "${space.spec.title}"${changed.length ? `, with ${changed.join(', ')}` : ''}`,
+    measure: d.measure && COLUMNS[d.measure] ? d.measure : (d.columns[0] ?? 'frontier'),
   };
 }
 

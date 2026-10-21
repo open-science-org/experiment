@@ -1,0 +1,66 @@
+{
+ "id": "simple",
+ "kind": "simulation",
+ "date": "2026-10-21",
+ "title": "The simple model: one chain, shared vs. hidden progress",
+ "design": {
+  "question": "Does the simulator match the exact mathematics of shared against hidden progress?",
+  "compare": "progress shared or hidden, for communities of 1 to 16 agents",
+  "fixed": "one chain of results, chance 0.2 per attempt, 640 attempts",
+  "measure": "agreement with the exact values",
+  "better": "higher",
+  "runs": "1000 runs per row"
+ },
+ "answer": "See the table: this experiment checks the model against exact values.",
+ "table": [
+  {
+   "N": 1,
+   "shared: simulated": "128.6 ± 0.3",
+   "shared: exact": "128.0",
+   "hidden: simulated": "128.6 ± 0.3",
+   "hidden: exact": "128.0",
+   "gain: simulated": "1.00",
+   "gain: exact": "1.00"
+  },
+  {
+   "N": 2,
+   "shared: simulated": "128.3 ± 0.3",
+   "shared: exact": "128.0",
+   "hidden: simulated": "67.9 ± 0.2",
+   "hidden: exact": "68.0",
+   "gain: simulated": "1.89",
+   "gain: exact": "1.88"
+  },
+  {
+   "N": 4,
+   "shared: simulated": "128.4 ± 0.3",
+   "shared: exact": "128.0",
+   "hidden: simulated": "37.2 ± 0.1",
+   "hidden: exact": "37.3",
+   "gain: simulated": "3.45",
+   "gain: exact": "3.44"
+  },
+  {
+   "N": 8,
+   "shared: simulated": "128.3 ± 0.3",
+   "shared: exact": "128.0",
+   "hidden: simulated": "21.3 ± 0.1",
+   "hidden: exact": "21.2",
+   "gain: simulated": "6.02",
+   "gain: exact": "6.03"
+  },
+  {
+   "N": 16,
+   "shared: simulated": "128.3 ± 0.3",
+   "shared: exact": "128.0",
+   "hidden: simulated": "12.7 ± 0.0",
+   "hidden: exact": "12.7",
+   "gain: simulated": "10.14",
+   "gain: exact": "10.11"
+  }
+ ],
+ "caveats": [
+  "A simulation with guessed parameters: it shows how the rules play out, not that they work."
+ ],
+ "page": "results/simple/summary.md"
+}

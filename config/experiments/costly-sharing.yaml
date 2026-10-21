@@ -4,6 +4,11 @@ description: >-
   Taking up a published result costs `absorbCost` compute, and each proof is wrong with chance
   `errorRate`; results built on a wrong result are wrong, and a target check rejects them and
   retracts the wrong results. Where does OSO's advantage shrink or vanish? Default world.
+question: "Does OSO's lead survive when absorbing results costs compute, or results are sometimes wrong?"
+compare: "absorb cost × error rate × traditional or OSO"
+fixed: "the field, agents and budget"
+measure: frontier
+better: higher
 seeds: 100
 factors:
   - name: setting

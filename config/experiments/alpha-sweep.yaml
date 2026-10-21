@@ -3,6 +3,11 @@ title: α sweep under agent's-choice visibility
 description: >-
   Agents choose whether to publish each lemma (section 2.5 of docs/simulator.md). α from 1 (traditional)
   down to 0.1, with c = 0.15 (c = 0 at α = 1). Default scoop risk ψ = 0.5.
+question: "Does flow-back make agents choose to share?"
+compare: "α from 1 (traditional) down to 0.1, agents choosing what to publish"
+fixed: "the field, agents and budget"
+measure: sharing
+better: higher
 seeds: 100
 set:
   rules: { c: 0.15, visibility: { kind: choice } }

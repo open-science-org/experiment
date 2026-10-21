@@ -1,0 +1,91 @@
+{
+ "id": "alpha-sweep",
+ "kind": "simulation",
+ "date": "2026-10-21",
+ "title": "α sweep under agent's-choice visibility",
+ "design": {
+  "question": "Does flow-back make agents choose to share?",
+  "compare": "α from 1 (traditional) down to 0.1, agents choosing what to publish",
+  "fixed": "the field, agents and budget",
+  "measure": "share of results published at once",
+  "better": "higher",
+  "runs": "100 runs per row"
+ },
+ "answer": "Best on share of results published at once: α 0.1, 0.8.",
+ "table": [
+  {
+   "α": 1,
+   "sharing": "0.23 ± 0.08",
+   "frontier": "6.0 ± 0.9",
+   "reach L7": "0.35",
+   "speed": "100 ± 16"
+  },
+  {
+   "α": 0.9,
+   "sharing": "0.23 ± 0.08",
+   "frontier": "6.3 ± 0.8",
+   "reach L7": "0.44",
+   "speed": "97 ± 15"
+  },
+  {
+   "α": 0.8,
+   "sharing": "0.22 ± 0.09",
+   "frontier": "6.3 ± 1.0",
+   "reach L7": "0.43",
+   "speed": "96 ± 19"
+  },
+  {
+   "α": 0.7,
+   "sharing": "0.24 ± 0.09",
+   "frontier": "6.4 ± 0.9",
+   "reach L7": "0.50",
+   "speed": "99 ± 17"
+  },
+  {
+   "α": 0.6,
+   "sharing": "0.25 ± 0.09",
+   "frontier": "6.4 ± 0.9",
+   "reach L7": "0.48",
+   "speed": "98 ± 17"
+  },
+  {
+   "α": 0.5,
+   "sharing": "0.28 ± 0.09",
+   "frontier": "6.7 ± 0.8",
+   "reach L7": "0.63",
+   "speed": "91 ± 19"
+  },
+  {
+   "α": 0.4,
+   "sharing": "0.34 ± 0.10",
+   "frontier": "6.9 ± 0.7",
+   "reach L7": "0.73",
+   "speed": "95 ± 16"
+  },
+  {
+   "α": 0.3,
+   "sharing": "0.47 ± 0.11",
+   "frontier": "7.2 ± 0.7",
+   "reach L7": "0.86",
+   "speed": "89 ± 20"
+  },
+  {
+   "α": 0.2,
+   "sharing": "0.63 ± 0.10",
+   "frontier": "7.6 ± 0.5",
+   "reach L7": "0.98",
+   "speed": "74 ± 20"
+  },
+  {
+   "α": 0.1,
+   "sharing": "0.77 ± 0.07",
+   "frontier": "7.8 ± 0.4",
+   "reach L7": "1.00",
+   "speed": "60 ± 16"
+  }
+ ],
+ "caveats": [
+  "A simulation with guessed parameters: it shows how the rules play out, not that they work."
+ ],
+ "page": "results/alpha-sweep/summary.md"
+}

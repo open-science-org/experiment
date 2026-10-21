@@ -16,6 +16,7 @@ import { definitions, FREE, LEAN_DIR, loadTasks, parseReference, type Task } fro
 import type { Chat, Usage } from './agent.ts';
 import { referenceProof } from './selftest.ts';
 import { lineChart } from '../report/figures.ts';
+import { writeCard } from '../card.ts';
 import { RESULTS_DIR } from '../paths.ts';
 
 export type Rules = 'traditional' | 'oso';
@@ -497,7 +498,14 @@ ${table}
 
 Runs: ${runs.map((x) => x.runId).join(', ')}. Transcripts (with proofs) are private.
 `;
-  writeFileSync(join(dir, 'summary.md'), md);
+  if (!standIn) writeCard(dir, {
+    id, kind: 'race', date: new Date(Math.min(...runs.map((x) => x.result.actions[0]?.t ?? Date.now()))).toISOString().slice(0, 10), title: `Real agents, OSO vs traditional: ${id}`,
+    design: { question: 'For the same money, does an OSO community of AI labs solve more targets than a traditional one?', compare: 'traditional rules and OSO rules', fixed: `the same ${o.agents.length} labs, $${o.budget} each, no personas`, measure: 'targets solved', better: 'higher', runs: '1 run per side' },
+    answer: verdict.replace(/\*\*/g, ''), table: rows.map((r) => ({ rules: r.rules, 'targets solved': r['targets solved'], spent: r.spent, 'lemmas accepted': r['lemmas accepted'], 'duplicated work': r['duplicated work'] })),
+    caveats: ['One run per side: no verdict either way.', ...(note ? [note] : [])],
+    page: `results/community/${id}/summary.md`,
+  }, md.replace(/^# .*\n/, ''));
+  else writeFileSync(join(dir, 'summary.md'), md);
   writeFileSync(join(dir, 'data.json'), JSON.stringify({ id, runs: runs.map((x) => x.runId), stats: curves.map((c) => c.st), curves: curves.map((c) => ({ rules: c.result.opts.rules, points: c.pts })) }, null, 1) + '\n');
   return dir;
 }
@@ -510,7 +518,17 @@ export interface Pair { rep: number; traditional: CommunityResult; oso: Communit
  * Several races with the same design, summarized on the measure fixed in advance: counted targets
  * solved for the same budget, mean and spread over runs; verdict against two standard errors.
  */
-export function writeRaceSeries(id: string, pairs: Pair[], design: string): string {
+export interface RaceDesign { question?: string; compare?: string; fixed?: string; caveats?: string[]; prose?: string }
+
+/** Spend at which a run first had k counted targets solved (null if never). */
+function spendTo(r: CommunityResult, k: number): number | null {
+  const p = progress(r).find(([, y]) => y >= k);
+  return p ? p[0] : null;
+}
+
+export function writeRaceSeries(id: string, pairs: Pair[], designIn: string | RaceDesign): string {
+  const dsg: RaceDesign = typeof designIn === 'string' ? { prose: designIn } : designIn;
+  const design = dsg.prose ?? '';
   const dir = join(RESULTS_DIR, 'community', id);
   mkdirSync(join(dir, 'figures'), { recursive: true });
   const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length);
@@ -588,7 +606,44 @@ ${perRun.join('\n')}
 
 Transcripts, with every proof, are private.
 `;
-  writeFileSync(join(dir, 'summary.md'), md);
+  // Exploratory measures, computed the same way for every series and labelled as such.
+  const ks = Array.from({ length: counted.length }, (_, i) => i + 1);
+  const explore = ks.map((k) => {
+    const cell = (side: Rules) => {
+      const xs = pairs.map((p) => spendTo(p[side], k)).filter((x): x is number => x !== null);
+      return xs.length ? `$${(xs.reduce((a, b) => a + b, 0) / xs.length).toFixed(2)} (${xs.length} of ${pairs.length} runs)` : 'never';
+    };
+    return { 'counted targets': k, traditional: cell('traditional'), OSO: cell('oso') };
+  }).filter((r) => r.traditional !== 'never' || r.OSO !== 'never');
+  const budgetUse = (m(T, 'spent') + m(O, 'spent')) / 2 / budget;
+  const answer = md.split('\n').find((l) => l.startsWith('**'))!.replace(/\*\*/g, '');
+  writeCard(dir, {
+    id, kind: 'race', date: new Date().toISOString().slice(0, 10), title: `Real agents, OSO vs traditional: ${id}`,
+    design: {
+      question: dsg.question ?? 'For the same money, does an OSO community of AI labs solve more of the counted targets than a traditional one?',
+      compare: dsg.compare ?? 'traditional rules and OSO rules',
+      fixed: dsg.fixed ?? `the same ${o.agents.length} labs and personas, $${o.budget} each, ${o.conjectures?.length ?? 0} posted conjectures`,
+      measure: `counted targets solved (${counted.join(', ')})`, better: 'higher', runs: `${pairs.length} run${pairs.length > 1 ? 's' : ''} per side`,
+    },
+    answer,
+    table: [['Traditional', T], ['OSO', O]].map(([name, S]) => {
+      const st = S as ReturnType<typeof stats>[];
+      return { rules: name as string, 'counted targets': `${ms(st.map((x) => x.countedSolved))} of ${counted.length}`, 'all targets': `${ms(st.map((x) => x.targetsSolved))} of 8`, spent: `$${f2(m(st, 'spent'))}`, 'duplicated work': ms(st.map((x) => x.lemmasDuplicate)), 'built on others': ms(st.map((x) => x.builtOnOthers)) };
+    }),
+    caveats: [
+      ...(dsg.caveats ?? []),
+      ...(budgetUse < 0.7 ? [`Budgets were not binding: the communities spent ${Math.round(budgetUse * 100)}% of theirs on average, because labs passed.`] : []),
+      'Values are mean ± standard deviation over runs.',
+    ],
+    cost: `$${(T.reduce((a, x) => a + x.spent, 0) + O.reduce((a, x) => a + x.spent, 0)).toFixed(2)} at list prices`,
+    page: `results/community/${id}/summary.md`,
+  }, `![Counted targets solved for the money](figures/progress.svg)
+
+**Exploratory** (not fixed in advance): mean spend at which a run had k counted targets solved.
+
+${[`| ${Object.keys(explore[0] ?? { k: 1 }).join(' | ')} |`, `| ${Object.keys(explore[0] ?? { k: 1 }).map(() => '---').join(' | ')} |`, ...explore.map((r) => `| ${Object.values(r).join(' | ')} |`)].join('\n')}
+
+${md.slice(md.indexOf('## The design'))}`);
   writeFileSync(join(dir, 'data.json'), JSON.stringify({ id, verdict, counted, runs: pairs.map((p, n) => ({ rep: p.rep, traditional: T[n], oso: O[n] })) }, null, 1) + '\n');
   return dir;
 }

@@ -1,0 +1,63 @@
+{
+ "id": "lean-tree",
+ "kind": "simulation",
+ "date": "2026-10-21",
+ "title": "The six rule settings on the Lean problem set's reference tree",
+ "design": {
+  "question": "On the Lean problem set's tree, which rule setting gets furthest?",
+  "compare": "the six rule settings",
+  "fixed": "the Lean tree, 12 agents and the budget",
+  "measure": "hardest level published",
+  "better": "higher",
+  "runs": "100 runs per row"
+ },
+ "answer": "Best on hardest level published: OSO (immediate), 7.0 (tied with No flow-back, immediate). Best traditional: Traditional, 4.4; a clear difference.",
+ "table": [
+  {
+   "setting": "Traditional",
+   "frontier": "4.4 ± 1.2",
+   "reach L5": "0.44",
+   "speed": "31 ± 7",
+   "cost": "303 ± 66"
+  },
+  {
+   "setting": "OSO (immediate)",
+   "frontier": "7.0 ± 0.0",
+   "reach L5": "1.00",
+   "speed": "13 ± 3",
+   "cost": "125 ± 32"
+  },
+  {
+   "setting": "Flow-back, finished-only",
+   "frontier": "4.3 ± 1.1",
+   "reach L5": "0.48",
+   "speed": "33 ± 6",
+   "cost": "327 ± 64"
+  },
+  {
+   "setting": "No flow-back, immediate",
+   "frontier": "7.0 ± 0.1",
+   "reach L5": "1.00",
+   "speed": "14 ± 4",
+   "cost": "131 ± 39"
+  },
+  {
+   "setting": "No flow-back, choice",
+   "frontier": "4.9 ± 1.2",
+   "reach L5": "0.67",
+   "speed": "31 ± 7",
+   "cost": "301 ± 74"
+  },
+  {
+   "setting": "OSO (choice)",
+   "frontier": "5.2 ± 1.2",
+   "reach L5": "0.76",
+   "speed": "28 ± 8",
+   "cost": "273 ± 77"
+  }
+ ],
+ "caveats": [
+  "A simulation with guessed parameters: it shows how the rules play out, not that they work."
+ ],
+ "page": "results/lean-tree/summary.md"
+}

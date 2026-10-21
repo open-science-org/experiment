@@ -124,6 +124,22 @@ export interface Column {
 const reached = (rs: RunResult[]) => rs.filter((r) => r.speed !== null);
 
 /** Every column an experiment can list under `columns:`. Add a measure by adding an entry. */
+/** Plain names of measures, for answers. */
+export const MEASURE_NAMES: Record<string, string> = {
+  frontier: 'hardest level published', targetsSolved: 'targets solved', cost: 'compute to reach the main level', speed: 'rounds to reach the main level',
+  sharing: 'share of results published at once', reachTarget: 'share of runs reaching the main level', waste: 'wasted compute', credit: 'credit accuracy',
+};
+
+/** Each column's number for one run (null when a run has none, e.g. cost when the level was not reached). */
+export const VALUES: Record<string, (r: RunResult) => number | null> = {
+  frontier: (r) => r.frontier, deepestProved: (r) => r.deepestProved, reachTarget: (r) => (r.speed !== null ? 1 : 0),
+  speed: (r) => r.speed, cost: (r) => r.cost, spend: (r) => r.spend, productivity: (r) => r.productivity * 100,
+  breadth: (r) => r.breadth, waste: (r) => r.waste, credit: (r) => r.creditAccuracy, sharing: (r) => r.sharingRate,
+  hoarded: (r) => r.hoarded, reuse: (r) => r.reuse, duplicates: (r) => r.duplicates, targetsSolved: (r) => r.targetsSolved,
+  gamerShare: (r) => r.earningsByArchetype.gamer ?? null, trivialSpend: (r) => r.wasteParts.trivial,
+  rejected: (r) => r.rejectedTargets, retracted: (r) => r.retracted, absorbSpend: (r) => r.absorbShare,
+};
+
 export const COLUMNS: Record<string, Column> = {
   frontier: { header: () => 'frontier', value: (rs) => msd(rs.map((r) => r.frontier), 1) },
   deepestProved: { header: () => 'deepest proved', value: (rs) => msd(rs.map((r) => r.deepestProved), 1) },

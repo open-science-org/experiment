@@ -1,8 +1,8 @@
 {
   "experiment": "settings",
-  "date": "2026-10-17",
-  "commit": "d369863",
-  "dirty": false,
+  "date": "2026-10-21",
+  "commit": "023509e",
+  "dirty": true,
   "command": "npm run sim -- settings --seeds 100 --save",
   "seeds": 100,
   "overrides": {},
@@ -11,6 +11,11 @@
       "id": "settings",
       "title": "The six rule settings on the default world",
       "description": "Traditional research (α = 1, c = 0, finished-only), OSO (α = 0.8, c = 0.15) with immediate and with agent's-choice visibility, and the mixed corners. Same world parameters, agents and budget in every setting; each seed gives the same world and agents across settings.",
+      "question": "On the default field, which rule setting gets furthest for the same budget?",
+      "compare": "the six rule settings",
+      "fixed": "the field, 12 agents and the budget",
+      "measure": "frontier",
+      "better": "higher",
       "seeds": 100,
       "factors": [
         {
@@ -91,7 +96,10 @@
       },
       "success": {
         "p0": 0.5,
-        "eta": 0.6
+        "eta": 0.6,
+        "oracle": {
+          "kind": "chance"
+        }
       },
       "attribution": {
         "noise": 0
@@ -187,16 +195,22 @@
         "specialist": {
           "boost": 1.6,
           "penalty": 0.4
-        }
+        },
+        "deciders": {}
       },
       "rules": {
         "alpha": 1,
         "c": 0,
         "mint": 1,
         "screen": 0.5,
+        "publishFailures": false,
         "visibility": {
           "kind": "finished-only"
         }
+      },
+      "knowledge": {
+        "absorbCost": 0,
+        "errorRate": 0
       },
       "budget": {
         "X": 1200,
@@ -210,6 +224,9 @@
         }
       },
       "behaviour": {
+        "decider": {
+          "kind": "formula"
+        },
         "policy": {
           "kind": "softmax",
           "tau": 0.3,

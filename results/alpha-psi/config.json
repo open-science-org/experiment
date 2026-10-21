@@ -1,8 +1,8 @@
 {
   "experiment": "alpha-psi",
-  "date": "2026-10-17",
-  "commit": "d369863",
-  "dirty": false,
+  "date": "2026-10-21",
+  "commit": "023509e",
+  "dirty": true,
   "command": "npm run sim -- alpha-psi --seeds 100 --save",
   "seeds": 100,
   "overrides": {},
@@ -11,6 +11,11 @@
       "id": "alpha-psi",
       "title": "Where sharing becomes rational: α × scoop risk ψ × cited share c",
       "description": "Agent's-choice visibility. ψ is how much publishing a lemma raises a rival's chance of winning the target below it; c is the share of each mint paid to what a result built on.",
+      "question": "At which α, scoop risk ψ and cited share c does sharing become worth it to agents?",
+      "compare": "α × ψ × c, agents choosing what to publish",
+      "fixed": "the field, agents and budget",
+      "measure": "sharing",
+      "better": "higher",
       "seeds": 100,
       "set": {
         "rules.visibility": {
@@ -86,7 +91,10 @@
       },
       "success": {
         "p0": 0.5,
-        "eta": 0.6
+        "eta": 0.6,
+        "oracle": {
+          "kind": "chance"
+        }
       },
       "attribution": {
         "noise": 0
@@ -182,16 +190,22 @@
         "specialist": {
           "boost": 1.6,
           "penalty": 0.4
-        }
+        },
+        "deciders": {}
       },
       "rules": {
         "alpha": 1,
         "c": 0,
         "mint": 1,
         "screen": 0.5,
+        "publishFailures": false,
         "visibility": {
           "kind": "choice"
         }
+      },
+      "knowledge": {
+        "absorbCost": 0,
+        "errorRate": 0
       },
       "budget": {
         "X": 1200,
@@ -205,6 +219,9 @@
         }
       },
       "behaviour": {
+        "decider": {
+          "kind": "formula"
+        },
         "policy": {
           "kind": "softmax",
           "tau": 0.3,
