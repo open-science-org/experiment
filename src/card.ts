@@ -95,7 +95,8 @@ export function allCards(): Card[] {
   const scan = (dir: string, depth = 2) => {
     if (!existsSync(dir)) return;
     for (const d of readdirSync(dir, { withFileTypes: true })) {
-      if (!d.isDirectory() || d.name.startsWith('stub-')) continue;
+      // Single runs of a series (name-r1, name-r2, …) are summed up in the series' own card.
+      if (!d.isDirectory() || d.name.startsWith('stub-') || /-r\d+$/.test(d.name)) continue;
       const f = join(dir, d.name, 'card.json');
       if (existsSync(f)) { const c = read(f); if (c) out.push(c); }
       else if (depth > 1) scan(join(dir, d.name), depth - 1);
