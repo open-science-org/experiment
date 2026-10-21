@@ -1,0 +1,267 @@
+{
+ "id": "race-cheap",
+ "verdict": "no clear difference",
+ "counted": [
+  "A3",
+  "X2",
+  "B5",
+  "A5"
+ ],
+ "runs": [
+  {
+   "rep": 1,
+   "traditional": {
+    "rules": "traditional",
+    "targetsSolved": 4,
+    "countedSolved": 1,
+    "counted": 4,
+    "conjecturesProved": 5,
+    "builtOnOthers": 0,
+    "deepestTarget": 5,
+    "spent": 0.341909304,
+    "budget": 0.6,
+    "actions": 48,
+    "lemmasAccepted": 1,
+    "lemmasDuplicate": 8,
+    "trivial": 0,
+    "failed": 30,
+    "published": 5,
+    "neverPublished": 13,
+    "earnings": [
+     33,
+     0,
+     22,
+     67
+    ]
+   },
+   "oso": {
+    "rules": "oso",
+    "targetsSolved": 6,
+    "countedSolved": 2,
+    "counted": 4,
+    "conjecturesProved": 6,
+    "builtOnOthers": 6,
+    "deepestTarget": 5,
+    "spent": 0.3906959519999999,
+    "budget": 0.6,
+    "actions": 51,
+    "lemmasAccepted": 8,
+    "lemmasDuplicate": 3,
+    "trivial": 0,
+    "failed": 28,
+    "published": 20,
+    "neverPublished": 3,
+    "earnings": [
+     25.35833333333333,
+     18.291666666666668,
+     37.300000000000004,
+     85.05000000000001
+    ]
+   }
+  },
+  {
+   "rep": 2,
+   "traditional": {
+    "rules": "traditional",
+    "targetsSolved": 4,
+    "countedSolved": 1,
+    "counted": 4,
+    "conjecturesProved": 6,
+    "builtOnOthers": 0,
+    "deepestTarget": 4,
+    "spent": 0.4206343599999999,
+    "budget": 0.6,
+    "actions": 81,
+    "lemmasAccepted": 1,
+    "lemmasDuplicate": 42,
+    "trivial": 0,
+    "failed": 28,
+    "published": 5,
+    "neverPublished": 48,
+    "earnings": [
+     0,
+     0,
+     22,
+     44
+    ]
+   },
+   "oso": {
+    "rules": "oso",
+    "targetsSolved": 5,
+    "countedSolved": 2,
+    "counted": 4,
+    "conjecturesProved": 7,
+    "builtOnOthers": 7,
+    "deepestTarget": 5,
+    "spent": 0.23673337599999997,
+    "budget": 0.6,
+    "actions": 37,
+    "lemmasAccepted": 9,
+    "lemmasDuplicate": 3,
+    "trivial": 0,
+    "failed": 13,
+    "published": 21,
+    "neverPublished": 3,
+    "earnings": [
+     62.795,
+     14.25,
+     40.15,
+     34.80499999999999
+    ]
+   }
+  },
+  {
+   "rep": 3,
+   "traditional": {
+    "rules": "traditional",
+    "targetsSolved": 3,
+    "countedSolved": 2,
+    "counted": 4,
+    "conjecturesProved": 6,
+    "builtOnOthers": 0,
+    "deepestTarget": 5,
+    "spent": 0.180942056,
+    "budget": 0.6,
+    "actions": 30,
+    "lemmasAccepted": 0,
+    "lemmasDuplicate": 6,
+    "trivial": 0,
+    "failed": 15,
+    "published": 5,
+    "neverPublished": 10,
+    "earnings": [
+     11,
+     67,
+     0,
+     33
+    ]
+   },
+   "oso": {
+    "rules": "oso",
+    "targetsSolved": 5,
+    "countedSolved": 2,
+    "counted": 4,
+    "conjecturesProved": 8,
+    "builtOnOthers": 6,
+    "deepestTarget": 5,
+    "spent": 0.210652736,
+    "budget": 0.6,
+    "actions": 38,
+    "lemmasAccepted": 2,
+    "lemmasDuplicate": 2,
+    "trivial": 0,
+    "failed": 21,
+    "published": 15,
+    "neverPublished": 2,
+    "earnings": [
+     14.644999999999998,
+     29.474999999999998,
+     13.9,
+     88.98
+    ]
+   }
+  },
+  {
+   "rep": 4,
+   "traditional": {
+    "rules": "traditional",
+    "targetsSolved": 5,
+    "countedSolved": 2,
+    "counted": 4,
+    "conjecturesProved": 7,
+    "builtOnOthers": 0,
+    "deepestTarget": 5,
+    "spent": 0.413610616,
+    "budget": 0.6,
+    "actions": 55,
+    "lemmasAccepted": 1,
+    "lemmasDuplicate": 16,
+    "trivial": 0,
+    "failed": 26,
+    "published": 7,
+    "neverPublished": 22,
+    "earnings": [
+     17,
+     0,
+     16,
+     100
+    ]
+   },
+   "oso": {
+    "rules": "oso",
+    "targetsSolved": 5,
+    "countedSolved": 2,
+    "counted": 4,
+    "conjecturesProved": 7,
+    "builtOnOthers": 7,
+    "deepestTarget": 5,
+    "spent": 0.27338281599999986,
+    "budget": 0.6,
+    "actions": 41,
+    "lemmasAccepted": 5,
+    "lemmasDuplicate": 3,
+    "trivial": 0,
+    "failed": 21,
+    "published": 17,
+    "neverPublished": 3,
+    "earnings": [
+     5.6499999999999995,
+     23.699999999999996,
+     53.98,
+     64.67
+    ]
+   }
+  },
+  {
+   "rep": 5,
+   "traditional": {
+    "rules": "traditional",
+    "targetsSolved": 5,
+    "countedSolved": 2,
+    "counted": 4,
+    "conjecturesProved": 6,
+    "builtOnOthers": 0,
+    "deepestTarget": 5,
+    "spent": 0.31913495199999997,
+    "budget": 0.6,
+    "actions": 66,
+    "lemmasAccepted": 3,
+    "lemmasDuplicate": 30,
+    "trivial": 0,
+    "failed": 22,
+    "published": 8,
+    "neverPublished": 36,
+    "earnings": [
+     16,
+     17,
+     33,
+     68
+    ]
+   },
+   "oso": {
+    "rules": "oso",
+    "targetsSolved": 5,
+    "countedSolved": 2,
+    "counted": 4,
+    "conjecturesProved": 8,
+    "builtOnOthers": 6,
+    "deepestTarget": 5,
+    "spent": 0.309767784,
+    "budget": 0.6,
+    "actions": 48,
+    "lemmasAccepted": 8,
+    "lemmasDuplicate": 1,
+    "trivial": 0,
+    "failed": 26,
+    "published": 21,
+    "neverPublished": 1,
+    "earnings": [
+     20.874999999999996,
+     19.163999999999998,
+     33.075,
+     79.886
+    ]
+   }
+  }
+ ]
+}
