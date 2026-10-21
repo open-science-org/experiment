@@ -61,7 +61,7 @@ Each line is the mean, over 100 runs, of the hardest level the community had pub
 
 ## 3. The six settings
 
-The rules are the only difference between rows ([specification, section 3](https://github.com/open-science-org/OSO/blob/master/docs/demo-model.md#3-the-rules)). Traditional: nothing flows back to what a result built on, and work is published only when finished. OSO: value flows back (α = 0.8, c = 0.15), and results are published at once or when the agent chooses.
+The rules are the only difference between rows ([specification, section 3](../../docs/design.md#3-the-rules)). Traditional: nothing flows back to what a result built on, and work is published only when finished. OSO: value flows back (α = 0.8, c = 0.15), and results are published at once or when the agent chooses.
 
 | setting | frontier | reach L7 | speed | cost | spend | targets solved | waste | credit | sharing |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -196,7 +196,7 @@ Each cell: share of intermediate results published · hardest level reached.
 
 ## What this shows and what it does not
 
-- **It is a simulation** of the [OSO demo specification](https://github.com/open-science-org/OSO/blob/master/docs/demo-model.md): results are abstract, success is chance, and agents follow a formula. It shows how the incentive rules play out *if* this space works as described, not that it does.
+- **It is a simulation** of the [OSO demo specification](../../docs/design.md): results are abstract, success is chance, and agents follow a formula. It shows how the incentive rules play out *if* this space works as described, not that it does.
 - **The parameters are guesses,** especially the success chances, the scoop risk ψ, and the costs and error rates in section 5. Section 6 varies each one alone; it does not vary them together, except α and c.
 - **By default, sharing is free and always correct,** which favours OSO; section 5 shows how much of the lead survives without that.
 

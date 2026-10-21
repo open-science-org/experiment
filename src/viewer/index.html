@@ -189,6 +189,7 @@
   <a href="#/new">New</a>
   <a href="#/live">Live</a>
   <a href="#/topics">Topics</a>
+  <a href="#/how">How it works</a>
 </nav>
 <main>
   <!-- Results: every experiment as a short card -->
@@ -348,7 +349,8 @@ async function route() {
   if (old[path]) { const q = location.hash.split('?')[1]; location.hash = '#' + old[path] + (q ? (old[path].includes('?') ? '&' : '?') + q : ''); return; }
   const top = '/' + (path.split('/')[1] ?? '');
   for (const a of document.querySelectorAll('nav.side a')) {
-    const here = a.getAttribute('href') === '#' + top || (top === '/doc' && a.getAttribute('href') === '#/');
+    const isHow = top === '/how' || (top === '/doc' && /^\/doc\/(docs\/|README\.md|lean\/)/.test(path));
+    const here = isHow ? a.getAttribute('href') === '#/how' : a.getAttribute('href') === '#' + top || (top === '/doc' && a.getAttribute('href') === '#/');
     if (here) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
   }
   if (path === '/') { show('view-overview'); return drawResults(); }
@@ -356,6 +358,7 @@ async function route() {
   if (path === '/new') { show('view-new'); return enterNew(); }
   if (path === '/live') { show('view-live'); return showTab(params().get('tab') ?? 'ai'); }
   if (path === '/topics' || path === '/fields') { show('view-fields'); return enterFields(); }
+  if (path === '/how') { show('view-doc'); return openDoc('docs/README.md'); }
   show('view-overview'); drawResults();
 }
 window.addEventListener('hashchange', route);
@@ -366,7 +369,8 @@ async function openDoc(path) {
     const d = await api('/api/doc?path=' + encodeURIComponent(path));
     const field = /^reports\/([^/]+)\/report\.md$/.exec(d.path);
     const fieldId = /^reports\/([^/]+)\//.exec(d.path)?.[1];
-    $('doc-crumbs').innerHTML = `<a href="#/">← Results</a>${fieldId ? ` · <a href="#/doc/reports/${fieldId}/report.md">Full report</a> · <a href="#/live?tab=sim&space=${fieldId}">Watch a simulation</a>` : ''}`;
+    const howDoc = /^(docs\/|README\.md|lean\/)/.test(d.path);
+    $('doc-crumbs').innerHTML = howDoc ? (d.path === 'docs/README.md' ? '' : '<a href="#/how">← How it works</a>') : `<a href="#/">← Results</a>${fieldId ? ` · <a href="#/doc/reports/${fieldId}/report.md">Full report</a> · <a href="#/live?tab=sim&space=${fieldId}">Watch a simulation</a>` : ''}`;
     $('doc-body').innerHTML = d.html;
     // Headings get ids like GitHub's, so in-page links (#what-this-shows-…) scroll instead of navigating.
     const slug = (t) => t.toLowerCase().trim().replace(/[^\p{L}\p{N}\s-]/gu, '').replace(/\s/g, '-');
@@ -375,6 +379,9 @@ async function openDoc(path) {
       const id = decodeURIComponent(a.getAttribute('href').slice(1));
       a.onclick = (e) => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); };
     }
+    // A link to a section of another document arrives as ?at=<heading id>.
+    const at = params().get('at');
+    if (at) document.getElementById(at)?.scrollIntoView(); else window.scrollTo(0, 0);
   } catch (e) { $('doc-body').innerHTML = `<p>${esc(e.message)}</p>`; }
 }
 

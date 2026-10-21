@@ -17,12 +17,14 @@ import { allCards } from '../card.ts';
 const PORT = Number(process.env.PORT ?? 8791);
 /** Folders the viewer may serve files and documents from. Never lean/ (private) or .env. */
 const PUBLIC_DIRS = ['reports', 'results', 'docs', 'worlds', 'config', 'spaces'];
-const TYPES: Record<string, string> = { '.svg': 'image/svg+xml', '.png': 'image/png', '.json': 'application/json', '.md': 'text/plain; charset=utf-8', '.yaml': 'text/plain; charset=utf-8', '.jsonl': 'text/plain; charset=utf-8', '.py': 'text/plain; charset=utf-8' };
+/** Single public files outside those folders. Nothing else in lean/ is served: its private parts hold proofs. */
+const PUBLIC_FILES = ['README.md', 'lean/README.md', 'lean/Problems/Defs.lean', 'lean/Problems/Targets.lean'];
+const TYPES: Record<string, string> = { '.svg': 'image/svg+xml', '.png': 'image/png', '.json': 'application/json', '.md': 'text/plain; charset=utf-8', '.yaml': 'text/plain; charset=utf-8', '.jsonl': 'text/plain; charset=utf-8', '.py': 'text/plain; charset=utf-8', '.lean': 'text/plain; charset=utf-8' };
 
 /** A repository path, if it is inside a public folder. */
 function publicPath(path: string): string | null {
   const rel = normalize(path).replace(/^(\.\.\/)+/, '');
-  if (rel.startsWith('/') || rel.includes('..') || !PUBLIC_DIRS.includes(rel.split('/')[0])) return null;
+  if (rel.startsWith('/') || rel.includes('..') || !(PUBLIC_DIRS.includes(rel.split('/')[0]) || PUBLIC_FILES.includes(rel))) return null;
   const full = join(ROOT, rel);
   return existsSync(full) ? full : null;
 }
@@ -38,8 +40,9 @@ function doc(path: string): { path: string; title: string; html: string } {
   html = html.replace(/(src|href)="([^"#:]+?)(#[^"]*)?"/g, (m, attr, href, hash = '') => {
     if (/^(https?:|mailto:|\/)/.test(href)) return m;
     const target = resolve(href);
-    if (!publicPath(target)) return `${attr}="#" data-missing="${target}"`;
-    if (attr === 'href' && target.endsWith('.md')) return `href="#/doc/${target}"`;
+    // Code and other files outside the public folders: open them on GitHub, where the repository is public.
+    if (!publicPath(target)) return attr === 'href' && existsSync(join(ROOT, target)) ? `href="https://github.com/open-science-org/experiment/${statSync(join(ROOT, target)).isDirectory() ? 'tree' : 'blob'}/master/${target}${hash}"` : `${attr}="#" data-missing="${target}"`;
+    if (attr === 'href' && target.endsWith('.md')) return `href="#/doc/${target}${hash ? `?at=${hash.slice(1)}` : ''}"`;
     return `${attr}="/files/${target}${hash}"`;
   });
   html = html.replace(/<a href="(https?:[^"]+)"/g, '<a href="$1" target="_blank" rel="noopener"');

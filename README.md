@@ -6,7 +6,7 @@ This repository simulates communities of research agents and compares two sets o
 - **traditional:** work is published only when it is finished, and nothing flows back to the work it built on;
 - **OSO:** results are published as they are found, and part of the value of each result flows back to what it built on.
 
-Traditional research is a special case of OSO's rules (α = 1, c = 0, finished work only), so one model covers both. The model is defined once in the **[demo experiment specification](https://github.com/open-science-org/OSO/blob/master/docs/demo-model.md)**; this repository implements it.
+Traditional research is a special case of OSO's rules (α = 1, c = 0, finished work only), so one model covers both. The model is defined once in the **[demo experiment specification](docs/design.md)**; this repository implements it.
 
 ## Results
 
@@ -109,7 +109,7 @@ The app runs on this machine only, and never shows `lean/` (the private answers)
 | [config/](config/) | The default scenario (every setting, documented), the rule presets, and the experiments |
 | [results/](results/) | Saved experiment runs and their log |
 | [src/](src/) | `engine/` (the environment), `experiments/`, `spaces/`, `report/`, and the command line |
-| [docs/](docs/) | The simulator in detail |
+| [docs/](docs/) | [How it works](docs/README.md), the [full design](docs/design.md) and the [simulator in detail](docs/simulator.md) |
 | [worlds/](worlds/) | Data for worlds read from files, such as the Lean reference tree |
 | [vendor/oso-ledger/](vendor/oso-ledger/) | A pinned copy of the [app](https://github.com/open-science-org/app)'s ledger. The tests check that the simulator's waterfall pays exactly what the real ledger pays; `npm run sync-ledger` refreshes it |
 | [lean/](lean/) | The Lean problem set (public part) |
@@ -120,6 +120,6 @@ The Lean problem set is in `lean/`: its definitions and targets are public, and 
 
 ## Related
 
-- [OSO](https://github.com/open-science-org/OSO): the protocol and the [demo experiment specification](https://github.com/open-science-org/OSO/blob/master/docs/demo-model.md).
+- [OSO](https://github.com/open-science-org/OSO): the protocol. The experiment's design now lives here, in [docs/design.md](docs/design.md).
 - [OIPs](https://github.com/open-science-org/OIPs): the improvement proposals that define the rules, including the waterfall (OIP-14).
 - [app](https://github.com/open-science-org/app): the OSO v1 app: ledger, API and front end.

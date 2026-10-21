@@ -1,6 +1,6 @@
 # OSO demo simulator
 
-The simulator is one instantiation of the **[OSO demo experiment specification](https://github.com/open-science-org/OSO/blob/master/docs/demo-model.md)**. The specification defines every concept once:
+The simulator is one instantiation of the **[OSO demo experiment specification](design.md)**. The specification defines every concept once:
 - results and the research tree;
 - attempts and success;
 - what agents know and what sharing conveys;
@@ -43,7 +43,7 @@ Contents:
 
 ## 0. The specification in the simulator
 
-Where each element of the [specification](https://github.com/open-science-org/OSO/blob/master/docs/demo-model.md) lives:
+Where each element of the [specification](design.md) lives:
 
 | Specification | Configuration (scenario) | Code |
 | --- | --- | --- |
@@ -61,7 +61,7 @@ Where each element of the [specification](https://github.com/open-science-org/OS
 | Measures (5) | `measures.targetLevel`; columns in experiments | `measures.ts` |
 | Experiments and factors (7) | `experiments/*.yaml` | `experiment.ts`, `cli.ts` |
 
-**The effects of sharing modelled here.** By default, a published result lets other agents attempt what builds on it, after uptake. It carries no statement, method or failed attempts, and it is always correct and free to absorb. Optional mechanics add public failures, a cost to absorb, and wrong results (section 2.6) ([specification, section 2.3](https://github.com/open-science-org/OSO/blob/master/docs/demo-model.md#23-knowledge-and-sharing)).
+**The effects of sharing modelled here.** By default, a published result lets other agents attempt what builds on it, after uptake. It carries no statement, method or failed attempts, and it is always correct and free to absorb. Optional mechanics add public failures, a cost to absorb, and wrong results (section 2.6) ([specification, section 2.3](design.md#23-knowledge-and-sharing)).
 
 ## 1. The simple model
 
@@ -103,7 +103,7 @@ This check also caught a flaw. The simulator's first random-number generator (mu
 
 ## 2. The default setup, as implemented
 
-The default scenario ([scenarios/default.yaml](../config/scenarios/default.yaml)), with the implementation details the [specification](https://github.com/open-science-org/OSO/blob/master/docs/demo-model.md) leaves to each instantiation. Compared with the simple model, it adds five things:
+The default scenario ([scenarios/default.yaml](../config/scenarios/default.yaml)), with the implementation details the [specification](design.md) leaves to each instantiation. Compared with the simple model, it adds five things:
 1. **A branching world** with targets, bounties and dead ends.
 2. **Agents with different traits.**
 3. **Rewards:** a mint per result and a bounty per target, paid through the OSO waterfall.
@@ -476,7 +476,7 @@ The full grid over scoop risk ψ and cited share c is in [results/alpha-psi](../
 
 ## 6. What this simulation can and cannot show
 
-It is a thought experiment with the arithmetic done exactly. The [specification, section 6](https://github.com/open-science-org/OSO/blob/master/docs/demo-model.md#6-instantiations) compares it element by element with the Lean experiment. Where it departs from real research, starting with the largest gaps:
+It is a thought experiment with the arithmetic done exactly. The [specification, section 6](design.md#6-instantiations) compares it element by element with the Lean experiment. Where it departs from real research, starting with the largest gaps:
 
 1. **Agents never invent problems.** Every possible result already exists, and agents see exactly which ones they can attempt. Real research is mostly finding the right question or lemma.
 2. **By default, the benefit of sharing is largely built in.** A published result is instantly usable, always correct and free to absorb. The optional costs and errors (section 2.6) test how much of the advantage survives without that, but their sizes are guesses.
