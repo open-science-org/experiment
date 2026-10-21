@@ -96,6 +96,18 @@ test('with Lean: communities run, and under OSO results are shared while traditi
   assert.ok(oso.earnings.some((e) => e > 0));
 });
 
+test('a community stops, marked, when the key runs out of credit', async () => {
+  const { runCommunity } = await import('../src/lean/community.ts');
+  const { mkdtempSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const root = mkdtempSync(`${tmpdir()}/oso-credit-`);
+  let calls = 0;
+  const broke = async () => { calls++; throw new Error('OpenRouter 402: This request would exceed your available credits'); };
+  const r = await runCommunity({ rules: 'oso', agents: ['a', 'b'], budget: 1, rounds: 10, repairs: 0, alpha: 0.8, c: 0.15, mint: 1, effort: 'low' }, () => broke, () => 0, 'test-credit', () => {}, root);
+  assert.equal(r.stopped, 'out of credit');
+  assert.equal(calls, 2, 'no round after the first refusal');
+});
+
 test('with Lean: race designs suggest counted targets from the pilot and post their lemmas as conjectures', { skip: !leanAvailable() }, async () => {
   const design = await import('../src/viewer/design.ts');
   const direct = design.conjecturesFor(['A3'], 'direct');

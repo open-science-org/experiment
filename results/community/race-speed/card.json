@@ -1,0 +1,46 @@
+{
+ "id": "race-speed",
+ "kind": "race",
+ "date": "2026-10-21",
+ "title": "Cheap AI models: who reaches the targets for less money",
+ "design": {
+  "question": "With the cheapest model, does an OSO community reach 2 of the targets that count for less money than a traditional one?",
+  "compare": "traditional rules and OSO rules",
+  "fixed": "four DeepSeek V4.1 Flash labs (two foundation builders, a target racer, a neutral lab), $0.08 each, 12 posted conjectures, up to 30 rounds",
+  "measure": "money spent to solve 2 of the targets that count (A3, X2, B5, A5); a run that never does counts as its whole budget",
+  "better": "lower",
+  "runs": "5 runs per side"
+ },
+ "answer": "No clear difference: OSO solved 2 targets that count for $0.27 on average, traditional for $0.27 (1 and 1 of 5 runs got there).",
+ "table": [
+  {
+   "rules": "Traditional",
+   "money to 2 targets": "$0.27 ± 0.12",
+   "targets that count": "0.8 ± 0.8 of 4",
+   "all targets": "3.4 ± 1.1 of 8",
+   "spent": "$0.07",
+   "work done twice": "3.6 ± 2.1",
+   "used another lab's result": "0.0 ± 0.0"
+  },
+  {
+   "rules": "OSO",
+   "money to 2 targets": "$0.27 ± 0.11",
+   "targets that count": "0.8 ± 0.8 of 4",
+   "all targets": "2.4 ± 1.7 of 8",
+   "spent": "$0.08",
+   "work done twice": "1.8 ± 0.8",
+   "used another lab's result": "2.4 ± 2.2"
+  }
+ ],
+ "caveats": [
+  "Budgets were counted at list prices, but OpenRouter charged about 5.6× more ($3.56 against $0.69).",
+  "Tests a lead first seen in the earlier cheap-model test, on fresh runs.",
+  "One model and one small problem set.",
+  "Budgets were not binding: the communities spent 24% of theirs on average, because labs passed.",
+  "Values are mean ± standard deviation over runs."
+ ],
+ "cost": "$0.76 at list prices",
+ "invalid": "The money on the key ran out during the test: 950 model calls were refused, so labs stopped early (only 24% of budgets used).",
+ "page": "results/community/race-speed/summary.md",
+ "chart": "results/community/race-speed/figures/progress.svg"
+}

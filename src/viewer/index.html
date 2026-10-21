@@ -398,7 +398,7 @@ async function drawResults() {
       <rect x="${tl}" y="${y + 18}" width="${bw(h.traditional.frontier)}" height="14" rx="3" fill="var(--s1)"><title>Traditional ${h.traditional.frontier.toFixed(1)} of ${h.maxLevel}</title></rect><text x="${tl + bw(h.traditional.frontier) + 5}" y="${y + 29}" font-size="11" font-weight="700" fill="var(--s1)">${h.traditional.frontier.toFixed(1)}</text>`;
   });
   tsvg += '</svg>';
-  const race = cards.find((c) => c.kind === 'race' && c.chart), models = cards.find((c) => c.kind === 'model pilot' && c.chart);
+  const race = cards.find((c) => c.kind === 'race' && c.chart && !c.invalid), models = cards.find((c) => c.kind === 'model pilot' && c.chart);
   const glance = [
     `<div class="res">${tsvg}<div class="meta">Simulations. <a href="#/topics">All topics →</a></div></div>`,
     race ? `<a class="res" href="#/doc/${esc(race.page)}"><img src="/files/${esc(race.chart)}" alt="${esc(race.title)}" style="width:100%"><div class="meta">${esc(race.title)}</div></a>` : '',
@@ -409,10 +409,10 @@ async function drawResults() {
     <div class="glance">${glance}</div>
     <div class="chips">${['all', 'AI models', 'Topic', 'Simulation'].map(chip).join('')}</div>
     <div class="fields">${shown.map((c) => `<a class="res field" href="#/doc/${esc(c.page)}">
-      <span class="chip ${/^(OSO|Best on [^:]+: OSO)/.test(c.answer) ? 'ahead' : ''}">${esc(KIND[c.kind])}</span>
+      <span class="chip ${!c.invalid && /^(OSO|Best on [^:]+: OSO)/.test(c.answer) ? 'ahead' : ''}">${esc(KIND[c.kind])}</span>${c.invalid ? ' <span class="chip">Not valid</span>' : ''}
       <h3>${esc(c.title.replace(/^(Real agents, OSO vs traditional|Lean pilot): /, ''))}</h3>
       <p class="q">${esc(c.design.question)}</p>
-      <p class="a">${esc(c.answer)}</p>
+      <p class="a">${esc(c.invalid ? 'Not valid: ' + c.invalid : c.answer)}</p>
       <div class="meta">${esc(c.date)} · ${esc(c.design.runs)}${c.cost ? ' · ' + esc(c.cost) : ''}</div></a>`).join('') || '<p class="muted">Nothing yet.</p>'}</div>`;
   for (const b of $('view-overview').querySelectorAll('.chips .btn')) b.onclick = () => { resultsFilter = b.dataset.f; drawResults(); };
 }
@@ -597,7 +597,7 @@ function drawCommunity() {
     const start = Math.min(...side.actions.map((a) => a.t));
     return side.actions.filter((a) => a.t - start <= C.now - C.t0);
   };
-  const curve = (acts) => { const solved = new Set(); let spent = 0; const pts = [[0, 0]]; for (const a of [...acts].sort((x, y) => x.t - y.t)) { spent += a.listCost; if (a.kind === 'target' && a.ok) solved.add(a.target); pts.push([spent, solved.size]); } return pts; };
+  const curve = (acts) => { const solved = new Set(); let spent = 0; const pts = [[0, 0]]; for (const a of [...acts].sort((x, y) => x.t - y.t)) { spent += a.cost ?? a.listCost; if (a.kind === 'target' && a.ok) solved.add(a.target); pts.push([spent, solved.size]); } return pts; };
   const budget = Math.max(...['traditional', 'oso'].map((k) => (C.run[k] ? C.run[k].options.budget * C.run[k].options.agents.length : 0)), 0.01);
   const W = 760, H = 300, l = 54, rgt = 150, top = 36, bot = 42, pw = W - l - rgt, ph = H - top - bot;
   const sx = (x) => l + (x / budget) * pw, sy = (y) => top + ph - (y / 8) * ph;
@@ -642,7 +642,7 @@ function drawSide(k, acts) {
   const feed = [...acts].sort((a, b) => b.t - a.t).slice(0, 40).map((a) => {
     const what = a.kind === 'target' ? `target <b>${esc(a.target ?? '?')}</b>` : a.kind === 'lemma' ? `lemma <code>${esc(a.entry ?? a.name ?? '?')}</code>` : a.kind === 'pass' ? 'passed' : 'no action';
     const res = a.kind === 'pass' ? '' : a.ok ? (a.reason ? `<span class="muted">accepted (${esc(a.reason)})</span>` : '<span class="ok">✓ accepted</span>') : `<span class="no">✕ ${esc(a.reason ?? 'not accepted')}</span>`;
-    return `<div style="padding:3px 0;border-bottom:1px solid var(--line)"><button class="mark" data-k="${k}" data-t="${a.t}" data-agent="${a.agent}" title="Show the turns">${a.turns}</button>round ${a.round} · lab ${a.agent + 1} · ${what} ${res} <span class="muted">· $${a.listCost.toFixed(3)}</span></div>`;
+    return `<div style="padding:3px 0;border-bottom:1px solid var(--line)"><button class="mark" data-k="${k}" data-t="${a.t}" data-agent="${a.agent}" title="Show the turns">${a.turns}</button>round ${a.round} · lab ${a.agent + 1} · ${what} ${res} <span class="muted">· $${(a.cost ?? a.listCost).toFixed(3)}</span></div>`;
   }).join('');
   el.innerHTML = `<h2>${k === 'oso' ? 'OSO' : 'Traditional'}${side.finished && acts.length === side.actions.length ? ' <span class="muted">· finished</span>' : ''}</h2>
     <div class="stats">
@@ -657,7 +657,7 @@ function drawSide(k, acts) {
     <div class="log" style="max-height:340px">${feed || 'No actions yet.'}</div>`;
   for (const b of el.querySelectorAll('.log .mark')) b.onclick = () => {
     const a = C.run[b.dataset.k].actions.find((x) => String(x.t) === b.dataset.t && String(x.agent) === b.dataset.agent);
-    $('drawer-body').innerHTML = `<h3>Round ${a.round} · lab ${a.agent + 1} (${esc(a.model)}) · ${b.dataset.k === 'oso' ? 'OSO' : 'traditional'}</h3><p class="muted">${a.kind === 'target' ? 'Target ' + esc(a.target) : 'Lemma ' + esc(a.entry ?? a.name ?? '')} · ${a.ok ? 'accepted' : 'not accepted'}${a.reason ? ' (' + esc(a.reason) + ')' : ''} · ${a.turns} turn(s) · $${a.listCost.toFixed(3)} at list price${a.uses?.length ? ` · used ${a.uses.map((u) => esc(u.replace(/^OSO\./, ''))).join(', ')}` : ''}</p>` +
+    $('drawer-body').innerHTML = `<h3>Round ${a.round} · lab ${a.agent + 1} (${esc(a.model)}) · ${b.dataset.k === 'oso' ? 'OSO' : 'traditional'}</h3><p class="muted">${a.kind === 'target' ? 'Target ' + esc(a.target) : 'Lemma ' + esc(a.entry ?? a.name ?? '')} · ${a.ok ? 'accepted' : 'not accepted'}${a.reason ? ' (' + esc(a.reason) + ')' : ''} · ${a.turns} turn(s) · $${(a.cost ?? a.listCost).toFixed(3)}${a.cost === undefined ? ' at list price' : ''}${a.uses?.length ? ` · used ${a.uses.map((u) => esc(u.replace(/^OSO\./, ''))).join(', ')}` : ''}</p>` +
       a.transcript.map((t, n) => `<div class="turn"><h4>Turn ${n + 1}${t.errors.length ? ' <span class="no">✕ rejected</span>' : n === a.transcript.length - 1 && a.ok ? ' <span class="ok">✓ accepted</span>' : ''}</h4>${t.errors.length ? `<pre class="err">${esc(t.errors.join('\n\n'))}</pre>` : ''}${t.proof ? `<pre>${esc(t.proof)}</pre>` : `<pre>${esc(t.text.slice(0, 2000))}</pre>`}</div>`).join('');
     $('drawer').classList.add('open');
   };

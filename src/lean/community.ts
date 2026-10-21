@@ -25,7 +25,7 @@ export interface CommunityOptions {
   rules: Rules;
   /** One entry per agent: the model it runs on. */
   agents: string[];
-  /** Budget per agent, in dollars at the model's list price. */
+  /** Budget per agent, in dollars: what the provider charged (older runs: list prices). */
   budget: number;
   rounds: number;
   repairs: number;
@@ -75,7 +75,8 @@ export interface Action {
   ok: boolean; reason?: string; turns: number;
   /** The library entry an accepted action created, and the results its proof used. */
   entry?: string; uses?: string[];
-  usage: Usage; listCost: number; spentAfter: number;
+  /** Dollars this action counted against the budget: the provider's charge. Older runs have only listCost. */
+  usage: Usage; cost?: number; listCost?: number; spentAfter: number;
   transcript: { text: string; proof: string | null; errors: string[] }[];
   t: number;
 }
@@ -336,7 +337,7 @@ Take one action.`;
     const a: Action = {
       round, agent: i, model, kind, target, name: lemma?.name, signature: lemma?.signature, ok, reason: reason || (ok ? undefined : 'not accepted'),
       ...(made ? { entry: made.name, uses: made.uses } : {}),
-      turns: transcript.length, usage, listCost: price(usage), spentAfter: this.spent[i], transcript, t: Date.now(),
+      turns: transcript.length, usage, cost: price(usage), spentAfter: this.spent[i], transcript, t: Date.now(),
     };
     this.actions.push(a);
     log(a);
@@ -378,7 +379,12 @@ export function referenceAgent(com: Community, i: number): Chat {
   };
 }
 
-export interface CommunityResult { opts: CommunityOptions; actions: Action[]; library: Entry[]; earnings: number[]; spent: number[] }
+export interface CommunityResult { opts: CommunityOptions; actions: Action[]; library: Entry[]; earnings: number[]; spent: number[]; /** Why the run ended early, if it did (for example, out of credit). */ stopped?: string }
+
+/** What an action cost: the charge, or the list price for runs recorded before charges were used. */
+export const costOf = (a: Action) => a.cost ?? a.listCost ?? 0;
+/** Whether a run's money is the provider's charge (true) or list prices (older runs). */
+export const charged = (r: CommunityResult) => r.actions.every((a) => a.cost !== undefined);
 
 /** Runs one community to the end: rounds of one action per agent with budget left, in parallel. */
 export async function runCommunity(opts: CommunityOptions, chatFor: (com: Community, i: number) => Chat, price: (model: string, u: Usage) => number, runId: string, log = console.log, root = join(LEAN_DIR, 'runs')): Promise<CommunityResult> {
@@ -389,15 +395,22 @@ export async function runCommunity(opts: CommunityOptions, chatFor: (com: Commun
   const file = join(dir, 'actions.jsonl');
   writeFileSync(file, '');
   const chats = opts.agents.map((_, i) => chatFor(com, i));
-  for (let round = 1; round <= opts.rounds && !com.done(); round++) {
+  let stopped: string | undefined;
+  for (let round = 1; round <= opts.rounds && !com.done() && !stopped; round++) {
     const active = opts.agents.map((_, i) => i).filter((i) => com.active(i));
     await Promise.all(active.map((i) => com.act(i, round, chats[i], (u) => price(opts.agents[i], u), (a) => {
       appendFileSync(file, JSON.stringify(a) + '\n');
       const solved = com.targets.filter((t) => com.solved(t.publicId)).length;
-      log(`  round ${round} · lab ${i + 1} (${a.model.split('/').pop()}): ${a.kind === 'target' ? `target ${a.target}` : a.kind === 'conjecture' ? `conjecture ${a.target}` : a.kind === 'lemma' ? `lemma ${a.name ?? '?'}` : a.kind === 'pass' ? 'passed' : 'no action'} ${a.ok ? 'accepted' : 'failed'}${a.reason ? ` (${a.reason})` : ''} · $${a.listCost.toFixed(3)} · ${solved}/8 targets solved`);
-    }).catch((e) => log(`  round ${round} · lab ${i + 1}: error ${(e as Error).message}`))));
+      log(`  round ${round} · lab ${i + 1} (${a.model.split('/').pop()}): ${a.kind === 'target' ? `target ${a.target}` : a.kind === 'conjecture' ? `conjecture ${a.target}` : a.kind === 'lemma' ? `lemma ${a.name ?? '?'}` : a.kind === 'pass' ? 'passed' : 'no action'} ${a.ok ? 'accepted' : 'failed'}${a.reason ? ` (${a.reason})` : ''} · $${costOf(a).toFixed(3)} · ${solved}/8 targets solved`);
+    }).catch((e) => {
+      const msg = (e as Error).message;
+      log(`  round ${round} · lab ${i + 1}: error ${msg}`);
+      // Out of credit: every later call fails too, so the run would only look like labs giving up.
+      if (/\b402\b|credits/i.test(msg)) stopped = 'out of credit';
+    })));
   }
-  const result: CommunityResult = { opts, actions: com.actions, library: com.library, earnings: com.earnings, spent: com.spent };
+  if (stopped) log(`  stopped: ${stopped}`);
+  const result: CommunityResult = { opts, actions: com.actions, library: com.library, earnings: com.earnings, spent: com.spent, ...(stopped ? { stopped } : {}) };
   writeFileSync(join(dir, 'result.json'), JSON.stringify(result, null, 1));
   return result;
 }
@@ -420,7 +433,7 @@ export function progress(r: CommunityResult): [number, number][] {
   let spent = 0;
   const pts: [number, number][] = [[0, 0]];
   for (const a of acts) {
-    spent += a.listCost;
+    spent += costOf(a);
     if (a.kind === 'target' && a.ok && a.target && counted.has(a.target)) solved.add(a.target);
     pts.push([spent, solved.size]);
   }
@@ -460,9 +473,10 @@ export function writeCommunityComparison(id: string, runs: { runId: string; resu
   const curves = runs.map((x) => ({ ...x, pts: progress(x.result), st: stats(x.result) }));
   const label = (rules: Rules) => (rules === 'oso' ? 'OSO' : 'Traditional');
   const maxX = Math.max(...curves.map((c) => c.st.budget), 1e-6);
+  const money = runs.every((x) => charged(x.result)) ? 'as charged' : 'at list prices';
   writeFileSync(join(dir, 'figures', 'progress.svg'), lineChart({
     title: `Targets solved for the money: ${who}, OSO vs traditional`,
-    subtitle: `Same agents and budget ($${maxX.toFixed(2)} at list prices); Lean checks every proof.`,
+    subtitle: `Same agents and budget ($${maxX.toFixed(2)} ${money}); Lean checks every proof.`,
     xLabel: 'Dollars spent by the community', yLabel: 'Targets solved',
     series: curves.map((c) => ({ name: label(c.result.opts.rules), slot: c.result.opts.rules === 'oso' ? 2 : 1, points: c.pts })) as never,
     x: [0, maxX], y: [0, 8], xTicks: [0, maxX / 4, maxX / 2, (3 * maxX) / 4, maxX], yTicks: [0, 2, 4, 6, 8],
@@ -490,7 +504,7 @@ ${verdict} ${note}
 
 ${table}
 
-- **Agents:** ${o.agents.map((m, i) => `lab ${i + 1}: \`${m}\``).join(', ')}; each with $${o.budget} at list prices; reasoning effort ${o.effort}.
+- **Agents:** ${o.agents.map((m, i) => `lab ${i + 1}: \`${m}\``).join(', ')}; each with $${o.budget} ${money}; reasoning effort ${o.effort}.
 - **Each round,** every lab with budget left takes one action: prove a target, or state and prove a new lemma; up to ${o.repairs} repairs on Lean's errors.
 - **Traditional:** lemmas stay private until their author proves a target; the target and the lemmas it rests on are then published and the author takes the bounty. **OSO:** every result is published at once; mint ${o.mint}, c = ${o.c}, α = ${o.alpha}.
 - **Duplicated work:** a lemma proved again when another lab already had it (privately, under traditional rules), or a target solved twice, for example by two labs in the same round. **Trivial:** one basic tactic proves it; it can be cited but earns no mint. **Labs may pass** when nothing seems worth their budget, and keep the rest.
@@ -519,7 +533,7 @@ export interface Pair { rep: number; traditional: CommunityResult; oso: Communit
  * Several races with the same design, summarized on the measure fixed in advance: counted targets
  * solved for the same budget, mean and spread over runs; verdict against two standard errors.
  */
-export interface RaceDesign { title?: string; question?: string; compare?: string; fixed?: string; caveats?: string[]; prose?: string; primary?: { kind: 'spendTo'; k: number } }
+export interface RaceDesign { /** Set when the result must not be used, with the reason. */ invalid?: string; title?: string; question?: string; compare?: string; fixed?: string; caveats?: string[]; prose?: string; primary?: { kind: 'spendTo'; k: number } }
 
 /** Spend at which a run first had k counted targets solved (null if never). */
 function spendTo(r: CommunityResult, k: number): number | null {
@@ -537,6 +551,9 @@ export function writeRaceSeries(id: string, pairs: Pair[], designIn: string | Ra
   const side = (k: Rules) => pairs.map((p) => stats(p[k]));
   const T = side('traditional'), O = side('oso');
   const counted = countedOf(pairs[0].oso);
+  const priced = pairs.every((p) => charged(p.oso) && charged(p.traditional)) ? 'as charged' : 'at list prices';
+  const stoppedRuns = pairs.flatMap((p) => [p.traditional, p.oso]).filter((r) => r.stopped);
+  const invalid = dsg.invalid ?? (stoppedRuns.length ? `${stoppedRuns.length} run(s) stopped early (${stoppedRuns[0].stopped}).` : undefined);
   const m = (xs: { [k: string]: unknown }[], key: string) => mean(xs.map((x) => Number(x[key])));
   const se = (xs: number[]) => (xs.length > 1 ? sd(xs) / Math.sqrt(xs.length) : Infinity);
   const tC = T.map((x) => x.countedSolved), oC = O.map((x) => x.countedSolved);
@@ -606,7 +623,7 @@ ${design}
 
 - **Counted targets:** ${counted.join(', ')}. The others are warm-ups: solved, they are reported but do not count.
 - **Labs:** ${o.agents.map((mdl, i) => `lab ${i + 1}: \`${mdl}\`${o.personaNames?.[i] ? ` as ${o.personaNames[i]}` : ''}`).join('; ')}. The same labs and personas on both sides.
-- **Budget:** $${o.budget} per lab at list prices; up to ${o.rounds} rounds. **Posted conjectures:** ${o.conjectures?.length ?? 0}, bounty ${o.conjectureBounty ?? 1} each; their ids (K1, …) are neutral, and their statements are given to the labs but not listed here.
+- **Budget:** $${o.budget} per lab ${priced}; up to ${o.rounds} rounds. **Posted conjectures:** ${o.conjectures?.length ?? 0}, bounty ${o.conjectureBounty ?? 1} each; their ids (K1, …) are neutral, and their statements are given to the labs but not listed here.
 - **Rules:** traditional: results private until their lab proves a target, then published with it; OSO: everything published at once, α = ${o.alpha}, c = ${o.c}, mint ${o.mint}.
 
 ## Every run
@@ -650,7 +667,8 @@ Transcripts, with every proof, are private.
       ...(budgetUse < 0.7 ? [`Budgets were not binding: the communities spent ${Math.round(budgetUse * 100)}% of theirs on average, because labs passed.`] : []),
       'Values are mean ± standard deviation over runs.',
     ],
-    cost: `$${(T.reduce((a, x) => a + x.spent, 0) + O.reduce((a, x) => a + x.spent, 0)).toFixed(2)} at list prices`,
+    cost: `$${(T.reduce((a, x) => a + x.spent, 0) + O.reduce((a, x) => a + x.spent, 0)).toFixed(2)} ${priced}`,
+    ...(invalid ? { invalid } : {}),
     page: `results/community/${id}/summary.md`,
     chart: `results/community/${id}/figures/progress.svg`,
   }, `

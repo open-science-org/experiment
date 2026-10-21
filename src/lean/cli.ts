@@ -94,11 +94,19 @@ if (cmd === 'community') {
     counted: (cfg.counted as string[] | undefined) ?? (value('counted', '') ? value('counted', '').split(',') : []),
   };
   const rules = pick('rules', 'traditional,oso').split(',') as ('traditional' | 'oso')[];
-  console.log(`${rules.length} communities × ${agents.length} labs × $${base.budget} = $${(rules.length * agents.length * base.budget).toFixed(2)} at most, at list prices; up to ${base.rounds} rounds.`);
+  console.log(`${rules.length} communities × ${agents.length} labs × $${base.budget} = $${(rules.length * agents.length * base.budget).toFixed(2)} at most; up to ${base.rounds} rounds.`);
   if (flag('dry-run')) process.exit(0);
   if (!stub && !process.env.OPENROUTER_API_KEY) { console.error('Set OPENROUTER_API_KEY in .env (or use --stub).'); process.exit(1); }
   const prices = stub ? null : await listPrices([...new Set(agents)]);
-  const price = (m: string, u: { input: number; output: number; cacheRead: number }) => (prices ? (u.input + u.cacheRead) * prices[m].input + u.output * prices[m].output : 0.01);
+  // Budgets count what OpenRouter charged; list prices understate it (about 5x in October 2026), so they are only a fallback.
+  const price = (m: string, u: { input: number; output: number; cacheRead: number; cost?: number }) => (!prices ? 0.01 : u.cost ?? (u.input + u.cacheRead) * prices[m].input + u.output * prices[m].output);
+  if (!stub) {
+    // Refuse to start a test the key cannot pay for: running out midway makes the result useless.
+    const most = rules.length * agents.length * base.budget * Number(pick('repeats', '1'));
+    const res = await fetch('https://openrouter.ai/api/v1/key', { headers: { Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}` } });
+    const left = ((await res.json()) as { data?: { limit_remaining: number | null } }).data?.limit_remaining;
+    if (left != null && left < most * 1.1) { console.error(`The key has $${left.toFixed(2)} left; this test can spend up to $${most.toFixed(2)}. Add credit first.`); process.exit(1); }
+  }
   const id = pick('run', `${stub ? 'stub-' : ''}community-${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}`);
   const repeats = Number(pick('repeats', '1'));
   const chat = (com: import('./community.ts').Community, i: number) => (stub ? referenceAgent(com, i) : openRouterChat({ provider: 'openrouter', model: agents[i], effort: base.effortByLab?.[i] ?? base.effort, maxTokens: 32_000 }));
@@ -143,8 +151,8 @@ if (cmd === 'series') {
   }
   if (!pairs.length) throw new Error(`no finished pair of races for ${arg}`);
   const cfgFile = join(LEAN_DIR, 'runs', `${arg}.config.json`);
-  const c = existsSync(cfgFile) ? JSON.parse(readFileSync(cfgFile, 'utf8')) as { title?: string; design?: string; question?: string; compare?: string; fixed?: string; caveats?: string[]; primary?: { kind: 'spendTo'; k: number } } : {};
-  const design = { title: c.title, prose: c.design, question: c.question, compare: c.compare, fixed: c.fixed, caveats: c.caveats, primary: c.primary };
+  const c = existsSync(cfgFile) ? JSON.parse(readFileSync(cfgFile, 'utf8')) as { title?: string; design?: string; question?: string; compare?: string; fixed?: string; caveats?: string[]; primary?: { kind: 'spendTo'; k: number }; invalid?: string } : {};
+  const design = { title: c.title, prose: c.design, question: c.question, compare: c.compare, fixed: c.fixed, caveats: c.caveats, primary: c.primary, invalid: c.invalid };
   console.log(`${pairs.length} finished pair(s): ${writeRaceSeries(arg, pairs, design)}/summary.md`);
   process.exit(0);
 }

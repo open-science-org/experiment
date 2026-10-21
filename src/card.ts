@@ -34,6 +34,8 @@ export interface Card {
   page: string;
   /** One comparison chart (an SVG, path from the repository root). */
   chart?: string;
+  /** Set when the result must not be used, with the reason. The card stays, marked. */
+  invalid?: string;
 }
 
 const table = (rows: Record<string, string | number>[]) => {
@@ -46,7 +48,7 @@ const table = (rows: Record<string, string | number>[]) => {
 /** The card as Markdown: short on top, details folded away below. */
 export function cardMarkdown(c: Card, details = ''): string {
   return `# ${c.title}
-
+${c.invalid ? `\n**Not valid:** ${c.invalid} Do not use this result.\n` : ''}
 **Question:** ${c.design.question}
 
 **Answer:** ${c.answer}
@@ -108,7 +110,7 @@ export function allCards(): Card[] {
 export function writeIndex(): void {
   const cards = allCards();
   const link = (c: Card) => `[${c.title}](${relative(RESULTS_DIR, join(ROOT, c.page)).replace(/\\/g, '/')})`;
-  const rows = cards.map((c) => ({ date: c.date, kind: c.kind, experiment: link(c), question: c.design.question, answer: c.answer, cost: c.cost ?? '–' }));
+  const rows = cards.map((c) => ({ date: c.date, kind: c.kind, experiment: link(c), question: c.design.question, answer: c.invalid ? `Not valid: ${c.invalid}` : c.answer, cost: c.cost ?? '–' }));
   writeFileSync(join(RESULTS_DIR, 'README.md'), `# Experiments
 
 Every experiment in this repository, newest first. Each has a short card: the question, the answer computed from the measure declared before the run, a small table, the design and its caveats. The run-by-run log of saved simulations is [LOG.md](LOG.md).

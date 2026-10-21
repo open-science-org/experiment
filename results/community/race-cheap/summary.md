@@ -14,9 +14,9 @@
 **Design** (fixed before the run): compared traditional rules and OSO rules · held the same: four DeepSeek V4.1 Flash labs (two foundation builders, a target racer, a neutral lab), $0.15 each, 12 posted conjectures, up to 30 rounds · measure: targets solved, counting A3, X2, B5, A5, higher is better · 5 runs per side. Cost: $3.10 at list prices.
 
 **Caveats:**
+- Money is at list prices; OpenRouter charged about 5.6× more ($17.25 in all), the same factor on both sides, so the comparison holds but real dollars are higher.
 - Counted targets: those DeepSeek never proved alone in the pilot but did with lemmas; neither side reached B5 or A5.
 - One model and one small problem set; 4 traditional actions were lost to dropped connections, none on the OSO side.
-- Budgets were not binding: the communities spent 52% of theirs on average, because labs passed.
 
 <details><summary>Details</summary>
 
