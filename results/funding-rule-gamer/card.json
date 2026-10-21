@@ -11,7 +11,7 @@
   "better": "higher",
   "runs": "100 runs per row"
  },
- "answer": "Best on hardest level published: gaming agent 1, ρ 0, OSO (immediate), 6.0 (tied with gaming agent 0, ρ 0, OSO (immediate) and gaming agent 0, ρ 0.5, OSO (immediate) and 3 more). Best traditional: gaming agent 1, ρ 1, Traditional, 5.7; a clear difference.",
+ "answer": "Best: gaming agent 1, ρ 0, OSO, 6.0 (5 more tie). Best traditional: gaming agent 1, ρ 1, Traditional, 5.7. Clear difference.",
  "table": [
   {
    "gaming agent": 1,

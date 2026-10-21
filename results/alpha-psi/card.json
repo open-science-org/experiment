@@ -11,7 +11,7 @@
   "better": "higher",
   "runs": "100 runs per row"
  },
- "answer": "Best on share of results published at once: ψ 0.1, α 0.1, c 0, 0.9.",
+ "answer": "Best: ψ 0.1, α 0.1, c 0, 0.9.",
  "table": [
   {
    "ψ": 0.5,

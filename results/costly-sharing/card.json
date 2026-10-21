@@ -11,7 +11,7 @@
   "better": "higher",
   "runs": "100 runs per row"
  },
- "answer": "Best on hardest level published: OSO (immediate), absorb cost 0, error rate 0, 7.9. Best traditional: Traditional, absorb cost 0.5, error rate 0, 5.7; a clear difference.",
+ "answer": "Best: OSO, absorb cost 0, error rate 0, 7.9. Best traditional: Traditional, absorb cost 0.5, error rate 0, 5.7. Clear difference.",
  "table": [
   {
    "setting": "Traditional",

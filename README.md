@@ -85,27 +85,20 @@ Every experiment, of any kind, declares before it runs: the **question**, what i
 
 [results/README.md](results/README.md) lists every experiment with its question and answer, newest first. It is rebuilt whenever a result is saved.
 
-## The app: everything in one place
+## The app
 
 ```sh
 npm run viewer        # then open http://127.0.0.1:8791
 ```
 
-One local app, with one navigation for everything:
+Four pages:
 
-- **Design an experiment:** in two steps, without the command line.
-  1. **The field.** Pick one that exists; or describe a new one in words and let a model draft it (it is checked, test-run and drawn before you save it); or write or edit the field's file, starting from a template or another field. Saving it offers to build its standard report.
-  2. **The experiment.** Choose the rule settings to compare. Every parameter starts at the field's own value and has a slider and a number box; change it for every row, or tick *vary* to try several values (at most two parameters). Each parameter says what it does, and an example tree beside the list shows it at work at the current value, for instance how a bounty of 100 splits back through the tree at the chosen α. α and c belong to OSO's flow-back rules, so they never change the traditional rows. Then choose the measures and the runs per row. The app shows how many simulated runs that is, runs it in the background with a live log, and shows the result; it is saved like any other experiment (`config/experiments/`, `results/`).
-- **Overview:** the question; every simulated field's verdict, with OSO's and traditional's hardest level, targets solved, and OSO's lead as the market-set parameters vary; and the latest comparison of models in the Lean pilot.
-- **Field reports:** each field's full canonical report, with its figures.
-- **Replay a community:** pick a field, a seed and two rule settings. The same community then plays back side by side, round by round, on the research tree: what each agent attempts, what is proved but kept hidden, what is published, and who earns what. A run is traced on demand; recording draws no random numbers, so it is the same run the reports count. A link such as `#/replay?space=drug-discovery&seed=3&round=30` opens a given moment.
-- **Lean pilot:**
-  - every attempt by every model, filling in while runs go ("Follow live"), or replayed in the order attempts finished;
-  - clicking an attempt shows its turns: each proof, and Lean's errors;
-  - the summary of each run.
-- **Saved experiments:** every saved result and the log of runs, plus the simulator's documentation.
+- **Results:** every experiment as a short card (question, answer). Click one for its details.
+- **New:** one form. Pick who does the work: **simulated agents** (chance decides each attempt; free, thousands of runs) or **AI models** (Lean checks each proof; costs money, a few runs). Then the question, what to compare, and the runs. Everything else is under *More options*.
+- **Live:** tests with AI models as they run, simulation replays, and every attempt by the AI models.
+- **Fields:** the fields, their reports, and adding a new one.
 
-It listens on this machine only. It serves documents and figures from `reports/`, `results/`, `docs/`, `worlds/`, `config/` and `spaces/`, and never from `lean/` or `.env`; pilot transcripts contain proofs, so the pilot view is local by design.
+The app runs on this machine only, and never shows `lean/` (the private answers) or `.env`.
 
 ## Layout
 

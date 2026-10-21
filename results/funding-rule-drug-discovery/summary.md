@@ -2,7 +2,7 @@
 
 **Question:** Does the funding rule decide the race in drug discovery?
 
-**Answer:** Best on hardest level published: OSO (immediate), ρ, compute follows earnings 0, 6.0 (tied with OSO (immediate), ρ, compute follows earnings 0.5 and OSO (immediate), ρ, compute follows earnings 1 and 1 more). Best traditional: Traditional, ρ, compute follows earnings 1, 5.7; a clear difference.
+**Answer:** Best: OSO, ρ 0, 6.0 (3 more tie). Best traditional: Traditional, ρ 1, 5.7. Clear difference.
 
 | setting | ρ, compute follows earnings | frontier | targets solved | cost | gamer share of pay |
 | --- | --- | --- | --- | --- | --- |
@@ -39,6 +39,6 @@ Values are mean ± standard deviation over runs.
 | OSO (choice) | 0.5 | 5.4 ± 0.9 | 1.0 ± 1.1 | 756 ± 253 | 0.93 | 0.41 ± 0.12 |
 | OSO (choice) | 1 | 6.0 ± 0.3 | 2.5 ± 0.9 | 481 ± 226 | 0.70 | 0.41 ± 0.12 |
 
-Code: commit `023509e` (with uncommitted changes). Experiment: [config/experiments/funding-rule-drug-discovery.yaml](../../config/experiments/funding-rule-drug-discovery.yaml). Command: `npm run sim -- funding-rule-drug-discovery --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `9b5ec21` (with uncommitted changes). Experiment: [config/experiments/funding-rule-drug-discovery.yaml](../../config/experiments/funding-rule-drug-discovery.yaml). Command: `npm run sim -- funding-rule-drug-discovery --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

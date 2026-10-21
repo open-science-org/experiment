@@ -163,163 +163,161 @@
   .lab .told { margin-top: 8px; font-size: 12.5px; background: var(--surface); border: 1px dashed var(--line); border-radius: 6px; padding: 6px 8px; }
   .setting-note { display: block; font-size: 11.5px; color: var(--ink-3); margin-left: 22px; }
   .note { font-size: 12px; color: var(--ink-2); margin: 0 0 12px; }
+  .info { color: var(--ink-3); cursor: help; font-size: 12px; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+  .tabs .btn[aria-selected="true"] { background: var(--s1); color: #fff; border-color: var(--s1); }
+  h3.section { font-size: 14px; margin: 16px 0 6px; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 12px; }
+  .chips .btn[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+  .res { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+  .res h3 { margin: 4px 0 6px; font-size: 15px; }
+  .res .q { color: var(--ink-2); font-size: 13px; margin: 0 0 6px; }
+  .res .a { font-size: 14px; margin: 0; }
+  .res .meta { color: var(--ink-3); font-size: 12px; margin-top: 8px; }
 </style>
 </head>
 <body>
 <header>
   <h1>OSO experiment</h1>
-  <span class="muted">Does open science research beat traditional research for the same money?</span>
+  <span class="muted">Share work early (OSO) or keep it until it is finished (traditional): which gets more done for the same money?</span>
 </header>
 <div class="app">
-<nav class="side" aria-label="Sections">
-  <a href="#/">Overview</a>
-  <a href="#/design"><b>Design an experiment</b></a>
-  <div class="group">Simulated fields</div>
-  <div id="nav-fields"></div>
-  <a href="#/replay">Replay a community</a>
-  <div class="group">Real agents</div>
-  <a href="#/community"><b>OSO vs traditional</b></a>
-  <a href="#/pilot">Lean pilot</a>
-  <div id="nav-pilot"></div>
-  <div class="group">Everything else</div>
-  <a href="#/experiments">Saved experiments</a>
-  <a href="#/doc/docs/simulator.md">How the simulator works</a>
+<nav class="side" aria-label="Pages">
+  <a href="#/">Results</a>
+  <a href="#/new">New</a>
+  <a href="#/live">Live</a>
+  <a href="#/fields">Fields</a>
 </nav>
 <main>
+  <!-- Results: every experiment as a short card -->
   <section id="view-overview" class="hidden"></section>
   <section id="view-doc" class="hidden"><div class="crumbs" id="doc-crumbs"></div><article class="doc" id="doc-body"></article></section>
-  <section id="view-experiments" class="hidden"></section>
-  <section id="view-community" class="hidden">
-    <p class="lede">Two communities of AI labs, the same models and the same budget, race on the Lean problem set. <b>Traditional:</b> a lab's lemmas stay private until it proves a target; then the target and its lemmas are published and the lab takes the bounty. <b>OSO:</b> every result is published as soon as Lean accepts it, and value flows back to the results it used. Lean checks every proof.</p>
-    <details class="step" id="race" style="max-width:none"><summary><b>Start a race of your own</b> <span class="muted">· each lab is a model (its brain) and a persona (its behaviour)</span></summary>
-      <p class="note">A lab has two separate parts. <b>Model</b>: its brain, which sets how capable it is and what each step costs. <b>Persona</b>: its behaviour, set by features. <i>Instructed</i> features are written into the lab's instructions (shown under each lab, exactly as the lab will read them); <i>enforced</i> features are set by the harness, whatever the model does. The same persona can run on different models, and the same model under different personas, so a result can be traced to the brain or to the behaviour. Both communities get exactly the same labs and budget.</p>
-      <div class="labs" id="r-labs"></div>
-      <div class="row"><button class="btn" id="r-add">Add a lab</button></div>
-      <div class="row"><label>Question <input id="r-question" style="width:560px" placeholder="One sentence, decided before the run"></label></div>
-      <div><label>Counted targets: the race is judged on these, decided before it runs. <a href="#" id="r-suggest">Suggest from the pilot</a> <span class="muted" id="r-suggest-note"></span></label><div class="choice" id="r-counted"></div></div>
-      <div class="row">
-        <label>Post as conjectures <select id="r-conj"><option value="none">nothing</option><option value="direct" selected>the lemmas the counted targets use directly</option><option value="all">every lemma they rest on</option></select></label>
-        <label>Runs per side <input id="r-repeats" type="number" min="1" max="10" value="3" style="width:60px"></label>
-      </div>
-      <div class="row">
-        <label>Budget per lab, $ <input id="r-budget" type="number" min="0.05" max="20" step="0.05" value="0.5" style="width:80px"></label>
-        <label>Rounds <input id="r-rounds" type="number" min="1" max="200" value="30" style="width:70px"></label>
-        <label><input type="checkbox" id="r-trad" checked> Traditional</label><label><input type="checkbox" id="r-oso" checked> OSO</label>
-        <label>Name <input id="r-id" value="my-race" style="width:150px"></label>
-      </div>
-      <div class="row"><button class="btn primary" id="r-start">Start the race</button><span id="r-cost" class="muted"></span></div>
-      <div id="r-job" class="joblog hidden" aria-live="polite"></div>
-      <article id="r-card" class="doc hidden" style="margin-top:10px"></article>
-    </details>
-    <div class="bar"><label>Run <select id="c-run"></select></label><span id="c-live" class="live hidden">● live</span><span id="c-card"></span>
-      <button class="btn" id="c-first" aria-label="Start">⏮</button><button class="btn primary" id="c-play">▶ Replay</button>
-      <label>Speed <select id="c-speed"><option value="20">×20</option><option value="60" selected>×60</option><option value="240">×240</option></select></label>
-      <input type="range" id="c-scrub" min="0" max="0" value="0" aria-label="Time"><span class="clock" id="c-clock"></span>
-      <label><input type="checkbox" id="c-follow" checked> Follow live</label></div>
-    <div class="pane" style="margin-bottom:12px"><div id="c-chart"></div></div>
-    <div class="panes"><div class="pane" id="c-traditional"></div><div class="pane" id="c-oso"></div></div>
-  </section>
-  <section id="view-design" class="hidden">
-    <p class="lede">Design your own experiment in two steps: the <b>field</b> agents work in, then the <b>comparison</b>: which rules, which parameters to vary, what to measure. Everything you save is a plain file in the repository (<code>spaces/</code>, <code>config/experiments/</code>, <code>results/</code>), the same as one made at the command line.</p>
 
+  <!-- New: one form for both kinds -->
+  <section id="view-new" class="hidden">
     <div class="step">
-      <h2>1. The field</h2>
-      <p class="note">A field is its research tree (results, what each builds on, how hard each is), its targets with bounties, and its words for things. Use one that exists, describe a new one and let a model draft it, or write the file yourself.</p>
-      <div class="choice" role="radiogroup">
-        <label><input type="radio" name="fmode" value="existing" checked> Use an existing field</label>
-        <label><input type="radio" name="fmode" value="describe"> Describe a new field</label>
-        <label><input type="radio" name="fmode" value="edit"> Write or edit a field's file</label>
+      <div class="row"><label>Question <input id="e-question" placeholder="What do you want to find out?" style="width:560px"></label></div>
+      <div class="row choice" role="radiogroup" aria-label="Who does the work">
+        <b>Who does the work</b>
+        <label><input type="radio" name="who" value="sim" checked> Simulated agents <span class="info" title="Formula agents. Chance decides if each attempt works. Free and fast: thousands of runs.">ⓘ</span></label>
+        <label><input type="radio" name="who" value="ai"> AI models <span class="info" title="Real AI models try to prove real theorems. Lean checks each proof. Costs money: a few runs.">ⓘ</span></label>
       </div>
-      <div id="f-existing" class="row"><label>Field <select id="f-pick"></select></label><a id="f-report-link" href="#">Read its report</a></div>
-      <div id="f-describe" class="hidden">
-        <textarea id="f-desc" class="prose" rows="4" placeholder="For example: protein design. Starting from known folds, labs design binders, then enzymes; each stage is much harder; three target enzymes carry prizes."></textarea>
-        <div class="row"><button class="btn primary" id="f-draft">Draft the field</button><span class="muted">A model (Claude Opus 5.5, through the key in .env) writes the file; it is checked and test-run, and errors go back to the model. Costs a few cents. You review it before saving.</span></div>
+      <div class="row">
+        <label id="n-field-sim">Field <select id="e-space"></select></label>
+        <span id="n-field-ai" class="hidden">Field: <b>Lean problems</b> <span class="info" title="8 theorems to prove, each with a reward. Lean checks every proof.">ⓘ</span></span>
+        <label id="n-measure-sim">Measure <select id="e-measure"></select></label>
+        <span id="n-measure-ai" class="hidden">Measure: <b>targets solved</b></span>
+        <label id="n-runs-sim">Runs <input id="e-seeds" type="number" min="1" max="1000" value="50" style="width:70px"></label>
+        <label id="n-runs-ai" class="hidden">Runs <input id="r-repeats" type="number" min="1" max="10" value="3" style="width:60px"></label>
+      </div>
+      <div><b>Compare</b><div class="choice" id="e-settings"></div></div>
+      <div class="row"><button class="btn primary" id="n-run">Run</button><span id="e-summary" class="muted"></span><span id="r-cost" class="muted hidden"></span></div>
+      <details id="n-more"><summary>More options</summary>
+        <div id="more-sim">
+          <div class="row"><label>Name <input id="e-id" value="my-experiment" style="width:180px"></label><label>Title <input id="e-title" placeholder="optional" style="width:220px"></label><label><input type="checkbox" id="e-overwrite"> replace an experiment with this name</label></div>
+          <h3 class="section">Settings</h3>
+          <div class="params-wrap">
+            <div><div class="row"><button class="btn" id="e-reset">Reset</button><span class="muted" id="e-changed"></span></div><div id="e-params"></div></div>
+            <aside class="explainer" id="e-explain" aria-live="polite"></aside>
+          </div>
+          <h3 class="section">Agents</h3>
+          <div class="row"><button class="btn" id="a-reset">Reset</button><button class="btn" id="a-add">Add a kind</button><span class="muted" id="a-summary"></span></div>
+          <div class="kinds" id="a-kinds"></div>
+          <h3 class="section">Also report</h3>
+          <div class="choice" id="e-columns"></div>
+          <details><summary class="muted">The experiment file</summary><pre id="e-yaml"></pre></details>
+        </div>
+        <div id="more-ai" class="hidden">
+          <div class="row"><label>Name <input id="r-id" value="my-test" style="width:150px"></label><label>Money per lab, $ <input id="r-budget" type="number" min="0.05" max="20" step="0.05" value="0.15" style="width:80px"></label><label>Rounds <input id="r-rounds" type="number" min="1" max="200" value="30" style="width:70px"></label></div>
+          <h3 class="section">Labs <span class="info" title="Each lab is an AI model with a way of working. Both sides get the same labs.">ⓘ</span></h3>
+          <div class="labs" id="r-labs"></div>
+          <div class="row"><button class="btn" id="r-add">Add a lab</button></div>
+          <h3 class="section">Targets that count <span class="info" title="The test is judged on these, chosen before it runs.">ⓘ</span></h3>
+          <div class="row"><a href="#" id="r-suggest">Suggest from earlier tests</a><span class="muted" id="r-suggest-note"></span></div>
+          <div class="choice" id="r-counted"></div>
+          <div class="row"><label>Post helper results <span class="info" title="Smaller results the targets need, listed for every lab to prove.">ⓘ</span> <select id="r-conj"><option value="none">none</option><option value="direct" selected>the ones the targets use directly</option><option value="all">all the ones they rest on</option></select></label></div>
+        </div>
+      </details>
+      <div id="e-job" class="joblog hidden" aria-live="polite"></div>
+      <div id="r-job" class="joblog hidden" aria-live="polite"></div>
+      <article id="e-result" class="doc hidden"></article>
+      <article id="r-card" class="doc hidden"></article>
+    </div>
+  </section>
+
+  <!-- Live: what is running, and replays -->
+  <section id="view-live" class="hidden">
+    <div class="tabs" role="tablist">
+      <button class="btn" data-tab="ai" role="tab">Tests with AI models</button>
+      <button class="btn" data-tab="sim" role="tab">Simulation replay</button>
+      <button class="btn" data-tab="attempts" role="tab">AI model attempts</button>
+    </div>
+    <div id="tab-ai">
+      <div class="bar"><label>Test <select id="c-run"></select></label><span id="c-live" class="live hidden">● live</span><span id="c-card"></span>
+        <button class="btn" id="c-first" aria-label="Start">⏮</button><button class="btn primary" id="c-play">▶ Replay</button>
+        <label>Speed <select id="c-speed"><option value="20">×20</option><option value="60" selected>×60</option><option value="240">×240</option></select></label>
+        <input type="range" id="c-scrub" min="0" max="0" value="0" aria-label="Time"><span class="clock" id="c-clock"></span>
+        <label><input type="checkbox" id="c-follow" checked> Follow live</label></div>
+      <div class="pane" style="margin-bottom:12px"><div id="c-chart"></div></div>
+      <div class="panes"><div class="pane" id="c-traditional"></div><div class="pane" id="c-oso"></div></div>
+    </div>
+    <div id="tab-sim" class="hidden">
+      <div class="bar">
+        <label>Field <select id="sim-space"></select></label>
+        <label>Seed <input id="sim-seed" type="number" min="1" value="1" style="width:70px"></label>
+        <label>Left <select id="sim-left"></select></label>
+        <label>Right <select id="sim-right"></select></label>
+        <button class="btn primary" id="sim-load">Load</button>
+      </div>
+      <div class="bar">
+        <button class="btn" id="sim-first" aria-label="First round">⏮</button>
+        <button class="btn" id="sim-prev" aria-label="Previous round">◀</button>
+        <button class="btn primary" id="sim-play" aria-label="Play">▶ Play</button>
+        <button class="btn" id="sim-next" aria-label="Next round">▶|</button>
+        <label>Speed <select id="sim-speed"><option value="2">2 rounds/s</option><option value="5" selected>5 rounds/s</option><option value="12">12 rounds/s</option><option value="30">30 rounds/s</option></select></label>
+        <input type="range" id="sim-scrub" min="0" max="0" value="0" aria-label="Round">
+        <span class="clock" id="sim-clock">Round 0</span>
+      </div>
+      <div class="legend" id="sim-legend"></div>
+      <div class="panes"><div class="pane" id="pane-left"></div><div class="pane" id="pane-right"></div></div>
+    </div>
+    <div id="tab-attempts" class="hidden">
+      <div class="bar"><div class="runs" id="pilot-runs">Loading…</div><button class="btn primary" id="pilot-load">Show</button></div>
+      <div class="bar">
+        <button class="btn" id="pilot-first" aria-label="Start">⏮</button>
+        <button class="btn primary" id="pilot-play" aria-label="Play">▶ Replay</button>
+        <label>Speed <select id="pilot-speed"><option value="30">×30</option><option value="120" selected>×120</option><option value="600">×600</option></select></label>
+        <input type="range" id="pilot-scrub" min="0" max="0" value="0" aria-label="Time">
+        <span class="clock" id="pilot-clock"></span>
+        <label><input type="checkbox" id="pilot-follow" checked> Follow live</label>
+      </div>
+      <p class="note">✓ proved · ✕ not proved · the number is how many tries it took. Click one to see it.</p>
+      <div class="cards" id="pilot-cards"></div>
+      <div class="grid"><table class="pilot" id="pilot-grid"></table></div>
+    </div>
+  </section>
+
+  <!-- Fields -->
+  <section id="view-fields" class="hidden">
+    <div class="fields" id="fields-list"></div>
+    <details class="step" style="margin-top:14px"><summary><b>Add a field</b></summary>
+      <div class="choice" role="radiogroup">
+        <label><input type="radio" name="fmode" value="describe" checked> Describe it</label>
+        <label><input type="radio" name="fmode" value="edit"> Write the file</label>
+      </div>
+      <div id="f-existing" class="hidden"><select id="f-pick"></select><a id="f-report-link" href="#"></a></div>
+      <div id="f-describe">
+        <textarea id="f-desc" class="prose" rows="3" placeholder="For example: protein design. Labs start from known folds, then design binders, then enzymes. Three enzymes are the prizes."></textarea>
+        <div class="row"><button class="btn primary" id="f-draft">Draft it</button><span class="muted">An AI model writes the file. A few cents.</span></div>
       </div>
       <div id="f-edit" class="hidden">
-        <div class="row"><label>Start from <select id="f-start"><option value="">a blank template</option></select></label><span class="muted">Every setting is documented in <a href="#/doc/config/scenarios/default.yaml">config/scenarios/default.yaml</a>; a small field can list its results one by one, like <a href="#" id="f-graph-example">the battery field</a>.</span></div>
-        <textarea id="f-yaml" rows="22" spellcheck="false"></textarea>
-        <div class="row"><button class="btn" id="f-check">Check</button><button class="btn primary" id="f-save">Save field</button><label><input type="checkbox" id="f-overwrite"> save over an existing field with the same id</label></div>
+        <div class="row"><label>Start from <select id="f-start"><option value="">a blank file</option></select></label><a href="#" id="f-graph-example" class="hidden">example</a></div>
+        <textarea id="f-yaml" rows="20" spellcheck="false"></textarea>
+        <div class="row"><button class="btn" id="f-check">Check</button><button class="btn primary" id="f-save">Save</button><label><input type="checkbox" id="f-overwrite"> replace a field with this id</label></div>
       </div>
       <div id="f-job" class="joblog hidden" aria-live="polite"></div>
       <div id="f-result"></div>
-    </div>
-
-    <div class="step">
-      <h2>2. The experiment</h2>
-      <p class="note">Each combination of a rule setting and the values you vary is one row of the result; each row is run many times with different random draws. The field's agents and budget are the same in every row.</p>
-      <div class="row">
-        <label>Field <select id="e-space"></select></label>
-        <label>Name <input id="e-id" value="my-experiment" style="width:180px"></label>
-        <label>Title <input id="e-title" value="" placeholder="A short name" style="width:220px"></label>
-      </div>
-      <div class="row">
-        <label>Question <input id="e-question" value="" placeholder="One sentence: what this experiment answers" style="width:520px"></label>
-        <label>Main measure <select id="e-measure"></select></label>
-      </div>
-      <div><label>Compare these rule settings</label><div class="choice" id="e-settings" style="align-items:flex-start"></div></div>
-      <div class="params-wrap">
-        <div>
-          <label>Parameters: start from the field's own values. Drag a slider or type a value to change it for every row, or tick <b>vary</b> to try several values (at most two parameters). Click a parameter to see what it does.</label>
-          <div class="row"><button class="btn" id="e-reset">Reset to the field's values</button><span class="muted" id="e-changed"></span></div>
-          <div id="e-params"></div>
-        </div>
-        <aside class="explainer" id="e-explain" aria-live="polite"></aside>
-      </div>
-      <div><label>The agents: who is in the community. Every kind has eight traits; change them, change how many of each kind there are, or add a kind of your own. Click a trait to see what it does.</label>
-        <div class="row"><button class="btn" id="a-reset">Reset to the field's agents</button><button class="btn" id="a-add">Add an agent kind</button><span class="muted" id="a-summary"></span></div>
-        <div class="kinds" id="a-kinds"></div>
-      </div>
-      <div><label>Measure</label><div class="choice" id="e-columns"></div></div>
-      <div class="row"><label>Runs per row <input id="e-seeds" type="number" min="1" max="1000" value="50" style="width:80px"></label><span id="e-summary" class="muted"></span></div>
-      <details><summary class="muted">Show the experiment file</summary><pre id="e-yaml"></pre></details>
-      <div class="row"><button class="btn primary" id="e-run">Run the experiment</button><label><input type="checkbox" id="e-overwrite"> run over an existing experiment with the same name</label></div>
-      <div id="e-job" class="joblog hidden" aria-live="polite"></div>
-      <article id="e-result" class="doc hidden"></article>
-    </div>
-  </section>
-
-  <!-- Simulation playback -->
-  <section id="view-sim" class="hidden">
-    <div class="bar">
-      <label>Field <select id="sim-space"></select></label>
-      <label>Seed <input id="sim-seed" type="number" min="1" value="1" style="width:70px"></label>
-      <label>Left <select id="sim-left"></select></label>
-      <label>Right <select id="sim-right"></select></label>
-      <button class="btn primary" id="sim-load">Load</button>
-      <span class="muted">Same field, agents, budget and seed on both sides: only the rules differ.</span>
-    </div>
-    <div class="bar">
-      <button class="btn" id="sim-first" aria-label="First round">⏮</button>
-      <button class="btn" id="sim-prev" aria-label="Previous round">◀</button>
-      <button class="btn primary" id="sim-play" aria-label="Play">▶ Play</button>
-      <button class="btn" id="sim-next" aria-label="Next round">▶|</button>
-      <label>Speed <select id="sim-speed"><option value="2">2 rounds/s</option><option value="5" selected>5 rounds/s</option><option value="12">12 rounds/s</option><option value="30">30 rounds/s</option></select></label>
-      <input type="range" id="sim-scrub" min="0" max="0" value="0" aria-label="Round">
-      <span class="clock" id="sim-clock">Round 0</span>
-    </div>
-    <div class="legend" id="sim-legend"></div>
-    <div class="panes">
-      <div class="pane" id="pane-left"></div>
-      <div class="pane" id="pane-right"></div>
-    </div>
-  </section>
-
-  <!-- Lean pilot playback -->
-  <section id="view-pilot" class="hidden">
-    <p class="note">Each attempt is one model trying to prove one theorem: a proof plus up to three repairs on Lean's errors. <b>Alone</b>: no lemmas given; <b>with</b>: the theorems it rests on are given. The number on a mark is how many turns the attempt used (✓ proved, ✕ not proved, … in progress). Click a mark to read the attempt's turns. Transcripts contain proofs and stay on this machine.</p>
-    <div class="bar"><div class="runs" id="pilot-runs">Loading runs…</div><button class="btn primary" id="pilot-load">Show</button></div>
-    <div class="bar">
-      <button class="btn" id="pilot-first" aria-label="Start">⏮</button>
-      <button class="btn primary" id="pilot-play" aria-label="Play">▶ Replay</button>
-      <label>Speed <select id="pilot-speed"><option value="30">×30</option><option value="120" selected>×120</option><option value="600">×600</option></select></label>
-      <input type="range" id="pilot-scrub" min="0" max="0" value="0" aria-label="Time">
-      <span class="clock" id="pilot-clock"></span>
-      <label><input type="checkbox" id="pilot-follow" checked> Follow live</label>
-    </div>
-    <div class="cards" id="pilot-cards"></div>
-    <div class="grid"><table class="pilot" id="pilot-grid"></table></div>
-    <h2 class="section">Run summaries</h2>
-    <div class="list" id="pilot-summaries"></div>
+    </details>
   </section>
 </main>
 </div>
@@ -335,7 +333,7 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 const api = (path) => fetch(path).then(async (r) => { const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText); return j; });
 const money = (x) => '$' + (x < 0.1 ? x.toFixed(3) : x.toFixed(2));
 
-const VIEWS = ['view-overview', 'view-doc', 'view-experiments', 'view-sim', 'view-pilot', 'view-design', 'view-community'];
+const VIEWS = ['view-overview', 'view-doc', 'view-new', 'view-live', 'view-fields'];
 const show = (view) => { for (const v of VIEWS) $(v).classList.toggle('hidden', v !== view); window.scrollTo(0, 0); };
 const params = () => new URLSearchParams(location.hash.split('?')[1] ?? '');
 let OV = null;
@@ -343,16 +341,20 @@ const overviewData = async () => (OV ??= await api('/api/overview'));
 
 async function route() {
   const path = location.hash.slice(1).split('?')[0] || '/';
-  for (const a of document.querySelectorAll('nav.side a')) a.toggleAttribute('aria-current', a.getAttribute('href') === '#' + path || (path.startsWith('/doc/reports/') && a.getAttribute('href') === '#' + path));
-  for (const a of document.querySelectorAll('nav.side a')) if (a.hasAttribute('aria-current')) a.setAttribute('aria-current', 'page');
-  if (path === '/') { show('view-overview'); return drawOverview(); }
+  // Old links still work.
+  const old = { '/design': '/new', '/community': '/live?tab=ai', '/replay': '/live?tab=sim', '/pilot': '/live?tab=attempts', '/experiments': '/' };
+  if (old[path]) { const q = location.hash.split('?')[1]; location.hash = '#' + old[path] + (q ? (old[path].includes('?') ? '&' : '?') + q : ''); return; }
+  const top = '/' + (path.split('/')[1] ?? '');
+  for (const a of document.querySelectorAll('nav.side a')) {
+    const here = a.getAttribute('href') === '#' + top || (top === '/doc' && a.getAttribute('href') === '#/');
+    if (here) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+  }
+  if (path === '/') { show('view-overview'); return drawResults(); }
   if (path.startsWith('/doc/')) { show('view-doc'); return openDoc(path.slice(5)); }
-  if (path === '/experiments') { show('view-experiments'); return drawExperiments(); }
-  if (path === '/design') { show('view-design'); return enterDesign(); }
-  if (path === '/community') { show('view-community'); return enterCommunity(); }
-  if (path === '/replay') { show('view-sim'); return enterReplay(); }
-  if (path === '/pilot') { show('view-pilot'); if (!pilot.loadedList) loadRunList(); return drawPilotSummaries(); }
-  show('view-overview'); drawOverview();
+  if (path === '/new') { show('view-new'); return enterNew(); }
+  if (path === '/live') { show('view-live'); return showTab(params().get('tab') ?? 'ai'); }
+  if (path === '/fields') { show('view-fields'); return enterFields(); }
+  show('view-overview'); drawResults();
 }
 window.addEventListener('hashchange', route);
 
@@ -361,7 +363,8 @@ async function openDoc(path) {
   try {
     const d = await api('/api/doc?path=' + encodeURIComponent(path));
     const field = /^reports\/([^/]+)\/report\.md$/.exec(d.path);
-    $('doc-crumbs').innerHTML = field ? `<a href="#/replay?space=${field[1]}">Replay this field round by round →</a>` : `<span class="muted">${esc(d.path)}</span>`;
+    const fieldId = /^reports\/([^/]+)\//.exec(d.path)?.[1];
+    $('doc-crumbs').innerHTML = `<a href="#/">← Results</a>${fieldId ? ` · <a href="#/doc/reports/${fieldId}/report.md">Full report</a> · <a href="#/live?tab=sim&space=${fieldId}">Watch a simulation</a>` : ''}`;
     $('doc-body').innerHTML = d.html;
     // Headings get ids like GitHub's, so in-page links (#what-this-shows-…) scroll instead of navigating.
     const slug = (t) => t.toLowerCase().trim().replace(/[^\p{L}\p{N}\s-]/gu, '').replace(/\s/g, '-');
@@ -373,66 +376,47 @@ async function openDoc(path) {
   } catch (e) { $('doc-body').innerHTML = `<p>${esc(e.message)}</p>`; }
 }
 
-async function drawOverview() {
+const KIND = { race: 'AI models', 'model pilot': 'AI models', 'field report': 'Field', simulation: 'Simulation' };
+let resultsFilter = 'all';
+async function drawResults() {
+  OV = null;
+  const ov = await overviewData();
+  const order = { race: 0, 'model pilot': 1, 'field report': 2, simulation: 3 };
+  const cards = [...ov.cards].sort((a, b) => order[a.kind] - order[b.kind] || b.date.localeCompare(a.date));
+  const shown = cards.filter((c) => resultsFilter === 'all' || KIND[c.kind] === resultsFilter);
+  const chip = (f) => `<button class="btn" data-f="${f}" aria-pressed="${resultsFilter === f}">${f === 'all' ? 'All' : f}</button>`;
+  $('view-overview').innerHTML = `
+    <div class="chips">${['all', 'AI models', 'Field', 'Simulation'].map(chip).join('')}</div>
+    <div class="fields">${shown.map((c) => `<a class="res field" href="#/doc/${esc(c.page)}">
+      <span class="chip ${/^(OSO|Best on [^:]+: OSO)/.test(c.answer) ? 'ahead' : ''}">${esc(KIND[c.kind])}</span>
+      <h3>${esc(c.title.replace(/^(Real agents, OSO vs traditional|Lean pilot): /, ''))}</h3>
+      <p class="q">${esc(c.design.question)}</p>
+      <p class="a">${esc(c.answer)}</p>
+      <div class="meta">${esc(c.date)} · ${esc(c.design.runs)}${c.cost ? ' · ' + esc(c.cost) : ''}</div></a>`).join('') || '<p class="muted">Nothing yet.</p>'}</div>`;
+  for (const b of $('view-overview').querySelectorAll('.chips .btn')) b.onclick = () => { resultsFilter = b.dataset.f; drawResults(); };
+}
+
+/* Live: tabs */
+function showTab(t) {
+  for (const k of ['ai', 'sim', 'attempts']) { $('tab-' + k).classList.toggle('hidden', k !== t); }
+  for (const b of document.querySelectorAll('#view-live .tabs .btn')) b.setAttribute('aria-selected', b.dataset.tab === t);
+  if (t === 'ai') return enterCommunity();
+  if (t === 'sim') return enterReplay();
+  if (t === 'attempts' && !pilot.loadedList) return loadRunList();
+}
+for (const b of document.querySelectorAll('#view-live .tabs .btn')) b.onclick = () => { location.hash = '#/live?tab=' + b.dataset.tab; };
+
+/* Fields */
+async function enterFields() {
+  await enterDesign();
+  OV = null;
   const ov = await overviewData();
   const f1 = (x) => (Number.isFinite(x) ? x.toFixed(1) : '–');
-  const fields = ov.fields.map((h) => {
-    const m = (h.sensitivity ?? []).filter((x) => x.group === 'market');
-    const lead = m.length ? `${f1(Math.min(...m.map((x) => x.min)))} to ${f1(Math.max(...m.map((x) => x.max)))} levels` : '–';
-    const bar = (label, v, max, cls) => `<span>${label}</span><div class="b ${cls}" style="width:${(100 * v / max).toFixed(1)}%"></div><span class="n">${f1(v)}</span>`;
-    return `<a class="field" href="#/doc/reports/${h.id}/report.md"><span class="chip ${h.verdict === 'OSO ahead' ? 'ahead' : ''}">${esc(h.verdict)}</span><h3>${esc(h.title)}</h3><div class="muted">${esc(h.summary)}</div>
-      <div class="pair">${bar('OSO level', h.oso.frontier, h.maxLevel, 'oso')}${bar('traditional', h.traditional.frontier, h.maxLevel, 'trad')}</div>
-      <div class="muted" style="margin-top:8px">Hardest level reached, of ${h.maxLevel}. Targets solved: ${f1(h.oso.targetsSolved)} vs ${f1(h.traditional.targetsSolved)} of ${h.targets}. OSO's lead as market parameters vary: ${lead}.</div></a>`;
-  }).join('');
-  const md = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\*(.+?)\*/g, '<i>$1</i>');
-  const cd = ov.comparisonData;
-  const k = (x) => (x == null ? '–' : x >= 1000 ? (x / 1000).toFixed(1) + 'k' : String(Math.round(x)));
-  const pct = (p) => (p.attempts ? Math.round(100 * p.proved / p.attempts) : NaN);
-  const models = cd ? cd.models.map((m) => {
-    const name = m.model.split('/').pop();
-    const ratio = m.library.tokensPerProof && m.alone.tokensPerProof ? (m.alone.tokensPerProof / m.library.tokensPerProof).toFixed(1) : null;
-    const bar = (label, p, cls) => `<span>${label}</span><div class="b ${cls}" style="width:${p.attempts ? (100 * p.proved / p.attempts).toFixed(1) : 0}%"></div><span class="n">${p.attempts ? `${p.proved}/${p.attempts}` : '–'}</span>`;
-    const verdict = m.alone.attempts && m.alone.proved === m.alone.attempts ? 'proved every target alone' : m.needsLemmas.length ? `needed the lemmas for ${m.needsLemmas.join(', ')}` : 'lemmas did not decide any target';
-    const curve = cd.curves?.find((c) => c.model === m.model);
-    const src = curve ? `/files/${esc(ov.comparisonPath.replace(/summary\.md$/, curve.file))}` : '';
-    const chart = curve ? `<a href="${src}" target="_blank" rel="noopener" title="Open full size"><img src="${src}" alt="${esc(name)}: targets proved for the money, with lemmas and alone" style="width:100%;margin-top:8px;border-radius:6px"></a>` : '';
-    return `<div class="field"><span class="chip ${m.needsLemmas.length ? 'ahead' : ''}">${esc(verdict)}</span><h3>${esc(name)}</h3>
-      <div class="pair">${bar('with lemmas', m.library, 'oso')}${bar('alone', m.alone, 'trad')}</div>
-      <div class="muted" style="margin-top:8px">Attempts that proved their target (8 targets × 2 attempts). Per proof: ${k(m.library.tokensPerProof)} output tokens with lemmas${ratio ? `, ${k(m.alone.tokensPerProof)} alone (${ratio}× more)` : ''}; $${m.library.costPerProof?.toFixed(3) ?? '–'} with lemmas${m.alone.costPerProof ? `, $${m.alone.costPerProof.toFixed(3)} alone` : ''}.${m.missingAlone.length ? ` Not run alone: ${m.missingAlone.join(', ')}.` : ''}</div>${chart}</div>`;
-  }).join('') : '';
-  const cardBlock = (c) => `<div class="field" style="cursor:default"><span class="chip ${/^(OSO|For the same money, the OSO)/.test(c.answer) ? 'ahead' : ''}">${esc(c.kind)} · ${esc(c.date)}</span><h3><a href="#/doc/${esc(c.page)}">${esc(c.title)}</a></h3><p style="margin:4px 0"><b>Q:</b> ${esc(c.design.question)}</p><p style="margin:4px 0"><b>A:</b> ${esc(c.answer)}</p><div class="muted">${esc(c.design.runs)}${c.cost ? ' · ' + esc(c.cost) : ''}</div></div>`;
-  const races = ov.cards.filter((c) => c.kind === 'race').length ? `<div class="fields">${ov.cards.filter((c) => c.kind === 'race').map(cardBlock).join('')}</div>` : '';
-  const sims = ov.cards.filter((c) => c.kind === 'simulation').slice(0, 6);
-  const comp = cd ? `<div class="findings"><ul>${cd.headline.map((h) => `<li>${md(h)}</li>`).join('')}</ul></div>
-      <div class="fields">${models}</div>
-      <div class="legend" style="margin-top:8px"><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s2)"/></svg>with the lemmas the target rests on (as under OSO)</span><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s1)"/></svg>alone (as under traditional rules)</span></div>
-      <p class="note">The charts show targets proved as each model spends, working up the tree, alone and with the lemmas. The lemmas' own cost is not counted: they show what a prover saves when the lemmas are already published. The races of whole communities are above. <a href="#/doc/${esc(ov.comparisonPath)}">Every target and model, with notes →</a></p>`
-    : ov.comparison ? `<article class="doc">${ov.comparison.html.replace(/<h1>.*?<\/h1>/, '')}</article>` : '<p class="muted">No pilot comparison yet.</p>';
-  $('view-overview').innerHTML = `
-    <p class="lede">Communities of research agents get the same field, agents and budget, under two sets of rules. <b>Traditional:</b> work is published only when it is finished, and nothing flows back to the work it built on. <b>OSO:</b> results are published as they are found, and part of each result's value flows back to what it built on. The <a href="https://github.com/open-science-org/OSO/blob/master/docs/demo-model.md" target="_blank" rel="noopener">specification</a> defines the model once.</p>
-    <h2 class="section">Simulated fields</h2>
-    <p class="note">Simulations with guessed parameters: they show how the rules play out if a field works as described, not that it does. Click a field for its full report.</p>
-    <div class="fields">${fields || '<p class="muted">No reports yet: npm run sim -- report all.</p>'}</div>
-    <div class="legend" style="margin-top:8px"><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s2)"/></svg>OSO (results published at once)</span><span><svg width="14" height="10"><rect width="14" height="10" rx="2" fill="var(--s1)"/></svg>traditional</span></div>
-    <h2 class="section">Real agents: OSO vs traditional races</h2>
-    ${races || '<p class="muted">No races yet.</p>'}
-    <h2 class="section">Real agents: the Lean pilot</h2>
-    <p class="note">Five AI models tried to prove the problem set's 8 posted targets, alone or given the lemmas each target rests on; Lean checked every proof. The question: do shared lemmas make results reachable that are not reachable alone, or only cheaper? <a href="#/pilot">Watch or replay the runs →</a></p>
-    ${comp}
-    <h2 class="section">Simulation experiments</h2>
-    <div class="fields">${sims.map(cardBlock).join('')}</div>
-    <p class="note"><a href="#/experiments">Every experiment, with its question and answer →</a></p>`;
-}
-
-async function drawExperiments() {
-  // One index of every experiment (results/README.md): question, computed answer, cost; each links to its card.
-  const d = await api('/api/doc?path=results/README.md');
-  $('view-experiments').innerHTML = `<article class="doc">${d.html}</article>`;
-}
-
-async function drawPilotSummaries() {
-  const ov = await overviewData();
-  $('pilot-summaries').innerHTML = ov.pilot.map((p) => `<a href="#/doc/results/pilot/${p.id}/summary.md">${esc(p.title)}</a>`).join('') || '<p class="muted" style="padding:8px 12px">No summaries yet.</p>';
+  const bar = (label, v, max, cls) => `<span>${label}</span><div class="b ${cls}" style="width:${(100 * v / max).toFixed(1)}%"></div><span class="n">${f1(v)}</span>`;
+  $('fields-list').innerHTML = ov.fields.sort((a, b) => a.title.localeCompare(b.title)).map((h) => `<div class="res">
+    <h3>${esc(h.title)}</h3><p class="q">${esc(h.summary)}</p>
+    <div class="pair">${bar('OSO', h.oso.frontier, h.maxLevel, 'oso')}${bar('traditional', h.traditional.frontier, h.maxLevel, 'trad')}</div>
+    <div class="meta">Hardest level reached, of ${h.maxLevel} · <a href="#/doc/reports/${h.id}/card.md">Result</a> · <a href="#/doc/reports/${h.id}/report.md">Full report</a> · <a href="#/live?tab=sim&space=${h.id}">Watch</a></div></div>`).join('');
 }
 
 /* ------------------------------------------------------------------ Communities: OSO vs traditional, live or replayed */
@@ -443,22 +427,23 @@ async function initRace() {
   const [models, opts] = await Promise.all([api('/api/models'), api('/api/design/options')]);
   R.models = models; R.personas = opts.personas; R.features = opts.personaFeatures;
   const preset = (n) => ({ ...R.personas.find((p) => p.name === n) });
-  R.labs = [['deepseek/deepseek-v4.1-flash', 'Foundation builder'], ['google/gemini-3.8-flash', 'Target racer'], ['openai/gpt-5.6-terra', 'Neutral'], ['deepseek/deepseek-v4.1-flash', 'Cheap explorer']].map(([model, p]) => ({ model, persona: preset(p) }));
+  // Default: the cheapest model in every lab, as in the cheap-model test.
+  R.labs = ['Foundation builder', 'Foundation builder', 'Target racer', 'Neutral'].map((p) => ({ model: 'deepseek/deepseek-v4.1-flash', persona: preset(p) }));
   drawLabs();
-  for (const id of ['r-budget', 'r-rounds', 'r-trad', 'r-oso', 'r-repeats']) $(id).addEventListener('input', raceCost);
+  for (const id of ['r-budget', 'r-rounds', 'r-repeats']) $(id).addEventListener('input', raceCost);
+  $('e-settings').addEventListener('change', () => { if (who() === 'ai') raceCost(); });
   const posted = ['C3', 'A3', 'C4', 'X1', 'B3', 'B5', 'X2', 'A5'];
   $('r-counted').innerHTML = posted.map((t) => `<label><input type="checkbox" value="${t}"> ${t} <span class="muted" id="r-stat-${t}"></span></label>`).join('');
   $('r-suggest').onclick = async (e) => {
     e.preventDefault();
     const model = R.labs[0]?.model;
     const sg = await api('/api/race/suggest?model=' + encodeURIComponent(model));
-    if (!sg.run) { $('r-suggest-note').textContent = `no pilot data for ${model}`; return; }
-    for (const t of sg.targets) { const el = $('r-stat-' + t.id); if (el) el.textContent = `alone ${t.alone.proved}/${t.alone.attempts} · with lemmas ${t.library.proved}/${t.library.attempts}`; }
+    if (!sg.run) { $('r-suggest-note').textContent = ` no earlier tests for ${model.split('/').pop()}`; return; }
+    for (const t of sg.targets) { const el = $('r-stat-' + t.id); if (el) el.textContent = `alone ${t.alone.proved}/${t.alone.attempts}, with help ${t.library.proved}/${t.library.attempts}`; }
     for (const box of $('r-counted').querySelectorAll('input')) box.checked = sg.counted.includes(box.value);
-    $('r-suggest-note').textContent = `${model.split('/').pop()}: counted are the targets it never proved alone but did with lemmas (${sg.counted.join(', ') || 'none'}).`;
+    $('r-suggest-note').textContent = ` picked the ones ${model.split('/').pop()} never proved alone but did with help.`;
   };
   $('r-add').onclick = () => { R.labs.push({ model: R.labs.at(-1)?.model ?? 'deepseek/deepseek-v4.1-flash', persona: preset('Neutral') }); drawLabs(); };
-  $('r-start').onclick = startRace;
 }
 function featureControl(i, f, p) {
   const kind = `<span class="kind ${f.kind}">${f.kind === 'unavailable' ? 'not yet available' : f.kind}</span>`;
@@ -468,19 +453,18 @@ function featureControl(i, f, p) {
   else if (f.type === 'toggle') ctl = `<label><input type="checkbox" data-i="${i}" data-f="${f.key}" ${p[f.key] ? 'checked' : ''}> sees and cites other labs' results</label>`;
   else if (f.type === 'number') ctl = `<input type="number" min="${f.min}" max="${f.max}" value="${p[f.key]}" data-i="${i}" data-f="${f.key}" style="width:60px" aria-label="${esc(f.label)}"> repairs per action`;
   else ctl = '<span class="muted">—</span>';
-  return `<div class="feat" title="${esc(f.explain)}"><div class="fl"><b>${esc(f.label)}</b>${kind}</div>${ctl}<div class="muted" style="font-size:11px">${esc(f.explain)}</div></div>`;
+  return `<div class="feat" title="${esc(f.explain)}"><div class="fl"><b>${esc(f.label)}</b> <span class="info" title="${esc(f.explain)}">ⓘ</span>${kind}</div>${ctl}</div>`;
 }
 function drawLabs() {
   const mopts = (sel) => R.models.map((m) => `<option value="${esc(m.id)}" ${m.id === sel ? 'selected' : ''}>${esc(m.id)} · $${m.input.toFixed(2)} / $${m.output.toFixed(2)} per M tokens</option>`).join('');
   const popts = (sel) => R.personas.map((p) => `<option ${p.name === sel ? 'selected' : ''}>${esc(p.name)}</option>`).join('') + (R.personas.some((p) => p.name === sel) ? '' : `<option selected>${esc(sel)}</option>`);
   $('r-labs').innerHTML = R.labs.map((l, i) => `<div class="lab">
       <div class="lhead"><b>Lab ${i + 1}</b>
-        <label><span class="part">Model: the brain</span><select data-i="${i}" class="r-model">${mopts(l.model)}</select></label>
-        <label><span class="part">Persona: the behaviour</span><select data-i="${i}" class="r-persona">${popts(l.persona.name)}</select></label>
-        <span><button class="btn r-edit" data-i="${i}">${l.open ? 'Hide features' : 'Adjust features'}</button> <button class="btn r-del" data-i="${i}" ${R.labs.length < 2 ? 'disabled' : ''}>Remove</button></span></div>
+        <label><span class="part">Model</span><select data-i="${i}" class="r-model">${mopts(l.model)}</select></label>
+        <label><span class="part">Way of working</span><select data-i="${i}" class="r-persona">${popts(l.persona.name)}</select></label>
+        <span><button class="btn r-edit" data-i="${i}">${l.open ? 'Done' : 'Adjust'}</button> <button class="btn r-del" data-i="${i}" ${R.labs.length < 2 ? 'disabled' : ''}>Remove</button></span></div>
       ${l.open ? `<div class="feats">${R.features.map((f) => featureControl(i, f, l.persona)).join('')}</div>` : ''}
-      <div class="told" id="told-${i}"><span class="muted">Told to the lab:</span> …</div>
-      <div class="muted" style="font-size:11.5px;margin-top:4px">Enforced: ${l.persona.reuse ? 'sees other labs\' results' : '<b>works alone</b>'} · ${l.persona.persistence} repairs per action · ${esc(l.persona.thoroughness)} reasoning effort</div>
+      <div class="told" id="told-${i}"></div>
     </div>`).join('');
   R.labs.forEach((l, i) => told(i));
   const on = (sel, ev, fn) => { for (const el of $('r-labs').querySelectorAll(sel)) el.addEventListener(ev, () => fn(el, R.labs[el.dataset.i])); };
@@ -500,42 +484,43 @@ async function told(i) {
   try {
     const { text } = await post('/api/persona/text', { persona: R.labs[i].persona });
     const el = $('told-' + i);
-    if (el) el.innerHTML = `<span class="muted">Told to the lab:</span> ${text ? esc(text) : '<i class="muted">nothing beyond the common instructions</i>'}`;
+    const l = R.labs[i];
+    if (el) el.innerHTML = `<span class="muted">Told:</span> ${text ? esc(text) : '<i class="muted">nothing extra</i>'} <span class="muted">· ${l.persona.reuse ? 'sees others\' work' : 'works alone'} · ${l.persona.persistence} fixes per try · ${esc(l.persona.thoroughness)} effort</span>`;
   } catch {}
 }
 function raceDesign() {
   return {
     id: $('r-id').value.trim(), labs: R.labs.map((l) => ({ model: l.model, persona: l.persona })), budget: Number($('r-budget').value), rounds: Number($('r-rounds').value),
-    rules: [['r-trad', 'traditional'], ['r-oso', 'oso']].filter(([id]) => $(id).checked).map(([, r]) => r),
-    question: $('r-question').value.trim(), counted: [...$('r-counted').querySelectorAll('input:checked')].map((i) => i.value),
+    rules: [...$('e-settings').querySelectorAll('input:checked')].map((i) => i.value).filter((v) => v === 'traditional' || v === 'oso'),
+    question: $('e-question').value.trim(), counted: [...$('r-counted').querySelectorAll('input:checked')].map((i) => i.value),
     conjectures: $('r-conj').value, repeats: Number($('r-repeats').value),
   };
 }
 async function raceCost() {
   const d = raceDesign(), max = d.budget * d.labs.length * d.rules.length * d.repeats;
   let bal = '';
-  try { const b = await api('/api/balance'); if (b.ok && b.remaining != null) bal = ` Your OpenRouter key has $${b.remaining.toFixed(2)} left.`; } catch {}
-  $('r-cost').textContent = `At most $${max.toFixed(2)} at list prices (${d.labs.length} labs × $${d.budget} × ${d.rules.length} communit${d.rules.length === 1 ? 'y' : 'ies'} × ${d.repeats} run${d.repeats > 1 ? 's' : ''}).${bal}`;
+  try { const b = await api('/api/balance'); if (b.ok && b.remaining != null) bal = ` · $${b.remaining.toFixed(2)} left on your key`; } catch {}
+  $('r-cost').textContent = `Costs at most $${max.toFixed(2)}${bal}`;
   return max;
 }
 async function startRace() {
   const d = raceDesign(), max = await raceCost();
-  if (!confirm(`Start "${d.id}"? It can spend up to $${max.toFixed(2)} of your OpenRouter credit.`)) return;
+  if (!d.rules.length) { alert('Tick Traditional, OSO or both.'); return; }
+  if (!confirm(`Run "${d.id}"? It can cost up to $${max.toFixed(2)}.`)) return;
   try {
-    if (!d.counted.length && !confirm('No counted targets chosen: the race will be judged on all 8. Continue?')) return;
+    if (!d.counted.length && !confirm('No targets picked to count: all 8 will count. Go on?')) return;
     const j = await post('/api/community/start', { design: d });
     follow(j.job, $('r-job'), async (job) => {
       enterCommunity();
       if (job.status === 'done') { const c = await api('/api/doc?path=' + encodeURIComponent(job.result.doc)); $('r-card').innerHTML = c.html; $('r-card').classList.remove('hidden'); OV = null; }
     });
-    setTimeout(() => enterCommunity().then(() => { $('c-run').value = `${d.id}-r1`; loadCommunity(); }), 5000);
+    $('r-job').insertAdjacentHTML('beforebegin', `<p id="r-watch"><a href="#/live?tab=ai&run=${encodeURIComponent(d.id)}-r1">Watch it live →</a></p>`);
   } catch (e) { $('r-job').classList.remove('hidden'); $('r-job').textContent = e.message; }
 }
 
 async function enterCommunity() {
   if (!C.ready) {
     C.ready = true;
-    initRace().then(() => { if (params().get('race') === 'open') { $('race').open = true; R.labs[0].open = true; drawLabs(); } });
     $('c-run').onchange = () => { $('c-follow').checked = true; loadCommunity(); };
     $('c-play').onclick = () => {
       if (C.timer) return stopC();
@@ -550,8 +535,10 @@ async function enterCommunity() {
   }
   const runs = await api('/api/community/runs');
   const keep = $('c-run').value;
-  $('c-run').innerHTML = runs.map((r) => `<option value="${esc(r.id)}">${r.id.startsWith('stub-') ? 'Practice run, no AI (stand-ins replay our reference proofs)' : `${esc(r.id)} · real AI labs`} · ${r.actions} actions${r.live ? ' · live' : ''}</option>`).join('') || '<option>No community runs yet</option>';
-  if (keep && runs.some((r) => r.id === keep)) $('c-run').value = keep;
+  $('c-run').innerHTML = runs.filter((r) => !r.id.startsWith('stub-')).map((r) => `<option value="${esc(r.id)}">${esc(r.id)} · ${r.actions} actions${r.live ? ' · live' : ''}</option>`).join('') || '<option>No tests yet</option>';
+  const wanted = params().get('run');
+  if (wanted && runs.some((r) => r.id === wanted)) $('c-run').value = wanted;
+  else if (keep && runs.some((r) => r.id === keep)) $('c-run').value = keep;
   else { const real = runs.find((r) => r.live && !r.id.startsWith('stub-')) ?? runs.find((r) => !r.id.startsWith('stub-')); if (real) $('c-run').value = real.id; }
   loadCommunity();
 }
@@ -567,15 +554,15 @@ async function loadCommunity() {
   // The card for this race, or for the series it belongs to; or a button to build it once runs have ended.
   const series = /^(.*)-r\d+$/.exec(id)?.[1];
   const cardId = (OV ?? await overviewData()).cards.find((c) => c.kind === 'race' && (c.id === id || c.id === series))?.id;
-  $('c-card').innerHTML = cardId ? ` <a href="#/doc/results/community/${esc(cardId)}/summary.md">Read the card →</a>` : series && !live ? ` <button class="btn" id="c-build">Build the card for ${esc(series)}</button>` : '';
-  if ($('c-build')) $('c-build').onclick = async () => { const j = await post('/api/race/series', { id: series }); follow(j.job, $('r-job'), () => { OV = null; loadCommunity(); }); $('race').open = true; };
+  $('c-card').innerHTML = cardId ? ` <a href="#/doc/results/community/${esc(cardId)}/summary.md">Result →</a>` : series && !live ? ` <button class="btn" id="c-build">Make the result</button>` : '';
+  if ($('c-build')) $('c-build').onclick = async () => { const j = await post('/api/race/series', { id: series }); $('c-card').textContent = ' making the result…'; follow(j.job, $('r-job'), () => { OV = null; loadCommunity(); }); };
   C.t0 = acts.length ? Math.min(...acts.map((a) => a.t)) - 1000 : Date.now();
   C.t1 = Math.max(C.t0 + 1000, ...acts.map((a) => a.t), live ? Date.now() : 0);
   if ($('c-follow').checked) C.now = C.t1;
   $('c-scrub').max = Math.round((C.t1 - C.t0) / 1000);
   drawCommunity();
   clearTimeout(C.poll);
-  if (live && location.hash.startsWith('#/community')) C.poll = setTimeout(() => { if ($('c-follow').checked && !C.timer) loadCommunity(); else C.poll = setTimeout(loadCommunity, 4000); }, 4000);
+  if (live && location.hash.startsWith('#/live')) C.poll = setTimeout(() => { if ($('c-follow').checked && !C.timer) loadCommunity(); else C.poll = setTimeout(loadCommunity, 4000); }, 4000);
 }
 
 function drawCommunity() {
@@ -593,10 +580,10 @@ function drawCommunity() {
   const budget = Math.max(...['traditional', 'oso'].map((k) => (C.run[k] ? C.run[k].options.budget * C.run[k].options.agents.length : 0)), 0.01);
   const W = 760, H = 300, l = 54, rgt = 150, top = 36, bot = 42, pw = W - l - rgt, ph = H - top - bot;
   const sx = (x) => l + (x / budget) * pw, sy = (y) => top + ph - (y / 8) * ph;
-  let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="Targets solved for the money"><text x="${l}" y="20" font-size="14" font-weight="700" fill="var(--ink)">Targets solved for the money</text>`;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="Targets solved for the money"><text x="${l}" y="20" font-size="14" font-weight="700" fill="var(--ink)">Targets solved, by money spent</text>`;
   for (const y of [0, 2, 4, 6, 8]) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"/><text x="${l - 8}" y="${sy(y) + 4}" text-anchor="end" font-size="11" fill="var(--ink-2)">${y}</text>`;
   for (const k of [0, 0.25, 0.5, 0.75, 1]) svg += `<text x="${sx(budget * k)}" y="${top + ph + 16}" text-anchor="middle" font-size="11" fill="var(--ink-2)">$${(budget * k).toFixed(2)}</text>`;
-  svg += `<text x="${l + pw / 2}" y="${H - 6}" text-anchor="middle" font-size="11" fill="var(--ink-2)">Dollars spent by the community (list prices)</text>`;
+  svg += `<text x="${l + pw / 2}" y="${H - 6}" text-anchor="middle" font-size="11" fill="var(--ink-2)">Money spent</text>`;
   const ends = [];
   for (const [k, color, name] of [['traditional', 'var(--s1)', 'Traditional'], ['oso', 'var(--s2)', 'OSO']]) {
     if (!C.run[k]) continue;
@@ -675,10 +662,36 @@ async function refreshSpaces() {
   D.spaces = await api('/api/spaces');
   const opts = D.spaces.map((s) => `<option value="${s.id}">${esc(s.title)}</option>`).join('');
   for (const id of ['f-pick', 'e-space']) { const v = $(id).value; $(id).innerHTML = opts; if (v) $(id).value = v; }
-  $('f-start').innerHTML = '<option value="">a blank template</option>' + opts;
+  $('f-start').innerHTML = '<option value="">a blank file</option>' + opts;
   OV = null;
-  const ov = await overviewData();
-  $('nav-fields').innerHTML = ov.fields.sort((a, b) => a.title.localeCompare(b.title)).map((h) => `<a class="sub" href="#/doc/reports/${h.id}/report.md">${esc(h.title)}</a>`).join('');
+}
+
+/* New: one form; who does the work decides which options apply. */
+let runSim = async () => {};
+const who = () => document.querySelector('input[name=who]:checked')?.value ?? 'sim';
+let newReady = false;
+async function enterNew() {
+  await enterDesign();
+  if (!newReady) {
+    newReady = true;
+    await initRace();
+    for (const r of document.querySelectorAll('input[name=who]')) r.onchange = applyWho;
+    $('n-run').onclick = () => (who() === 'ai' ? startRace() : runSim());
+    // A fresh name each time, so nothing is overwritten by accident.
+    const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
+    $('e-id').value = `exp-${stamp}`; $('r-id').value = `test-${stamp}`;
+    $('e-question').addEventListener('input', () => { if (!$('e-title').value) designCheck(); });
+  }
+  if (params().get('who') === 'ai') document.querySelector('input[name=who][value=ai]').checked = true;
+  if (params().get('more')) $('n-more').open = true;
+  applyWho();
+}
+function applyWho() {
+  const ai = who() === 'ai';
+  for (const [id, show] of [['n-field-sim', !ai], ['n-field-ai', ai], ['n-measure-sim', !ai], ['n-measure-ai', ai], ['n-runs-sim', !ai], ['n-runs-ai', ai], ['more-sim', !ai], ['more-ai', ai], ['e-summary', !ai], ['r-cost', ai]]) $(id).classList.toggle('hidden', !show);
+  // AI tests compare the two rule sets only.
+  for (const l of $('e-settings').querySelectorAll('label')) l.classList.toggle('hidden', ai && !['traditional', 'oso'].includes(l.dataset.k));
+  if (ai) raceCost(); else designCheck();
 }
 
 let designReady = false;
@@ -688,10 +701,9 @@ async function enterDesign() {
   D.opts = await api('/api/design/options');
   await refreshSpaces();
   // Step 1
-  const modes = { existing: 'f-existing', describe: 'f-describe', edit: 'f-edit' };
+  const modes = { describe: 'f-describe', edit: 'f-edit' };
   for (const r of document.querySelectorAll('input[name=fmode]')) r.onchange = () => { for (const [m, el] of Object.entries(modes)) $(el).classList.toggle('hidden', m !== r.value); $('f-result').innerHTML = ''; };
-  const reportLink = () => { $('f-report-link').href = `#/doc/reports/${$('f-pick').value}/report.md`; $('e-space').value = $('f-pick').value; designCheck(); };
-  $('f-pick').onchange = reportLink; reportLink();
+
   $('f-yaml').value = D.opts.template;
   $('f-start').onchange = async () => { $('f-yaml').value = $('f-start').value ? (await api('/api/spaces/yaml?id=' + $('f-start').value)).yaml : D.opts.template; };
   $('f-graph-example').onclick = async (e) => { e.preventDefault(); $('f-start').value = 'solid-state-battery'; $('f-start').onchange(); };
@@ -702,8 +714,8 @@ async function enterDesign() {
       const r = await post('/api/spaces/save', { yaml: $('f-yaml').value, overwrite: $('f-overwrite').checked });
       await refreshSpaces();
       $('f-pick').value = r.id; $('e-space').value = r.id;
-      $('f-result').insertAdjacentHTML('afterbegin', `<p><span class="ok">Saved</span> as <code>spaces/${esc(r.id)}.yaml</code>. <button class="btn" id="f-build">Build its standard report</button> <span class="muted">(about a minute: every report runs the same experiments)</span></p>`);
-      $('f-build').onclick = () => post('/api/reports/build', { space: r.id, seeds: 100 }).then((j) => follow(j.job, $('f-job'), async (job) => { await refreshSpaces(); if (job.status === 'done') $('f-result').insertAdjacentHTML('afterbegin', `<p><a href="#/doc/reports/${esc(r.id)}/report.md">Read the report →</a></p>`); }));
+      $('f-result').insertAdjacentHTML('afterbegin', `<p><span class="ok">Saved.</span> <button class="btn" id="f-build">Make its report</button> <span class="muted">about a minute</span></p>`);
+      $('f-build').onclick = () => post('/api/reports/build', { space: r.id, seeds: 100 }).then((j) => follow(j.job, $('f-job'), async (job) => { await refreshSpaces(); if (job.status === 'done') { $('f-result').insertAdjacentHTML('afterbegin', `<p><a href="#/doc/reports/${esc(r.id)}/card.md">See the result →</a></p>`); enterFields(); } }));
       designCheck();
     } catch (e) { $('f-result').insertAdjacentHTML('afterbegin', `<p class="no">${esc(e.message)}</p>`); }
   };
@@ -728,7 +740,7 @@ async function enterDesign() {
     sharingOnly: 'publish at once, but nothing flows back',
     traditionalChoice: 'agents choose what to publish; nothing flows back',
   };
-  $('e-settings').innerHTML = Object.entries(D.opts.settings).map(([k, v]) => `<label style="display:block"><input type="checkbox" value="${k}" ${['traditional', 'oso', 'osoChoice'].includes(k) ? 'checked' : ''}> ${esc(v)}<span class="setting-note">${esc(SETTING_NOTES[k] ?? '')}</span></label>`).join('');
+  $('e-settings').innerHTML = Object.entries(D.opts.settings).map(([k, v]) => `<label data-k="${k}" title="${esc(SETTING_NOTES[k] ?? '')}"><input type="checkbox" value="${k}" ${['traditional', 'oso'].includes(k) ? 'checked' : ''}> ${esc(v === 'OSO (immediate)' ? 'OSO' : v)} <span class="info">ⓘ</span></label>`).join('');
   if (params().get('param')) selected = params().get('param');
   await loadFieldValues();
   await loadFieldAgents();
@@ -745,9 +757,9 @@ async function enterDesign() {
   $('e-measure').innerHTML = D.opts.columns.map((c) => `<option value="${c.id}" ${c.id === 'frontier' ? 'selected' : ''}>${esc(c.meaning)}</option>`).join('');
   for (const id of ['e-measure', 'e-question']) $(id).addEventListener('change', designCheck);
   $('e-columns').innerHTML = D.opts.columns.map((c) => `<label title="${esc(c.meaning)}"><input type="checkbox" value="${c.id}" ${D.opts.defaultColumns.includes(c.id) ? 'checked' : ''}> ${esc(c.meaning)}</label>`).join('');
-  for (const el of document.querySelectorAll('#view-design .step:nth-of-type(2) input, #view-design .step:nth-of-type(2) select')) el.addEventListener('change', designCheck);
+  for (const el of document.querySelectorAll('#view-new #more-sim input, #view-new #more-sim select, #e-settings input, #e-space, #e-seeds')) el.addEventListener('change', designCheck);
   $('e-id').addEventListener('input', designCheck);
-  $('e-run').onclick = async () => {
+  runSim = async () => {
     const c = await designCheck(); if (!c?.ok) return;
     if (c.runs > 20000 && !confirm(`That is ${c.runs.toLocaleString()} simulated runs. Run it?`)) return;
     try {
@@ -756,7 +768,7 @@ async function enterDesign() {
       follow(j.job, $('e-job'), async (job) => {
         if (job.status !== 'done') return;
         const d = await api('/api/doc?path=' + encodeURIComponent(job.result.doc));
-        $('e-result').innerHTML = d.html + `<p><a href="#/doc/${esc(job.result.doc)}">Open it in saved experiments</a> · <a href="#/replay?space=${esc(currentDesign().space)}">Replay this field round by round</a></p>`;
+        $('e-result').innerHTML = d.html + `<p><a href="#/live?tab=sim&space=${esc(currentDesign().space)}">Watch a simulation of this field →</a></p>`;
         $('e-result').classList.remove('hidden');
         OV = null;
       });
@@ -788,12 +800,12 @@ const agentsChanged = () => JSON.stringify(D.agents) !== JSON.stringify({ archet
 function drawAgents() {
   const kinds = Object.keys(D.agents.archetypes).sort((a, b) => (D.agents.mix[b] ?? 0) - (D.agents.mix[a] ?? 0));
   const total = Object.values(D.agents.mix).reduce((a, b) => a + (b || 0), 0);
-  $('a-summary').textContent = `${total} agents${agentsChanged() ? ' · changed from the field\'s' : ''}`;
+  $('a-summary').textContent = `${total} agents${agentsChanged() ? ' · changed' : ''}`;
   $('a-kinds').innerHTML = kinds.map((k) => {
     const t = D.agents.archetypes[k], n = D.agents.mix[k] ?? 0;
     return `<div class="kind" data-k="${esc(k)}"><div class="khead"><b>${esc(k)}</b><label>how many <input type="number" class="a-n" min="0" max="50" value="${n}" style="width:60px"></label></div>` +
       D.opts.traits.map((tr) => `<div class="trait" data-tr="${tr.key}" title="${esc(tr.explain)}"><span>${esc(tr.label)}</span><input type="range" min="${tr.min}" max="${tr.max}" step="${tr.step}" value="${t[tr.key]}" aria-label="${esc(k)} ${esc(tr.label)}"><input type="number" min="${tr.min}" max="${tr.max}" step="${tr.step}" value="${t[tr.key]}"></div>`).join('') +
-      `<label style="font-size:12px"><input type="checkbox" class="a-spec" ${t.specialist ? 'checked' : ''}> specialist: much better in one area, worse elsewhere</label></div>`;
+      `<label style="font-size:12px" title="Much better in one area, worse elsewhere"><input type="checkbox" class="a-spec" ${t.specialist ? 'checked' : ''}> specialist</label></div>`;
   }).join('');
   for (const card of $('a-kinds').querySelectorAll('.kind')) {
     const k = card.dataset.k;
@@ -823,22 +835,21 @@ async function loadFieldValues() {
 const fmtV = (p, v) => (p.integer ? String(Math.round(v)) : String(Number(v.toFixed(3))));
 
 function drawParams() {
-  const groups = [['market', 'Set by communities, funders or the protocol'], ['guess', 'Our guesses about agents and knowledge'], ['field', 'The field']];
+  const groups = [['market', 'Rules and money'], ['guess', 'Assumptions about agents'], ['field', 'The field']];
   const nVary = D.opts.parameters.filter((p) => P[p.path].vary).length;
   $('e-params').innerHTML = groups.map(([g, title]) => `<div class="pgroup">${title}</div>` + D.opts.parameters.filter((p) => p.group === g).map((p) => {
     const st = P[p.path], changed = !st.vary && st.value !== D.field[p.path];
     return `<div class="param ${selected === p.path ? 'sel' : ''}" data-path="${p.path}" tabindex="0">
-      <div class="ptop"><b>${esc(p.label)}</b><span class="muted">${esc(p.short)}</span>${p.flowBack ? '<span class="muted">(OSO settings only)</span>' : ''}${changed ? '<span class="tag">changed</span>' : ''}${st.vary ? '<span class="tag vary">varied</span>' : ''}</div>
+      <div class="ptop" title="${esc(p.short)}"><b>${esc(p.label)}</b> <span class="info">ⓘ</span>${changed ? '<span class="tag">changed</span>' : ''}${st.vary ? '<span class="tag vary">varied</span>' : ''}</div>
       <div class="pctl">
         <input type="range" min="${p.min}" max="${p.max}" step="${p.step}" value="${st.value}" ${st.vary ? 'disabled' : ''} aria-label="${esc(p.label)}">
         <input type="number" min="${p.min}" max="${p.max}" step="${p.step}" value="${fmtV(p, st.value)}" ${st.vary ? 'disabled' : ''} aria-label="${esc(p.label)} value">
-        <span class="muted">field: ${fmtV(p, D.field[p.path])}</span>
-        <label><input type="checkbox" class="pvary" ${st.vary ? 'checked' : ''} ${!st.vary && nVary >= 2 ? 'disabled' : ''}> vary</label>
+        <label title="Try several values"><input type="checkbox" class="pvary" ${st.vary ? 'checked' : ''} ${!st.vary && nVary >= 2 ? 'disabled' : ''}> try several</label>
         ${st.vary ? `<input class="pvalues" value="${esc(st.values)}" placeholder="values, separated by commas">` : ''}
       </div></div>`;
   }).join('')).join('');
   const n = D.opts.parameters.filter((p) => !P[p.path].vary && P[p.path].value !== D.field[p.path]).length;
-  $('e-changed').textContent = n ? `${n} changed from the field's values` : '';
+  $('e-changed').textContent = n ? `${n} changed` : '';
   for (const row of $('e-params').querySelectorAll('.param')) {
     const p = D.opts.parameters.find((x) => x.path === row.dataset.path);
     const [range, num] = row.querySelectorAll('input[type=range], input[type=number]');
@@ -1009,7 +1020,8 @@ function designCheck() {
     checkTimer = setTimeout(async () => {
       if (!D.opts) return done(null);
       const c = await post('/api/experiments/check', { design: currentDesign() });
-      $('e-summary').innerHTML = c.ok ? `${c.rows} row${c.rows === 1 ? '' : 's'} × ${$('e-seeds').value} runs = <b>${c.runs.toLocaleString()} simulated runs</b>${c.exists ? ' · <span class="no">an experiment with this name exists</span>' : ''}` : `<span class="no">${esc(c.error)}</span>`;
+      if (who() !== 'sim') return done(c);
+      $('e-summary').innerHTML = c.ok ? `${c.runs.toLocaleString()} runs in all${c.exists ? ' · <span class="no">this name is taken (More options)</span>' : ''}` : `<span class="no">${esc(c.error)}</span>`;
       $('e-yaml').textContent = c.ok ? c.yaml : '';
       done(c);
     }, 250);
@@ -1182,14 +1194,6 @@ async function initReplay() {
   await loadSim();
 }
 
-// Navigation: one entry per field report, and boot.
-(async () => {
-  const ov = await overviewData();
-  $('nav-fields').innerHTML = ov.fields.sort((a, b) => a.title.localeCompare(b.title)).map((h) => `<a class="sub" href="#/doc/reports/${h.id}/report.md">${esc(h.title)}</a>`).join('');
-  const comp = ov.pilot.find((p) => p.id.startsWith('panel-20'));
-  if (comp) $('nav-pilot').innerHTML = `<a class="sub" href="#/doc/results/pilot/${comp.id}/summary.md">Models compared</a>`;
-  route();
-})();
 
 /* ------------------------------------------------------------------ Lean pilot playback */
 const pilot = { runs: [], t0: 0, t1: 0, now: 0, timer: null, poll: null, loadedList: false, selected: [] };
@@ -1248,7 +1252,7 @@ function drawPilot() {
   const now = pilot.now;
   $('pilot-scrub').value = Math.round((now - pilot.t0) / 1000);
   const el = Math.max(0, (now - pilot.t0) / 1000);
-  $('pilot-clock').textContent = `${Math.floor(el / 60)} min ${Math.floor(el % 60)} s into the runs`;
+  $('pilot-clock').textContent = el > 5400 ? `${(el / 3600).toFixed(1)} h` : `${Math.floor(el / 60)} min`;
   // Cards per run.
   $('pilot-cards').innerHTML = pilot.runs.map((run) => {
     const done = run.items.filter((i) => !i.running && i.end <= now);
@@ -1262,11 +1266,11 @@ function drawPilot() {
   const posted = new Map(pilot.runs[0]?.tree.map((t) => [t.id, t.posted]) ?? []);
   ids.sort((a, b) => (depth.get(a) ?? 0) - (depth.get(b) ?? 0) || a.localeCompare(b));
   const conds = ['alone', 'library'];
-  let head = '<thead><tr><th>theorem</th><th>depth</th>' + pilot.runs.map((r) => `<th class="run" colspan="2">${esc(r.options.model.model.split('/').pop())}</th>`).join('') + '</tr>';
-  head += '<tr><th></th><th></th>' + pilot.runs.map(() => conds.map((c, k) => `<th ${k ? '' : 'class="run"'}>${c === 'library' ? 'with lemmas' : 'alone'}</th>`).join('')).join('') + '</tr></thead>';
+  let head = '<thead><tr><th>target</th><th>depth</th>' + pilot.runs.map((r) => `<th class="run" colspan="2">${esc(r.options.model.model.split('/').pop())}</th>`).join('') + '</tr>';
+  head += '<tr><th></th><th></th>' + pilot.runs.map(() => conds.map((c, k) => `<th ${k ? '' : 'class="run"'}>${c === 'library' ? 'with help' : 'alone'}</th>`).join('')).join('') + '</tr></thead>';
   let body = '<tbody>';
   for (const id of ids) {
-    body += `<tr><th>${esc(id)}${posted.get(id) ? '' : ' <span class="muted">lemma</span>'}</th><td>${depth.get(id) ?? ''}</td>`;
+    body += `<tr><th>${esc(id)}${posted.get(id) ? '' : ' <span class="muted">helper</span>'}</th><td>${depth.get(id) ?? ''}</td>`;
     pilot.runs.forEach((run, ri) => {
       for (const c of conds) {
         const its = run.items.filter((i) => i.publicId === id && i.condition === c && i.start <= now).sort((a, b) => a.k - b.k);
@@ -1288,7 +1292,7 @@ $('pilot-grid').onclick = (e) => {
   const b = e.target.closest('.mark'); if (!b) return;
   const run = pilot.runs[Number(b.dataset.run)];
   const rec = run.records.find((r) => r.publicId === b.dataset.id && r.condition === b.dataset.c && r.k === Number(b.dataset.k));
-  const title = `${esc(b.dataset.id)} · ${b.dataset.c === 'library' ? 'with lemmas' : 'alone'} · attempt ${Number(b.dataset.k) + 1} · ${esc(run.options.model.model)}`;
+  const title = `${esc(b.dataset.id)} · ${b.dataset.c === 'library' ? 'with help' : 'alone'} · try ${Number(b.dataset.k) + 1} · ${esc(run.options.model.model)}`;
   if (!rec) { $('drawer-body').innerHTML = `<h3>${title}</h3><p>In progress.</p>`; }
   else {
     $('drawer-body').innerHTML = `<h3>${title}</h3><p class="muted">${rec.ok ? 'Proved' : 'Not proved'} in ${rec.turns} turn(s) · ${money(rec.usage.cost ?? 0)} · ${rec.usage.output.toLocaleString()} output tokens${rec.uses?.length ? ` · used ${rec.uses.length} library theorem(s)` : ''}</p>` +
@@ -1315,6 +1319,7 @@ $('pilot-first').onclick = () => { stopPilot(); $('pilot-follow').checked = fals
 $('pilot-scrub').oninput = (e) => { stopPilot(); $('pilot-follow').checked = false; pilot.now = pilot.t0 + Number(e.target.value) * 1000; drawPilot(); };
 $('pilot-follow').onchange = (e) => { if (e.target.checked) { stopPilot(); loadPilot(); } };
 $('pilot-load').onclick = loadPilot;
+route();
 </script>
 </body>
 </html>

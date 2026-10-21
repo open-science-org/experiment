@@ -1,15 +1,15 @@
-# Real agents, OSO vs traditional: race-cheap
+# Cheap AI models, OSO vs traditional
 
 **Question:** With the cheapest model, does an OSO community of AI labs solve more of the hard targets than a traditional one, for the same money?
 
-**Answer:** No clear difference: the OSO communities solved 2.0 of the counted targets and the traditional ones 1.6, on average over 5 runs each.
+**Answer:** No clear difference: OSO 2.0, traditional 1.6 targets that count (5 runs each).
 
-| rules | counted targets | all targets | spent | duplicated work | built on others |
+| rules | targets that count | all targets | spent | work done twice | used another lab's result |
 | --- | --- | --- | --- | --- | --- |
 | Traditional | 1.6 ± 0.5 of 4 | 4.2 ± 0.8 of 8 | $0.34 | 20.4 ± 15.3 | 0.0 ± 0.0 |
 | OSO | 2.0 ± 0.0 of 4 | 5.2 ± 0.4 of 8 | $0.28 | 2.4 ± 0.9 | 6.4 ± 0.5 |
 
-**Design** (fixed before the run): compared traditional rules and OSO rules · held the same: four DeepSeek V4.1 Flash labs (two foundation builders, a target racer, a neutral lab), $0.15 each, 12 posted conjectures, up to 30 rounds · measure: counted targets solved (A3, X2, B5, A5), higher is better · 5 runs per side. Cost: $3.10 at list prices.
+**Design** (fixed before the run): compared traditional rules and OSO rules · held the same: four DeepSeek V4.1 Flash labs (two foundation builders, a target racer, a neutral lab), $0.15 each, 12 posted conjectures, up to 30 rounds · measure: targets solved, counting A3, X2, B5, A5, higher is better · 5 runs per side. Cost: $3.10 at list prices.
 
 **Caveats:**
 - Counted targets: those DeepSeek never proved alone in the pilot but did with lemmas; neither side reached B5 or A5.

@@ -92,7 +92,7 @@ const jsonl = (f: string) => (existsSync(f) ? readFileSync(f, 'utf8').split('\n'
 function pilotRuns() {
   const dir = join(LEAN_DIR, 'runs');
   if (!existsSync(dir)) return [];
-  return readdirSync(dir).filter((d) => existsSync(join(dir, d, 'options.json'))).map((d) => {
+  return readdirSync(dir).filter((d) => existsSync(join(dir, d, 'attempts.jsonl')) && !d.startsWith('stub-')).map((d) => {
     const opts = JSON.parse(readFileSync(join(dir, d, 'options.json'), 'utf8'));
     const files = ['attempts.jsonl', 'events.jsonl'].map((f) => join(dir, d, f)).filter(existsSync);
     const modified = Math.max(0, ...files.map((f) => statSync(f).mtimeMs));

@@ -11,7 +11,7 @@
   "better": "higher",
   "runs": "100 runs per row"
  },
- "answer": "Best on hardest level published: OSO (immediate), ρ, compute follows earnings 0, 6.0 (tied with OSO (immediate), ρ, compute follows earnings 0.5 and OSO (immediate), ρ, compute follows earnings 1 and 1 more). Best traditional: Traditional, ρ, compute follows earnings 1, 5.7; a clear difference.",
+ "answer": "Best: OSO, ρ 0, 6.0 (3 more tie). Best traditional: Traditional, ρ 1, 5.7. Clear difference.",
  "table": [
   {
    "setting": "Traditional",

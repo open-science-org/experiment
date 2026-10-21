@@ -2,7 +2,7 @@
  "id": "community-2026-10-20b",
  "kind": "race",
  "date": "2026-10-20",
- "title": "Real agents, OSO vs traditional: community-2026-10-20b",
+ "title": "First AI test, OSO vs traditional",
  "design": {
   "question": "For the same money, does an OSO community of AI labs solve more targets than a traditional one?",
   "compare": "traditional rules and OSO rules",
@@ -30,7 +30,7 @@
  ],
  "caveats": [
   "One run per side: no verdict either way.",
-  "The two communities ran one after the other on 2026-10-20; an OSO run that stopped partway was rerun from the start."
+  "One OSO run stopped partway and was rerun from the start."
  ],
  "page": "results/community/community-2026-10-20b/summary.md"
 }

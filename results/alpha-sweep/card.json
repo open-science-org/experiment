@@ -11,7 +11,7 @@
   "better": "higher",
   "runs": "100 runs per row"
  },
- "answer": "Best on share of results published at once: α 0.1, 0.8.",
+ "answer": "Best: α 0.1, 0.8.",
  "table": [
   {
    "α": 1,

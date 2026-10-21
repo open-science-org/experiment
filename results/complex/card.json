@@ -11,7 +11,7 @@
   "better": "higher",
   "runs": "100 runs per row"
  },
- "answer": "Best on hardest level published: free and correct, OSO (immediate), 7.0 (tied with free and correct, OSO + public failures). Best traditional: free and correct, Traditional, 5.6; a clear difference.",
+ "answer": "Best: free and correct, OSO, 7.0 (1 more tie). Best traditional: free and correct, Traditional, 5.6. Clear difference.",
  "table": [
   {
    "knowledge": "free and correct",

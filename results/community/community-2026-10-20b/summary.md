@@ -1,4 +1,4 @@
-# Real agents, OSO vs traditional: community-2026-10-20b
+# First AI test, OSO vs traditional
 
 **Question:** For the same money, does an OSO community of AI labs solve more targets than a traditional one?
 
@@ -13,12 +13,12 @@
 
 **Caveats:**
 - One run per side: no verdict either way.
-- The two communities ran one after the other on 2026-10-20; an OSO run that stopped partway was rerun from the start.
+- One OSO run stopped partway and was rerun from the start.
 
 <details><summary>Details</summary>
 
 
-**Both communities solved 4 targets for the same money.** The two communities ran one after the other on 2026-10-20; an OSO run that stopped partway was rerun from the start.
+**Both communities solved 4 targets for the same money.** One OSO run stopped partway and was rerun from the start.
 
 ![Targets solved for the money](figures/progress.svg)
 

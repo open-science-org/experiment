@@ -360,20 +360,20 @@ A target a model proves alone does not need its lemmas, for that model: shared l
   const notes = exists(notesFile) ? readFileSync(notesFile, 'utf8').trim() : '';
   const plain = (t: string) => t.replace(/\*\*/g, '');
   writeCard(dir, {
-    id, kind: 'model pilot', date: new Date().toISOString().slice(0, 10), title: `Lean pilot: ${title}`,
+    id, kind: 'model pilot', date: new Date().toISOString().slice(0, 10), title,
     design: {
-      question: 'Do shared lemmas make targets reachable that a model cannot prove alone?',
-      compare: 'each model alone, and given the lemmas each target rests on',
+      question: 'Can a model solve more when it is given the helper results (lemmas) a target needs?',
+      compare: 'each model alone, and with the helper results each target needs',
       fixed: `the 8 posted targets, ${r0.attempts} attempts each, up to ${r0.repairs} repairs, reasoning effort ${r0.model.effort}, grind ${r0.allowGrind ? 'allowed' : 'banned'}`,
-      measure: 'targets proved with lemmas but never alone', better: 'higher', runs: `${r0.attempts} attempts per target and condition`,
+      measure: 'targets solved with help but never alone', better: 'higher', runs: `${r0.attempts} tries per target, each way`,
     },
-    answer: plain(headline[0] ?? ''),
+    answer: (() => { const h = models_.filter((m) => m.needsLemmas.length); return `With help, ${h.length} of ${models_.length} models solved targets they never solved alone (${h.map((m) => short(m.model)).join(', ') || 'none'}). ${models_.filter((m) => m.alone.attempts && m.alone.proved === m.alone.attempts).map((m) => short(m.model)).join(' and ') || 'No model'} solved everything alone.`; })(),
     table: models_.map((m) => ({
-      model: short(m.model), 'with lemmas': `${m.library.proved}/${m.library.attempts}`, alone: `${m.alone.proved}/${m.alone.attempts}`,
-      'needed the lemmas for': m.needsLemmas.join(', ') || '–',
-      'tokens per proof, with / alone': m.library.tokensPerProof && m.alone.tokensPerProof ? `${(m.library.tokensPerProof / 1000).toFixed(1)}k / ${(m.alone.tokensPerProof / 1000).toFixed(1)}k` : '–',
+      model: short(m.model), 'with help': `${m.library.proved}/${m.library.attempts}`, alone: `${m.alone.proved}/${m.alone.attempts}`,
+      'needed help for': m.needsLemmas.join(', ') || '–',
+      'tokens per proof, with help / alone': m.library.tokensPerProof && m.alone.tokensPerProof ? `${(m.library.tokensPerProof / 1000).toFixed(1)}k / ${(m.alone.tokensPerProof / 1000).toFixed(1)}k` : '–',
     })),
-    caveats: [plain(headline[1] ?? ''), 'Lemma statements are given, not found: this measures how much lemmas help, not whether labs would think of them.', 'A few attempts per cell: rates are rough.'].filter(Boolean),
+    caveats: ['The helper results were given, not found: this measures how much they help, not whether a model would think of them.', 'Only a few tries per target: the rates are rough.'],
     cost: `$${models_.reduce((a, m) => a + m.cost, 0).toFixed(2)}`,
     page: `results/pilot/${id}/summary.md`,
   }, md.replace(/^# .*\n/, '') + (notes ? `\n## Notes\n\n${notes}\n` : ''));

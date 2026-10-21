@@ -2,7 +2,7 @@
 
 **Question:** Does OSO's lead survive when absorbing results costs compute, or results are sometimes wrong?
 
-**Answer:** Best on hardest level published: OSO (immediate), absorb cost 0, error rate 0, 7.9. Best traditional: Traditional, absorb cost 0.5, error rate 0, 5.7; a clear difference.
+**Answer:** Best: OSO, absorb cost 0, error rate 0, 7.9. Best traditional: Traditional, absorb cost 0.5, error rate 0, 5.7. Clear difference.
 
 | setting | absorb cost | error rate | frontier | reach L7 | cost | spend |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -69,6 +69,6 @@ Values are mean ± standard deviation over runs.
 | OSO (immediate) | 1 | 0.05 | 6.8 ± 0.7 | 0.72 | 695 ± 250 | 1182 ± 68 | 4.3 ± 1.2 | 0.41 ± 0.03 | 2.5 ± 1.6 | 6.3 ± 5.5 |
 | OSO (immediate) | 1 | 0.15 | 6.6 ± 0.6 | 0.62 | 744 ± 255 | 1186 ± 56 | 3.4 ± 1.1 | 0.41 ± 0.02 | 5.5 ± 2.2 | 14.1 ± 6.9 |
 
-Code: commit `023509e` (with uncommitted changes). Experiment: [config/experiments/costly-sharing.yaml](../../config/experiments/costly-sharing.yaml). Command: `npm run sim -- costly-sharing --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `9b5ec21` (with uncommitted changes). Experiment: [config/experiments/costly-sharing.yaml](../../config/experiments/costly-sharing.yaml). Command: `npm run sim -- costly-sharing --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

@@ -78,9 +78,9 @@ export function compareRows(rows: { label: string; values: number[] }[], better:
   const isTrad = (l: string) => /(^|, )Traditional\b/.test(l);
   const tied = stat.slice(1).filter((r) => !clear(best, r) && !isTrad(r.label)).map((r) => r.label);
   const trad = stat.find((r) => isTrad(r.label));
-  let out = `Best on ${measure}: ${best.label}, ${fmt(best.m)}${tied.length ? ` (tied with ${tied.slice(0, 2).join(' and ')}${tied.length > 2 ? ` and ${tied.length - 2} more` : ''})` : ''}.`;
-  if (trad && trad !== best) out += ` Best traditional: ${trad.label}, ${fmt(trad.m)}; ${clear(best, trad) ? 'a clear difference' : 'within two standard errors'}.`;
-  else if (trad === best) out += ' That is a traditional setting.';
+  let out = `Best: ${best.label}, ${fmt(best.m)}${tied.length ? ` (${tied.length} more tie)` : ''}.`;
+  if (trad && trad !== best) out += ` Best traditional: ${trad.label}, ${fmt(trad.m)}. ${clear(best, trad) ? 'Clear difference.' : 'No clear difference.'}`;
+  else if (trad === best) out += ' That is traditional.';
   return out;
 }
 

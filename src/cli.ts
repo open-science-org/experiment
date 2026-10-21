@@ -170,7 +170,7 @@ function runOne(spec: ExperimentSpec) {
 function simulationCard(spec: ExperimentSpec, out: Output, n: number, date: string): Card {
   const measure = spec.measure ?? (spec.analysis ? undefined : (spec.columns ?? DEFAULT_COLUMNS)[0]);
   // Text labels stand alone ("OSO (immediate)"); numbers carry their factor's name ("α 0.4").
-  const label = (row: Output['rows'][number]) => Object.entries(row.labels).map(([k, v]) => (typeof v === 'number' ? `${k} ${v}` : String(v))).join(', ') || 'all';
+  const label = (row: Output['rows'][number]) => Object.entries(row.labels).map(([k, v]) => (typeof v === 'number' ? `${k.split(',')[0]} ${v}` : String(v).replace(/^OSO \(immediate\)$/, 'OSO'))).join(', ') || 'all';
   const header = (id: string) => COLUMNS[id]?.header(out.rows[0].scenario) ?? id;
   const better = spec.better ?? (measure && ['cost', 'speed', 'waste', 'duplicates', 'spend', 'gamerShare', 'trivialSpend', 'rejected', 'retracted', 'absorbSpend', 'hoarded'].includes(measure) ? 'lower' : 'higher');
   const answer = measure && VALUES[measure]

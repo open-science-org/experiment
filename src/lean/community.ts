@@ -499,7 +499,7 @@ ${table}
 Runs: ${runs.map((x) => x.runId).join(', ')}. Transcripts (with proofs) are private.
 `;
   if (!standIn) writeCard(dir, {
-    id, kind: 'race', date: new Date(Math.min(...runs.map((x) => x.result.actions[0]?.t ?? Date.now()))).toISOString().slice(0, 10), title: `Real agents, OSO vs traditional: ${id}`,
+    id, kind: 'race', date: new Date(Math.min(...runs.map((x) => x.result.actions[0]?.t ?? Date.now()))).toISOString().slice(0, 10), title: 'First AI test, OSO vs traditional',
     design: { question: 'For the same money, does an OSO community of AI labs solve more targets than a traditional one?', compare: 'traditional rules and OSO rules', fixed: `the same ${o.agents.length} labs, $${o.budget} each, no personas`, measure: 'targets solved', better: 'higher', runs: '1 run per side' },
     answer: verdict.replace(/\*\*/g, ''), table: rows.map((r) => ({ rules: r.rules, 'targets solved': r['targets solved'], spent: r.spent, 'lemmas accepted': r['lemmas accepted'], 'duplicated work': r['duplicated work'] })),
     caveats: ['One run per side: no verdict either way.', ...(note ? [note] : [])],
@@ -518,7 +518,7 @@ export interface Pair { rep: number; traditional: CommunityResult; oso: Communit
  * Several races with the same design, summarized on the measure fixed in advance: counted targets
  * solved for the same budget, mean and spread over runs; verdict against two standard errors.
  */
-export interface RaceDesign { question?: string; compare?: string; fixed?: string; caveats?: string[]; prose?: string }
+export interface RaceDesign { title?: string; question?: string; compare?: string; fixed?: string; caveats?: string[]; prose?: string }
 
 /** Spend at which a run first had k counted targets solved (null if never). */
 function spendTo(r: CommunityResult, k: number): number | null {
@@ -574,9 +574,9 @@ export function writeRaceSeries(id: string, pairs: Pair[], designIn: string | Ra
   const o = pairs[0].oso.opts;
   const md = `# Real agents, OSO vs traditional: ${id}
 
-**${verdict === 'OSO ahead' ? `For the same money, the OSO communities solved more of the counted targets: ${f1(mean(oC))} against ${f1(mean(tC))} on average over ${pairs.length} runs each.`
-    : verdict === 'traditional ahead' ? `For the same money, the traditional communities solved more of the counted targets: ${f1(mean(tC))} against ${f1(mean(oC))} on average over ${pairs.length} runs each.`
-    : verdict === 'no clear difference' ? `No clear difference: the OSO communities solved ${f1(mean(oC))} of the counted targets and the traditional ones ${f1(mean(tC))}, on average over ${pairs.length} runs each.`
+**${verdict === 'OSO ahead' ? `OSO ahead: ${f1(mean(oC))} against ${f1(mean(tC))} targets that count (${pairs.length} runs each).`
+    : verdict === 'traditional ahead' ? `Traditional ahead: ${f1(mean(tC))} against ${f1(mean(oC))} targets that count (${pairs.length} runs each).`
+    : verdict === 'no clear difference' ? `No clear difference: OSO ${f1(mean(oC))}, traditional ${f1(mean(tC))} targets that count (${pairs.length} runs each).`
     : `One run per side: OSO ${f1(mean(oC))}, traditional ${f1(mean(tC))} counted targets; too few runs for a verdict.`}**
 
 The verdict compares the mean number of counted targets solved against two standard errors. The measure and the design were fixed before the runs.
@@ -618,17 +618,17 @@ Transcripts, with every proof, are private.
   const budgetUse = (m(T, 'spent') + m(O, 'spent')) / 2 / budget;
   const answer = md.split('\n').find((l) => l.startsWith('**'))!.replace(/\*\*/g, '');
   writeCard(dir, {
-    id, kind: 'race', date: new Date().toISOString().slice(0, 10), title: `Real agents, OSO vs traditional: ${id}`,
+    id, kind: 'race', date: new Date().toISOString().slice(0, 10), title: dsg.title ?? `AI models, OSO vs traditional (${id})`,
     design: {
       question: dsg.question ?? 'For the same money, does an OSO community of AI labs solve more of the counted targets than a traditional one?',
       compare: dsg.compare ?? 'traditional rules and OSO rules',
       fixed: dsg.fixed ?? `the same ${o.agents.length} labs and personas, $${o.budget} each, ${o.conjectures?.length ?? 0} posted conjectures`,
-      measure: `counted targets solved (${counted.join(', ')})`, better: 'higher', runs: `${pairs.length} run${pairs.length > 1 ? 's' : ''} per side`,
+      measure: `targets solved, counting ${counted.join(', ')}`, better: 'higher', runs: `${pairs.length} run${pairs.length > 1 ? 's' : ''} per side`,
     },
     answer,
     table: [['Traditional', T], ['OSO', O]].map(([name, S]) => {
       const st = S as ReturnType<typeof stats>[];
-      return { rules: name as string, 'counted targets': `${ms(st.map((x) => x.countedSolved))} of ${counted.length}`, 'all targets': `${ms(st.map((x) => x.targetsSolved))} of 8`, spent: `$${f2(m(st, 'spent'))}`, 'duplicated work': ms(st.map((x) => x.lemmasDuplicate)), 'built on others': ms(st.map((x) => x.builtOnOthers)) };
+      return { rules: name as string, 'targets that count': `${ms(st.map((x) => x.countedSolved))} of ${counted.length}`, 'all targets': `${ms(st.map((x) => x.targetsSolved))} of 8`, spent: `$${f2(m(st, 'spent'))}`, 'work done twice': ms(st.map((x) => x.lemmasDuplicate)), "used another lab's result": ms(st.map((x) => x.builtOnOthers)) };
     }),
     caveats: [
       ...(dsg.caveats ?? []),

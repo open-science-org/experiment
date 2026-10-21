@@ -1,6 +1,6 @@
 {
  "id": "panel-2026-10-19",
- "title": "five models on the posted targets (2026-10-19)",
+ "title": "Five AI models: alone or with help",
  "runs": [
   "panel-claude-opus-5.5",
   "panel-claude-sonnet-5.5",

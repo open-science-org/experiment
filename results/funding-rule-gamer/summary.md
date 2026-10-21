@@ -2,7 +2,7 @@
 
 **Question:** Is the funding-rule effect caused by the gaming agent?
 
-**Answer:** Best on hardest level published: gaming agent 1, ρ 0, OSO (immediate), 6.0 (tied with gaming agent 0, ρ 0, OSO (immediate) and gaming agent 0, ρ 0.5, OSO (immediate) and 3 more). Best traditional: gaming agent 1, ρ 1, Traditional, 5.7; a clear difference.
+**Answer:** Best: gaming agent 1, ρ 0, OSO, 6.0 (5 more tie). Best traditional: gaming agent 1, ρ 1, Traditional, 5.7. Clear difference.
 
 | gaming agent | ρ | setting | frontier | targets solved | cost | gamer share of pay |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -45,6 +45,6 @@ Values are mean ± standard deviation over runs.
 | 0 | 1 | Traditional | 1.0 ± 2.3 | 0.3 ± 0.8 | 1000 ± 187 | – |
 | 0 | 1 | OSO (immediate) | 6.0 ± 0.1 | 2.4 ± 1.1 | 186 ± 86 | – |
 
-Code: commit `023509e` (with uncommitted changes). Experiment: [config/experiments/funding-rule-gamer.yaml](../../config/experiments/funding-rule-gamer.yaml). Command: `npm run sim -- funding-rule-gamer --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `9b5ec21` (with uncommitted changes). Experiment: [config/experiments/funding-rule-gamer.yaml](../../config/experiments/funding-rule-gamer.yaml). Command: `npm run sim -- funding-rule-gamer --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

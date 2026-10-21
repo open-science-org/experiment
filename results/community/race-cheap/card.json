@@ -2,32 +2,32 @@
  "id": "race-cheap",
  "kind": "race",
  "date": "2026-10-21",
- "title": "Real agents, OSO vs traditional: race-cheap",
+ "title": "Cheap AI models, OSO vs traditional",
  "design": {
   "question": "With the cheapest model, does an OSO community of AI labs solve more of the hard targets than a traditional one, for the same money?",
   "compare": "traditional rules and OSO rules",
   "fixed": "four DeepSeek V4.1 Flash labs (two foundation builders, a target racer, a neutral lab), $0.15 each, 12 posted conjectures, up to 30 rounds",
-  "measure": "counted targets solved (A3, X2, B5, A5)",
+  "measure": "targets solved, counting A3, X2, B5, A5",
   "better": "higher",
   "runs": "5 runs per side"
  },
- "answer": "No clear difference: the OSO communities solved 2.0 of the counted targets and the traditional ones 1.6, on average over 5 runs each.",
+ "answer": "No clear difference: OSO 2.0, traditional 1.6 targets that count (5 runs each).",
  "table": [
   {
    "rules": "Traditional",
-   "counted targets": "1.6 ± 0.5 of 4",
+   "targets that count": "1.6 ± 0.5 of 4",
    "all targets": "4.2 ± 0.8 of 8",
    "spent": "$0.34",
-   "duplicated work": "20.4 ± 15.3",
-   "built on others": "0.0 ± 0.0"
+   "work done twice": "20.4 ± 15.3",
+   "used another lab's result": "0.0 ± 0.0"
   },
   {
    "rules": "OSO",
-   "counted targets": "2.0 ± 0.0 of 4",
+   "targets that count": "2.0 ± 0.0 of 4",
    "all targets": "5.2 ± 0.4 of 8",
    "spent": "$0.28",
-   "duplicated work": "2.4 ± 0.9",
-   "built on others": "6.4 ± 0.5"
+   "work done twice": "2.4 ± 0.9",
+   "used another lab's result": "6.4 ± 0.5"
   }
  ],
  "caveats": [

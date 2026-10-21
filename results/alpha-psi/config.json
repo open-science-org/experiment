@@ -1,7 +1,7 @@
 {
   "experiment": "alpha-psi",
   "date": "2026-10-21",
-  "commit": "023509e",
+  "commit": "9b5ec21",
   "dirty": true,
   "command": "npm run sim -- alpha-psi --seeds 100 --save",
   "seeds": 100,
