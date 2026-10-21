@@ -13,7 +13,7 @@
  "allowGrind": false,
  "effort": "high",
  "headline": [
-  "**Lemmas made targets reachable for 3 of 5 models.** gpt-5.6-terra: X1; gemini-3.8-flash: X1, A5; deepseek-v4.1-flash: A3 were proved with their lemmas but never alone.",
+  "**Lemmas made targets reachable for 3 of 5 models.** gpt-5.6-terra: X1; gemini-3.8-flash: X1, A5; deepseek-v4.1-flash: A3, B5, X2, A5 were proved with their lemmas but never alone.",
   "**claude-opus-5.5 and claude-sonnet-5.5 proved every target alone,** so for them the lemmas save cost but are not needed.",
   "**With the lemmas, a proof took 1.4 to 6.6 times fewer output tokens** than without, across models (tokens, not dollars: OpenRouter sends a model's calls to providers with different prices).",
   "**Cheapest with lemmas: deepseek-v4.1-flash,** at $0.008 per proof (75% of attempts proved)."
@@ -111,19 +111,18 @@
    },
    "alone": {
     "proved": 4,
-    "attempts": 10,
+    "attempts": 16,
     "costPerProof": 0.0009048589999999999,
     "tokensPerProof": 58785
    },
    "needsLemmas": [
-    "A3"
-   ],
-   "missingAlone": [
+    "A3",
     "B5",
     "X2",
     "A5"
    ],
-   "cost": 0.5499196354000001
+   "missingAlone": [],
+   "cost": 0.9106778354000001
   }
  ],
  "curves": [
@@ -823,6 +822,30 @@
     ],
     [
      0.38268526599999997,
+     3
+    ],
+    [
+     0.45285508799999996,
+     3
+    ],
+    [
+     0.5215612519999999,
+     3
+    ],
+    [
+     0.574216742,
+     3
+    ],
+    [
+     0.62884986,
+     3
+    ],
+    [
+     0.674757914,
+     3
+    ],
+    [
+     0.743443466,
      3
     ]
    ],

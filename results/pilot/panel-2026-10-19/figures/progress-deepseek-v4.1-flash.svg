@@ -43,16 +43,16 @@
 <text class="tick" x="56" y="96" text-anchor="end">8</text>
 <line class="base" x1="64" x2="570" y1="364" y2="364"/>
 <text class="tick" x="64" y="382" text-anchor="middle">$0</text>
-<text class="tick" x="190.5" y="382" text-anchor="middle">$0.13</text>
-<text class="tick" x="317" y="382" text-anchor="middle">$0.25</text>
-<text class="tick" x="443.5" y="382" text-anchor="middle">$0.38</text>
-<text class="tick" x="570" y="382" text-anchor="middle">$0.50</text>
+<text class="tick" x="190.5" y="382" text-anchor="middle">$0.25</text>
+<text class="tick" x="317" y="382" text-anchor="middle">$0.50</text>
+<text class="tick" x="443.5" y="382" text-anchor="middle">$0.75</text>
+<text class="tick" x="570" y="382" text-anchor="middle">$1</text>
 <text class="axis" x="317" y="408" text-anchor="middle">Dollars spent</text>
 <text class="axis" transform="translate(16 228) rotate(-90)" text-anchor="middle">Targets proved</text>
-<path class="line c2" d="M64.0 364.0 L64.4 330.0 L65.6 330.0 L85.3 330.0 L85.7 296.0 L92.9 262.0 L96.6 262.0 L98.5 262.0 L100.5 262.0 L101.2 228.0 L101.8 228.0 L102.7 194.0 L103.4 194.0 L133.6 160.0 L169.9 160.0 L182.5 126.0 L233.2 126.0"/>
-<circle class="dot f2" cx="233.2" cy="126.0" r="4.5"><title>With lemmas: 7 at dollars spent $0.17</title></circle>
-<path class="line c1" d="M64.0 364.0 L65.2 330.0 L67.0 330.0 L164.3 330.0 L261.5 330.0 L262.4 296.0 L264.3 296.0 L357.0 296.0 L449.7 296.0 L450.0 262.0 L451.3 262.0"/>
-<circle class="dot f1" cx="451.3" cy="262.0" r="4.5"><title>Alone: 3 at dollars spent $0.38</title></circle>
-<text class="label" x="463.27748919199996" y="130">With lemmas: 7</text>
-<text class="label" x="463.27748919199996" y="266">Alone: 3</text>
+<path class="line c2" d="M64.0 364.0 L64.2 330.0 L64.8 330.0 L74.6 330.0 L74.9 296.0 L78.4 262.0 L80.3 262.0 L81.3 262.0 L82.2 262.0 L82.6 228.0 L82.9 228.0 L83.4 194.0 L83.7 194.0 L98.8 160.0 L116.9 160.0 L123.3 126.0 L148.6 126.0"/>
+<circle class="dot f2" cx="148.6" cy="126.0" r="4.5"><title>With lemmas: 7 at dollars spent $0.17</title></circle>
+<path class="line c1" d="M64.0 364.0 L64.6 330.0 L65.5 330.0 L114.1 330.0 L162.8 330.0 L163.2 296.0 L164.1 296.0 L210.5 296.0 L256.8 296.0 L257.0 262.0 L257.6 262.0 L293.1 262.0 L327.9 262.0 L354.6 262.0 L382.2 262.0 L405.4 262.0 L440.2 262.0"/>
+<circle class="dot f1" cx="440.2" cy="262.0" r="4.5"><title>Alone: 3 at dollars spent $0.74</title></circle>
+<text class="label" x="452.182393796" y="130">With lemmas: 7</text>
+<text class="label" x="452.182393796" y="266">Alone: 3</text>
 </svg>
