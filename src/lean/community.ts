@@ -77,6 +77,8 @@ export interface Action {
   entry?: string; uses?: string[];
   /** Dollars this action counted against the budget: the provider's charge. Older runs have only listCost. */
   usage: Usage; cost?: number; listCost?: number; spentAfter: number;
+  /** The companies that served this action's calls, in order. */
+  servedBy?: string[];
   transcript: { text: string; proof: string | null; errors: string[] }[];
   t: number;
 }
@@ -250,12 +252,14 @@ Take one action.`;
     const messages: { role: 'user' | 'assistant'; content: unknown }[] = [{ role: 'user', content: this.turnPrompt(i, round) }];
     const usage: Usage = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, cost: 0 };
     const transcript: Action['transcript'] = [];
+    const servedBy: string[] = [];
     let kind: Action['kind'] = 'none', target: string | undefined, lemma: ReturnType<typeof parseLemma> = null, ok = false, reason = '';
     const repairs = this.opts.repairsByLab?.[i] ?? this.opts.repairs;
     for (let k = 0; k <= repairs; k++) {
       const reply = await chat(system, messages);
       for (const key of ['input', 'output', 'cacheRead', 'cacheWrite'] as const) usage[key] += reply.usage[key];
       usage.cost = (usage.cost ?? 0) + (reply.usage.cost ?? 0);
+      if (reply.usage.provider) servedBy.push(reply.usage.provider);
       this.spent[i] += price(reply.usage);
       const text = reply.text;
       if (/ACTION:\s*pass\b/i.test(text)) { kind = 'pass'; reason = 'passed'; this.passed.add(i); transcript.push({ text, proof: null, errors: [] }); break; }
@@ -337,7 +341,7 @@ Take one action.`;
     const a: Action = {
       round, agent: i, model, kind, target, name: lemma?.name, signature: lemma?.signature, ok, reason: reason || (ok ? undefined : 'not accepted'),
       ...(made ? { entry: made.name, uses: made.uses } : {}),
-      turns: transcript.length, usage, cost: price(usage), spentAfter: this.spent[i], transcript, t: Date.now(),
+      turns: transcript.length, usage, cost: price(usage), spentAfter: this.spent[i], ...(servedBy.length ? { servedBy } : {}), transcript, t: Date.now(),
     };
     this.actions.push(a);
     log(a);

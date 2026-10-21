@@ -5,7 +5,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { check, type CheckOptions, type CheckResult } from './checker.ts';
 import { definitions, type Task } from './tasks.ts';
 
-export interface Usage { input: number; output: number; cacheRead: number; cacheWrite: number; /** Dollars, when the provider reports it. */ cost?: number }
+export interface Usage { input: number; output: number; cacheRead: number; cacheWrite: number; /** Dollars, when the provider reports it. */ cost?: number; /** The company that served the call (OpenRouter sends calls to many). */ provider?: string }
 export interface Turn { proof: string | null; check: CheckResult | null; usage: Usage; stop: string }
 
 /** One model call: the conversation so far → the reply's text, the raw content to send back, usage. */
@@ -41,6 +41,9 @@ export function openRouterChat(settings: ModelSettings): Chat {
       max_tokens: settings.maxTokens,
       reasoning: { effort: settings.effort === 'max' ? 'high' : settings.effort },
       usage: { include: true },
+      // Cheapest company first, others only if it fails. By default OpenRouter spreads calls across
+      // companies, and in October 2026 that cost about 5.6x the listed (cheapest) price.
+      provider: { sort: 'price' },
       messages: [
         { role: 'system', content: system },
         ...messages.map((m) => {
@@ -72,6 +75,7 @@ export function openRouterChat(settings: ModelSettings): Chat {
       }
       const json = await res.json() as {
         error?: { message: string };
+        provider?: string;
         choices?: { message: { content: string | null; reasoning_details?: unknown }; finish_reason: string }[];
         usage?: { prompt_tokens: number; completion_tokens: number; prompt_tokens_details?: { cached_tokens?: number }; cost?: number };
       };
@@ -83,7 +87,7 @@ export function openRouterChat(settings: ModelSettings): Chat {
       return {
         text,
         content: { text, reasoning_details: choice.message.reasoning_details },
-        usage: { input: (u?.prompt_tokens ?? 0) - cached, output: u?.completion_tokens ?? 0, cacheRead: cached, cacheWrite: 0, cost: u?.cost },
+        usage: { input: (u?.prompt_tokens ?? 0) - cached, output: u?.completion_tokens ?? 0, cacheRead: cached, cacheWrite: 0, cost: u?.cost, provider: json.provider },
         stop: choice.finish_reason === 'content_filter' ? 'refusal' : choice.finish_reason,
       };
     }
