@@ -88,15 +88,21 @@ Every experiment, of any kind, declares before it runs: the **question**, what i
 ## The app
 
 ```sh
+git clone https://github.com/open-science-org/experiment.git
+cd experiment
+npm install
 npm run viewer        # then open http://127.0.0.1:8791
 ```
 
-Four pages:
+Needs Node 22.18 or later. Simulations need nothing else. Tests with AI models also need [Lean](https://lean-lang.org/install/) (`elan`) and an OpenRouter key in `.env` (`OPENROUTER_API_KEY=…`); they also need the private reference files in `lean/` (not in this repository; ask the maintainers). `PORT=9000 npm run viewer` picks another port.
+
+Five pages:
 
 - **Results:** every experiment as a short card (question, answer). Click one for its details.
 - **New:** one form. Pick who does the work: **simulated agents** (chance decides each attempt; free, thousands of runs) or **AI models** (Lean checks each proof; costs money, a few runs). Then the question, what to compare, and the runs. Everything else is under *More options*.
 - **Live:** tests with AI models as they run, simulation replays, and every attempt by the AI models.
 - **Topics:** the research topics, their reports, and adding a new one.
+- **How it works:** the design in plain words, with links to the full design and the simulation in detail.
 
 The app runs on this machine only, and never shows `lean/` (the private answers) or `.env`.
 
