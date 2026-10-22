@@ -1,0 +1,31 @@
+id: agent-kinds
+title: How much the kinds of agents matter
+description: >-
+  Each kind of agent swapped for the same number of plain agents (average skill, no preferences, full
+  reuse), and teams of 12 of one kind. Same field and budget throughout; each seed gives the same world.
+question: "Does the mix of agent kinds change who wins, traditional or OSO?"
+compare: "the default mix, each kind swapped for plain agents, and teams of one kind, under three rule settings"
+fixed: "the field, 12 agents and the budget"
+measure: frontier
+better: higher
+seeds: 100
+factors:
+  - name: team
+    levels:
+      - { label: 'default mix' }
+      - { label: 'no foundation builders', set: { agents.mix.foundation: 0, agents.mix.plain: 3 } }
+      - { label: 'no racers', set: { agents.mix.racer: 0, agents.mix.plain: 3 } }
+      - { label: 'no explorers', set: { agents.mix.explorer: 0, agents.mix.plain: 2 } }
+      - { label: 'no specialists', set: { agents.mix.specialist: 0, agents.mix.plain: 2 } }
+      - { label: 'no free rider', set: { agents.mix.freeRider: 0, agents.mix.plain: 1 } }
+      - { label: 'no gamer', set: { agents.mix.gamer: 0, agents.mix.plain: 1 } }
+      - { label: 'all plain', set: { agents.mix.plain: 12, agents.mix.foundation: 0, agents.mix.racer: 0, agents.mix.explorer: 0, agents.mix.specialist: 0, agents.mix.freeRider: 0, agents.mix.gamer: 0 } }
+      - { label: 'all foundation', set: { agents.mix.plain: 0, agents.mix.foundation: 12, agents.mix.racer: 0, agents.mix.explorer: 0, agents.mix.specialist: 0, agents.mix.freeRider: 0, agents.mix.gamer: 0 } }
+      - { label: 'all racers', set: { agents.mix.plain: 0, agents.mix.foundation: 0, agents.mix.racer: 12, agents.mix.explorer: 0, agents.mix.specialist: 0, agents.mix.freeRider: 0, agents.mix.gamer: 0 } }
+      - { label: 'all explorers', set: { agents.mix.plain: 0, agents.mix.foundation: 0, agents.mix.racer: 0, agents.mix.explorer: 12, agents.mix.specialist: 0, agents.mix.freeRider: 0, agents.mix.gamer: 0 } }
+  - name: setting
+    levels:
+      - { label: Traditional, preset: traditional }
+      - { label: OSO (immediate), preset: oso }
+      - { label: OSO (choice), preset: osoChoice }
+columns: [frontier, reachTarget, cost, sharing, gamerShare]

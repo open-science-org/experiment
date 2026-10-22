@@ -4,6 +4,7 @@ Every experiment in this repository, newest first. Each has a short card: the qu
 
 | date | kind | experiment | question | answer | cost |
 | --- | --- | --- | --- | --- | --- |
+| 2026-10-22 | simulation | [How much the kinds of agents matter](agent-kinds/summary.md) | Does the mix of agent kinds change who wins, traditional or OSO? | Best: all plain, OSO, 8.0 (5 more tie). Best traditional: all explorers, Traditional, 7.7. Clear difference. | – |
 | 2026-10-21 | field report | [A solid-state battery](../reports/solid-state-battery/card.md) | For the same money, does OSO get further than traditional research in a solid-state battery? | OSO ahead: level 5.0 against 2.0 of 5; targets 1.9 against 0.6 of 2. | – |
 | 2026-10-21 | field report | [An abstract research field](../reports/abstract-field/card.md) | For the same money, does OSO get further than traditional research in an abstract research field? | OSO ahead: level 7.9 against 5.7 of 8; targets 6.9 against 4.2 of 7. | – |
 | 2026-10-21 | field report | [Early-stage drug discovery](../reports/drug-discovery/card.md) | For the same money, does OSO get further than traditional research in Early-stage drug discovery? | OSO ahead: level 6.0 against 2.7 of 6; targets 2.8 against 0.7 of 3. | – |

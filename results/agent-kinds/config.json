@@ -1,0 +1,1060 @@
+{
+  "experiment": "agent-kinds",
+  "date": "2026-10-22",
+  "commit": "cacf1d2",
+  "dirty": true,
+  "command": "npm run sim -- agent-kinds --seeds 100 --save",
+  "seeds": 100,
+  "overrides": {},
+  "config": {
+    "experiment": {
+      "id": "agent-kinds",
+      "title": "How much the kinds of agents matter",
+      "description": "Each kind of agent swapped for the same number of plain agents (average skill, no preferences, full reuse), and teams of 12 of one kind. Same field and budget throughout; each seed gives the same world.",
+      "question": "Does the mix of agent kinds change who wins, traditional or OSO?",
+      "compare": "the default mix, each kind swapped for plain agents, and teams of one kind, under three rule settings",
+      "fixed": "the field, 12 agents and the budget",
+      "measure": "frontier",
+      "better": "higher",
+      "seeds": 100,
+      "factors": [
+        {
+          "name": "team",
+          "levels": [
+            {
+              "label": "default mix"
+            },
+            {
+              "label": "no foundation builders",
+              "set": {
+                "agents.mix.foundation": 0,
+                "agents.mix.plain": 3
+              }
+            },
+            {
+              "label": "no racers",
+              "set": {
+                "agents.mix.racer": 0,
+                "agents.mix.plain": 3
+              }
+            },
+            {
+              "label": "no explorers",
+              "set": {
+                "agents.mix.explorer": 0,
+                "agents.mix.plain": 2
+              }
+            },
+            {
+              "label": "no specialists",
+              "set": {
+                "agents.mix.specialist": 0,
+                "agents.mix.plain": 2
+              }
+            },
+            {
+              "label": "no free rider",
+              "set": {
+                "agents.mix.freeRider": 0,
+                "agents.mix.plain": 1
+              }
+            },
+            {
+              "label": "no gamer",
+              "set": {
+                "agents.mix.gamer": 0,
+                "agents.mix.plain": 1
+              }
+            },
+            {
+              "label": "all plain",
+              "set": {
+                "agents.mix.plain": 12,
+                "agents.mix.foundation": 0,
+                "agents.mix.racer": 0,
+                "agents.mix.explorer": 0,
+                "agents.mix.specialist": 0,
+                "agents.mix.freeRider": 0,
+                "agents.mix.gamer": 0
+              }
+            },
+            {
+              "label": "all foundation",
+              "set": {
+                "agents.mix.plain": 0,
+                "agents.mix.foundation": 12,
+                "agents.mix.racer": 0,
+                "agents.mix.explorer": 0,
+                "agents.mix.specialist": 0,
+                "agents.mix.freeRider": 0,
+                "agents.mix.gamer": 0
+              }
+            },
+            {
+              "label": "all racers",
+              "set": {
+                "agents.mix.plain": 0,
+                "agents.mix.foundation": 0,
+                "agents.mix.racer": 12,
+                "agents.mix.explorer": 0,
+                "agents.mix.specialist": 0,
+                "agents.mix.freeRider": 0,
+                "agents.mix.gamer": 0
+              }
+            },
+            {
+              "label": "all explorers",
+              "set": {
+                "agents.mix.plain": 0,
+                "agents.mix.foundation": 0,
+                "agents.mix.racer": 0,
+                "agents.mix.explorer": 12,
+                "agents.mix.specialist": 0,
+                "agents.mix.freeRider": 0,
+                "agents.mix.gamer": 0
+              }
+            }
+          ]
+        },
+        {
+          "name": "setting",
+          "levels": [
+            {
+              "label": "Traditional",
+              "preset": "traditional"
+            },
+            {
+              "label": "OSO (immediate)",
+              "preset": "oso"
+            },
+            {
+              "label": "OSO (choice)",
+              "preset": "osoChoice"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        "frontier",
+        "reachTarget",
+        "cost",
+        "sharing",
+        "gamerShare"
+      ]
+    },
+    "base": {
+      "world": {
+        "kind": "layered",
+        "levels": 8,
+        "width": 10,
+        "maxPrereqs": 3,
+        "skipProb": 0.25,
+        "areas": 3,
+        "areaStickiness": 0.8,
+        "targets": [
+          {
+            "level": 3,
+            "count": 2
+          },
+          {
+            "level": 5,
+            "count": 2
+          },
+          {
+            "level": 7,
+            "count": 2
+          },
+          {
+            "level": 8,
+            "count": 1
+          }
+        ],
+        "bountyBase": 4,
+        "bountyGrowth": 2
+      },
+      "success": {
+        "p0": 0.5,
+        "eta": 0.6,
+        "oracle": {
+          "kind": "chance"
+        }
+      },
+      "attribution": {
+        "noise": 0
+      },
+      "agents": {
+        "archetypes": {
+          "plain": {
+            "skill": 1,
+            "conjecture": 1,
+            "cost": 1,
+            "horizon": 1,
+            "risk": 0,
+            "reuse": 1,
+            "sharing": 0,
+            "gaming": 0,
+            "specialist": false
+          },
+          "foundation": {
+            "skill": 1,
+            "conjecture": 0.7,
+            "cost": 1,
+            "horizon": 0.98,
+            "risk": 0.2,
+            "reuse": 0.9,
+            "sharing": 0.5,
+            "gaming": 0,
+            "specialist": false
+          },
+          "racer": {
+            "skill": 1,
+            "conjecture": 0.5,
+            "cost": 1,
+            "horizon": 0.85,
+            "risk": -0.2,
+            "reuse": 0.6,
+            "sharing": 0,
+            "gaming": 0,
+            "specialist": false
+          },
+          "explorer": {
+            "skill": 0.5,
+            "conjecture": 0.3,
+            "cost": 0.3,
+            "horizon": 0.95,
+            "risk": 0,
+            "reuse": 0.8,
+            "sharing": 0.2,
+            "gaming": 0,
+            "specialist": false
+          },
+          "specialist": {
+            "skill": 1,
+            "conjecture": 0.6,
+            "cost": 1,
+            "horizon": 0.95,
+            "risk": 0,
+            "reuse": 0.8,
+            "sharing": 0.2,
+            "gaming": 0,
+            "specialist": true
+          },
+          "freeRider": {
+            "skill": 0.8,
+            "conjecture": 0.5,
+            "cost": 1,
+            "horizon": 0.9,
+            "risk": 0,
+            "reuse": 1,
+            "sharing": -1,
+            "gaming": 0,
+            "specialist": false
+          },
+          "gamer": {
+            "skill": 0.8,
+            "conjecture": 0.3,
+            "cost": 0.5,
+            "horizon": 0.9,
+            "risk": 0,
+            "reuse": 0.8,
+            "sharing": 0,
+            "gaming": 0.6,
+            "specialist": false
+          }
+        },
+        "mix": {
+          "foundation": 3,
+          "racer": 3,
+          "explorer": 2,
+          "specialist": 2,
+          "freeRider": 1,
+          "gamer": 1
+        },
+        "specialist": {
+          "boost": 1.6,
+          "penalty": 0.4
+        },
+        "deciders": {}
+      },
+      "rules": {
+        "alpha": 1,
+        "c": 0,
+        "mint": 1,
+        "screen": 0.5,
+        "publishFailures": false,
+        "visibility": {
+          "kind": "finished-only"
+        }
+      },
+      "knowledge": {
+        "absorbCost": 0,
+        "errorRate": 0
+      },
+      "budget": {
+        "X": 1200,
+        "rounds": 120,
+        "perAgentPerRound": null,
+        "stopWhenSolved": true,
+        "allocation": {
+          "kind": "earnings-share",
+          "rho": 0.5,
+          "smoothing": 0.7
+        }
+      },
+      "behaviour": {
+        "decider": {
+          "kind": "formula"
+        },
+        "policy": {
+          "kind": "softmax",
+          "tau": 0.3,
+          "epsilon": 0.05
+        },
+        "perceptionNoise": 1,
+        "kappa": 1,
+        "psi": 0.5,
+        "roundsPerLevel": 5
+      },
+      "measures": {
+        "targetLevel": 7
+      }
+    },
+    "rows": [
+      {
+        "labels": {
+          "team": "default mix",
+          "setting": "Traditional"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "c": 0,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "default mix",
+          "setting": "OSO (immediate)"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "immediate"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "default mix",
+          "setting": "OSO (choice)"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "choice"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "no foundation builders",
+          "setting": "Traditional"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "foundation": 0,
+              "plain": 3
+            }
+          },
+          "rules": {
+            "alpha": 1,
+            "c": 0,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "no foundation builders",
+          "setting": "OSO (immediate)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "foundation": 0,
+              "plain": 3
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "immediate"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "no foundation builders",
+          "setting": "OSO (choice)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "foundation": 0,
+              "plain": 3
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "choice"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "no racers",
+          "setting": "Traditional"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "racer": 0,
+              "plain": 3
+            }
+          },
+          "rules": {
+            "alpha": 1,
+            "c": 0,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "no racers",
+          "setting": "OSO (immediate)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "racer": 0,
+              "plain": 3
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "immediate"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "no racers",
+          "setting": "OSO (choice)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "racer": 0,
+              "plain": 3
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "choice"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "no explorers",
+          "setting": "Traditional"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "explorer": 0,
+              "plain": 2
+            }
+          },
+          "rules": {
+            "alpha": 1,
+            "c": 0,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "no explorers",
+          "setting": "OSO (immediate)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "explorer": 0,
+              "plain": 2
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "immediate"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "no explorers",
+          "setting": "OSO (choice)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "explorer": 0,
+              "plain": 2
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "choice"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "no specialists",
+          "setting": "Traditional"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "specialist": 0,
+              "plain": 2
+            }
+          },
+          "rules": {
+            "alpha": 1,
+            "c": 0,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "no specialists",
+          "setting": "OSO (immediate)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "specialist": 0,
+              "plain": 2
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "immediate"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "no specialists",
+          "setting": "OSO (choice)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "specialist": 0,
+              "plain": 2
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "choice"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "no free rider",
+          "setting": "Traditional"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "freeRider": 0,
+              "plain": 1
+            }
+          },
+          "rules": {
+            "alpha": 1,
+            "c": 0,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "no free rider",
+          "setting": "OSO (immediate)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "freeRider": 0,
+              "plain": 1
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "immediate"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "no free rider",
+          "setting": "OSO (choice)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "freeRider": 0,
+              "plain": 1
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "choice"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "no gamer",
+          "setting": "Traditional"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "gamer": 0,
+              "plain": 1
+            }
+          },
+          "rules": {
+            "alpha": 1,
+            "c": 0,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "no gamer",
+          "setting": "OSO (immediate)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "gamer": 0,
+              "plain": 1
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "immediate"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "no gamer",
+          "setting": "OSO (choice)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "gamer": 0,
+              "plain": 1
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "choice"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "all plain",
+          "setting": "Traditional"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "plain": 12,
+              "foundation": 0,
+              "racer": 0,
+              "explorer": 0,
+              "specialist": 0,
+              "freeRider": 0,
+              "gamer": 0
+            }
+          },
+          "rules": {
+            "alpha": 1,
+            "c": 0,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "all plain",
+          "setting": "OSO (immediate)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "plain": 12,
+              "foundation": 0,
+              "racer": 0,
+              "explorer": 0,
+              "specialist": 0,
+              "freeRider": 0,
+              "gamer": 0
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "immediate"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "all plain",
+          "setting": "OSO (choice)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "plain": 12,
+              "foundation": 0,
+              "racer": 0,
+              "explorer": 0,
+              "specialist": 0,
+              "freeRider": 0,
+              "gamer": 0
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "choice"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "all foundation",
+          "setting": "Traditional"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "plain": 0,
+              "foundation": 12,
+              "racer": 0,
+              "explorer": 0,
+              "specialist": 0,
+              "freeRider": 0,
+              "gamer": 0
+            }
+          },
+          "rules": {
+            "alpha": 1,
+            "c": 0,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "all foundation",
+          "setting": "OSO (immediate)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "plain": 0,
+              "foundation": 12,
+              "racer": 0,
+              "explorer": 0,
+              "specialist": 0,
+              "freeRider": 0,
+              "gamer": 0
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "immediate"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "all foundation",
+          "setting": "OSO (choice)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "plain": 0,
+              "foundation": 12,
+              "racer": 0,
+              "explorer": 0,
+              "specialist": 0,
+              "freeRider": 0,
+              "gamer": 0
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "choice"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "all racers",
+          "setting": "Traditional"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "plain": 0,
+              "foundation": 0,
+              "racer": 12,
+              "explorer": 0,
+              "specialist": 0,
+              "freeRider": 0,
+              "gamer": 0
+            }
+          },
+          "rules": {
+            "alpha": 1,
+            "c": 0,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "all racers",
+          "setting": "OSO (immediate)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "plain": 0,
+              "foundation": 0,
+              "racer": 12,
+              "explorer": 0,
+              "specialist": 0,
+              "freeRider": 0,
+              "gamer": 0
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "immediate"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "all racers",
+          "setting": "OSO (choice)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "plain": 0,
+              "foundation": 0,
+              "racer": 12,
+              "explorer": 0,
+              "specialist": 0,
+              "freeRider": 0,
+              "gamer": 0
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "choice"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "all explorers",
+          "setting": "Traditional"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "plain": 0,
+              "foundation": 0,
+              "racer": 0,
+              "explorer": 12,
+              "specialist": 0,
+              "freeRider": 0,
+              "gamer": 0
+            }
+          },
+          "rules": {
+            "alpha": 1,
+            "c": 0,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "all explorers",
+          "setting": "OSO (immediate)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "plain": 0,
+              "foundation": 0,
+              "racer": 0,
+              "explorer": 12,
+              "specialist": 0,
+              "freeRider": 0,
+              "gamer": 0
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "immediate"
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "team": "all explorers",
+          "setting": "OSO (choice)"
+        },
+        "overrides": {
+          "agents": {
+            "mix": {
+              "plain": 0,
+              "foundation": 0,
+              "racer": 0,
+              "explorer": 12,
+              "specialist": 0,
+              "freeRider": 0,
+              "gamer": 0
+            }
+          },
+          "rules": {
+            "alpha": 0.8,
+            "c": 0.15,
+            "visibility": {
+              "kind": "choice"
+            }
+          }
+        }
+      }
+    ]
+  }
+}

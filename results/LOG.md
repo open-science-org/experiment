@@ -73,3 +73,4 @@ Runs up to 2026-10-19 were made when the simulator lived in `sim/` of [open-scie
 | 2026-10-21 | [settings](settings/summary.md) | `7434f7c` (uncommitted changes) | 100 | `npm run sim -- settings --seeds 100 --save` |
 | 2026-10-21 | [simple](simple/summary.md) | `7434f7c` (uncommitted changes) | 1000 | `npm run sim -- simple --seeds 1000 --save` |
 | 2026-10-21 | [my-experiment](my-experiment/summary.md) | `7434f7c` (uncommitted changes) | 50 | `npm run sim -- my-experiment --seeds 50 --save` |
+| 2026-10-22 | [agent-kinds](agent-kinds/summary.md) | `cacf1d2` (uncommitted changes) | 100 | `npm run sim -- agent-kinds --seeds 100 --save` |
