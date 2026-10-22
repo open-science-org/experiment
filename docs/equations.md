@@ -5,12 +5,13 @@ Every rule of the experiment as a formula, in the order a run uses them. Each fo
 
 ## The example tree
 
-![An example tree: A and B at level 1, C at level 2 built on A and B, target T at level 3 built on C and B](img/equations-tree.svg)
+![An example tree, levels left to right: results 1 and 2 at level 1, result 3 at level 2 built on 1 and 2, target 4 at level 3 built on 3 and 2](img/equations-tree.svg)
 
-- **Results** are the nodes. A **parent** is a result another one builds on: A and B are C's parents; C and B are T's.
+- **Results** are the numbered nodes. Numbers, not letters, so they never clash with a symbol. A **parent** is a result another one builds on: 1 and 2 are the parents of 3; 3 and 2 are the parents of 4.
 - **Arrows** go from a parent to the result built on it. The number on an arrow is the **link weight** (section 5).
-- **Roots** (A, B) build on nothing. **Targets** (T) carry a prize.
-- Levels run left to right, easiest first. A result **after** $x$ is built on $x$, directly or through others: T is after C, and C and T are after A. A result **before** $x$ is one $x$ builds on.
+- **Roots** (1, 2) build on nothing. **Targets** (4) carry a prize.
+- Levels run left to right, easiest first. A result **after** $x$ is built on $x$, directly or through others: 4 is after 3, and 3 and 4 are after 1. A result **before** $x$ is one $x$ builds on.
+- In the formulas, $x$, $y$ and $z$ stand for *any* result; each example says which numbered result plays which role (for example $x = 4$, with parents $y = 3$ and $y = 2$).
 
 ## Symbols
 
@@ -20,12 +21,12 @@ Grouped by what they belong to, in the order of the sections below. One letter p
 
 | Symbol | Meaning | In the example | Default |
 | --- | --- | --- | --- |
-| $x$ | a result | A, B, C or T | |
-| $y \to x$ | $y$ is a parent of $x$ ($x$ builds on $y$) | $C \to T$ | |
-| $t$ | a target | T | |
-| $\ell_x$ | level of $x$ | $\ell_C = 2$ | |
-| $p_x$ | chance one try at $x$ works | $p_C = 0.3$ | $0.5 \times 0.6^{\ell - 1}$ |
-| $B_t$ | prize of target $t$ | $B_T = 16$ | $4 \times 2^{\ell - 1}$ |
+| $x$ | a result | 1, 2, 3 or 4 | |
+| $y \to x$ | $y$ is a parent of $x$ ($x$ builds on $y$) | $3 \to 4$ | |
+| $t$ | a target | 4 | |
+| $\ell_x$ | level of $x$ | $\ell_3 = 2$ | |
+| $p_x$ | chance one try at $x$ works | $p_3 = 0.3$ | $0.5 \times 0.6^{\ell - 1}$ |
+| $B_t$ | prize of target $t$ | $B_4 = 16$ | $4 \times 2^{\ell - 1}$ |
 
 **A try** ([section 2](#2-a-try))
 
@@ -57,10 +58,10 @@ Grouped by what they belong to, in the order of the sections below. One letter p
 
 | Symbol | Meaning | In the example | Default |
 | --- | --- | --- | --- |
-| $w_{y \to x}$ | link weight: how much $x$ owes parent $y$ | $w_{C \to T} = 62.5\%$ | from difficulty |
-| $\alpha$ | share of incoming value a result's author keeps | T keeps 12.8 of 16 | traditional 1, OSO 0.8 |
-| $\text{share}(x, z)$ | part of value entering $x$ that reaches $z$'s author | $\text{share}(T, C) = 0.1$ | |
-| $S_x$ | what authoring $x$ earns from later work | $S_C = 1.675$ | |
+| $w_{y \to x}$ | link weight: how much $x$ owes parent $y$ | $w_{3 \to 4} = 62.5\%$ | from difficulty |
+| $\alpha$ | share of incoming value a result's author keeps | 4 keeps 12.8 of 16 | traditional 1, OSO 0.8 |
+| $\text{share}(x, z)$ | part of value entering $x$ that reaches $z$'s author | $\text{share}(4, 3) = 0.1$ | |
+| $S_x$ | what authoring $x$ earns from later work | $S_3 = 1.675$ | |
 
 **Choosing what to try** ([section 6](#6-choosing-what-to-try))
 
@@ -108,7 +109,7 @@ How big a prize is: it doubles with each level.
 
 $$B_t = B_0 \cdot 2^{\,\ell_t - 1} \qquad (B_0 = 4)$$
 
-*Example:* A and B (level 1) have $p = 0.5$, C has $p = 0.3$, T has $p = 0.18$. T's prize is $B_T = 4 \cdot 2^2 = 16$. A hand-drawn tree can set $p_x$ and $B_t$ for each result instead.
+*Example:* results 1 and 2 (level 1) have $p = 0.5$, result 3 has $p_3 = 0.3$, target 4 has $p_4 = 0.18$. Its prize is $B_4 = 4 \cdot 2^2 = 16$. A hand-drawn tree can set $p_x$ and $B_t$ for each result instead.
 
 ## 2. A try
 
@@ -118,7 +119,7 @@ $$\pi_{i,x} = \min(1,\ s_i \, p_x)$$
 
 A specialist's skill is $\times 1.6$ in its own area and $\times 0.4$ elsewhere. A try costs $k_i$. A success on a result someone else already published is a **duplicate** and earns nothing.
 
-*Example:* a cheap explorer ($s = 0.5$) trying T: $\pi = 0.5 \times 0.18 = 0.09$, about one success in eleven tries.
+*Example:* a cheap explorer ($s = 0.5$) trying target 4: $\pi = 0.5 \times 0.18 = 0.09$, about one success in eleven tries.
 
 **Learning from failure** (optional). Each failed try makes the next one likelier. $F_{i,x}$ counts $i$'s own failures on $x$, and $F^{\text{pub}}_x$ the failures others made public:
 
@@ -138,7 +139,7 @@ It makes $\lfloor b_i / k_i \rfloor$ tries and keeps the rest for the next round
 
 **The mint.** A new result pays its author $(1-c)\,m$, and $c\,m$ enters its parents by link weight and flows back from there (section 5). A root keeps all of $m$. A trivial result is rejected with chance $\theta$; if accepted it earns $m$.
 
-*Example* ($c = 0.15$): when C is published, C gets 0.85, and A and B get 0.075 each.
+*Example* ($c = 0.15$): when result 3 is published ($x = 3$), its author gets 0.85, and the authors of its parents 1 and 2 get 0.075 each.
 
 **Gaming.** With chance $g_i$ an agent spends a try on a trivial result instead, to collect its mint (section 6).
 
@@ -148,7 +149,7 @@ It makes $\lfloor b_i / k_i \rfloor$ tries and keeps the rest for the next round
 
 $$w_{y \to x} = \frac{1/p_y}{\sum_{y' \to x} 1/p_{y'}}$$
 
-*Example:* T's parents are C ($1/p = 3.33$) and B ($1/p = 2$), so $w_{C \to T} = 3.33/5.33 = 62.5\%$ and $w_{B \to T} = 37.5\%$. C's parents A and B are equally hard: 50% each.
+*Example* ($x = 4$): its parents are 3 ($1/p_3 = 3.33$) and 2 ($1/p_2 = 2$), so $w_{3 \to 4} = 3.33/5.33 = 62.5\%$ and $w_{2 \to 4} = 37.5\%$. Result 3's parents 1 and 2 are equally hard: 50% each.
 
 **The waterfall.** Value entering result $x$ is split: $x$'s author keeps $\alpha$, and $1-\alpha$ flows to its parents by link weight, where the same split repeats. $\text{share}(x, z)$ is the part of value entering $x$ that reaches the author of $z$ ($z$ is $x$ itself or a result before it):
 
@@ -156,7 +157,7 @@ $$\text{share}(x, x) = \alpha \quad (1 \text{ for a root}) \qquad \text{share}(x
 
 **The prize.** When target $t$ is first published, $B_t$ enters $t$ through the waterfall.
 
-*Example* ($\alpha = 0.8$): T's prize of 16. T keeps $0.8 \times 16 = 12.8$. The other 3.2 goes 62.5% to C (2.0) and 37.5% to B (1.2). C keeps $0.8 \times 2.0 = 1.6$ and passes 0.2 each to A and B. In all: **T 12.8, C 1.6, B 1.4, A 0.2.** Under traditional rules ($\alpha = 1$) T keeps all 16.
+*Example* ($\alpha = 0.8$): target 4's prize of 16. Its author keeps $0.8 \times 16 = 12.8$. The other 3.2 goes 62.5% to result 3 (2.0) and 37.5% to result 2 (1.2). Result 3 keeps $0.8 \times 2.0 = 1.6$ and passes 0.2 each to 1 and 2. In all: **4 gets 12.8, 3 gets 1.6, 2 gets 1.4, 1 gets 0.2.** Under traditional rules ($\alpha = 1$) target 4 keeps all 16.
 
 ## 6. Choosing what to try
 
@@ -174,7 +175,7 @@ $$h_x = \max\!\big(1,\ 5\,(\text{average level of targets after } x - \ell_x)\bi
 
 $$S_x = \sum_{t \text{ after } x} B_t \, \text{share}(t, x) \;+\; \sum_{z \text{ after } x} c\, m \sum_{y \to z} w_{y \to z}\, \text{share}(y, x)$$
 
-*Example:* for C, T's prize sends $16 \times 0.2 \times 0.625 \times 0.8 = 1.6$, and T's mint sends $0.15 \times 0.625 \times 0.8 = 0.075$, so $S_C = 1.675$. Under traditional rules $S_x = 0$ for every result.
+*Example* ($x = 3$): target 4's prize sends $16 \times 0.2 \times 0.625 \times 0.8 = 1.6$, and 4's mint sends $0.15 \times 0.625 \times 0.8 = 0.075$, so $S_3 = 1.675$. Under traditional rules $S_x = 0$ for every result.
 
 **What $x$ is worth to agent $i$.** $\hat B_x$ is the largest prize after $x$, and $\hat S_x$ is $S_x$, each as $i$ sees it: the true value times $(1 + \sigma_0 (1 - q_i)\, \xi)$, with $\xi$ a random normal number drawn once.
 
@@ -184,7 +185,7 @@ $$V_{i,x} = \underbrace{(1-c)\,m}_{\text{mint}} + \underbrace{\alpha\, B_x\, \te
 
 $$U_{i,x} = V_{i,x}\left(\pi_{i,x} - \gamma_i \sqrt{\pi_{i,x}(1-\pi_{i,x})}\right)$$
 
-*Example:* a patient agent ($\delta = 0.98$) looking at C: $h_C = 5\,(3 - 2) = 5$, so later value counts $0.98^5 = 0.90$. An impatient racer ($\delta = 0.85$) counts it $0.85^5 = 0.44$, so foundations look half as good to it.
+*Example:* a patient agent ($\delta = 0.98$) looking at result 3: $h_3 = 5\,(3 - 2) = 5$, so later value counts $0.98^5 = 0.90$. An impatient racer ($\delta = 0.85$) counts it $0.85^5 = 0.44$, so foundations look half as good to it.
 
 **The pick.** With chance $g_i$ the agent farms a trivial result instead. Otherwise it picks at random with chance $\varepsilon$, and else by softmax: the better the score, the likelier the pick ($U^{\max}_i$ is its best score).
 
@@ -198,7 +199,7 @@ $$\underbrace{\beta_i\, m}_{\text{liking for sharing}} + \underbrace{M_x\big(1 -
 
 $M_x$ is $x$'s mint: $(1-c)\,m$, or $m$ for a root. A private result earns its mint only if its author later wins a target after it, which is why waiting can lose it.
 
-*Example:* an agent holding C under OSO, with 3 agents able to try C ($\text{win} = 1/3$), $\delta = 0.9$ ($0.9^5 = 0.59$), no liking for sharing, and true estimates. Sharing brings $0.85 \times (1 - 0.59/3) + 0.59 \times 1.675 \approx 1.67$. The scoop risk is $0.8 \times 16 \times \tfrac13 \times 0.5 \approx 2.13$. It keeps C private. At $\alpha = 0.3$ the risk falls to 0.8 and $S_C$ rises, so it shares.
+*Example:* an agent holding result 3 under OSO, with 3 agents able to try it ($\text{win} = 1/3$), $\delta = 0.9$ ($0.9^5 = 0.59$), no liking for sharing, and true estimates. Sharing brings $0.85 \times (1 - 0.59/3) + 0.59 \times 1.675 \approx 1.67$. The scoop risk is $0.8 \times 16 \times \tfrac13 \times 0.5 \approx 2.13$. It keeps result 3 private. At $\alpha = 0.3$ the risk falls to 0.8 and $S_3$ rises, so it shares.
 
 ## 8. Sharing and its costs
 
@@ -220,7 +221,7 @@ $$\text{frontier} = \max\{\ell_x : x \text{ published}\}$$
 
 $$\text{value} = \sum_{t \text{ solved}} B_t \qquad \text{ROI} = \frac{\text{value}}{\text{money spent}}$$
 
-*Example:* solving T for 40 units of money gives value 16 and ROI 0.4.
+*Example:* solving target 4 for 40 units of money gives value 16 and ROI 0.4.
 
 **Sharing:** the share of proved results (other than targets) published in the round they were proved. **Waste:** the share of money spent on duplicates, dead ends and trivial results.
 
