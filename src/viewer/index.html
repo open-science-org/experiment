@@ -148,6 +148,7 @@
   .kind { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--bg); }
   .kind .khead { display: flex; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 6px; }
   .kind .khead b { font-size: 14px; }
+  .examples .btn { font-size: 12px; padding: 3px 9px; }
   .agents-help { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0 0 12px; font-size: 13px; }
   @media (max-width: 800px) { .agents-help { grid-template-columns: 1fr; } }
   .agents-help > * { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
@@ -207,6 +208,7 @@
   <section id="view-new" class="hidden">
     <div class="step">
       <div class="row"><label>Question <input id="e-question" placeholder="What do you want to find out?" style="width:560px"></label></div>
+      <div class="row examples" id="n-examples"><span class="muted">Start from an example:</span></div>
       <div class="row choice" role="radiogroup" aria-label="Who does the work">
         <b>Who does the work</b>
         <label><input type="radio" name="who" value="sim" checked> Simulated agents <span class="info" title="Formula agents. Chance decides if each attempt works. Free and fast: thousands of runs.">ⓘ</span></label>
@@ -222,6 +224,10 @@
       </div>
       <div><b>Compare</b><div class="choice" id="e-settings"></div></div>
       <div class="row"><button class="btn primary" id="n-run">Run</button><span id="e-summary" class="muted"></span><span id="r-cost" class="muted hidden"></span></div>
+      <div id="e-job" class="joblog hidden" aria-live="polite"></div>
+      <div id="r-job" class="joblog hidden" aria-live="polite"></div>
+      <article id="e-result" class="doc hidden"></article>
+      <article id="r-card" class="doc hidden"></article>
       <details id="n-more"><summary>More options</summary>
         <div id="more-sim">
           <div class="row"><label>Name <input id="e-id" value="my-experiment" style="width:180px"></label><label>Title <input id="e-title" placeholder="optional" style="width:220px"></label><label><input type="checkbox" id="e-overwrite"> replace an experiment with this name</label></div>
@@ -255,10 +261,6 @@
           <div class="row"><label>Post helper results <span class="info" title="Smaller results the targets need, listed for every lab to prove.">ⓘ</span> <select id="r-conj"><option value="none">none</option><option value="direct" selected>the ones the targets use directly</option><option value="all">all the ones they rest on</option></select></label></div>
         </div>
       </details>
-      <div id="e-job" class="joblog hidden" aria-live="polite"></div>
-      <div id="r-job" class="joblog hidden" aria-live="polite"></div>
-      <article id="e-result" class="doc hidden"></article>
-      <article id="r-card" class="doc hidden"></article>
     </div>
   </section>
 
@@ -712,6 +714,22 @@ async function refreshSpaces() {
 /* New: one form; who does the work decides which options apply. */
 let runSim = async () => {};
 const who = () => document.querySelector('input[name=who]:checked')?.value ?? 'sim';
+
+/** Example questions for simulations: each fills in the form; the person then presses Run. */
+const EXAMPLES = [
+  { label: 'Does OSO beat traditional here?', question: 'For the same money, does OSO get further than traditional research on this topic?', settings: ['traditional', 'oso'], measure: 'frontier' },
+  { label: 'Sharing or credit: which one helps?', question: 'Is it sharing at once, or credit flowing back, that makes OSO get further?', settings: ['traditional', 'oso', 'sharingOnly', 'creditOnly'], measure: 'frontier' },
+  { label: 'How much credit makes agents share?', question: 'When agents choose what to publish, how low must α be before most of them share?', settings: ['osoChoice'], measure: 'sharing', vary: { 'rules.alpha': '0.8, 0.5, 0.3, 0.1' } },
+  { label: 'What if shared results are sometimes wrong?', question: 'Does OSO still get further when some shared results are wrong?', settings: ['traditional', 'oso'], measure: 'frontier', vary: { 'knowledge.errorRate': '0, 0.05, 0.15' } },
+  { label: 'Does a bigger mint help or feed gaming?', question: 'Does a bigger mint per result make agents share more, or just pay the gamer?', settings: ['traditional', 'oso', 'osoChoice'], measure: 'frontier', vary: { 'rules.mint': '0, 1, 4' } },
+];
+function useExample(x) {
+  $('e-question').value = x.question;
+  for (const i of $('e-settings').querySelectorAll('input')) i.checked = x.settings.includes(i.value);
+  if ([...$('e-measure').options].some((o) => o.value === x.measure)) $('e-measure').value = x.measure;
+  for (const p of D.opts.parameters) { P[p.path].vary = !!x.vary?.[p.path]; if (x.vary?.[p.path]) P[p.path].values = x.vary[p.path]; }
+  drawParams(); designCheck();
+}
 let newReady = false;
 async function enterNew() {
   await enterDesign();
@@ -724,6 +742,8 @@ async function enterNew() {
     const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
     $('e-id').value = `exp-${stamp}`; $('r-id').value = `test-${stamp}`;
     $('e-question').addEventListener('input', () => { if (!$('e-title').value) designCheck(); });
+    $('n-examples').insertAdjacentHTML('beforeend', EXAMPLES.map((x, k) => `<button class="btn" data-x="${k}" title="${esc(x.question)}">${esc(x.label)}</button>`).join(''));
+    for (const b of $('n-examples').querySelectorAll('button')) b.onclick = () => useExample(EXAMPLES[b.dataset.x]);
   }
   if (params().get('who') === 'ai') document.querySelector('input[name=who][value=ai]').checked = true;
   if (params().get('more')) $('n-more').open = true;
@@ -731,6 +751,7 @@ async function enterNew() {
 }
 function applyWho() {
   const ai = who() === 'ai';
+  $('n-examples').classList.toggle('hidden', ai);
   for (const [id, show] of [['n-field-sim', !ai], ['n-field-ai', ai], ['n-measure-sim', !ai], ['n-measure-ai', ai], ['n-runs-sim', !ai], ['n-runs-ai', ai], ['more-sim', !ai], ['more-ai', ai], ['e-summary', !ai], ['r-cost', ai]]) $(id).classList.toggle('hidden', !show);
   // AI tests compare the two rule sets only.
   for (const l of $('e-settings').querySelectorAll('label')) l.classList.toggle('hidden', ai && !['traditional', 'oso'].includes(l.dataset.k));
@@ -803,19 +824,28 @@ async function enterDesign() {
   for (const el of document.querySelectorAll('#view-new #more-sim input, #view-new #more-sim select, #e-settings input, #e-space, #e-seeds')) el.addEventListener('change', designCheck);
   $('e-id').addEventListener('input', designCheck);
   runSim = async () => {
-    const c = await designCheck(); if (!c?.ok) return;
+    const btn = $('n-run');
+    const c = await designCheck();
+    if (!c?.ok) { $('e-summary').scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
     if (c.runs > 20000 && !confirm(`That is ${c.runs.toLocaleString()} simulated runs. Run it?`)) return;
     try {
+      btn.disabled = true; btn.textContent = 'Running…';
       const j = await post('/api/experiments/run', { design: currentDesign(), overwrite: $('e-overwrite').checked });
       $('e-result').classList.add('hidden');
+      $('e-job').classList.remove('hidden');
+      $('e-job').scrollIntoView({ block: 'start', behavior: 'smooth' });
       follow(j.job, $('e-job'), async (job) => {
+        btn.disabled = false; btn.textContent = 'Run';
         if (job.status !== 'done') return;
+        $('e-job').classList.add('hidden');
+        // A fresh name for the next run, so it does not collide with this one.
+        $('e-id').value = `exp-${new Date().toISOString().slice(0, 19).replace(/[-:T]/g, '')}`;
         const d = await api('/api/doc?path=' + encodeURIComponent(job.result.doc));
         $('e-result').innerHTML = d.html + `<p><a href="#/live?tab=sim&space=${esc(currentDesign().space)}">Watch a simulation of this field →</a></p>`;
         $('e-result').classList.remove('hidden');
         OV = null;
       });
-    } catch (e) { $('e-job').classList.remove('hidden'); $('e-job').textContent = e.message; }
+    } catch (e) { btn.disabled = false; btn.textContent = 'Run'; $('e-job').classList.remove('hidden'); $('e-job').textContent = e.message; }
   };
   designCheck();
 }
@@ -1047,7 +1077,7 @@ function explain() {
 
 function currentDesign() {
   return {
-    id: $('e-id').value.trim(), title: $('e-title').value.trim(), question: $('e-question').value.trim(), measure: $('e-measure').value, space: $('e-space').value,
+    id: $('e-id').value.trim(), title: $('e-title').value.trim() || $('e-question').value.trim(), question: $('e-question').value.trim(), measure: $('e-measure').value, space: $('e-space').value,
     settings: [...$('e-settings').querySelectorAll('input:checked')].map((i) => i.value),
     set: Object.fromEntries(D.opts.parameters.filter((p) => !P[p.path].vary && P[p.path].value !== D.field[p.path]).map((p) => [p.path, P[p.path].value])),
     vary: D.opts.parameters.filter((p) => P[p.path].vary).map((p) => ({ path: p.path, values: P[p.path].values.split(',').map((x) => x.trim()).filter(Boolean).map(Number).filter(Number.isFinite) })),
