@@ -148,6 +148,13 @@
   .kind { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--bg); }
   .kind .khead { display: flex; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 6px; }
   .kind .khead b { font-size: 14px; }
+  .agents-help { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0 0 12px; font-size: 13px; }
+  @media (max-width: 800px) { .agents-help { grid-template-columns: 1fr; } }
+  .agents-help > * { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+  .agents-help dl { display: grid; grid-template-columns: 130px 1fr; gap: 4px 10px; margin: 8px 0 0; }
+  .agents-help dt { font-weight: 600; } .agents-help dd { margin: 0; color: var(--ink-2); }
+  .agents-help .matters p { margin: 6px 0 0; color: var(--ink-2); }
+  .kind .kwhat { font-size: 12px; color: var(--ink-2); margin: 2px 0 6px; }
   .trait { display: grid; grid-template-columns: 120px 1fr 64px; gap: 6px; align-items: center; font-size: 12px; margin: 3px 0; }
   .trait input[type=range] { min-width: 0; }
   .trait input[type=number] { width: 64px; padding: 2px 4px; }
@@ -224,6 +231,13 @@
             <aside class="explainer" id="e-explain" aria-live="polite"></aside>
           </div>
           <h3 class="section">Agents</h3>
+          <p class="muted" style="margin:0 0 8px">Each round, every agent picks the most promising result it can try, and pays for the try. Its kind sets how it picks. The values are guesses, not measurements.</p>
+          <div class="agents-help">
+            <details open><summary><b>What the settings mean</b></summary><dl id="a-legend"></dl></details>
+            <div class="matters"><b>How much this matters</b>
+              <p>Under OSO rules, every team tried reaches about the top (8 of 8). Under traditional rules, the team matters: from 4.9 (all foundation builders) to 7.7 (all cheap explorers). Removing one kind changes little, except the <b>gamer</b> (traditional goes from 5.7 to 6.6 without it) and <b>cheap tries</b> (explorers get about 3× more tries for the same money).</p>
+              <p><a href="#/doc/results/agent-kinds/summary.md">See the test →</a></p></div>
+          </div>
           <div class="row"><button class="btn" id="a-reset">Reset</button><button class="btn" id="a-add">Add a kind</button><span class="muted" id="a-summary"></span></div>
           <div class="kinds" id="a-kinds"></div>
           <h3 class="section">Also report</h3>
@@ -830,9 +844,10 @@ function drawAgents() {
   const kinds = Object.keys(D.agents.archetypes).sort((a, b) => (D.agents.mix[b] ?? 0) - (D.agents.mix[a] ?? 0));
   const total = Object.values(D.agents.mix).reduce((a, b) => a + (b || 0), 0);
   $('a-summary').textContent = `${total} agents${agentsChanged() ? ' · changed' : ''}`;
+  $('a-legend').innerHTML = D.opts.traits.map((tr) => `<dt>${esc(tr.label)}</dt><dd>${esc(tr.explain)}</dd>`).join('') + '<dt>specialist</dt><dd>Much better in one area, much worse elsewhere.</dd>';
   $('a-kinds').innerHTML = kinds.map((k) => {
-    const t = D.agents.archetypes[k], n = D.agents.mix[k] ?? 0;
-    return `<div class="kind" data-k="${esc(k)}"><div class="khead"><b>${esc(k)}</b><label>how many <input type="number" class="a-n" min="0" max="50" value="${n}" style="width:60px"></label></div>` +
+    const t = D.agents.archetypes[k], n = D.agents.mix[k] ?? 0, info = D.opts.kinds?.[k];
+    return `<div class="kind" data-k="${esc(k)}"><div class="khead"><b>${esc(info?.name ?? k)}</b><label>how many <input type="number" class="a-n" min="0" max="50" value="${n}" style="width:60px"></label></div>${info ? `<div class="kwhat">${esc(info.what)}</div>` : ''}` +
       D.opts.traits.map((tr) => `<div class="trait" data-tr="${tr.key}" title="${esc(tr.explain)}"><span>${esc(tr.label)}</span><input type="range" min="${tr.min}" max="${tr.max}" step="${tr.step}" value="${t[tr.key]}" aria-label="${esc(k)} ${esc(tr.label)}"><input type="number" min="${tr.min}" max="${tr.max}" step="${tr.step}" value="${t[tr.key]}"></div>`).join('') +
       `<label style="font-size:12px" title="Much better in one area, worse elsewhere"><input type="checkbox" class="a-spec" ${t.specialist ? 'checked' : ''}> specialist</label></div>`;
   }).join('');
@@ -846,7 +861,7 @@ function drawAgents() {
       const set = (v) => { if (!Number.isFinite(v)) return; v = Math.min(tr.max, Math.max(tr.min, v)); D.agents.archetypes[k][tr.key] = v; range.value = v; num.value = v; $('a-summary').textContent = `${Object.values(D.agents.mix).reduce((a, b) => a + (b || 0), 0)} agents${agentsChanged() ? ' · changed from the field\'s' : ''}`; designCheck(); };
       range.oninput = () => set(Number(range.value));
       num.onchange = () => set(Number(num.value));
-      const show = () => { $('e-explain').innerHTML = `<h3>${esc(tr.label)} <span class="muted">(${esc(k)})</span></h3><p>${esc(tr.explain)}</p><p class="cap">This kind: ${D.agents.archetypes[k][tr.key]}. Range ${tr.min} to ${tr.max}.</p><p class="cap muted">Agent kinds and their traits are guesses meant to give a varied community; they were not measured. See the simulator doc, section 2.2.</p>`; };
+      const show = () => { $('e-explain').innerHTML = `<h3>${esc(tr.label)} <span class="muted">(${esc(k)})</span></h3><p>${esc(tr.explain)}</p><p class="cap">This kind: ${D.agents.archetypes[k][tr.key]}. Range ${tr.min} to ${tr.max}.</p><p class="cap muted">Agent kinds and their traits are guesses, not measurements. More in <a href="#/doc/docs/simulator.md?at=22-agents-agentsts">the simulation in detail</a>.</p>`; };
       row.addEventListener('focusin', show);
       row.addEventListener('click', show);
     }

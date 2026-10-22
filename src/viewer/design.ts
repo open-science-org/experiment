@@ -89,15 +89,26 @@ export const PARAMETERS: Parameter[] = [
 
 /** The eight traits of a simulated agent (docs/simulator.md, section 2.2). */
 export const TRAITS = [
-  { key: 'skill', label: 'skill', min: 0.1, max: 2, step: 0.05, explain: 'Multiplies the chance that an attempt succeeds: chance = skill × the result\'s base chance (at most 1).' },
-  { key: 'conjecture', label: 'conjecture quality', min: 0, max: 1, step: 0.05, explain: 'How accurately the agent sees what a result is worth before trying it. At 1 it sees exactly; lower, it misjudges by more (see σ₀, perception noise).' },
-  { key: 'cost', label: 'cost per attempt', min: 0.1, max: 3, step: 0.05, explain: 'Compute units one attempt costs this agent. A cheap explorer tries more often with the same budget.' },
-  { key: 'horizon', label: 'horizon', min: 0.5, max: 1, step: 0.01, explain: 'How much the agent values later payoffs: value arriving t rounds from now counts × horizon^t. Near 1 it is patient (foundations pay off late); lower, it wants returns now.' },
-  { key: 'risk', label: 'risk attitude', min: -1, max: 1, step: 0.05, explain: 'Penalty on uncertain payoffs. Positive: cautious, prefers likely successes. Negative: risk-seeking, goes for long shots such as hard targets.' },
-  { key: 'reuse', label: 'reuse', min: 0, max: 1, step: 0.05, explain: 'Chance each round of taking up a result someone else published, so that it can build on it. Low reuse means ignoring others\' work.' },
-  { key: 'sharing', label: 'sharing', min: -1, max: 1, step: 0.05, explain: 'Intrinsic value the agent puts on publishing, in units of the mint: positive likes sharing (as many scientists do), negative dislikes it (a free rider). It matters when agents choose what to publish.' },
-  { key: 'gaming', label: 'gaming', min: 0, max: 1, step: 0.05, explain: 'Share of the agent\'s attempts spent submitting trivial results to collect the mint. The validation screen θ decides how often that pays.' },
+  { key: 'skill', label: 'skill', min: 0.1, max: 2, step: 0.05, explain: 'How often a try works. At 1 a try works as often as the result allows; at 0.5, half as often.' },
+  { key: 'conjecture', label: 'conjecture quality', min: 0, max: 1, step: 0.05, explain: 'How well the agent judges what a result is worth before trying it. At 1 it judges exactly; lower, it often picks the wrong things.' },
+  { key: 'cost', label: 'cost per attempt', min: 0.1, max: 3, step: 0.05, explain: 'Money per try. A cheaper agent gets more tries from the same budget.' },
+  { key: 'horizon', label: 'horizon', min: 0.5, max: 1, step: 0.01, explain: 'Patience. Near 1, the agent values payoffs that come many rounds later, such as a prize several levels up; lower, it wants payoffs now.' },
+  { key: 'risk', label: 'risk attitude', min: -1, max: 1, step: 0.05, explain: 'Above 0, the agent avoids long shots and prefers sure things; below 0, it chases long shots such as hard targets.' },
+  { key: 'reuse', label: 'reuse', min: 0, max: 1, step: 0.05, explain: 'Chance each round of picking up a result someone else published, so it can build on it. Sharing only helps if agents reuse.' },
+  { key: 'sharing', label: 'sharing', min: -1, max: 1, step: 0.05, explain: 'How much the agent likes publishing for its own sake: above 0 it likes it, below 0 it dislikes it. Only matters when agents choose what to share.' },
+  { key: 'gaming', label: 'gaming', min: 0, max: 1, step: 0.05, explain: 'Share of tries spent on trivial results, just to collect the small reward each one pays.' },
 ];
+
+/** The kinds of agent in the default community, in plain words. */
+export const KINDS: Record<string, { name: string; what: string }> = {
+  foundation: { name: 'Foundation builder', what: 'Patient and careful; builds the basic results others need, and likes sharing.' },
+  racer: { name: 'Target racer', what: 'Impatient; chases the prizes and long shots, and never shares for its own sake.' },
+  explorer: { name: 'Cheap explorer', what: 'Less skilled and a poor judge, but each try is cheap, so it tries a lot.' },
+  specialist: { name: 'Specialist', what: 'Much better in its own area (1.6×), much worse elsewhere (0.4×).' },
+  freeRider: { name: 'Free rider', what: "Uses everyone's results and dislikes sharing its own." },
+  gamer: { name: 'Gamer', what: 'Spends most tries on trivial results to collect their small rewards.' },
+  plain: { name: 'Plain', what: 'Average at everything, no preferences; uses every result it sees. A baseline.' },
+};
 
 /** A field's agents: their kinds with traits, and how many of each. */
 export function fieldAgents(id: string) {
@@ -128,6 +139,7 @@ export function options() {
     settings: SETTINGS,
     parameters: PARAMETERS,
     traits: TRAITS,
+    kinds: KINDS,
     personas: PERSONAS,
     personaFeatures: PERSONA_FEATURES,
     flowBackSettings: FLOW_BACK,
