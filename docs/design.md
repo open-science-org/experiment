@@ -127,7 +127,10 @@ All payments use one ledger, with the rules of OIP-8 and OIP-14.
   - its author keeps a share **α**;
   - the rest, 1 − α, flows to its prerequisites in proportion to their attribution weights, and the split repeats at each of them;
   - a root keeps everything that reaches it.
-- **Attribution weights.** How much a result relied on each prerequisite. Exact where the instantiation shows it (in Lean, the proof records which results it uses); estimated otherwise.
+- **Attribution weights.** The weight of the link from a prerequisite j to a result x is **how much j contributed to x: the work j saves.** That is the extra cost of getting x if j did not exist. A result's weights are these contributions, scaled to sum to 1.
+  - When prerequisites overlap (either one would do, or they only help together), each one's contribution is averaged over every order in which they could be added (the Shapley value), so the split stays fair.
+  - A prerequisite that helps without being needed contributes the work it saves, not its whole cost.
+  - Each instantiation says how it measures this, and how close the measure is to the definition (section 6).
 - **Validation screen.** A trivial result is rejected with probability **θ** and then earns nothing. This is OSO's admission check (OIP-11).
 
 ### 2.5 Budget and compute
@@ -275,7 +278,7 @@ Value is measured on several axes, because a setting can be fast but expensive, 
 | Success chance p | Set (0.5 × 0.6^(level − 1) by default) | Measured in the pilot |
 | What sharing conveys | That the result is proved | The statement and the proof |
 | Cost and correctness of shared results | Free and correct by default; optionally a cost to absorb, and wrong results that are retracted | Reading costs tokens; Lean guarantees correctness |
-| Attribution weights | By difficulty (exact or with noise) | Exact: the theorems a proof uses |
+| Attribution weights | The work a prerequisite saves: finding it again costs about 1/p tries, so weights are proportional to 1/p (exact, or with noise to test a ledger that gets them wrong) | Which theorems a proof uses is exact; how much each contributed is measured for now by the money spent to prove it (the work saved if it had to be proved again from scratch) |
 | Trivial results | Farmed by gaming agents; screen θ | Statements closed by one cheap tactic; rejected by the screen |
 | Agents | Formula agents with set traits | LLM agents; traits from model and prompt, measured |
 | Cost | Compute units | Tokens and checking time |

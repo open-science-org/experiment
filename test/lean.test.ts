@@ -118,3 +118,11 @@ test('with Lean: race designs suggest counted targets from the pilot and post th
   const s = design.suggestCounted('no-such/model');
   assert.equal(s.run, null);
 });
+
+test('flow-back is split by what each used result cost to prove, equally when a cost is unknown', async () => {
+  const { Community } = await import('../src/lean/community.ts');
+  const w = (costs: (number | undefined)[]) => Community.prototype.weights.call(null, costs.map((cost) => ({ cost })) as never);
+  assert.deepEqual(w([1, 3]), [0.25, 0.75]);
+  assert.deepEqual(w([1, undefined]), [0.5, 0.5]);
+  assert.deepEqual(w([]), []);
+});

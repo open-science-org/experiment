@@ -1,0 +1,27 @@
+# Designed in the experiment app.
+id: exp-202610220110
+title: exp-202610220110
+description: 'Designed in the app on the field "An abstract research field"
+  (spaces/abstract-field.yaml): Traditional vs OSO (immediate). α and c apply to the OSO (flow-back)
+  settings only.'
+seeds: 50
+set:
+  budget:
+    X: 1200
+factors:
+  - name: setting
+    levels:
+      - label: Traditional
+        preset: traditional
+      - label: OSO (immediate)
+        preset: oso
+columns:
+  - frontier
+  - reachTarget
+  - cost
+  - sharing
+  - targetsSolved
+question: "Traditional vs OSO (immediate) on An abstract research field: which gets furthest?"
+compare: Traditional, OSO (immediate)
+fixed: the field "An abstract research field"
+measure: frontier

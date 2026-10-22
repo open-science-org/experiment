@@ -205,6 +205,8 @@ The budget is X = 1,200 compute units over T = 120 rounds, so 10 per round.
 7. **Earnings** are added up and Ē is updated.
 8. **Stopping.** The run ends when the budget is spent, or as soon as every target is solved, since a funder stops paying then.
 
+**The weights** ŵ(x, j) are proportional to 1/p_j: the expected tries to find j, which is the work j saves x ([design, attribution weights](design.md#24-rewards)).
+
 **The waterfall** (`world.ts`, function `shares`): value v entering result x pays share[x][a] · v to the author of each a, either x itself or one of its ancestors.
 
 ```

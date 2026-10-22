@@ -52,6 +52,8 @@ export interface CommunityOptions {
 /** A result in the community's library. */
 export interface Entry {
   name: string;
+  /** Money spent on the action that proved it: the stand-in for how much it contributes to what uses it. */
+  cost?: number;
   ns: string;
   signature: string;
   author: number;
@@ -158,12 +160,21 @@ export class Community {
     for (let k = 2; ; k++) if (!taken.has(`${base}_${k}`)) return `${base}_${k}`;
   }
 
+  /**
+   * How flow-back from a result is split between the results it used: by each one's contribution, the
+   * work it saves (docs/design.md, attribution weights). Measured for now by what it cost to prove;
+   * an equal split when a cost is unknown.
+   */
+  weights(used: Entry[]): number[] {
+    const costs = used.map((u) => u.cost ?? 0), sum = costs.reduce((a, b) => a + b, 0);
+    return costs.every((x) => x > 0) ? costs.map((x) => x / sum) : used.map(() => 1 / used.length);
+  }
   /** Pays value v into entry x: it keeps α (all, under traditional rules or if it used nothing); the rest flows to what it used. */
   pay(x: Entry, v: number) {
     const used = x.uses.map((n) => this.library.find((e) => `${e.ns}.${e.name}` === n)).filter((e): e is Entry => !!e);
     const keep = this.opts.rules === 'oso' && used.length ? this.opts.alpha : 1;
     this.earnings[x.author] += v * keep;
-    if (keep < 1) for (const u of used) this.pay(u, (v * (1 - keep)) / used.length);
+    if (keep < 1) { const w = this.weights(used); used.forEach((u, k) => this.pay(u, v * (1 - keep) * w[k])); }
   }
   /** Publishing a result: its mint (less the cited share under OSO), and the bounty if it is a target. */
   publish(e: Entry, round: number) {
@@ -174,7 +185,7 @@ export class Community {
     const c = this.opts.rules === 'oso' && used.length ? this.opts.c : 0;
     const mint = e.trivial ? 0 : this.opts.mint;
     this.earnings[e.author] += mint * (1 - c);
-    for (const u of used) this.pay(u, (mint * c) / used.length);
+    { const w = this.weights(used); used.forEach((u, k) => this.pay(u, mint * c * w[k])); }
     if (e.target) this.pay(e, this.bounty(this.targets.find((t) => t.publicId === e.target)!));
     if (e.conjecture && !e.trivial) this.pay(e, this.opts.conjectureBounty ?? 1);
   }
@@ -201,7 +212,7 @@ export class Community {
       : `How this community works (OSO rules):
 - Every result you prove is published at once, and every lab can build on it immediately.
 - Each new result earns its author a mint of ${o.mint}; if it builds on earlier results, ${o.c * 100}% of that mint goes to them.
-- When value reaches a result (a target's bounty, or value flowing from later work), its author keeps ${o.alpha * 100}% and the rest flows back to the results it used, and on down.`;
+- When value reaches a result (a target's bounty, or value flowing from later work), its author keeps ${o.alpha * 100}% and the rest flows back to the results it used, split by how much each cost to prove, and on down.`;
     const persona = o.personas?.[i]?.trim() ? `Your lab's way of working${o.personaNames?.[i] ? ` (${o.personaNames[i]})` : ''}: ${o.personas[i].trim()}` : '';
     return `You are lab ${i + 1} of ${o.agents.length} in a research community proving theorems in Lean 4 (version 4.35.0, core library only, no Mathlib). Your aim is to earn as much as you can within your budget; every model call you make costs budget.
 
@@ -338,6 +349,7 @@ Take one action.`;
       messages.push({ role: 'user', content: `Not accepted:\n\n${errors.join('\n\n').slice(0, 5000)}\n\nFix it and reply again in the same format.` });
     }
     const made = ok ? this.library.filter((e) => e.author === i && e.round === round).at(-1) : undefined;
+    if (made) made.cost = price(usage);
     const a: Action = {
       round, agent: i, model, kind, target, name: lemma?.name, signature: lemma?.signature, ok, reason: reason || (ok ? undefined : 'not accepted'),
       ...(made ? { entry: made.name, uses: made.uses } : {}),
