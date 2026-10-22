@@ -5,6 +5,7 @@ import { createServer } from 'node:http';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, extname, join, normalize, relative } from 'node:path';
 import { marked } from 'marked';
+import katex from 'katex';
 import { ROOT, REPORTS_DIR, RESULTS_DIR } from '../paths.ts';
 import { loadScenario, expandPaths } from '../engine/config.ts';
 import { traceRun } from '../engine/model.ts';
@@ -33,10 +34,20 @@ function publicPath(path: string): string | null {
 function doc(path: string): { path: string; title: string; html: string } {
   const full = publicPath(path);
   if (!full || !full.endsWith('.md')) throw new Error(`no such document: ${path}`);
-  const md = readFileSync(full, 'utf8');
+  let md = readFileSync(full, 'utf8');
   const base = dirname(relative(ROOT, full));
+  // Documents that start with <!-- math --> have $…$ and $$…$$ maths (as on GitHub), rendered here with KaTeX.
+  const maths: string[] = [];
+  if (md.startsWith('<!-- math -->')) {
+    const keep = (tex: string, display: boolean) => {
+      maths.push(katex.renderToString(tex.trim(), { displayMode: display, throwOnError: false, output: 'html' }));
+      return `MATH${maths.length - 1}END`;
+    };
+    md = md.replace(/^\$\$([\s\S]+?)\$\$$/gm, (_, t) => keep(t, true)).replace(/\$([^$\n]+?)\$/g, (_, t) => keep(t, false));
+  }
   const resolve = (href: string) => normalize(join(base, href));
   let html = marked.parse(md, { async: false }) as string;
+  html = html.replace(/MATH(\d+)END/g, (_, k) => maths[Number(k)]);
   html = html.replace(/(src|href)="([^"#:]+?)(#[^"]*)?"/g, (m, attr, href, hash = '') => {
     if (/^(https?:|mailto:|\/)/.test(href)) return m;
     const target = resolve(href);
@@ -212,6 +223,14 @@ const server = createServer(async (req, res) => {
     if (url.pathname === '/api/spaces/yaml') return send(200, { yaml: design.fieldYaml(url.searchParams.get('id') ?? '') });
     if (url.pathname === '/api/jobs') return send(200, design.listJobs());
     if (url.pathname.startsWith('/api/jobs/')) return send(200, design.getJob(url.pathname.slice('/api/jobs/'.length)));
+    if (url.pathname.startsWith('/katex/')) {
+      // The maths renderer's style sheet and fonts, from its package.
+      const dist = join(ROOT, 'node_modules', 'katex', 'dist');
+      const f = normalize(join(dist, url.pathname.slice('/katex/'.length)));
+      if (!f.startsWith(dist + '/') || !existsSync(f) || statSync(f).isDirectory()) return send(404, { error: 'not found' });
+      const types: Record<string, string> = { '.css': 'text/css; charset=utf-8', '.woff2': 'font/woff2', '.woff': 'font/woff', '.ttf': 'font/ttf' };
+      return send(200, readFileSync(f), types[extname(f)] ?? 'application/octet-stream');
+    }
     if (url.pathname === '/') return send(200, readFileSync(PAGE, 'utf8'), 'text/html; charset=utf-8');
     if (url.pathname === '/api/overview') return send(200, overview());
     if (url.pathname === '/api/doc') return send(200, doc(url.searchParams.get('path') ?? ''));

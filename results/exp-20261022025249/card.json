@@ -1,0 +1,64 @@
+{
+ "chart": "results/exp-20261022025249/figures/compare.svg",
+ "id": "exp-20261022025249",
+ "kind": "simulation",
+ "date": "2026-10-22",
+ "title": "exp-20261022025249",
+ "design": {
+  "question": "Traditional vs OSO (immediate) vs OSO (choice) vs Flow-back, finished-only vs No flow-back, immediate vs No flow-back, choice on An abstract research field: which gets furthest?",
+  "compare": "Traditional, OSO (immediate), OSO (choice), Flow-back, finished-only, No flow-back, immediate, No flow-back, choice",
+  "fixed": "the field \"An abstract research field\", with mint per result = 0, θ, validation screen = 0",
+  "measure": "hardest level published",
+  "better": "higher",
+  "runs": "50 runs per row"
+ },
+ "answer": "Best: OSO, 8.0 (1 more tie). Best traditional: Traditional, 6.4. Clear difference.",
+ "table": [
+  {
+   "setting": "Traditional",
+   "frontier": "6.4 ± 1.5",
+   "reach L7": "0.60",
+   "cost": "845 ± 194",
+   "ROI (value per spend)": "0.54 ± 0.45"
+  },
+  {
+   "setting": "OSO (immediate)",
+   "frontier": "8.0 ± 0.0",
+   "reach L7": "1.00",
+   "cost": "420 ± 133",
+   "ROI (value per spend)": "1.61 ± 0.44"
+  },
+  {
+   "setting": "OSO (choice)",
+   "frontier": "7.1 ± 1.0",
+   "reach L7": "0.78",
+   "cost": "869 ± 201",
+   "ROI (value per spend)": "0.58 ± 0.47"
+  },
+  {
+   "setting": "Flow-back, finished-only",
+   "frontier": "6.9 ± 1.3",
+   "reach L7": "0.70",
+   "cost": "857 ± 173",
+   "ROI (value per spend)": "0.65 ± 0.48"
+  },
+  {
+   "setting": "No flow-back, immediate",
+   "frontier": "8.0 ± 0.1",
+   "reach L7": "1.00",
+   "cost": "432 ± 114",
+   "ROI (value per spend)": "1.63 ± 0.51"
+  },
+  {
+   "setting": "No flow-back, choice",
+   "frontier": "7.1 ± 0.9",
+   "reach L7": "0.78",
+   "cost": "871 ± 140",
+   "ROI (value per spend)": "0.61 ± 0.46"
+  }
+ ],
+ "caveats": [
+  "A simulation with guessed parameters: it shows how the rules play out, not that they work."
+ ],
+ "page": "results/exp-20261022025249/summary.md"
+}

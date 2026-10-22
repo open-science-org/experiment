@@ -179,12 +179,19 @@
   .chips .btn[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
   .res { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
   .res h3 { margin: 4px 0 6px; font-size: 15px; }
-  .glance { display: grid; grid-template-columns: repeat(auto-fit, minmax(520px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .glance { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 12px; margin-bottom: 8px; align-items: start; }
+  #view-overview h2 { font-size: 16px; margin: 22px 0 10px; } #view-overview h2.first { margin-top: 0; }
+  #view-overview h2 .muted { font-weight: 400; font-size: 13px; }
+  #view-overview details.group > summary { cursor: pointer; list-style: none; } #view-overview details.group > summary h2 { display: inline; }
+  #view-overview details.group > summary::before { content: '▸ '; color: var(--ink-3); } #view-overview details.group[open] > summary::before { content: '▾ '; }
+  #view-overview details.group .fields { margin-top: 10px; }
   .glance .res { text-decoration: none; color: var(--ink); }
   .res .q { color: var(--ink-2); font-size: 13px; margin: 0 0 6px; }
   .res .a { font-size: 14px; margin: 0; }
   .res .meta { color: var(--ink-3); font-size: 12px; margin-top: 8px; }
 </style>
+<link rel="stylesheet" href="/katex/katex.min.css">
+<style>.doc .katex-display { overflow-x: auto; overflow-y: hidden; padding: 4px 0; }</style>
 </head>
 <body>
 <header>
@@ -198,6 +205,7 @@
   <a href="#/live">Live</a>
   <a href="#/topics">Topics</a>
   <a href="#/how">How it works</a>
+  <a href="#/equations" class="sub">Equations</a>
 </nav>
 <main>
   <!-- Results: every experiment as a short card -->
@@ -365,8 +373,9 @@ async function route() {
   if (old[path]) { const q = location.hash.split('?')[1]; location.hash = '#' + old[path] + (q ? (old[path].includes('?') ? '&' : '?') + q : ''); return; }
   const top = '/' + (path.split('/')[1] ?? '');
   for (const a of document.querySelectorAll('nav.side a')) {
-    const isHow = top === '/how' || (top === '/doc' && /^\/doc\/(docs\/|README\.md|lean\/)/.test(path));
-    const here = isHow ? a.getAttribute('href') === '#/how' : a.getAttribute('href') === '#' + top || (top === '/doc' && a.getAttribute('href') === '#/');
+    const isEq = top === '/equations' || path === '/doc/docs/equations.md';
+    const isHow = !isEq && (top === '/how' || (top === '/doc' && /^\/doc\/(docs\/|README\.md|lean\/)/.test(path)));
+    const here = isEq ? a.getAttribute('href') === '#/equations' : isHow ? a.getAttribute('href') === '#/how' : a.getAttribute('href') === '#' + top || (top === '/doc' && a.getAttribute('href') === '#/');
     if (here) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
   }
   if (path === '/') { show('view-overview'); return drawResults(); }
@@ -375,6 +384,7 @@ async function route() {
   if (path === '/live') { show('view-live'); return showTab(params().get('tab') ?? 'ai'); }
   if (path === '/topics' || path === '/fields') { show('view-fields'); return enterFields(); }
   if (path === '/how') { show('view-doc'); return openDoc('docs/README.md'); }
+  if (path === '/equations') { show('view-doc'); return openDoc('docs/equations.md'); }
   show('view-overview'); drawResults();
 }
 window.addEventListener('hashchange', route);
@@ -401,14 +411,11 @@ async function openDoc(path) {
   } catch (e) { $('doc-body').innerHTML = `<p>${esc(e.message)}</p>`; }
 }
 
-const KIND = { race: 'AI models', 'model pilot': 'AI models', 'field report': 'Topic', simulation: 'Simulation' };
-let resultsFilter = 'all';
 async function drawResults() {
   OV = null;
   const ov = await overviewData();
   const order = { race: 0, 'model pilot': 1, 'field report': 2, simulation: 3 };
   const cards = [...ov.cards].sort((a, b) => order[a.kind] - order[b.kind] || b.date.localeCompare(a.date));
-  const shown = cards.filter((c) => resultsFilter === 'all' || KIND[c.kind] === resultsFilter);
   // At a glance: three comparisons. Every topic (OSO orange, traditional blue), the latest AI test, the AI models alone and with help.
   const topics = ov.fields.sort((a, b) => a.title.localeCompare(b.title));
   const tW = 560, rowH = 40, tl = 170, tpw = tW - tl - 60;
@@ -427,17 +434,30 @@ async function drawResults() {
     race ? `<a class="res" href="#/doc/${esc(race.page)}"><img src="/files/${esc(race.chart)}" alt="${esc(race.title)}" style="width:100%"><div class="meta">${esc(race.title)}</div></a>` : '',
     models ? `<a class="res" href="#/doc/${esc(models.page)}"><img src="/files/${esc(models.chart)}" alt="${esc(models.title)}" style="width:100%"><div class="meta">${esc(models.title)}</div></a>` : '',
   ].join('');
-  const chip = (f) => `<button class="btn" data-f="${f}" aria-pressed="${resultsFilter === f}">${f === 'all' ? 'All' : f}</button>`;
-  $('view-overview').innerHTML = `
-    <div class="glance">${glance}</div>
-    <div class="chips">${['all', 'AI models', 'Topic', 'Simulation'].map(chip).join('')}</div>
-    <div class="fields">${shown.map((c) => `<a class="res field" href="#/doc/${esc(c.page)}">
-      <span class="chip ${!c.invalid && /^(OSO|Best on [^:]+: OSO)/.test(c.answer) ? 'ahead' : ''}">${esc(KIND[c.kind])}</span>${c.invalid ? ' <span class="chip">Not valid</span>' : ''}
+  // Cards in groups: the main results first; quick tries made in the app, and results that are not valid, folded away.
+  const mine = (c) => c.kind === 'simulation' && /^(exp-|my-experiment$)/.test(c.id);
+  const groups = [
+    { title: 'AI models', note: 'Real models proving theorems; Lean checks every proof.', cards: cards.filter((c) => (c.kind === 'race' || c.kind === 'model pilot') && !c.invalid) },
+    { title: 'Topics', note: 'One full report per research topic (simulation).', cards: cards.filter((c) => c.kind === 'field report') },
+    { title: 'Questions answered by simulation', note: 'Each one changes one thing and compares.', cards: cards.filter((c) => c.kind === 'simulation' && !mine(c)) },
+    { title: 'Your quick tries', note: 'Made on the New page.', cards: cards.filter(mine), fold: true },
+    { title: 'Not valid', note: 'Kept for the record; do not use.', cards: cards.filter((c) => c.invalid), fold: true },
+  ].filter((g) => g.cards.length);
+  const card = (c) => `<a class="res field" href="#/doc/${esc(c.page)}">
+      ${c.invalid ? '<span class="chip">Not valid</span>' : ''}
       <h3>${esc(c.title.replace(/^(Real agents, OSO vs traditional|Lean pilot): /, ''))}</h3>
       <p class="q">${esc(c.design.question)}</p>
       <p class="a">${esc(c.invalid ? 'Not valid: ' + c.invalid : c.answer)}</p>
-      <div class="meta">${esc(c.date)} · ${esc(c.design.runs)}${c.cost ? ' · ' + esc(c.cost) : ''}</div></a>`).join('') || '<p class="muted">Nothing yet.</p>'}</div>`;
-  for (const b of $('view-overview').querySelectorAll('.chips .btn')) b.onclick = () => { resultsFilter = b.dataset.f; drawResults(); };
+      <div class="meta">${esc(c.date)} · ${esc(c.design.runs)}${c.cost ? ' · ' + esc(c.cost) : ''}</div></a>`;
+  const section = (g) => {
+    const body = `<div class="fields">${g.cards.map(card).join('')}</div>`;
+    const head = `${esc(g.title)} <span class="muted">· ${g.cards.length} · ${esc(g.note)}</span>`;
+    return g.fold ? `<details class="group"><summary><h2>${head}</h2></summary>${body}</details>` : `<section class="group"><h2>${head}</h2>${body}</section>`;
+  };
+  $('view-overview').innerHTML = `
+    <h2 class="first">At a glance <span class="muted">· OSO orange, traditional blue</span></h2>
+    <div class="glance">${glance}</div>
+    ${groups.map(section).join('') || '<p class="muted">Nothing yet.</p>'}`;
 }
 
 /* Live: tabs */

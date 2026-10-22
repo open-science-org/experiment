@@ -95,3 +95,5 @@ Runs up to 2026-10-19 were made when the simulator lived in `sim/` of [open-scie
 | 2026-10-22 | [sensitivity](sensitivity/summary.md) | `88a4b32` (uncommitted changes) | 100 | `npm run sim -- sensitivity --seeds 100 --save` |
 | 2026-10-22 | [settings](settings/summary.md) | `88a4b32` (uncommitted changes) | 100 | `npm run sim -- settings --seeds 100 --save` |
 | 2026-10-22 | [simple](simple/summary.md) | `88a4b32` (uncommitted changes) | 1000 | `npm run sim -- simple --seeds 1000 --save` |
+| 2026-10-22 | [exp-202610220210](exp-202610220210/summary.md) | `b725f0a` (uncommitted changes) | 50 | `npm run sim -- exp-202610220210 --seeds 50 --save` |
+| 2026-10-22 | [exp-20261022025249](exp-20261022025249/summary.md) | `b725f0a` (uncommitted changes) | 50 | `npm run sim -- exp-20261022025249 --seeds 50 --save` |
