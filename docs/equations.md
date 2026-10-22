@@ -10,7 +10,7 @@ Every rule of the experiment as a formula, in the order a run uses them. Each fo
 - **Results** are the nodes. A **parent** is a result another one builds on: A and B are C's parents; C and B are T's.
 - **Arrows** go from a parent to the result built on it. The number on an arrow is the **link weight** (section 5).
 - **Roots** (A, B) build on nothing. **Targets** (T) carry a prize.
-- A result **above** $x$ is built on $x$, directly or through others: T is above C, and C and T are above A.
+- Levels run left to right, easiest first. A result **after** $x$ is built on $x$, directly or through others: T is after C, and C and T are after A. A result **before** $x$ is one $x$ builds on.
 
 ## Symbols
 
@@ -67,7 +67,7 @@ Grouped by what they belong to, in the order of the sections below. One letter p
 | Symbol | Meaning | Default |
 | --- | --- | --- |
 | $\text{win}_x$ | chance of being first at $x$ | |
-| $h_x$ | rounds until value from above arrives | |
+| $h_x$ | rounds until value from later results arrives | |
 | $\delta_i$ | patience: how much later payoffs count | 0.85 to 0.98 |
 | $q_i,\ \sigma_0$ | judgement, and how wrong a poor judge's estimates are | 0.3 to 1; 1 |
 | $\gamma_i$ | risk attitude: above 0 cautious, below 0 chases long shots | −0.2 to 0.2 |
@@ -136,7 +136,7 @@ It makes $\lfloor b_i / k_i \rfloor$ tries and keeps the rest for the next round
 
 ## 4. The mint
 
-**The mint.** A new result pays its author $(1-c)\,m$, and $c\,m$ enters its parents by link weight and flows down from there (section 5). A root keeps all of $m$. A trivial result is rejected with chance $\theta$; if accepted it earns $m$.
+**The mint.** A new result pays its author $(1-c)\,m$, and $c\,m$ enters its parents by link weight and flows back from there (section 5). A root keeps all of $m$. A trivial result is rejected with chance $\theta$; if accepted it earns $m$.
 
 *Example* ($c = 0.15$): when C is published, C gets 0.85, and A and B get 0.075 each.
 
@@ -150,7 +150,7 @@ $$w_{y \to x} = \frac{1/p_y}{\sum_{y' \to x} 1/p_{y'}}$$
 
 *Example:* T's parents are C ($1/p = 3.33$) and B ($1/p = 2$), so $w_{C \to T} = 3.33/5.33 = 62.5\%$ and $w_{B \to T} = 37.5\%$. C's parents A and B are equally hard: 50% each.
 
-**The waterfall.** Value entering result $x$ is split: $x$'s author keeps $\alpha$, and $1-\alpha$ flows to its parents by link weight, where the same split repeats. $\text{share}(x, z)$ is the part of value entering $x$ that reaches the author of $z$ ($z$ is $x$ itself or a result below it):
+**The waterfall.** Value entering result $x$ is split: $x$'s author keeps $\alpha$, and $1-\alpha$ flows to its parents by link weight, where the same split repeats. $\text{share}(x, z)$ is the part of value entering $x$ that reaches the author of $z$ ($z$ is $x$ itself or a result before it):
 
 $$\text{share}(x, x) = \alpha \quad (1 \text{ for a root}) \qquad \text{share}(x, z) = \sum_{y \to x} (1-\alpha)\, w_{y \to x}\, \text{share}(y, z)$$
 
@@ -166,17 +166,17 @@ Each round, an agent looks at its **frontier**: results it does not know yet who
 
 $$\text{win}_x = \frac{1}{\max(1,\ n_x)}$$
 
-**Rounds until value from above arrives:** 5 per level between $x$ and the targets above it (1 if there are none).
+**Rounds until value from later results arrives:** 5 per level between $x$ and the targets after it (1 if there are none).
 
-$$h_x = \max\!\big(1,\ 5\,(\text{average level of targets above } x - \ell_x)\big)$$
+$$h_x = \max\!\big(1,\ 5\,(\text{average level of targets after } x - \ell_x)\big)$$
 
-**What authoring $x$ earns from later work** (flow-back), if every target above it is solved and every result above it published. The first sum is prizes flowing down; the second is mints flowing down:
+**What authoring $x$ earns from later work** (flow-back), if every target after it is solved and every result after it published. The first sum is prizes flowing back; the second is mints flowing back:
 
-$$S_x = \sum_{t \text{ above } x} B_t \, \text{share}(t, x) \;+\; \sum_{z \text{ above } x} c\, m \sum_{y \to z} w_{y \to z}\, \text{share}(y, x)$$
+$$S_x = \sum_{t \text{ after } x} B_t \, \text{share}(t, x) \;+\; \sum_{z \text{ after } x} c\, m \sum_{y \to z} w_{y \to z}\, \text{share}(y, x)$$
 
 *Example:* for C, T's prize sends $16 \times 0.2 \times 0.625 \times 0.8 = 1.6$, and T's mint sends $0.15 \times 0.625 \times 0.8 = 0.075$, so $S_C = 1.675$. Under traditional rules $S_x = 0$ for every result.
 
-**What $x$ is worth to agent $i$.** $\hat B_x$ is the largest prize above $x$, and $\hat S_x$ is $S_x$, each as $i$ sees it: the true value times $(1 + \sigma_0 (1 - q_i)\, \xi)$, with $\xi$ a random normal number drawn once.
+**What $x$ is worth to agent $i$.** $\hat B_x$ is the largest prize after $x$, and $\hat S_x$ is $S_x$, each as $i$ sees it: the true value times $(1 + \sigma_0 (1 - q_i)\, \xi)$, with $\xi$ a random normal number drawn once.
 
 $$V_{i,x} = \underbrace{(1-c)\,m}_{\text{mint}} + \underbrace{\alpha\, B_x\, \text{win}_x}_{\text{prize, if } x \text{ is a target}} + \underbrace{\delta_i^{h_x}\, \alpha\, \hat B_x\, \text{win}_x}_{\text{stepping stone}} + \underbrace{\delta_i^{h_x}\, \hat S_x}_{\text{flow-back}}$$
 
@@ -196,7 +196,7 @@ Only in the settings where agents choose; targets are always published. Agent $i
 
 $$\underbrace{\beta_i\, m}_{\text{liking for sharing}} + \underbrace{M_x\big(1 - \delta_i^{h_x}\, \text{win}_x\big)}_{\text{mint lost by waiting}} + \underbrace{\delta_i^{h_x}\, \hat S_x\, \kappa}_{\text{credit when others use it}} \;\ge\; \underbrace{\alpha\, \hat B_x\, \text{win}_x\, \psi}_{\text{scoop risk}}$$
 
-$M_x$ is $x$'s mint: $(1-c)\,m$, or $m$ for a root. A private result earns its mint only if its author later wins a target above it, which is why waiting can lose it.
+$M_x$ is $x$'s mint: $(1-c)\,m$, or $m$ for a root. A private result earns its mint only if its author later wins a target after it, which is why waiting can lose it.
 
 *Example:* an agent holding C under OSO, with 3 agents able to try C ($\text{win} = 1/3$), $\delta = 0.9$ ($0.9^5 = 0.59$), no liking for sharing, and true estimates. Sharing brings $0.85 \times (1 - 0.59/3) + 0.59 \times 1.675 \approx 1.67$. The scoop risk is $0.8 \times 16 \times \tfrac13 \times 0.5 \approx 2.13$. It keeps C private. At $\alpha = 0.3$ the risk falls to 0.8 and $S_C$ rises, so it shares.
 
