@@ -487,6 +487,8 @@ It is a thought experiment with the arithmetic done exactly. The [specification,
 5. **The key numbers are guesses.** Bounties, the mint, the traits, and above all the scoop risk ψ were chosen, not measured. Where α\* falls is a property of these assumptions.
 6. **The worlds are random graphs,** not fields with foundational results, fashions or dying lines of work.
 
+What the tests still use a stand-in or a guess for, in both kinds of test, is listed in [the design, section 12](design.md#12-not-yet-measured).
+
 What it is good for:
 - checking the mechanics (the waterfall matches the ledger, and the simple model matches the mathematics);
 - finding which parameters matter (ψ, α, ρ and the gamer, while c barely matters);

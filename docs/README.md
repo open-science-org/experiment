@@ -22,6 +22,7 @@
 ## Read more
 
 - [The full design](design.md): every part defined once, for both kinds of test.
+- [Not yet measured](design.md#12-not-yet-measured): what the tests still use a stand-in or a guess for.
 - [The simulation in detail](simulator.md): the agents, one round step by step, how agents decide, and what the results say.
 - [The default settings](../config/scenarios/default.yaml), each with a comment.
 - [The Lean problems](../lean/README.md): the AI-model tests.

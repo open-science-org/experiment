@@ -439,3 +439,17 @@ These are a first calibration of a model, not evidence about real research.
 - [ ] Models for the agents.
 - [ ] Where the Lean reference proofs are kept (private recommended), and whether agents may use `grind`.
 - [ ] Who builds what (Abinash, Bikrant).
+
+## 12. Not yet measured
+
+What the design defines but the tests do not yet measure, or measure only with a stand-in. Each row says what is used now, and how to measure it properly. Add to this list whenever a stand-in is chosen.
+
+| What | Used now | Why it matters | How to measure it |
+| --- | --- | --- | --- |
+| **Link strength when parents overlap** (either one would do, or they only help together) | Each parent counted alone, as if it had to be found again from scratch | Credit can go to a parent that was not really needed, or be split unfairly between two that help only together | Shapley split: the work each parent saves, averaged over every order of adding them |
+| **Link strength when a parent helps without being needed** | The parent's whole cost | It overpays a shortcut that saved a little work | The work saved: the cost of getting the child without that parent, minus the cost with it |
+| **Link strength in the AI tests** | The money spent to prove each used result | Matches the definition only if every used result would have to be proved again from scratch | Re-prove the child without each parent and measure the extra work (extra Lean checks and model calls) |
+| **Minting many real but useless results** | Only trivial results are modelled as gaming, caught half the time by the screen θ | An agent can keep publishing small true results that no one needs, to collect the mint | Model it, then test paying the mint only when a result is used, against paying it on publication |
+| **How real agents respond to credit** | Formula agents in the simulation; in the AI tests sharing is set by the rules, not chosen | In the simulation, credit (α) only changes behaviour when agents choose what to share, and then only at low α | AI tests where labs choose what to publish, at several values of α |
+| **Agent traits and the scoop risk ψ** | Guesses | ψ is the setting the simulation is most sensitive to | Measure from AI-model tests: how often a published result helps a rival win |
+| **Real cost of AI-model tests before 21 October 2026** | List prices; OpenRouter charged about 5.6× more | Dollar amounts in those results are too low; the comparison between sides holds (same factor) | Fixed for new tests: budgets count the actual charge, and only companies within 2× the cheapest are used |
