@@ -145,7 +145,10 @@ export const analyses: Record<string, Analysis> = {
   },
 };
 
-export const DEFAULT_COLUMNS = ['frontier', 'reachTarget', 'speed', 'cost', 'spend', 'productivity', 'breadth', 'waste', 'credit', 'sharing', 'hoarded'];
+/** The columns, with ROI added when missing. */
+export const withRoi = (cols: string[]) => (cols.includes('roi') ? cols : [...cols, 'roi']);
+
+export const DEFAULT_COLUMNS = ['frontier', 'reachTarget', 'speed', 'cost', 'roi', 'spend', 'productivity', 'breadth', 'waste', 'credit', 'sharing', 'hoarded'];
 
 export function runExperiment(spec: ExperimentSpec, seeds = spec.seeds): Output {
   const rows = expand(spec);
@@ -158,7 +161,8 @@ export function runExperiment(spec: ExperimentSpec, seeds = spec.seeds): Output 
     if (!a) throw new Error(`unknown analysis "${spec.analysis}" (known: ${Object.keys(analyses).join(', ')})`);
     table = a(spec, rows, results);
   } else {
-    const cols = spec.columns ?? DEFAULT_COLUMNS;
+    // Every result reports its return on the money (ROI), whatever else it lists.
+    const cols = withRoi(spec.columns ?? DEFAULT_COLUMNS);
     for (const c of cols) if (!COLUMNS[c]) throw new Error(`unknown column "${c}" (known: ${Object.keys(COLUMNS).join(', ')})`);
     table = rows.map((row, i) => ({
       ...row.labels,

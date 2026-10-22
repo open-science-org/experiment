@@ -25,6 +25,10 @@ export interface RunResult {
   published: number;
   trivialPublished: number;
   targetsSolved: number;
+  /** Value gained: the prizes (bounties) of the targets solved. */
+  value: number;
+  /** Return on the money: value gained per unit spent. */
+  roi: number;
   /** Targets rejected because they rested on a wrong result, and wrong results retracted. */
   rejectedTargets: number;
   retracted: number;
@@ -94,6 +98,8 @@ export function measure(s: State, curve: RunResult['curve'], speed: number | nul
     published: published.length,
     trivialPublished: s.trivialPublished,
     targetsSolved: world.targets.filter((t) => s.author[t] >= 0).length,
+    value: world.targets.filter((t) => s.author[t] >= 0).reduce((a, t) => a + world.bounty[t], 0),
+    roi: world.targets.filter((t) => s.author[t] >= 0).reduce((a, t) => a + world.bounty[t], 0) / spend,
     rejectedTargets: s.rejectedTargets,
     retracted: s.retracted,
     absorbShare: s.spendAbsorb / spend,
@@ -127,6 +133,7 @@ const reached = (rs: RunResult[]) => rs.filter((r) => r.speed !== null);
 /** Plain names of measures, for answers. */
 export const MEASURE_NAMES: Record<string, string> = {
   frontier: 'hardest level published', targetsSolved: 'targets solved', cost: 'compute to reach the main level', speed: 'rounds to reach the main level',
+  value: 'value gained (prizes of targets solved)', roi: 'value gained per unit spent',
   sharing: 'share of results published at once', reachTarget: 'share of runs reaching the main level', waste: 'wasted compute', credit: 'credit accuracy',
 };
 
@@ -136,6 +143,7 @@ export const VALUES: Record<string, (r: RunResult) => number | null> = {
   speed: (r) => r.speed, cost: (r) => r.cost, spend: (r) => r.spend, productivity: (r) => r.productivity * 100,
   breadth: (r) => r.breadth, waste: (r) => r.waste, credit: (r) => r.creditAccuracy, sharing: (r) => r.sharingRate,
   hoarded: (r) => r.hoarded, reuse: (r) => r.reuse, duplicates: (r) => r.duplicates, targetsSolved: (r) => r.targetsSolved,
+  value: (r) => r.value, roi: (r) => r.roi,
   gamerShare: (r) => r.earningsByArchetype.gamer ?? null, trivialSpend: (r) => r.wasteParts.trivial,
   rejected: (r) => r.rejectedTargets, retracted: (r) => r.retracted, absorbSpend: (r) => r.absorbShare,
 };
@@ -156,6 +164,8 @@ export const COLUMNS: Record<string, Column> = {
   reuse: { header: () => 'reuse', value: (rs) => msd(rs.map((r) => r.reuse)) },
   duplicates: { header: () => 'duplicates', value: (rs) => msd(rs.map((r) => r.duplicates), 1) },
   targetsSolved: { header: () => 'targets solved', value: (rs) => msd(rs.map((r) => r.targetsSolved), 1) },
+  value: { header: () => 'value gained', value: (rs) => msd(rs.map((r) => r.value), 0) },
+  roi: { header: () => 'ROI (value per spend)', value: (rs) => msd(rs.map((r) => r.roi), 2) },
   gamerShare: {
     header: () => 'gamer share of pay',
     value: (rs) => {

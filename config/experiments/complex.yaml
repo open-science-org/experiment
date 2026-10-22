@@ -24,4 +24,4 @@ factors:
       - { label: OSO (immediate), preset: oso }
       - { label: OSO + public failures, preset: oso, set: { rules.publishFailures: true } }
       - { label: OSO (choice), preset: osoChoice }
-columns: [frontier, reachTarget, speed, cost, spend, targetsSolved, absorbSpend, rejected, retracted, sharing, credit]
+columns: [frontier, reachTarget, speed, roi, cost, spend, targetsSolved, absorbSpend, rejected, retracted, sharing, credit]

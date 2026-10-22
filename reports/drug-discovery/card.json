@@ -1,7 +1,7 @@
 {
  "id": "drug-discovery",
  "kind": "field report",
- "date": "2026-10-21",
+ "date": "2026-10-22",
  "title": "Early-stage drug discovery",
  "design": {
   "question": "For the same money, does OSO get further than traditional research in Early-stage drug discovery?",
@@ -11,19 +11,21 @@
   "better": "higher",
   "runs": "100 runs per setting"
  },
- "answer": "OSO ahead: level 6.0 against 2.7 of 6; targets 2.8 against 0.7 of 3.",
+ "answer": "OSO ahead: level 6.0 against 2.7 of 6; targets 2.8 against 0.7 of 3; ROI 1.77 against 0.28.",
  "table": [
   {
    "rules": "Traditional",
    "hardest level": "2.7 of 6",
    "targets solved": "0.7 of 3",
-   "cost to level 5": 847
+   "cost to level 5": 847,
+   "ROI": "0.28 (335 for 1228)"
   },
   {
    "rules": "OSO",
    "hardest level": "6.0 of 6",
    "targets solved": "2.8 of 3",
-   "cost to level 5": 223
+   "cost to level 5": 223,
+   "ROI": "1.77 (1351 for 850)"
   }
  ],
  "caveats": [

@@ -1,7 +1,7 @@
 {
  "id": "lean-problem-set",
  "kind": "field report",
- "date": "2026-10-21",
+ "date": "2026-10-22",
  "title": "The Lean problem set",
  "design": {
   "question": "For the same money, does OSO get further than traditional research in the Lean problem set?",
@@ -11,19 +11,21 @@
   "better": "higher",
   "runs": "100 runs per setting"
  },
- "answer": "OSO ahead: level 7.0 against 4.4 of 7; targets 8.0 against 4.8 of 8.",
+ "answer": "OSO ahead: level 7.0 against 4.4 of 7; targets 8.0 against 4.8 of 8; ROI 2.01 against 0.31.",
  "table": [
   {
    "rules": "Traditional",
    "hardest level": "4.4 of 7",
    "targets solved": "4.8 of 8",
-   "cost to level 5": 303
+   "cost to level 5": 303,
+   "ROI": "0.31 (118 for 394)"
   },
   {
    "rules": "OSO",
    "hardest level": "7.0 of 7",
    "targets solved": "8.0 of 8",
-   "cost to level 5": 125
+   "cost to level 5": 125,
+   "ROI": "2.01 (460 for 243)"
   }
  ],
  "caveats": [

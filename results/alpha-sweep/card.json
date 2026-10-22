@@ -2,7 +2,7 @@
  "chart": "results/alpha-sweep/figures/compare.svg",
  "id": "alpha-sweep",
  "kind": "simulation",
- "date": "2026-10-21",
+ "date": "2026-10-22",
  "title": "α sweep under agent's-choice visibility",
  "design": {
   "question": "Does flow-back make agents choose to share?",
@@ -19,70 +19,70 @@
    "sharing": "0.23 ± 0.08",
    "frontier": "6.0 ± 0.9",
    "reach L7": "0.35",
-   "speed": "100 ± 16"
+   "ROI (value per spend)": "0.20 ± 0.17"
   },
   {
    "α": 0.9,
    "sharing": "0.23 ± 0.08",
    "frontier": "6.3 ± 0.8",
    "reach L7": "0.44",
-   "speed": "97 ± 15"
+   "ROI (value per spend)": "0.22 ± 0.17"
   },
   {
    "α": 0.8,
    "sharing": "0.22 ± 0.09",
    "frontier": "6.3 ± 1.0",
    "reach L7": "0.43",
-   "speed": "96 ± 19"
+   "ROI (value per spend)": "0.27 ± 0.25"
   },
   {
    "α": 0.7,
    "sharing": "0.24 ± 0.09",
    "frontier": "6.4 ± 0.9",
    "reach L7": "0.50",
-   "speed": "99 ± 17"
+   "ROI (value per spend)": "0.25 ± 0.19"
   },
   {
    "α": 0.6,
    "sharing": "0.25 ± 0.09",
    "frontier": "6.4 ± 0.9",
    "reach L7": "0.48",
-   "speed": "98 ± 17"
+   "ROI (value per spend)": "0.26 ± 0.24"
   },
   {
    "α": 0.5,
    "sharing": "0.28 ± 0.09",
    "frontier": "6.7 ± 0.8",
    "reach L7": "0.63",
-   "speed": "91 ± 19"
+   "ROI (value per spend)": "0.30 ± 0.23"
   },
   {
    "α": 0.4,
    "sharing": "0.34 ± 0.10",
    "frontier": "6.9 ± 0.7",
    "reach L7": "0.73",
-   "speed": "95 ± 16"
+   "ROI (value per spend)": "0.37 ± 0.35"
   },
   {
    "α": 0.3,
    "sharing": "0.47 ± 0.11",
    "frontier": "7.2 ± 0.7",
    "reach L7": "0.86",
-   "speed": "89 ± 20"
+   "ROI (value per spend)": "0.49 ± 0.37"
   },
   {
    "α": 0.2,
    "sharing": "0.63 ± 0.10",
    "frontier": "7.6 ± 0.5",
    "reach L7": "0.98",
-   "speed": "74 ± 20"
+   "ROI (value per spend)": "0.78 ± 0.48"
   },
   {
    "α": 0.1,
    "sharing": "0.77 ± 0.07",
    "frontier": "7.8 ± 0.4",
    "reach L7": "1.00",
-   "speed": "60 ± 16"
+   "ROI (value per spend)": "1.04 ± 0.47"
   }
  ],
  "caveats": [

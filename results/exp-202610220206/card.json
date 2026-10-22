@@ -1,0 +1,36 @@
+{
+ "chart": "results/exp-202610220206/figures/compare.svg",
+ "id": "exp-202610220206",
+ "kind": "simulation",
+ "date": "2026-10-22",
+ "title": "For the same money, does OSO get further than traditional research on this topic?",
+ "design": {
+  "question": "For the same money, does OSO get further than traditional research on this topic?",
+  "compare": "Traditional, OSO (immediate)",
+  "fixed": "the field \"Early-stage drug discovery\"",
+  "measure": "hardest level published",
+  "better": "higher",
+  "runs": "50 runs per row"
+ },
+ "answer": "Best: OSO, 6.0. Best traditional: Traditional, 2.6. Clear difference.",
+ "table": [
+  {
+   "setting": "Traditional",
+   "frontier": "2.6 ± 3.0",
+   "reach L5": "0.44",
+   "cost": "854 ± 229",
+   "ROI (value per spend)": "0.26 ± 0.39"
+  },
+  {
+   "setting": "OSO (immediate)",
+   "frontier": "6.0 ± 0.2",
+   "reach L5": "1.00",
+   "cost": "230 ± 99",
+   "ROI (value per spend)": "1.72 ± 0.78"
+  }
+ ],
+ "caveats": [
+  "A simulation with guessed parameters: it shows how the rules play out, not that they work."
+ ],
+ "page": "results/exp-202610220206/summary.md"
+}

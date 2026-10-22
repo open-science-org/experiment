@@ -2,7 +2,7 @@
  "chart": "results/settings/figures/compare.svg",
  "id": "settings",
  "kind": "simulation",
- "date": "2026-10-21",
+ "date": "2026-10-22",
  "title": "The six rule settings on the default world",
  "design": {
   "question": "On the default field, which rule setting gets furthest for the same budget?",
@@ -19,42 +19,42 @@
    "frontier": "5.7 ± 1.2",
    "reach L7": "0.35",
    "speed": "96 ± 16",
-   "cost": "957 ± 161"
+   "ROI (value per spend)": "0.22 ± 0.18"
   },
   {
    "setting": "OSO (immediate)",
    "frontier": "7.9 ± 0.2",
    "reach L7": "1.00",
    "speed": "49 ± 14",
-   "cost": "485 ± 141"
+   "ROI (value per spend)": "1.44 ± 0.48"
   },
   {
    "setting": "Flow-back, finished-only",
    "frontier": "5.5 ± 1.1",
    "reach L7": "0.28",
    "speed": "96 ± 18",
-   "cost": "959 ± 182"
+   "ROI (value per spend)": "0.20 ± 0.15"
   },
   {
    "setting": "No flow-back, immediate",
    "frontier": "7.9 ± 0.3",
    "reach L7": "1.00",
    "speed": "50 ± 14",
-   "cost": "494 ± 143"
+   "ROI (value per spend)": "1.41 ± 0.48"
   },
   {
    "setting": "No flow-back, choice",
    "frontier": "6.0 ± 0.9",
    "reach L7": "0.35",
    "speed": "100 ± 16",
-   "cost": "990 ± 159"
+   "ROI (value per spend)": "0.20 ± 0.17"
   },
   {
    "setting": "OSO (choice)",
    "frontier": "6.3 ± 1.0",
    "reach L7": "0.43",
    "speed": "96 ± 19",
-   "cost": "959 ± 186"
+   "ROI (value per spend)": "0.27 ± 0.25"
   }
  ],
  "caveats": [

@@ -6,10 +6,10 @@
 
 ![exp-202610220048](figures/compare.svg)
 
-| setting | frontier | reach L7 | cost | sharing |
+| setting | frontier | reach L7 | cost | ROI (value per spend) |
 | --- | --- | --- | --- | --- |
-| Traditional | 5.7 ± 1.1 | 0.34 | 984 ± 88 | 0.00 ± 0.01 |
-| OSO (immediate) | 8.0 ± 0.1 | 1.00 | 451 ± 127 | 1.00 ± 0.00 |
+| Traditional | 5.7 ± 1.1 | 0.34 | 984 ± 88 | 0.23 ± 0.20 |
+| OSO (immediate) | 8.0 ± 0.1 | 1.00 | 451 ± 127 | 1.56 ± 0.61 |
 
 **Design** (fixed before the run): compared Traditional, OSO (immediate) · held the same: the field "An abstract research field", with θ, validation screen = 0.65 · measure: hardest level published, higher is better · 50 runs per row.
 
@@ -22,11 +22,11 @@ Designed in the app on the field "An abstract research field" (spaces/abstract-f
 
 Values are mean ± standard deviation over runs.
 
-| setting | frontier | reach L7 | cost | sharing | targets solved |
-| --- | --- | --- | --- | --- | --- |
-| Traditional | 5.7 ± 1.1 | 0.34 | 984 ± 88 | 0.00 ± 0.01 | 4.2 ± 1.0 |
-| OSO (immediate) | 8.0 ± 0.1 | 1.00 | 451 ± 127 | 1.00 ± 0.00 | 6.9 ± 0.5 |
+| setting | frontier | reach L7 | cost | sharing | targets solved | ROI (value per spend) |
+| --- | --- | --- | --- | --- | --- | --- |
+| Traditional | 5.7 ± 1.1 | 0.34 | 984 ± 88 | 0.00 ± 0.01 | 4.2 ± 1.0 | 0.23 ± 0.20 |
+| OSO (immediate) | 8.0 ± 0.1 | 1.00 | 451 ± 127 | 1.00 ± 0.00 | 6.9 ± 0.5 | 1.56 ± 0.61 |
 
-Code: commit `2ecf6f1` (with uncommitted changes). Experiment: [config/experiments/exp-202610220048.yaml](../../config/experiments/exp-202610220048.yaml). Command: `npm run sim -- exp-202610220048 --seeds 50 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `88a4b32` (with uncommitted changes). Experiment: [config/experiments/exp-202610220048.yaml](../../config/experiments/exp-202610220048.yaml). Command: `npm run sim -- exp-202610220048 --seeds 50 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

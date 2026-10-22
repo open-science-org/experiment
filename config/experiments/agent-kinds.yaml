@@ -28,4 +28,4 @@ factors:
       - { label: Traditional, preset: traditional }
       - { label: OSO (immediate), preset: oso }
       - { label: OSO (choice), preset: osoChoice }
-columns: [frontier, reachTarget, cost, sharing, gamerShare]
+columns: [frontier, reachTarget, cost, roi, sharing, gamerShare]

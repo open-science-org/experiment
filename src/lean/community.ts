@@ -469,6 +469,8 @@ export function stats(r: CommunityResult) {
     /** Accepted results whose proof used another lab's result: the community building on itself. */
     builtOnOthers: r.library.filter((e) => e.uses.some((u) => { const x = r.library.find((y) => `${y.ns}.${y.name}` === u); return x && x.author !== e.author; })).length,
     deepestTarget: deepest,
+    /** Value gained: the prizes of the targets solved (4 at depth 1, doubling with each level). */
+    value: [...solved].reduce((a, id) => a + 4 * 2 ** ((loadTasks().find((t) => t.publicId === id)?.depth ?? 1) - 1), 0),
     spent: r.spent.reduce((a, b) => a + b, 0),
     budget: r.opts.budget * r.opts.agents.length,
     actions: r.actions.length,
@@ -501,7 +503,7 @@ export function writeCommunityComparison(id: string, runs: { runId: string; resu
   const o = runs[0].result.opts;
   const rows = curves.map((c) => ({
     rules: label(c.result.opts.rules), 'targets solved': `${c.st.targetsSolved} of 8`, 'deepest target': c.st.deepestTarget,
-    spent: `$${c.st.spent.toFixed(2)} of $${c.st.budget.toFixed(2)}`, actions: c.st.actions, 'lemmas accepted': c.st.lemmasAccepted,
+    spent: `$${c.st.spent.toFixed(2)} of $${c.st.budget.toFixed(2)}`, 'value gained': c.st.value, 'ROI (value per $)': c.st.spent > 0 ? Math.round(c.st.value / c.st.spent) : '–', actions: c.st.actions, 'lemmas accepted': c.st.lemmasAccepted,
     'duplicated work': c.st.lemmasDuplicate, trivial: c.st.trivial, 'failed attempts': c.st.failed, 'never published': c.st.neverPublished,
   }));
   const cols = Object.keys(rows[0] ?? {});
@@ -531,7 +533,7 @@ Runs: ${runs.map((x) => x.runId).join(', ')}. Transcripts (with proofs) are priv
   if (!standIn) writeCard(dir, {
     id, kind: 'race', date: new Date(Math.min(...runs.map((x) => x.result.actions[0]?.t ?? Date.now()))).toISOString().slice(0, 10), title: 'First AI test, OSO vs traditional',
     design: { question: 'For the same money, does an OSO community of AI labs solve more targets than a traditional one?', compare: 'traditional rules and OSO rules', fixed: `the same ${o.agents.length} labs, $${o.budget} each, no personas`, measure: 'targets solved', better: 'higher', runs: '1 run per side' },
-    answer: verdict.replace(/\*\*/g, ''), table: rows.map((r) => ({ rules: r.rules, 'targets solved': r['targets solved'], spent: r.spent, 'lemmas accepted': r['lemmas accepted'], 'duplicated work': r['duplicated work'] })),
+    answer: verdict.replace(/\*\*/g, ''), table: rows.map((r) => ({ rules: r.rules, 'targets solved': r['targets solved'], spent: r.spent, 'ROI (value per $)': r['ROI (value per $)'], 'lemmas accepted': r['lemmas accepted'], 'duplicated work': r['duplicated work'] })),
     caveats: ['One run per side: no verdict either way.', ...(note ? [note] : [])],
     page: `results/community/${id}/summary.md`,
     chart: `results/community/${id}/figures/progress.svg`,
@@ -676,7 +678,7 @@ Transcripts, with every proof, are private.
     table: [['Traditional', T], ['OSO', O]].map(([name, S]) => {
       const st = S as ReturnType<typeof stats>[];
       const sp = name === 'OSO' ? oS : tS;
-      return { rules: name as string, ...(primaryK !== null ? { [`money to ${primaryK} targets`]: `$${f2(mean(sp))} ± ${f2(sd(sp))}` } : {}), 'targets that count': `${ms(st.map((x) => x.countedSolved))} of ${counted.length}`, 'all targets': `${ms(st.map((x) => x.targetsSolved))} of 8`, spent: `$${f2(m(st, 'spent'))}`, 'work done twice': ms(st.map((x) => x.lemmasDuplicate)), "used another lab's result": ms(st.map((x) => x.builtOnOthers)) };
+      return { rules: name as string, ...(primaryK !== null ? { [`money to ${primaryK} targets`]: `$${f2(mean(sp))} ± ${f2(sd(sp))}` } : {}), 'targets that count': `${ms(st.map((x) => x.countedSolved))} of ${counted.length}`, 'all targets': `${ms(st.map((x) => x.targetsSolved))} of 8`, spent: `$${f2(m(st, 'spent'))}`, 'ROI (value per $)': ms(st.map((x) => (x.spent > 0 ? x.value / x.spent : 0))), 'work done twice': ms(st.map((x) => x.lemmasDuplicate)), "used another lab's result": ms(st.map((x) => x.builtOnOthers)) };
     }),
     caveats: [
       ...(dsg.caveats ?? []),

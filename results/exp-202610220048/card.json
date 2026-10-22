@@ -19,14 +19,14 @@
    "frontier": "5.7 ± 1.1",
    "reach L7": "0.34",
    "cost": "984 ± 88",
-   "sharing": "0.00 ± 0.01"
+   "ROI (value per spend)": "0.23 ± 0.20"
   },
   {
    "setting": "OSO (immediate)",
    "frontier": "8.0 ± 0.1",
    "reach L7": "1.00",
    "cost": "451 ± 127",
-   "sharing": "1.00 ± 0.00"
+   "ROI (value per spend)": "1.56 ± 0.61"
   }
  ],
  "caveats": [

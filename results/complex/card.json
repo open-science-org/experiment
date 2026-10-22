@@ -2,7 +2,7 @@
  "chart": "results/complex/figures/compare.svg",
  "id": "complex",
  "kind": "simulation",
- "date": "2026-10-21",
+ "date": "2026-10-22",
  "title": "All together on the Lean tree: learning, shared failures, costly and fallible sharing",
  "design": {
   "question": "With learning, shared failures, and costly, fallible sharing all on, does OSO still lead?",
@@ -20,7 +20,7 @@
    "frontier": "5.6 ± 1.4",
    "reach L5": "0.81",
    "speed": "30 ± 7",
-   "cost": "294 ± 67"
+   "ROI (value per spend)": "0.69 ± 0.51"
   },
   {
    "knowledge": "free and correct",
@@ -28,7 +28,7 @@
    "frontier": "7.0 ± 0.0",
    "reach L5": "1.00",
    "speed": "12 ± 3",
-   "cost": "114 ± 32"
+   "ROI (value per spend)": "2.49 ± 0.57"
   },
   {
    "knowledge": "free and correct",
@@ -36,7 +36,7 @@
    "frontier": "7.0 ± 0.0",
    "reach L5": "1.00",
    "speed": "10 ± 2",
-   "cost": "96 ± 25"
+   "ROI (value per spend)": "3.09 ± 0.52"
   },
   {
    "knowledge": "free and correct",
@@ -44,7 +44,7 @@
    "frontier": "6.2 ± 1.2",
    "reach L5": "0.92",
    "speed": "25 ± 8",
-   "cost": "248 ± 76"
+   "ROI (value per spend)": "1.23 ± 0.80"
   },
   {
    "knowledge": "costly and fallible",
@@ -52,7 +52,7 @@
    "frontier": "5.1 ± 1.4",
    "reach L5": "0.66",
    "speed": "31 ± 8",
-   "cost": "301 ± 76"
+   "ROI (value per spend)": "0.55 ± 0.50"
   },
   {
    "knowledge": "costly and fallible",
@@ -60,7 +60,7 @@
    "frontier": "6.9 ± 0.4",
    "reach L5": "1.00",
    "speed": "16 ± 7",
-   "cost": "159 ± 69"
+   "ROI (value per spend)": "1.88 ± 0.71"
   },
   {
    "knowledge": "costly and fallible",
@@ -68,7 +68,7 @@
    "frontier": "6.9 ± 0.4",
    "reach L5": "1.00",
    "speed": "16 ± 7",
-   "cost": "158 ± 65"
+   "ROI (value per spend)": "1.90 ± 0.70"
   },
   {
    "knowledge": "costly and fallible",
@@ -76,7 +76,7 @@
    "frontier": "5.4 ± 1.3",
    "reach L5": "0.78",
    "speed": "27 ± 9",
-   "cost": "261 ± 86"
+   "ROI (value per spend)": "0.84 ± 0.82"
   }
  ],
  "caveats": [

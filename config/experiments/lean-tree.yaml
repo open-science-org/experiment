@@ -20,4 +20,4 @@ factors:
       - { label: 'No flow-back, immediate', preset: sharingOnly }
       - { label: 'No flow-back, choice', preset: traditionalChoice }
       - { label: OSO (choice), preset: osoChoice }
-columns: [frontier, reachTarget, speed, cost, spend, targetsSolved, breadth, waste, credit, sharing, gamerShare]
+columns: [frontier, reachTarget, speed, roi, cost, spend, targetsSolved, breadth, waste, credit, sharing, gamerShare]

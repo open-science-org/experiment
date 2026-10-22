@@ -126,6 +126,7 @@ export function fieldValues(id: string): Record<string, number> {
 }
 
 const COLUMN_INFO: Record<string, string> = {
+  value: 'value gained: the prizes of the targets solved', roi: 'return on the money: value gained per unit spent',
   frontier: 'hardest level published', deepestProved: 'deepest level proved by anyone', reachTarget: 'share of runs reaching the main level',
   speed: 'rounds to reach the main level', cost: 'compute to reach the main level', spend: 'compute spent', productivity: 'results per 100 compute',
   breadth: 'share of targets solved', waste: 'share of compute on results no target needed', credit: 'how well bounty pay matches contribution',
@@ -144,7 +145,7 @@ export function options() {
     personaFeatures: PERSONA_FEATURES,
     flowBackSettings: FLOW_BACK,
     columns: Object.keys(COLUMNS).map((id) => ({ id, meaning: COLUMN_INFO[id] ?? id })),
-    defaultColumns: ['frontier', 'reachTarget', 'cost', 'targetsSolved', 'sharing'],
+    defaultColumns: ['frontier', 'reachTarget', 'cost', 'targetsSolved', 'value', 'roi', 'sharing'],
     template: spaceToYaml({
       id: 'my-field', title: 'My field', summary: 'One sentence about the field.',
       description: 'What the field is, its stages or areas, and what progress means in it.',

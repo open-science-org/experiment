@@ -1,7 +1,7 @@
 {
  "id": "abstract-field",
  "kind": "field report",
- "date": "2026-10-21",
+ "date": "2026-10-22",
  "title": "An abstract research field",
  "design": {
   "question": "For the same money, does OSO get further than traditional research in an abstract research field?",
@@ -11,19 +11,21 @@
   "better": "higher",
   "runs": "100 runs per setting"
  },
- "answer": "OSO ahead: level 7.9 against 5.7 of 8; targets 6.9 against 4.2 of 7.",
+ "answer": "OSO ahead: level 7.9 against 5.7 of 8; targets 6.9 against 4.2 of 7; ROI 1.44 against 0.22.",
  "table": [
   {
    "rules": "Traditional",
    "hardest level": "5.7 of 8",
    "targets solved": "4.2 of 7",
-   "cost to level 7": 957
+   "cost to level 7": 957,
+   "ROI": "0.22 (268 for 1194)"
   },
   {
    "rules": "OSO",
    "hardest level": "7.9 of 8",
    "targets solved": "6.9 of 7",
-   "cost to level 7": 485
+   "cost to level 7": 485,
+   "ROI": "1.44 (1130 for 849)"
   }
  ],
  "caveats": [

@@ -2,7 +2,7 @@
  "chart": "results/sensitivity/figures/compare.svg",
  "id": "sensitivity",
  "kind": "simulation",
- "date": "2026-10-21",
+ "date": "2026-10-22",
  "title": "How much the traditional-vs-OSO gap depends on the gamer and the compute loop",
  "design": {
   "question": "How much of OSO's lead depends on the gaming agent and the compute loop?",
@@ -20,7 +20,7 @@
    "frontier": "5.7 ± 1.2",
    "reach L7": "0.35",
    "speed": "96 ± 16",
-   "cost": "957 ± 161"
+   "ROI (value per spend)": "0.22 ± 0.18"
   },
   {
    "variant": "default (ρ = 0.5, θ = 0.5)",
@@ -28,7 +28,7 @@
    "frontier": "7.9 ± 0.2",
    "reach L7": "1.00",
    "speed": "49 ± 14",
-   "cost": "485 ± 141"
+   "ROI (value per spend)": "1.44 ± 0.48"
   },
   {
    "variant": "no compute loop (ρ = 0)",
@@ -36,7 +36,7 @@
    "frontier": "4.6 ± 0.9",
    "reach L7": "0.01",
    "speed": "111 ± 0",
-   "cost": "1105 ± 0"
+   "ROI (value per spend)": "0.09 ± 0.05"
   },
   {
    "variant": "no compute loop (ρ = 0)",
@@ -44,7 +44,7 @@
    "frontier": "8.0 ± 0.1",
    "reach L7": "1.00",
    "speed": "44 ± 11",
-   "cost": "432 ± 114"
+   "ROI (value per spend)": "1.53 ± 0.43"
   },
   {
    "variant": "strong screen (θ = 0.9)",
@@ -52,7 +52,7 @@
    "frontier": "5.7 ± 1.1",
    "reach L7": "0.32",
    "speed": "97 ± 15",
-   "cost": "964 ± 151"
+   "ROI (value per spend)": "0.24 ± 0.27"
   },
   {
    "variant": "strong screen (θ = 0.9)",
@@ -60,7 +60,7 @@
    "frontier": "8.0 ± 0.2",
    "reach L7": "1.00",
    "speed": "46 ± 13",
-   "cost": "456 ± 128"
+   "ROI (value per spend)": "1.55 ± 0.46"
   },
   {
    "variant": "no gamer",
@@ -68,7 +68,7 @@
    "frontier": "7.0 ± 1.2",
    "reach L7": "0.77",
    "speed": "84 ± 21",
-   "cost": "840 ± 210"
+   "ROI (value per spend)": "0.66 ± 0.46"
   },
   {
    "variant": "no gamer",
@@ -76,7 +76,7 @@
    "frontier": "8.0 ± 0.1",
    "reach L7": "1.00",
    "speed": "42 ± 13",
-   "cost": "412 ± 133"
+   "ROI (value per spend)": "1.62 ± 0.48"
   }
  ],
  "caveats": [

@@ -20,4 +20,4 @@ factors:
     levels:
       - { label: Traditional, preset: traditional }
       - { label: OSO (immediate), preset: oso }
-columns: [frontier, reachTarget, speed, cost, spend, productivity, breadth, waste, credit, sharing, hoarded, gamerShare, trivialSpend]
+columns: [frontier, reachTarget, speed, roi, cost, spend, productivity, breadth, waste, credit, sharing, hoarded, gamerShare, trivialSpend]

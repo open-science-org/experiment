@@ -66,8 +66,8 @@ export interface Headline {
   targetLevel: number;
   targets: number;
   budget: number;
-  traditional: { frontier: number; reach: number; cost: number; targetsSolved: number };
-  oso: { frontier: number; reach: number; cost: number; targetsSolved: number };
+  traditional: { frontier: number; reach: number; cost: number; targetsSolved: number; value?: number; spend?: number; roi?: number };
+  oso: { frontier: number; reach: number; cost: number; targetsSolved: number; value?: number; spend?: number; roi?: number };
   osoChoice: { frontier: number; sharing: number };
   alphaStar: number | null;
   robustness: { condition: string; osoLead: number }[];
@@ -89,6 +89,9 @@ function summarize(runs: RunResult[]) {
     targetsSolved: mean(runs.map((r) => r.targetsSolved)),
     targetsSE: se(runs.map((r) => r.targetsSolved)),
     sharing: mean(runs.map((r) => r.sharingRate)),
+    value: mean(runs.map((r) => r.value)),
+    spend: mean(runs.map((r) => r.spend)),
+    roi: mean(runs.map((r) => r.roi)),
   };
 }
 
@@ -231,8 +234,8 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
   const date = new Date().toISOString().slice(0, 10);
   const headline: Headline = {
     id: spec.id, title: spec.title, summary: spec.summary, verdict, maxLevel: world.levels, targetLevel: L, targets: T, budget: X,
-    traditional: { frontier: trad.frontier, reach: trad.reach, cost: trad.cost, targetsSolved: trad.targetsSolved },
-    oso: { frontier: oso.frontier, reach: oso.reach, cost: oso.cost, targetsSolved: oso.targetsSolved },
+    traditional: { frontier: trad.frontier, reach: trad.reach, cost: trad.cost, targetsSolved: trad.targetsSolved, value: trad.value, spend: trad.spend, roi: trad.roi },
+    oso: { frontier: oso.frontier, reach: oso.reach, cost: oso.cost, targetsSolved: oso.targetsSolved, value: oso.value, spend: oso.spend, roi: oso.roi },
     osoChoice: { frontier: choice.frontier, sharing: choice.sharing },
     alphaStar, robustness: robustness.map((r) => ({ condition: r.condition, osoLead: r.osoLead })),
     sensitivity: sens.map((x) => ({ parameter: x.p.label, group: x.p.group, min: x.min, max: x.max, base: x.base })),
@@ -272,6 +275,7 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
 - **How far:** with a budget of ${X} compute, OSO reached level **${f1(oso.frontier)}** of ${world.levels} on average; traditional research reached **${f1(trad.frontier)}**.
 - **Targets solved:** OSO solved **${f1(oso.targetsSolved)}** of ${T}; traditional solved **${f1(trad.targetsSolved)}**.
 - **Cost to reach level ${L}:** ${costLine(oso, 'OSO')}; ${costLine(trad, 'traditional')}.
+- **Return on the money (ROI):** OSO gained **${f2(oso.roi)}** in prize value per unit spent (${Math.round(oso.value)} for ${Math.round(oso.spend)}); traditional **${f2(trad.roi)}** (${Math.round(trad.value)} for ${Math.round(trad.spend)}). Value gained is the prizes of the targets solved.
 - **Does flow-back make agents share?** ${alphaStar !== null ? `When agents choose, sharing rises clearly (by 0.2 or more) once α is ${alphaStar} or lower.` : 'When agents choose, sharing does not rise clearly (by 0.2) for any α down to 0.1.'} At OSO's default α = 0.8, agents shared ${pct(choice.sharing)} of their intermediate results.
 - **Robustness:** OSO's lead in level is ${weakest.osoLead >= 0 ? 'smallest' : 'reversed'} when shared knowledge is **${weakest.condition}** (${weakest.osoLead >= 0 ? '+' : ''}${f1(weakest.osoLead)} levels).
 - **Sensitivity:** ${sensitivityLine}
@@ -386,10 +390,10 @@ The space is [spaces/${spec.id}.yaml](../../spaces/${spec.id}.yaml)${spec.source
       fixed: `the field, ${Object.values(scenario.agents.mix).reduce((a, b) => a + b, 0)} agents and a budget of ${X}`,
       measure: 'hardest level reached', better: 'higher', runs: `${seeds} runs per setting`,
     },
-    answer: `${verdict === 'OSO ahead' ? 'OSO ahead' : verdict === 'traditional ahead' ? 'Traditional ahead' : 'No clear difference'}: level ${f1(oso.frontier)} against ${f1(trad.frontier)} of ${world.levels}; targets ${f1(oso.targetsSolved)} against ${f1(trad.targetsSolved)} of ${T}.`,
+    answer: `${verdict === 'OSO ahead' ? 'OSO ahead' : verdict === 'traditional ahead' ? 'Traditional ahead' : 'No clear difference'}: level ${f1(oso.frontier)} against ${f1(trad.frontier)} of ${world.levels}; targets ${f1(oso.targetsSolved)} against ${f1(trad.targetsSolved)} of ${T}; ROI ${f2(oso.roi)} against ${f2(trad.roi)}.`,
     table: [
-      { rules: 'Traditional', 'hardest level': `${f1(trad.frontier)} of ${world.levels}`, 'targets solved': `${f1(trad.targetsSolved)} of ${T}`, [`cost to level ${L}`]: trad.reach > 0 ? Math.round(trad.cost) : 'never' },
-      { rules: 'OSO', 'hardest level': `${f1(oso.frontier)} of ${world.levels}`, 'targets solved': `${f1(oso.targetsSolved)} of ${T}`, [`cost to level ${L}`]: oso.reach > 0 ? Math.round(oso.cost) : 'never' },
+      { rules: 'Traditional', 'hardest level': `${f1(trad.frontier)} of ${world.levels}`, 'targets solved': `${f1(trad.targetsSolved)} of ${T}`, [`cost to level ${L}`]: trad.reach > 0 ? Math.round(trad.cost) : 'never', ROI: `${f2(trad.roi)} (${Math.round(trad.value)} for ${Math.round(trad.spend)})` },
+      { rules: 'OSO', 'hardest level': `${f1(oso.frontier)} of ${world.levels}`, 'targets solved': `${f1(oso.targetsSolved)} of ${T}`, [`cost to level ${L}`]: oso.reach > 0 ? Math.round(oso.cost) : 'never', ROI: `${f2(oso.roi)} (${Math.round(oso.value)} for ${Math.round(oso.spend)})` },
     ],
     caveats: ['A simulation with guessed parameters: it shows how the rules play out if the field works as described.', `OSO's lead as the market-set parameters vary: ${f1(marketMin.min)} to ${f1(Math.max(...market.map((x) => x.max)))} levels.`, ...(spec.notes ? [spec.notes] : [])],
     page: `reports/${spec.id}/card.md`,

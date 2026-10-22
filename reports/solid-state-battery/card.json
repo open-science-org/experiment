@@ -1,7 +1,7 @@
 {
  "id": "solid-state-battery",
  "kind": "field report",
- "date": "2026-10-21",
+ "date": "2026-10-22",
  "title": "A solid-state battery",
  "design": {
   "question": "For the same money, does OSO get further than traditional research in a solid-state battery?",
@@ -11,19 +11,21 @@
   "better": "higher",
   "runs": "100 runs per setting"
  },
- "answer": "OSO ahead: level 5.0 against 2.0 of 5; targets 1.9 against 0.6 of 2.",
+ "answer": "OSO ahead: level 5.0 against 2.0 of 5; targets 1.9 against 0.6 of 2; ROI 3.70 against 0.37.",
  "table": [
   {
    "rules": "Traditional",
    "hardest level": "2.0 of 5",
    "targets solved": "0.6 of 2",
-   "cost to level 5": 222
+   "cost to level 5": 222,
+   "ROI": "0.37 (85 for 235)"
   },
   {
    "rules": "OSO",
    "hardest level": "5.0 of 5",
    "targets solved": "1.9 of 2",
-   "cost to level 5": 136
+   "cost to level 5": 136,
+   "ROI": "3.70 (472 for 144)"
   }
  ],
  "caveats": [

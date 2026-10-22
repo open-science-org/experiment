@@ -20,4 +20,4 @@ factors:
       - { label: no learning, set: { success.oracle: { kind: chance } } }
       - { label: learn from own, set: { success.oracle: { kind: learning, gain: 0.1 } } }
       - { label: learn from all (public), set: { success.oracle: { kind: learning, gain: 0.1 }, rules.publishFailures: true } }
-columns: [frontier, reachTarget, speed, cost, spend, targetsSolved, waste, credit]
+columns: [frontier, reachTarget, speed, roi, cost, spend, targetsSolved, waste, credit]

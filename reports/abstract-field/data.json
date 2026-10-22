@@ -12,13 +12,19 @@
    "frontier": 5.66,
    "reach": 0.35,
    "cost": 956.5599999999954,
-   "targetsSolved": 4.23
+   "targetsSolved": 4.23,
+   "value": 267.52,
+   "spend": 1193.6969999999922,
+   "roi": 0.2249825011499258
   },
   "oso": {
    "frontier": 7.94,
    "reach": 1,
    "cost": 484.7220000000008,
-   "targetsSolved": 6.87
+   "targetsSolved": 6.87,
+   "value": 1130.24,
+   "spend": 849.3699999999953,
+   "roi": 1.4402089093675212
   },
   "osoChoice": {
    "frontier": 6.27,
@@ -116,8 +122,8 @@
    }
   ],
   "seeds": 100,
-  "commit": "7434f7c+",
-  "date": "2026-10-21"
+  "commit": "88a4b32+",
+  "date": "2026-10-22"
  },
  "settings": [
   {
@@ -130,7 +136,8 @@
    "targets solved": "4.2 ± 0.9",
    "waste": "0.64 ± 0.09",
    "credit": "0.95 ± 0.09",
-   "sharing": "0.01 ± 0.01"
+   "sharing": "0.01 ± 0.01",
+   "ROI (value per spend)": "0.22 ± 0.18"
   },
   {
    "setting": "OSO (immediate)",
@@ -142,7 +149,8 @@
    "targets solved": "6.9 ± 0.5",
    "waste": "0.86 ± 0.03",
    "credit": "0.57 ± 0.07",
-   "sharing": "1.00 ± 0.00"
+   "sharing": "1.00 ± 0.00",
+   "ROI (value per spend)": "1.44 ± 0.48"
   },
   {
    "setting": "Flow-back, finished-only",
@@ -154,7 +162,8 @@
    "targets solved": "4.1 ± 0.9",
    "waste": "0.64 ± 0.09",
    "credit": "0.96 ± 0.07",
-   "sharing": "0.00 ± 0.01"
+   "sharing": "0.00 ± 0.01",
+   "ROI (value per spend)": "0.20 ± 0.15"
   },
   {
    "setting": "No flow-back, immediate",
@@ -166,7 +175,8 @@
    "targets solved": "6.9 ± 0.4",
    "waste": "0.84 ± 0.04",
    "credit": "0.47 ± 0.09",
-   "sharing": "1.00 ± 0.00"
+   "sharing": "1.00 ± 0.00",
+   "ROI (value per spend)": "1.41 ± 0.48"
   },
   {
    "setting": "No flow-back, choice",
@@ -178,7 +188,8 @@
    "targets solved": "4.1 ± 0.9",
    "waste": "0.66 ± 0.07",
    "credit": "0.88 ± 0.12",
-   "sharing": "0.23 ± 0.08"
+   "sharing": "0.23 ± 0.08",
+   "ROI (value per spend)": "0.20 ± 0.17"
   },
   {
    "setting": "OSO (choice)",
@@ -190,7 +201,8 @@
    "targets solved": "4.4 ± 1.0",
    "waste": "0.68 ± 0.09",
    "credit": "0.87 ± 0.11",
-   "sharing": "0.22 ± 0.09"
+   "sharing": "0.22 ± 0.09",
+   "ROI (value per spend)": "0.27 ± 0.25"
   }
  ],
  "alpha": [

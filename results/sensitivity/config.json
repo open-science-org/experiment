@@ -1,7 +1,7 @@
 {
   "experiment": "sensitivity",
-  "date": "2026-10-21",
-  "commit": "7434f7c",
+  "date": "2026-10-22",
+  "commit": "88a4b32",
   "dirty": true,
   "command": "npm run sim -- sensitivity --seeds 100 --save",
   "seeds": 100,
@@ -62,6 +62,7 @@
         "frontier",
         "reachTarget",
         "speed",
+        "roi",
         "cost",
         "spend",
         "productivity",

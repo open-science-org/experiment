@@ -1,0 +1,47 @@
+# Designed in the experiment app.
+id: exp-202610220206
+title: For the same money, does OSO get further than traditional research on this topic?
+description: 'Designed in the app on the field "Early-stage drug discovery"
+  (spaces/drug-discovery.yaml): Traditional vs OSO (immediate). α and c apply to the OSO (flow-back)
+  settings only.'
+seeds: 50
+set:
+  world:
+    kind: layered
+    levels: 6
+    width: 9
+    maxPrereqs: 2
+    skipProb: 0.1
+    areas: 3
+    areaStickiness: 0.85
+    targets:
+      - level: 6
+        count: 3
+    bountyBase: 2
+    bountyGrowth: 3
+  success:
+    p0: 0.6
+    eta: 0.45
+  measures:
+    targetLevel: 5
+  budget:
+    X: 1240
+    rounds: 103
+    perAgentPerRound: null
+factors:
+  - name: setting
+    levels:
+      - label: Traditional
+        preset: traditional
+      - label: OSO (immediate)
+        preset: oso
+columns:
+  - frontier
+  - reachTarget
+  - cost
+  - sharing
+  - targetsSolved
+question: For the same money, does OSO get further than traditional research on this topic?
+compare: Traditional, OSO (immediate)
+fixed: the field "Early-stage drug discovery"
+measure: frontier

@@ -2,7 +2,7 @@
  "chart": "results/costly-sharing/figures/compare.svg",
  "id": "costly-sharing",
  "kind": "simulation",
- "date": "2026-10-21",
+ "date": "2026-10-22",
  "title": "Sharing isn't free: absorbing costs and wrong results",
  "design": {
   "question": "Does OSO's lead survive when absorbing results costs compute, or results are sometimes wrong?",
@@ -21,7 +21,7 @@
    "frontier": "5.7 ± 1.2",
    "reach L7": "0.35",
    "cost": "957 ± 161",
-   "spend": "1194 ± 11"
+   "ROI (value per spend)": "0.22 ± 0.18"
   },
   {
    "setting": "Traditional",
@@ -30,7 +30,7 @@
    "frontier": "5.1 ± 1.0",
    "reach L7": "0.15",
    "cost": "1061 ± 122",
-   "spend": "1194 ± 2"
+   "ROI (value per spend)": "0.15 ± 0.11"
   },
   {
    "setting": "Traditional",
@@ -39,7 +39,7 @@
    "frontier": "4.5 ± 0.9",
    "reach L7": "0.02",
    "cost": "989 ± 234",
-   "spend": "1194 ± 2"
+   "ROI (value per spend)": "0.09 ± 0.05"
   },
   {
    "setting": "Traditional",
@@ -48,7 +48,7 @@
    "frontier": "5.5 ± 1.1",
    "reach L7": "0.27",
    "cost": "975 ± 167",
-   "spend": "1194 ± 7"
+   "ROI (value per spend)": "0.21 ± 0.19"
   },
   {
    "setting": "Traditional",
@@ -57,7 +57,7 @@
    "frontier": "5.1 ± 1.0",
    "reach L7": "0.12",
    "cost": "954 ± 114",
-   "spend": "1195 ± 1"
+   "ROI (value per spend)": "0.14 ± 0.11"
   },
   {
    "setting": "Traditional",
@@ -66,7 +66,7 @@
    "frontier": "4.5 ± 0.9",
    "reach L7": "0.01",
    "cost": "895 ± 0",
-   "spend": "1195 ± 1"
+   "ROI (value per spend)": "0.08 ± 0.05"
   },
   {
    "setting": "Traditional",
@@ -75,7 +75,7 @@
    "frontier": "5.7 ± 1.1",
    "reach L7": "0.35",
    "cost": "996 ± 134",
-   "spend": "1193 ± 11"
+   "ROI (value per spend)": "0.22 ± 0.18"
   },
   {
    "setting": "Traditional",
@@ -84,7 +84,7 @@
    "frontier": "5.2 ± 1.0",
    "reach L7": "0.15",
    "cost": "976 ± 192",
-   "spend": "1192 ± 30"
+   "ROI (value per spend)": "0.16 ± 0.17"
   },
   {
    "setting": "Traditional",
@@ -93,7 +93,7 @@
    "frontier": "4.4 ± 1.0",
    "reach L7": "0.01",
    "cost": "585 ± 0",
-   "spend": "1192 ± 30"
+   "ROI (value per spend)": "0.09 ± 0.13"
   },
   {
    "setting": "Traditional",
@@ -102,7 +102,7 @@
    "frontier": "5.5 ± 1.1",
    "reach L7": "0.30",
    "cost": "1009 ± 170",
-   "spend": "1195 ± 2"
+   "ROI (value per spend)": "0.20 ± 0.16"
   },
   {
    "setting": "Traditional",
@@ -111,7 +111,7 @@
    "frontier": "5.2 ± 0.9",
    "reach L7": "0.14",
    "cost": "1008 ± 128",
-   "spend": "1194 ± 2"
+   "ROI (value per spend)": "0.14 ± 0.11"
   },
   {
    "setting": "Traditional",
@@ -120,7 +120,7 @@
    "frontier": "4.5 ± 1.0",
    "reach L7": "0.03",
    "cost": "1070 ± 74",
-   "spend": "1194 ± 2"
+   "ROI (value per spend)": "0.09 ± 0.06"
   },
   {
    "setting": "OSO (immediate)",
@@ -129,7 +129,7 @@
    "frontier": "7.9 ± 0.2",
    "reach L7": "1.00",
    "cost": "485 ± 141",
-   "spend": "849 ± 207"
+   "ROI (value per spend)": "1.44 ± 0.48"
   },
   {
    "setting": "OSO (immediate)",
@@ -138,7 +138,7 @@
    "frontier": "7.6 ± 0.5",
    "reach L7": "1.00",
    "cost": "568 ± 178",
-   "spend": "1061 ± 188"
+   "ROI (value per spend)": "0.86 ± 0.54"
   },
   {
    "setting": "OSO (immediate)",
@@ -147,7 +147,7 @@
    "frontier": "7.2 ± 0.5",
    "reach L7": "0.96",
    "cost": "629 ± 188",
-   "spend": "1183 ± 49"
+   "ROI (value per spend)": "0.36 ± 0.30"
   },
   {
    "setting": "OSO (immediate)",
@@ -156,7 +156,7 @@
    "frontier": "7.8 ± 0.4",
    "reach L7": "1.00",
    "cost": "627 ± 173",
-   "spend": "1020 ± 187"
+   "ROI (value per spend)": "1.06 ± 0.47"
   },
   {
    "setting": "OSO (immediate)",
@@ -165,7 +165,7 @@
    "frontier": "7.4 ± 0.5",
    "reach L7": "0.99",
    "cost": "675 ± 222",
-   "spend": "1121 ± 152"
+   "ROI (value per spend)": "0.63 ± 0.52"
   },
   {
    "setting": "OSO (immediate)",
@@ -174,7 +174,7 @@
    "frontier": "7.1 ± 0.5",
    "reach L7": "0.92",
    "cost": "781 ± 215",
-   "spend": "1192 ± 20"
+   "ROI (value per spend)": "0.26 ± 0.23"
   },
   {
    "setting": "OSO (immediate)",
@@ -183,7 +183,7 @@
    "frontier": "7.7 ± 0.5",
    "reach L7": "0.99",
    "cost": "626 ± 228",
-   "spend": "1007 ± 217"
+   "ROI (value per spend)": "1.01 ± 0.59"
   },
   {
    "setting": "OSO (immediate)",
@@ -192,7 +192,7 @@
    "frontier": "7.2 ± 0.6",
    "reach L7": "0.92",
    "cost": "679 ± 261",
-   "spend": "1128 ± 151"
+   "ROI (value per spend)": "0.56 ± 0.50"
   },
   {
    "setting": "OSO (immediate)",
@@ -201,7 +201,7 @@
    "frontier": "7.0 ± 0.6",
    "reach L7": "0.84",
    "cost": "759 ± 250",
-   "spend": "1188 ± 34"
+   "ROI (value per spend)": "0.24 ± 0.24"
   },
   {
    "setting": "OSO (immediate)",
@@ -210,7 +210,7 @@
    "frontier": "7.3 ± 0.7",
    "reach L7": "0.87",
    "cost": "663 ± 260",
-   "spend": "1076 ± 200"
+   "ROI (value per spend)": "0.69 ± 0.61"
   },
   {
    "setting": "OSO (immediate)",
@@ -219,7 +219,7 @@
    "frontier": "6.8 ± 0.7",
    "reach L7": "0.72",
    "cost": "695 ± 250",
-   "spend": "1182 ± 68"
+   "ROI (value per spend)": "0.29 ± 0.31"
   },
   {
    "setting": "OSO (immediate)",
@@ -228,7 +228,7 @@
    "frontier": "6.6 ± 0.6",
    "reach L7": "0.62",
    "cost": "744 ± 255",
-   "spend": "1186 ± 56"
+   "ROI (value per spend)": "0.15 ± 0.23"
   }
  ],
  "caveats": [

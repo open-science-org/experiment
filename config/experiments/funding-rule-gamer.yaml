@@ -27,4 +27,4 @@ factors:
     levels:
       - { label: Traditional, preset: traditional }
       - { label: OSO (immediate), preset: oso }
-columns: [frontier, targetsSolved, cost, gamerShare]
+columns: [frontier, targetsSolved, roi, cost, gamerShare]

@@ -1,7 +1,7 @@
 {
  "id": "simple",
  "kind": "simulation",
- "date": "2026-10-21",
+ "date": "2026-10-22",
  "title": "The simple model: one chain, shared vs. hidden progress",
  "design": {
   "question": "Does the simulator match the exact mathematics of shared against hidden progress?",

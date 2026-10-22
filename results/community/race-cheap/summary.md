@@ -6,10 +6,10 @@
 
 ![Cheap AI models, OSO vs traditional](figures/progress.svg)
 
-| rules | targets that count | all targets | spent | work done twice | used another lab's result |
-| --- | --- | --- | --- | --- | --- |
-| Traditional | 1.6 ± 0.5 of 4 | 4.2 ± 0.8 of 8 | $0.34 | 20.4 ± 15.3 | 0.0 ± 0.0 |
-| OSO | 2.0 ± 0.0 of 4 | 5.2 ± 0.4 of 8 | $0.28 | 2.4 ± 0.9 | 6.4 ± 0.5 |
+| rules | targets that count | all targets | spent | ROI (value per $) | work done twice | used another lab's result |
+| --- | --- | --- | --- | --- | --- | --- |
+| Traditional | 1.6 ± 0.5 of 4 | 4.2 ± 0.8 of 8 | $0.34 | 349.0 ± 156.2 | 20.4 ± 15.3 | 0.0 ± 0.0 |
+| OSO | 2.0 ± 0.0 of 4 | 5.2 ± 0.4 of 8 | $0.28 | 464.9 ± 92.8 | 2.4 ± 0.9 | 6.4 ± 0.5 |
 
 **Design** (fixed before the run): compared traditional rules and OSO rules · held the same: four DeepSeek V4.1 Flash labs (two foundation builders, a target racer, a neutral lab), $0.15 each, 12 posted conjectures, up to 30 rounds · measure: targets solved, counting A3, X2, B5, A5, higher is better · 5 runs per side. Cost: $3.10 at list prices.
 

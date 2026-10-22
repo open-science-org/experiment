@@ -6,14 +6,14 @@
 
 ![The six rule settings on the Lean problem set's reference tree](figures/compare.svg)
 
-| setting | frontier | reach L5 | speed | cost |
+| setting | frontier | reach L5 | speed | ROI (value per spend) |
 | --- | --- | --- | --- | --- |
-| Traditional | 4.4 ± 1.2 | 0.44 | 31 ± 7 | 303 ± 66 |
-| OSO (immediate) | 7.0 ± 0.0 | 1.00 | 13 ± 3 | 125 ± 32 |
-| Flow-back, finished-only | 4.3 ± 1.1 | 0.48 | 33 ± 6 | 327 ± 64 |
-| No flow-back, immediate | 7.0 ± 0.1 | 1.00 | 14 ± 4 | 131 ± 39 |
-| No flow-back, choice | 4.9 ± 1.2 | 0.67 | 31 ± 7 | 301 ± 74 |
-| OSO (choice) | 5.2 ± 1.2 | 0.76 | 28 ± 8 | 273 ± 77 |
+| Traditional | 4.4 ± 1.2 | 0.44 | 31 ± 7 | 0.31 ± 0.29 |
+| OSO (immediate) | 7.0 ± 0.0 | 1.00 | 13 ± 3 | 2.01 ± 0.50 |
+| Flow-back, finished-only | 4.3 ± 1.1 | 0.48 | 33 ± 6 | 0.31 ± 0.30 |
+| No flow-back, immediate | 7.0 ± 0.1 | 1.00 | 14 ± 4 | 1.98 ± 0.53 |
+| No flow-back, choice | 4.9 ± 1.2 | 0.67 | 31 ± 7 | 0.49 ± 0.43 |
+| OSO (choice) | 5.2 ± 1.2 | 0.76 | 28 ± 8 | 0.65 ± 0.60 |
 
 **Design** (fixed before the run): compared the six rule settings · held the same: the Lean tree, 12 agents and the budget · measure: hardest level published, higher is better · 100 runs per row.
 
@@ -26,15 +26,15 @@ The same settings as `settings`, on the real shape of the Lean problem set (42 r
 
 Values are mean ± standard deviation over runs.
 
-| setting | frontier | reach L5 | speed | cost | spend | targets solved | breadth | waste | credit | sharing | gamer share of pay |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Traditional | 4.4 ± 1.2 | 0.44 | 31 ± 7 | 303 ± 66 | 394 ± 14 | 4.8 ± 1.5 | 0.60 ± 0.19 | 0.53 ± 0.10 | 0.98 ± 0.04 | 0.01 ± 0.02 | 0.89 |
-| OSO (immediate) | 7.0 ± 0.0 | 1.00 | 13 ± 3 | 125 ± 32 | 243 ± 59 | 8.0 ± 0.0 | 1.00 ± 0.00 | 0.78 ± 0.05 | 0.73 ± 0.06 | 1.00 ± 0.00 | 0.14 |
-| Flow-back, finished-only | 4.3 ± 1.1 | 0.48 | 33 ± 6 | 327 ± 64 | 392 ± 19 | 4.9 ± 1.7 | 0.62 ± 0.21 | 0.55 ± 0.11 | 0.99 ± 0.03 | 0.01 ± 0.02 | 0.86 |
-| No flow-back, immediate | 7.0 ± 0.1 | 1.00 | 14 ± 4 | 131 ± 39 | 246 ± 63 | 8.0 ± 0.1 | 1.00 ± 0.02 | 0.77 ± 0.06 | 0.59 ± 0.08 | 1.00 ± 0.00 | 0.15 |
-| No flow-back, choice | 4.9 ± 1.2 | 0.67 | 31 ± 7 | 301 ± 74 | 386 ± 33 | 5.9 ± 1.4 | 0.73 ± 0.18 | 0.59 ± 0.13 | 0.84 ± 0.09 | 0.35 ± 0.05 | 0.68 |
-| OSO (choice) | 5.2 ± 1.2 | 0.76 | 28 ± 8 | 273 ± 77 | 372 ± 54 | 6.3 ± 1.3 | 0.79 ± 0.17 | 0.62 ± 0.13 | 0.84 ± 0.08 | 0.42 ± 0.06 | 0.53 |
+| setting | frontier | reach L5 | speed | ROI (value per spend) | cost | spend | targets solved | breadth | waste | credit | sharing | gamer share of pay |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Traditional | 4.4 ± 1.2 | 0.44 | 31 ± 7 | 0.31 ± 0.29 | 303 ± 66 | 394 ± 14 | 4.8 ± 1.5 | 0.60 ± 0.19 | 0.53 ± 0.10 | 0.98 ± 0.04 | 0.01 ± 0.02 | 0.89 |
+| OSO (immediate) | 7.0 ± 0.0 | 1.00 | 13 ± 3 | 2.01 ± 0.50 | 125 ± 32 | 243 ± 59 | 8.0 ± 0.0 | 1.00 ± 0.00 | 0.78 ± 0.05 | 0.73 ± 0.06 | 1.00 ± 0.00 | 0.14 |
+| Flow-back, finished-only | 4.3 ± 1.1 | 0.48 | 33 ± 6 | 0.31 ± 0.30 | 327 ± 64 | 392 ± 19 | 4.9 ± 1.7 | 0.62 ± 0.21 | 0.55 ± 0.11 | 0.99 ± 0.03 | 0.01 ± 0.02 | 0.86 |
+| No flow-back, immediate | 7.0 ± 0.1 | 1.00 | 14 ± 4 | 1.98 ± 0.53 | 131 ± 39 | 246 ± 63 | 8.0 ± 0.1 | 1.00 ± 0.02 | 0.77 ± 0.06 | 0.59 ± 0.08 | 1.00 ± 0.00 | 0.15 |
+| No flow-back, choice | 4.9 ± 1.2 | 0.67 | 31 ± 7 | 0.49 ± 0.43 | 301 ± 74 | 386 ± 33 | 5.9 ± 1.4 | 0.73 ± 0.18 | 0.59 ± 0.13 | 0.84 ± 0.09 | 0.35 ± 0.05 | 0.68 |
+| OSO (choice) | 5.2 ± 1.2 | 0.76 | 28 ± 8 | 0.65 ± 0.60 | 273 ± 77 | 372 ± 54 | 6.3 ± 1.3 | 0.79 ± 0.17 | 0.62 ± 0.13 | 0.84 ± 0.08 | 0.42 ± 0.06 | 0.53 |
 
-Code: commit `7434f7c` (with uncommitted changes). Experiment: [config/experiments/lean-tree.yaml](../../config/experiments/lean-tree.yaml). Command: `npm run sim -- lean-tree --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `88a4b32` (with uncommitted changes). Experiment: [config/experiments/lean-tree.yaml](../../config/experiments/lean-tree.yaml). Command: `npm run sim -- lean-tree --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

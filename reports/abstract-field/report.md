@@ -7,11 +7,12 @@
 - **How far:** with a budget of 1200 compute, OSO reached level **7.9** of 8 on average; traditional research reached **5.7**.
 - **Targets solved:** OSO solved **6.9** of 7; traditional solved **4.2**.
 - **Cost to reach level 7:** OSO 485 compute; traditional 957 compute (in the 35% of runs that got there).
+- **Return on the money (ROI):** OSO gained **1.44** in prize value per unit spent (1130 for 849); traditional **0.22** (268 for 1194). Value gained is the prizes of the targets solved.
 - **Does flow-back make agents share?** When agents choose, sharing rises clearly (by 0.2 or more) once α is 0.3 or lower. At OSO's default α = 0.8, agents shared 22% of their intermediate results.
 - **Robustness:** OSO's lead in level is smallest when shared knowledge is **costly to absorb** (+2.0 levels).
 - **Sensitivity:** Across the tested values of the parameters a market or community sets, OSO's lead (agents choosing what to share) runs from **+0.3** to **+1.9** levels. The smallest lead, at ρ, compute follows earnings = 100%, is still clearly positive. The lead is most sensitive to **α, retention**.
 
-*The verdict compares the hardest level reached, the targets solved and (when both communities reach level 7 in at least 90% of runs) the cost to get there, each against two standard errors. 100 simulated runs per setting · simulator commit `7434f7c+` · 2026-10-21. This is a simulation with guessed parameters, not evidence about real research; see [What this shows](#what-this-shows-and-what-it-does-not).*
+*The verdict compares the hardest level reached, the targets solved and (when both communities reach level 7 in at least 90% of runs) the cost to get there, each against two standard errors. 100 simulated runs per setting · simulator commit `88a4b32+` · 2026-10-22. This is a simulation with guessed parameters, not evidence about real research; see [What this shows](#what-this-shows-and-what-it-does-not).*
 
 ## 1. The problem space
 
@@ -63,14 +64,14 @@ Each line is the mean, over 100 runs, of the hardest level the community had pub
 
 The rules are the only difference between rows ([specification, section 3](../../docs/design.md#3-the-rules)). Traditional: nothing flows back to what a result built on, and work is published only when finished. OSO: value flows back (α = 0.8, c = 0.15), and results are published at once or when the agent chooses.
 
-| setting | frontier | reach L7 | speed | cost | spend | targets solved | waste | credit | sharing |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Traditional | 5.7 ± 1.2 | 0.35 | 96 ± 16 | 957 ± 161 | 1194 ± 11 | 4.2 ± 0.9 | 0.64 ± 0.09 | 0.95 ± 0.09 | 0.01 ± 0.01 |
-| OSO (immediate) | 7.9 ± 0.2 | 1.00 | 49 ± 14 | 485 ± 141 | 849 ± 207 | 6.9 ± 0.5 | 0.86 ± 0.03 | 0.57 ± 0.07 | 1.00 ± 0.00 |
-| Flow-back, finished-only | 5.5 ± 1.1 | 0.28 | 96 ± 18 | 959 ± 182 | 1195 ± 2 | 4.1 ± 0.9 | 0.64 ± 0.09 | 0.96 ± 0.07 | 0.00 ± 0.01 |
-| No flow-back, immediate | 7.9 ± 0.3 | 1.00 | 50 ± 14 | 494 ± 143 | 871 ± 210 | 6.9 ± 0.4 | 0.84 ± 0.04 | 0.47 ± 0.09 | 1.00 ± 0.00 |
-| No flow-back, choice | 6.0 ± 0.9 | 0.35 | 100 ± 16 | 990 ± 159 | 1195 ± 2 | 4.1 ± 0.9 | 0.66 ± 0.07 | 0.88 ± 0.12 | 0.23 ± 0.08 |
-| OSO (choice) | 6.3 ± 1.0 | 0.43 | 96 ± 19 | 959 ± 186 | 1193 ± 11 | 4.4 ± 1.0 | 0.68 ± 0.09 | 0.87 ± 0.11 | 0.22 ± 0.09 |
+| setting | frontier | reach L7 | speed | cost | spend | targets solved | waste | credit | sharing | ROI (value per spend) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Traditional | 5.7 ± 1.2 | 0.35 | 96 ± 16 | 957 ± 161 | 1194 ± 11 | 4.2 ± 0.9 | 0.64 ± 0.09 | 0.95 ± 0.09 | 0.01 ± 0.01 | 0.22 ± 0.18 |
+| OSO (immediate) | 7.9 ± 0.2 | 1.00 | 49 ± 14 | 485 ± 141 | 849 ± 207 | 6.9 ± 0.5 | 0.86 ± 0.03 | 0.57 ± 0.07 | 1.00 ± 0.00 | 1.44 ± 0.48 |
+| Flow-back, finished-only | 5.5 ± 1.1 | 0.28 | 96 ± 18 | 959 ± 182 | 1195 ± 2 | 4.1 ± 0.9 | 0.64 ± 0.09 | 0.96 ± 0.07 | 0.00 ± 0.01 | 0.20 ± 0.15 |
+| No flow-back, immediate | 7.9 ± 0.3 | 1.00 | 50 ± 14 | 494 ± 143 | 871 ± 210 | 6.9 ± 0.4 | 0.84 ± 0.04 | 0.47 ± 0.09 | 1.00 ± 0.00 | 1.41 ± 0.48 |
+| No flow-back, choice | 6.0 ± 0.9 | 0.35 | 100 ± 16 | 990 ± 159 | 1195 ± 2 | 4.1 ± 0.9 | 0.66 ± 0.07 | 0.88 ± 0.12 | 0.23 ± 0.08 | 0.20 ± 0.17 |
+| OSO (choice) | 6.3 ± 1.0 | 0.43 | 96 ± 19 | 959 ± 186 | 1193 ± 11 | 4.4 ± 1.0 | 0.68 ± 0.09 | 0.87 ± 0.11 | 0.22 ± 0.09 | 0.27 ± 0.25 |
 
 Values are mean ± standard deviation over runs. *frontier*: hardest level published; *reach L7*: share of runs reaching level 7; *speed*, *cost*: rounds and compute to reach it; *credit*: how closely bounty pay matches true contribution; *sharing*: share of intermediate results published as soon as they were proved.
 
@@ -206,4 +207,4 @@ Each cell: share of intermediate results published · hardest level reached.
 npm run sim -- report abstract-field --seeds 100
 ```
 
-The space is [spaces/abstract-field.yaml](../../spaces/abstract-field.yaml) (written by hand; the default scenario). Every number above is in [data.json](data.json). Generated by the OSO simulator at commit `7434f7c+` (with uncommitted changes).
+The space is [spaces/abstract-field.yaml](../../spaces/abstract-field.yaml) (written by hand; the default scenario). Every number above is in [data.json](data.json). Generated by the OSO simulator at commit `88a4b32+` (with uncommitted changes).

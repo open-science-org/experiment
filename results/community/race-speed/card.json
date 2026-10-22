@@ -1,7 +1,7 @@
 {
  "id": "race-speed",
  "kind": "race",
- "date": "2026-10-21",
+ "date": "2026-10-22",
  "title": "Cheap AI models: who reaches the targets for less money",
  "design": {
   "question": "With the cheapest model, does an OSO community reach 2 of the targets that count for less money than a traditional one?",
@@ -19,6 +19,7 @@
    "targets that count": "0.8 ± 0.8 of 4",
    "all targets": "3.4 ± 1.1 of 8",
    "spent": "$0.07",
+   "ROI (value per $)": "1041.2 ± 537.9",
    "work done twice": "3.6 ± 2.1",
    "used another lab's result": "0.0 ± 0.0"
   },
@@ -28,6 +29,7 @@
    "targets that count": "0.8 ± 0.8 of 4",
    "all targets": "2.4 ± 1.7 of 8",
    "spent": "$0.08",
+   "ROI (value per $)": "1011.0 ± 588.9",
    "work done twice": "1.8 ± 0.8",
    "used another lab's result": "2.4 ± 2.2"
   }

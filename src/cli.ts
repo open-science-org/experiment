@@ -18,7 +18,7 @@ import { CODE_PATHS, EXPERIMENTS_DIR, RESULTS_DIR, ROOT, SPACES_DIR } from './pa
 import { execSync } from 'node:child_process';
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { DEFAULT_COLUMNS, loadExperiment, runExperiment, analyses, type ExperimentSpec, type Output } from './experiments/experiment.ts';
+import { DEFAULT_COLUMNS, withRoi, loadExperiment, runExperiment, analyses, type ExperimentSpec, type Output } from './experiments/experiment.ts';
 import { deciders } from './engine/deciders.ts';
 import { COLUMNS, MEASURE_NAMES, VALUES } from './engine/measures.ts';
 import { oracles } from './engine/oracles.ts';
@@ -177,7 +177,8 @@ function simulationCard(spec: ExperimentSpec, out: Output, n: number, date: stri
   const answer = measure && VALUES[measure]
     ? compareRows(out.rows.map((row, i) => ({ label: label(row), values: out.results[i].map(VALUES[measure]!).filter((v): v is number => v !== null) })), better, MEASURE_NAMES[measure] ?? header(measure))
     : 'See the table: this experiment checks the model against exact values.';
-  const support = (spec.columns ?? DEFAULT_COLUMNS).filter((c) => c !== measure).slice(0, 3);
+  // The card's table: the measure, two more columns, and always the return on the money.
+  const support = [...withRoi(spec.columns ?? DEFAULT_COLUMNS).filter((c) => c !== measure && c !== 'roi').slice(0, 2), ...(measure === 'roi' ? [] : ['roi'])];
   const keyCols = spec.analysis ? Object.keys(out.table[0] ?? {}) : [...Object.keys(out.rows[0]?.labels ?? {}), ...(measure ? [header(measure)] : []), ...support.map(header)];
   const short = out.table.map((r) => Object.fromEntries(keyCols.map((c) => [c, r[c] ?? ''])));
   // One comparison chart: the main measure for each row, OSO orange, traditional blue, others grey.

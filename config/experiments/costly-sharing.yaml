@@ -17,4 +17,4 @@ factors:
       - { label: OSO (immediate), preset: oso }
   - { name: absorb cost, path: knowledge.absorbCost, values: [0, 0.25, 0.5, 1] }
   - { name: error rate, path: knowledge.errorRate, values: [0, 0.05, 0.15] }
-columns: [frontier, reachTarget, cost, spend, targetsSolved, absorbSpend, rejected, retracted]
+columns: [frontier, reachTarget, cost, roi, spend, targetsSolved, absorbSpend, rejected, retracted]

@@ -2,7 +2,7 @@
  "chart": "results/failures/figures/compare.svg",
  "id": "failures",
  "kind": "simulation",
- "date": "2026-10-21",
+ "date": "2026-10-22",
  "title": "Learning from failure: own failures vs. shared failures",
  "design": {
   "question": "Does making failed attempts public help, and under which rules?",
@@ -20,7 +20,7 @@
    "frontier": "5.7 ± 1.2",
    "reach L7": "0.35",
    "speed": "96 ± 16",
-   "cost": "957 ± 161"
+   "ROI (value per spend)": "0.22 ± 0.18"
   },
   {
    "setting": "Traditional",
@@ -28,7 +28,7 @@
    "frontier": "7.4 ± 0.7",
    "reach L7": "0.96",
    "speed": "87 ± 17",
-   "cost": "865 ± 171"
+   "ROI (value per spend)": "0.70 ± 0.35"
   },
   {
    "setting": "Traditional",
@@ -36,7 +36,7 @@
    "frontier": "7.6 ± 0.6",
    "reach L7": "0.98",
    "speed": "82 ± 17",
-   "cost": "810 ± 171"
+   "ROI (value per spend)": "0.88 ± 0.35"
   },
   {
    "setting": "OSO (immediate)",
@@ -44,7 +44,7 @@
    "frontier": "7.9 ± 0.2",
    "reach L7": "1.00",
    "speed": "49 ± 14",
-   "cost": "485 ± 141"
+   "ROI (value per spend)": "1.44 ± 0.48"
   },
   {
    "setting": "OSO (immediate)",
@@ -52,7 +52,7 @@
    "frontier": "8.0 ± 0.0",
    "reach L7": "1.00",
    "speed": "37 ± 10",
-   "cost": "367 ± 96"
+   "ROI (value per spend)": "2.16 ± 0.62"
   },
   {
    "setting": "OSO (immediate)",
@@ -60,7 +60,7 @@
    "frontier": "8.0 ± 0.0",
    "reach L7": "1.00",
    "speed": "29 ± 6",
-   "cost": "284 ± 64"
+   "ROI (value per spend)": "2.99 ± 0.63"
   }
  ],
  "caveats": [
