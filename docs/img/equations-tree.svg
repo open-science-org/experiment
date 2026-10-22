@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 400" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-label="An example tree: results A and B at level 1, C at level 2 built on A and B, and target T at level 3 built on C and B. Arrows go from a parent to the result built on it, labelled with the link weight.">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6b6b6b"/></marker>
+  </defs>
+  <rect width="680" height="400" rx="10" fill="#ffffff"/>
+  <!-- levels -->
+  <g font-size="12" fill="#6b6b6b">
+    <line x1="120" y1="80" x2="660" y2="80" stroke="#ececec"/>
+    <line x1="120" y1="195" x2="660" y2="195" stroke="#ececec"/>
+    <line x1="120" y1="310" x2="660" y2="310" stroke="#ececec"/>
+    <text x="16" y="76" font-weight="700" fill="#2b2b2b">level 3</text><text x="16" y="92">p = 0.18</text>
+    <text x="16" y="191" font-weight="700" fill="#2b2b2b">level 2</text><text x="16" y="207">p = 0.3</text>
+    <text x="16" y="306" font-weight="700" fill="#2b2b2b">level 1</text><text x="16" y="322">p = 0.5</text>
+  </g>
+  <!-- links: parent y to the result x built on it, labelled w_xy -->
+  <g stroke="#6b6b6b" stroke-width="2" fill="none" marker-end="url(#arr)">
+    <line x1="212" y1="290" x2="268" y2="218"/>
+    <line x1="430" y1="290" x2="318" y2="218"/>
+    <line x1="318" y1="172" x2="420" y2="106"/>
+    <line x1="470" y1="288" x2="470" y2="108"/>
+  </g>
+  <g font-size="12" fill="#2b2b2b">
+    <text x="196" y="250">w = 50%</text>
+    <text x="378" y="250">w = 50%</text>
+    <text x="300" y="134">w = 62.5%</text>
+    <text x="480" y="200">w = 37.5%</text>
+  </g>
+  <!-- nodes -->
+  <g font-size="15" font-weight="700" text-anchor="middle" fill="#2b2b2b">
+    <circle cx="190" cy="310" r="24" fill="#eef1f5" stroke="#9aa3ad" stroke-width="2"/><text x="190" y="315">A</text>
+    <circle cx="460" cy="310" r="24" fill="#eef1f5" stroke="#9aa3ad" stroke-width="2"/><text x="460" y="315">B</text>
+    <circle cx="295" cy="195" r="24" fill="#eef1f5" stroke="#9aa3ad" stroke-width="2"/><text x="295" y="200">C</text>
+    <rect x="418" y="56" width="92" height="48" rx="8" fill="#2b2b2b"/><text x="464" y="86" fill="#ffffff">T</text>
+  </g>
+  <!-- what each result is -->
+  <g font-size="12" fill="#4a4a4a">
+    <text x="222" y="335">a root: builds on nothing</text>
+    <text x="492" y="335">a root, and a parent of C and T</text>
+    <text x="330" y="190">built on A and B</text>
+    <text x="520" y="76" font-weight="700" fill="#2b2b2b">target: prize B<tspan font-size="9" dy="3">T</tspan><tspan dy="-3"> = 16</tspan></text>
+    <text x="520" y="92">built on C and B</text>
+  </g>
+  <!-- the prize's waterfall at α = 0.8 -->
+  <g font-size="12">
+    <rect x="120" y="352" width="540" height="34" rx="6" fill="#f6f6f4"/>
+    <text x="132" y="374" fill="#2b2b2b"><tspan font-weight="700">Prize 16 at α = 0.8:</tspan> T keeps 12.8 · C gets 2.0, keeps 1.6 · B 1.2 + 0.2 = 1.4 · A 0.2</text>
+  </g>
+</svg>
