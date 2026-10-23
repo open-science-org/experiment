@@ -7,12 +7,12 @@
 <style>
   :root {
     --bg: #f6f5f2; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #8a8983; --line: #e1e0db;
-    --s1: #2a78d6; --s1-soft: #d6e6fa; --s2: #eb6834; --good: #0ca30c; --bad: #d03b3b; --focus: #2a78d6;
+    --s1: #2a78d6; --s1-soft: #d6e6fa; --s2: #eb6834; --flow: #7b4fc4; --good: #0ca30c; --bad: #d03b3b; --focus: #2a78d6;
     font-family: Helvetica, Arial, sans-serif; color: var(--ink); background: var(--bg);
   }
   @media (prefers-color-scheme: dark) {
     :root { --bg: #121211; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --ink-3: #8f8e86; --line: #34332f;
-      --s1: #3987e5; --s1-soft: #1f3550; --s2: #d95926; --good: #3fbf3f; --bad: #e06060; }
+      --s1: #3987e5; --s1-soft: #1f3550; --s2: #d95926; --flow: #a782e8; --good: #3fbf3f; --bad: #e06060; }
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); }
@@ -150,6 +150,7 @@
   .kind .khead { display: flex; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 6px; }
   .kind .khead b { font-size: 14px; }
   .examples .btn { font-size: 12px; padding: 3px 9px; }
+  .watch { color: var(--s1); font-weight: 600; cursor: pointer; } .watch:hover { text-decoration: underline; }
   .gen-groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   @media (max-width: 800px) { .gen-groups { grid-template-columns: 1fr; } }
   .gen-groups fieldset { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; margin: 0; }
@@ -324,10 +325,10 @@
   <!-- Live: what is running, and replays -->
   <section id="view-live" class="hidden">
     <div class="tabs" role="tablist">
-      <button class="btn" data-tab="ai" role="tab">Tests with AI models</button>
-      <button class="btn" data-tab="sim" role="tab">Simulation replay</button>
-      <button class="btn" data-tab="attempts" role="tab">AI model attempts</button>
+      <button class="btn" data-tab="sim" role="tab">Simulation</button>
+      <button class="btn" data-tab="ai" role="tab">AI tests</button>
     </div>
+    <div id="ai-switch" class="row hidden" style="margin:0 0 8px"><span class="muted">Show</span><a href="#/live?tab=ai" id="ai-sw-tests">tests of OSO against traditional</a><span class="muted">·</span><a href="#/live?tab=attempts" id="ai-sw-attempts">every attempt by single models (the pilot)</a></div>
     <div id="tab-ai">
       <div class="bar"><label>Test <select id="c-run"></select></label><span id="c-live" class="live hidden">● live</span><span id="c-card"></span>
         <button class="btn" id="c-first" aria-label="Start">⏮</button><button class="btn primary" id="c-play">▶ Replay</button>
@@ -339,10 +340,14 @@
     </div>
     <div id="tab-sim" class="hidden">
       <div class="bar">
-        <label>Field <select id="sim-space"></select></label>
-        <label>Seed <input id="sim-seed" type="number" min="1" value="1" style="width:70px"></label>
-        <label>Left <select id="sim-left"></select></label>
-        <label>Right <select id="sim-right"></select></label>
+        <label>Show <select id="sim-source"><option value="result">a saved result</option><option value="topic">a topic</option></select></label>
+        <label id="sim-exp-ctl">Result <select id="sim-exp" style="max-width:420px"></select></label>
+        <label id="sim-space-ctl">Topic <select id="sim-space"></select></label>
+        <label>Run <input id="sim-seed" type="number" min="1" value="1" style="width:70px"> <span class="info" title="Which run (seed): the same graph and the same dice on both sides.">ⓘ</span></label>
+      </div>
+      <div class="bar">
+        <label>Left <select id="sim-left" style="max-width:300px"></select></label>
+        <label>Right <select id="sim-right" style="max-width:300px"></select></label>
         <button class="btn primary" id="sim-load">Load</button>
       </div>
       <div class="bar">
@@ -357,6 +362,7 @@
       <p class="muted" style="margin:0 0 8px">A round is one step of the run: that round's money is handed out, each agent makes the attempts it can afford, new ideas are shared or kept, and rewards are paid. What each agent earned in recent rounds sets its share of the next round's money (ρ). Step through the rounds with the buttons above.</p>
       <div class="legend" id="sim-legend"></div>
       <div class="panes"><div class="pane" id="pane-left"></div><div class="pane" id="pane-right"></div></div>
+      <div class="pane" style="margin-top:12px"><div id="sim-chart"></div></div>
     </div>
     <div id="tab-attempts" class="hidden">
       <div class="bar"><div class="runs" id="pilot-runs">Loading…</div><button class="btn primary" id="pilot-load">Show</button></div>
@@ -431,7 +437,7 @@ async function route() {
   if (path === '/') { show('view-overview'); return drawResults(); }
   if (path.startsWith('/doc/')) { show('view-doc'); return openDoc(path.slice(5)); }
   if (path === '/new') { show('view-new'); return enterNew(); }
-  if (path === '/live') { show('view-live'); return showTab(params().get('tab') ?? 'ai'); }
+  if (path === '/live') { show('view-live'); return showTab(params().get('tab') ?? 'sim'); }
   if (path === '/topics' || path === '/fields') { show('view-fields'); return enterFields(); }
   if (path === '/how') { show('view-doc'); return openDoc('docs/README.md'); }
   if (path === '/equations') { show('view-doc'); return openDoc(params().get('m') === 'full' ? 'docs/equations.md' : 'docs/equations-simple.md'); }
@@ -463,6 +469,7 @@ async function openDoc(path) {
 }
 
 let resultsQuery = '';
+const watchable = (c) => (c.kind === 'simulation' && c.id !== 'simple' ? `#/live?tab=sim&experiment=${encodeURIComponent(c.id)}` : c.kind === 'field report' ? `#/live?tab=sim&space=${encodeURIComponent(c.id)}` : c.kind === 'race' && !c.invalid ? `#/live?tab=ai` : '');
 const KINDWORD = { race: 'ai models', 'model pilot': 'ai models', 'field report': 'topic report simulation', simulation: 'simulation' };
 async function drawResults() {
   OV = null;
@@ -501,7 +508,8 @@ async function drawResults() {
       <h3>${esc(c.title.replace(/^(Real agents, OSO vs traditional|Lean pilot): /, ''))}</h3>
       <p class="q">${esc(c.design.question)}</p>
       <p class="a">${esc(c.invalid ? 'Not valid: ' + c.invalid : c.answer)}</p>
-      <div class="meta">${esc(c.date)} · ${esc(c.design.runs)}${c.cost ? ' · ' + esc(c.cost) : ''}</div><div class="meta"><code>${esc(c.id)}</code></div></a>`;
+      <div class="meta">${esc(c.date)} · ${esc(c.design.runs)}${c.cost ? ' · ' + esc(c.cost) : ''}</div><div class="meta"><code>${esc(c.id)}</code>${watchable(c) ? ` · <span class="watch" role="link" tabindex="0" data-watch="${esc(watchable(c))}">Watch ▶</span>` : ''}</div></a>`;
+  // A card's replay in Live: a saved simulation by its rows, a topic report by its rule settings.
   const section = (g) => {
     const body = `<div class="fields">${g.cards.map(card).join('')}</div>`;
     const head = `${esc(g.title)} <span class="muted">· ${g.cards.length} · ${esc(g.note)}</span>`;
@@ -519,6 +527,10 @@ async function drawResults() {
     <h2 class="first">At a glance <span class="muted">· OSO orange, traditional blue</span></h2>
     <div class="glance">${glance}</div>
     ${groups.map(section).join('') || '<p class="muted">Nothing yet.</p>'}`}`;
+  for (const el of $('view-overview').querySelectorAll('.watch')) {
+    const go = (e) => { e.preventDefault(); e.stopPropagation(); location.hash = el.dataset.watch; };
+    el.onclick = go; el.onkeydown = (e) => { if (e.key === 'Enter') go(e); };
+  }
   const box = $('r-search');
   box.oninput = () => { resultsQuery = box.value; const at = box.selectionStart; drawResults().then(() => { $('r-search').focus(); $('r-search').setSelectionRange(at, at); }); };
 }
@@ -526,7 +538,11 @@ async function drawResults() {
 /* Live: tabs */
 function showTab(t) {
   for (const k of ['ai', 'sim', 'attempts']) { $('tab-' + k).classList.toggle('hidden', k !== t); }
-  for (const b of document.querySelectorAll('#view-live .tabs .btn')) b.setAttribute('aria-selected', b.dataset.tab === t);
+  // Two tabs: Simulation, and AI tests (OSO-vs-traditional tests, or the pilot's single-model attempts).
+  const top = t === 'attempts' ? 'ai' : t;
+  for (const b of document.querySelectorAll('#view-live .tabs .btn')) b.setAttribute('aria-selected', b.dataset.tab === top);
+  $('ai-switch').classList.toggle('hidden', top !== 'ai');
+  $('ai-sw-tests').style.fontWeight = t === 'ai' ? '700' : ''; $('ai-sw-attempts').style.fontWeight = t === 'attempts' ? '700' : '';
   if (t === 'ai') return enterCommunity();
   if (t === 'sim') return enterReplay();
   if (t === 'attempts' && !pilot.loadedList) return loadRunList();
@@ -1263,7 +1279,11 @@ async function enterReplay() {
   if (!replayReady) { replayReady = true; await initReplay(); }
   else {
     const h = params();
-    if (h.get('space') && h.get('space') !== $('sim-space').value) { $('sim-space').value = h.get('space'); loadSim(); }
+    if (h.get('experiment') && (h.get('experiment') !== $('sim-exp').value || $('sim-source').value !== 'result')) {
+      $('sim-source').value = 'result'; $('sim-exp').value = h.get('experiment'); fillSides().then(loadSim);
+    } else if (h.get('space') && (h.get('space') !== $('sim-space').value || $('sim-source').value !== 'topic')) {
+      $('sim-source').value = 'topic'; $('sim-space').value = h.get('space'); fillSides().then(loadSim);
+    }
   }
 }
 
@@ -1278,6 +1298,8 @@ function legend() {
     `<span>${node('var(--s1)', 'var(--s1)')}published: anyone can build on it</span>`,
     `<span><svg width="16" height="16"><polygon points="8,1 10,6 15,6 11,9 12.5,15 8,11.5 3.5,15 5,9 1,6 6,6" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.2"/></svg>target (with bounty)</span>`,
     `<span><svg width="20" height="16"><circle cx="10" cy="8" r="7" fill="none" stroke="var(--s2)" stroke-width="2"/></svg>attempted this round (dashed: every attempt failed)</span>`,
+    `<span><svg width="20" height="16"><circle cx="10" cy="8" r="6" fill="var(--surface)" stroke="var(--ink-3)" stroke-width="1.6"/><path d="M10 1 A7 7 0 0 1 17 8" fill="none" stroke="var(--ink)" stroke-width="2.4"/></svg>bits resolved by the agent closest to it (generated graphs)</span>`,
+    `<span><svg width="24" height="16"><line x1="2" y1="8" x2="22" y2="8" stroke="var(--flow)" stroke-width="3"/></svg><b style="color:var(--flow)">flow-back</b>: a bounty paid this round, and what reached each idea</span>`,
   ].join('');
 }
 
@@ -1291,18 +1313,38 @@ function snapshots(run) {
   const byRound = new Map();
   for (const e of run.events) { if (!byRound.has(e.r)) byRound.set(e.r, []); byRound.get(e.r).push(e); }
   const last = Math.max(0, ...run.events.map((e) => e.r));
-  const snaps = [{ published: published.slice(), hidden: holders.map((h) => h.size), tried: new Map(), proved: proved.slice(), pubs: pubs.slice(), earnings: earnings.slice(), spend: 0, level: 0, log: [] }];
+  const know = Array.from({ length: A }, () => new Set());
+  const bits = run.world.bits;
+  // With bits: for each idea, the share of its bits the agent closest to it has resolved.
+  const resolved = () => {
+    if (!bits) return null;
+    const best = new Float32Array(n);
+    for (const k of know) {
+      const have = new Set(); for (const x of k) for (const b of bits[x]) have.add(b);
+      for (let x = 0; x < n; x++) { let c = 0; for (const b of bits[x]) if (have.has(b)) c++; best[x] = Math.max(best[x], c / bits[x].length); }
+    }
+    return best;
+  };
+  const snaps = [{ published: published.slice(), hidden: holders.map((h) => h.size), tried: new Map(), proved: proved.slice(), pubs: pubs.slice(), earnings: earnings.slice(), spend: 0, level: 0, log: [], res: resolved(), flows: [], beta: { proved: 0, atOnce: 0 }, flowed: 0 }];
   for (let t = 1; t <= last; t++) {
-    const tried = new Map(), log = [];
+    const tried = new Map(), log = [], flows = [], fresh = [];
+    let flowed = 0;
+    const pubNow = new Set();
     for (const e of byRound.get(t) ?? []) {
       if (e.k === 'attempt') {
         const c = tried.get(e.x) ?? { n: 0, ok: 0 }; c.n++; if (e.ok) c.ok++; tried.set(e.x, c);
+        if (e.ok) know[e.a].add(e.x);
+        if (e.ok && !e.dup && !run.world.isTarget[e.x]) fresh.push(`${e.a}:${e.x}`);
         if (e.ok) { proved[e.a]++; if (published[e.x] < 0) holders[e.x].add(e.a); log.push(`agent ${e.a + 1} proved ${name(run, e.x)}${e.dup ? ' (already published: duplicate work)' : ''}${e.wrong ? ' (wrongly)' : ''}`); }
       } else if (e.k === 'publish') {
-        published[e.x] = e.a; holders[e.x].clear(); pubs[e.a]++;
+        published[e.x] = e.a; holders[e.x].clear(); pubs[e.a]++; know[e.a].add(e.x); pubNow.add(`${e.a}:${e.x}`);
         log.push(`agent ${e.a + 1} published ${name(run, e.x)}${run.world.isTarget[e.x] ? ` — target solved, bounty ${run.world.bounty[e.x]}` : ''}`);
+      } else if (e.k === 'takeup') {
+        know[e.a].add(e.x);
+      } else if (e.k === 'pay') {
+        flows.push(e); for (const [z, v] of e.to) if (z !== e.x) flowed += v;
       } else if (e.k === 'retract') {
-        if (e.published) published[e.x] = -1; holders[e.x].delete(e.a);
+        if (e.published) published[e.x] = -1; holders[e.x].delete(e.a); know[e.a].delete(e.x);
         log.push(`${name(run, e.x)} was found wrong and retracted`);
       } else if (e.k === 'rejected') {
         log.push(`agent ${e.a + 1}'s proof of target ${name(run, e.x)} was rejected: it rested on a wrong idea`);
@@ -1312,7 +1354,9 @@ function snapshots(run) {
     const trivial = (byRound.get(t) ?? []).filter((e) => e.k === 'trivial').length;
     if (fails) log.push(`${fails} failed attempt${fails > 1 ? 's' : ''}`);
     if (trivial) log.push(`${trivial} trivial idea${trivial > 1 ? 's' : ''} submitted (gaming the mint)`);
-    snaps.push({ published: published.slice(), hidden: holders.map((h) => h.size), tried, proved: proved.slice(), pubs: pubs.slice(), earnings: earnings.slice(), spend, level, log });
+    if (flowed > 0) log.push(`${flowed.toFixed(1)} of the bounty flowed back to earlier ideas`);
+    snaps.push({ published: published.slice(), hidden: holders.map((h) => h.size), tried, proved: proved.slice(), pubs: pubs.slice(), earnings: earnings.slice(), spend, level, log,
+      res: resolved(), flows, flowed, beta: { proved: fresh.length, atOnce: fresh.filter((k) => pubNow.has(k)).length } });
   }
   return snaps;
 }
@@ -1358,8 +1402,23 @@ function drawPane(pane, t) {
       svg += `<circle cx="${x}" cy="${y}" r="6" fill="${fill}" stroke="${stroke}" stroke-width="1.6"><title>${esc(tip)}</title></circle>`;
     }
     if (hid && !pub) svg += `<text x="${x}" y="${y + 3.5}" text-anchor="middle" font-size="9" font-weight="700" fill="var(--s1)">${s.hidden[r]}</text>`;
+    // Generated graphs: an arc shows the share of the idea's bits the closest agent has resolved.
+    if (s.res && !pub && s.res[r] > 0 && s.res[r] < 1) {
+      const R = w.isTarget[r] ? 12 : 9, a = 2 * Math.PI * s.res[r], x1 = x + R * Math.sin(a), y1 = y - R * Math.cos(a);
+      svg += `<path d="M ${x} ${y - R} A ${R} ${R} 0 ${a > Math.PI ? 1 : 0} 1 ${x1.toFixed(1)} ${y1.toFixed(1)}" fill="none" stroke="var(--ink)" stroke-width="2.2"><title>${Math.round(s.res[r] * 100)}% of its bits resolved</title></path>`;
+    }
+  }
+  // Flow-back this round: from the idea whose bounty was paid, back along the links to every idea it reached.
+  for (const f of s.flows ?? []) {
+    const got = new Map(f.to), drawn = new Set();
+    // Each link the value crossed, once; thicker for more value.
+    const walk = (x) => { for (const j of w.prereqs[x]) if (got.has(j) && !drawn.has(`${x}-${j}`)) { drawn.add(`${x}-${j}`); const wd = 1.2 + 3 * Math.min(1, got.get(j) / Math.max(1e-9, f.to[0][1] * 0.25)); svg += `<line x1="${lay.pos[x][0]}" y1="${lay.pos[x][1]}" x2="${lay.pos[j][0]}" y2="${lay.pos[j][1]}" stroke="var(--flow)" stroke-width="${wd.toFixed(1)}" stroke-opacity="0.8"/>`; walk(j); } };
+    walk(f.x);
+    for (const [z, v] of f.to) if (v >= 0.5) svg += `<text x="${lay.pos[z][0] + 8}" y="${lay.pos[z][1] - 8}" font-size="10" font-weight="700" fill="var(--flow)">+${v.toFixed(v < 10 ? 1 : 0)}</text>`;
   }
   svg += '</svg>';
+  const b = s.beta ?? { proved: 0, atOnce: 0 };
+  const roundLine = `<p class="muted" style="margin:4px 0">This round: ${b.proved ? `<b>${b.atOnce} of ${b.proved}</b> new intermediate ideas published at once (β ≈ ${(b.atOnce / b.proved).toFixed(2)})` : 'no new intermediate ideas'}${s.flowed ? ` · <b style="color:var(--flow)">${s.flowed.toFixed(1)}</b> flowed back` : ''}</p>`;
   const maxE = Math.max(1e-9, ...s.earnings);
   const agents = run.agents.map((a) => `<tr><td>${a.id + 1}</td><td>${esc(a.archetype)}</td><td>${s.proved[a.id]}</td><td>${s.pubs[a.id]}</td><td style="width:40%"><div class="meter" style="width:${(100 * s.earnings[a.id] / maxE).toFixed(1)}%" title="${s.earnings[a.id].toFixed(1)}"></div></td><td>${s.earnings[a.id].toFixed(0)}</td></tr>`).join('');
   el.innerHTML = `<h2>${esc(run.setting.label)}${done ? ' <span class="muted">· run ended</span>' : ''}</h2>
@@ -1370,13 +1429,36 @@ function drawPane(pane, t) {
       <div class="stat">Published<b>${pubN}</b></div>
       <div class="stat">Proved, hidden<b>${hiddenN}</b></div>
     </div>
+    ${roundLine}
     ${svg}
     <table class="agents"><thead><tr><th>agent</th><th>kind</th><th>proved</th><th>published</th><th colspan="2">earnings</th></tr></thead><tbody>${agents}</tbody></table>
     <div class="log" aria-live="polite"><b>Round ${t}:</b> ${s.log.length ? s.log.slice(0, 30).map(esc).join(' · ') + (s.log.length > 30 ? ` · +${s.log.length - 30} more` : '') : 'nothing happened'}</div>`;
 }
 
+// Hardest level published against money spent, both sides, up to the current round.
+function drawSimChart() {
+  if (!sim.panes.length) return;
+  const W = 760, H = 230, l = 50, rgt = 200, tp = 34, b = 34, pw = W - l - rgt, ph = H - tp - b;
+  const X = Math.max(...sim.panes.map((p) => p.run.budget.X)), Y = Math.max(...sim.panes.map((p) => p.run.world.levels));
+  const sx = (v) => l + (v / X) * pw, sy = (v) => tp + ph - (v / Y) * ph;
+  const colour = (label, k) => (/^OSO/.test(label) ? 'var(--s2)' : /^Traditional/.test(label) ? 'var(--s1)' : k ? 'var(--ink-3)' : 'var(--ink-2)');
+  let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="Hardest level published by money spent"><text x="${l}" y="20" font-size="14" font-weight="700" fill="var(--ink)">Hardest level published, by money spent</text>`;
+  for (let k = 0; k <= Y; k += Math.max(1, Math.round(Y / 4))) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(k)}" y2="${sy(k)}" stroke="var(--line)"/><text x="${l - 6}" y="${sy(k) + 4}" text-anchor="end" font-size="11" fill="var(--ink-3)">${k}</text>`;
+  for (const f of [0, 0.25, 0.5, 0.75, 1]) svg += `<text x="${sx(X * f)}" y="${tp + ph + 16}" text-anchor="middle" font-size="11" fill="var(--ink-3)">${Math.round(X * f)}</text>`;
+  svg += `<text x="${l + pw / 2}" y="${H - 2}" text-anchor="middle" font-size="11" fill="var(--ink-3)">money spent</text>`;
+  sim.panes.forEach((p, k) => {
+    const pts = p.snaps.slice(0, sim.round + 1).map((q) => [q.spend, q.level]);
+    const c = colour(p.run.setting.label, k), last = pts[pts.length - 1];
+    let d = ''; pts.forEach(([x, y], i) => { d += `${i ? 'L' : 'M'}${sx(x).toFixed(1)} ${sy(i ? pts[i - 1][1] : y).toFixed(1)} L${sx(x).toFixed(1)} ${sy(y).toFixed(1)} `; });
+    svg += `<path d="${d}" fill="none" stroke="${c}" stroke-width="2.4"${k && !/^OSO|^Traditional/.test(p.run.setting.label) ? ' stroke-dasharray="5 3"' : ''}/>`;
+    svg += `<circle cx="${sx(last[0])}" cy="${sy(last[1])}" r="4" fill="${c}"/><text x="${l + pw + 10}" y="${tp + 14 + k * 20}" font-size="12" font-weight="700" fill="${c}">${esc(p.run.setting.label.slice(0, 26))}: ${last[1]}</text>`;
+  });
+  $('sim-chart').innerHTML = svg + '</svg>';
+}
+
 function drawSim() {
   for (const p of sim.panes) drawPane(p, sim.round);
+  drawSimChart();
   $('sim-scrub').value = sim.round;
   $('sim-clock').textContent = `Round ${sim.round} of ${sim.max}`;
 }
@@ -1384,9 +1466,11 @@ function drawSim() {
 async function loadSim() {
   stopSim();
   const space = $('sim-space').value, seed = Number($('sim-seed').value) || 1;
+  const fromResult = $('sim-source').value === 'result' && $('sim-exp').value;
   $('pane-left').innerHTML = $('pane-right').innerHTML = '<p class="muted">Running the simulation…</p>';
   try {
-    const runs = await Promise.all([$('sim-left').value, $('sim-right').value].map((setting) => api(`/api/sim?space=${encodeURIComponent(space)}&setting=${setting}&seed=${seed}`)));
+    const url = (side) => fromResult ? `/api/sim?experiment=${encodeURIComponent($('sim-exp').value)}&row=${side}&seed=${seed}` : `/api/sim?space=${encodeURIComponent(space)}&setting=${side}&seed=${seed}`;
+    const runs = await Promise.all([$('sim-left').value, $('sim-right').value].map((side) => api(url(side))));
     sim.panes = runs.map((run, i) => ({ run, snaps: snapshots(run), el: $(i ? 'pane-right' : 'pane-left'), lay: layout(run.world) }));
     sim.max = Math.max(...sim.panes.map((p) => p.snaps.length - 1));
     const want = Number(params().get('round'));
@@ -1411,16 +1495,38 @@ $('sim-next').onclick = () => { stopSim(); sim.round = Math.min(sim.max, sim.rou
 $('sim-scrub').oninput = (e) => { stopSim(); sim.round = Number(e.target.value); drawSim(); };
 $('sim-load').onclick = loadSim;
 
+let simSettings = null;
+// Left and right: two societies of the chosen result (rows), or two rule settings of a topic.
+async function fillSides(pick = {}) {
+  if ($('sim-source').value === 'result' && $('sim-exp').value) {
+    const r = await api('/api/sim/rows?experiment=' + encodeURIComponent($('sim-exp').value));
+    const opts = r.rows.map((label, k) => `<option value="${k}">${esc(label)}</option>`).join('');
+    $('sim-left').innerHTML = $('sim-right').innerHTML = opts;
+    const find = (re, dflt) => { const k = r.rows.findIndex((x) => re.test(x)); return String(k >= 0 ? k : dflt); };
+    $('sim-left').value = pick.left ?? find(/^Traditional/, 0);
+    $('sim-right').value = pick.right ?? find(/^OSO/, r.rows.length - 1);
+    if (!pick.seed) $('sim-seed').value = r.firstSeed;
+  } else {
+    $('sim-left').innerHTML = $('sim-right').innerHTML = Object.entries(simSettings).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('');
+    $('sim-left').value = pick.left ?? 'traditional'; $('sim-right').value = pick.right ?? 'oso';
+  }
+  $('sim-exp-ctl').classList.toggle('hidden', $('sim-source').value !== 'result');
+  $('sim-space-ctl').classList.toggle('hidden', $('sim-source').value === 'result');
+}
 async function initReplay() {
   legend();
-  const [spaces, settings] = await Promise.all([api('/api/spaces'), api('/api/settings')]);
+  const [spaces, settings, exps] = await Promise.all([api('/api/spaces'), api('/api/settings'), api('/api/sim/experiments')]);
+  simSettings = settings;
   $('sim-space').innerHTML = spaces.map((s) => `<option value="${s.id}">${esc(s.title)}</option>`).join('');
-  const opts = Object.entries(settings).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('');
-  $('sim-left').innerHTML = $('sim-right').innerHTML = opts;
-  $('sim-left').value = 'traditional'; $('sim-right').value = 'oso';
   if (spaces.some((s) => s.id === 'drug-discovery')) $('sim-space').value = 'drug-discovery';
+  $('sim-exp').innerHTML = exps.map((x) => `<option value="${esc(x.id)}">${esc(x.title)} · ${esc(x.id)}</option>`).join('');
   const h = params();
-  for (const [k, id] of [['space', 'sim-space'], ['seed', 'sim-seed'], ['left', 'sim-left'], ['right', 'sim-right']]) if (h.get(k)) $(id).value = h.get(k);
+  if (h.get('experiment')) { $('sim-source').value = 'result'; $('sim-exp').value = h.get('experiment'); }
+  else if (h.get('space') || !exps.length) $('sim-source').value = 'topic';
+  for (const [k, id] of [['space', 'sim-space'], ['seed', 'sim-seed']]) if (h.get(k)) $(id).value = h.get(k);
+  await fillSides({ left: h.get('left') ?? undefined, right: h.get('right') ?? undefined, seed: h.get('seed') });
+  $('sim-source').onchange = async () => { await fillSides(); loadSim(); };
+  $('sim-exp').onchange = async () => { await fillSides(); loadSim(); };
   await loadSim();
 }
 

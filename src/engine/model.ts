@@ -21,6 +21,8 @@ export type TraceEvent =
   | { r: number; k: 'attempt'; a: number; x: number; ok: boolean; p: number; dup?: boolean; wrong?: boolean }
   | { r: number; k: 'trivial'; a: number; published: boolean }
   | { r: number; k: 'publish'; a: number; x: number }
+  /** A bounty entering x, and the amount that reached each idea (flow-back). */
+  | { r: number; k: 'pay'; x: number; to: [number, number][] }
   | { r: number; k: 'takeup'; a: number; x: number }
   | { r: number; k: 'rejected'; a: number; x: number }
   | { r: number; k: 'retract'; a: number; x: number; published: boolean }
@@ -91,6 +93,7 @@ function payInto(s: State, x: number, v: number, bounty = false, fallback = s.au
   };
   pay(x);
   for (const a of s.world.ancestors[x]) if (row[a] > 0) pay(a);
+  if (bounty && s.trace) s.trace.push({ r: s.round, k: 'pay', x, to: [[x, v * row[x]], ...[...s.world.ancestors[x]].filter((a) => row[a] > 0).map((a): [number, number] => [a, v * row[a]])] });
 }
 
 function publishOne(s: State, i: number, x: number) {

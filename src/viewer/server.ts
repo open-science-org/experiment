@@ -9,7 +9,7 @@ import katex from 'katex';
 import { ROOT, REPORTS_DIR, RESULTS_DIR } from '../paths.ts';
 import { loadScenario, expandPaths } from '../engine/config.ts';
 import { traceRun } from '../engine/model.ts';
-import { preset } from '../experiments/experiment.ts';
+import { expand, loadExperiment, preset } from '../experiments/experiment.ts';
 import { loadSpace, spaceIds, withCalibratedBudget, type Space } from '../spaces/spaces.ts';
 import { LEAN_DIR, leanAvailable, loadTasks } from '../lean/tasks.ts';
 import * as design from './design.ts';
@@ -81,6 +81,37 @@ const spaces = new Map<string, Space>();
 function space(id: string): Space {
   if (!spaces.has(id)) spaces.set(id, withCalibratedBudget(loadSpace(id)).space);
   return spaces.get(id)!;
+}
+
+/** What the page needs to replay one traced run. */
+function replayOf(sc: ReturnType<typeof loadScenario>, seed: number, label: string, title: string) {
+  const t = traceRun(sc, seed);
+  const w = t.world;
+  return {
+    space: { id: '', title, glossary: null, areas: [] },
+    setting: { id: label, label }, seed,
+    budget: { X: sc.budget.X, rounds: sc.budget.rounds },
+    world: { n: w.n, levels: w.levels, level: w.level, area: w.area, prereqs: w.prereqs, isTarget: w.isTarget, bounty: w.bounty, deadEnd: w.deadEnd, names: w.names ?? null, p: w.p, bits: w.bits ?? null },
+    agents: t.agents.map((a) => ({ id: a.id, archetype: a.archetype })),
+    events: t.events,
+    result: { frontier: t.result.frontier, targetsSolved: t.result.targetsSolved, spend: t.result.spend, sharing: t.result.sharingRate },
+  };
+}
+
+/** A saved experiment's rows, for picking two societies to replay. */
+function experimentRows(id: string) {
+  const spec = loadExperiment(id);
+  const rows = expand(spec);
+  const label = (r: (typeof rows)[number]) => Object.entries(r.labels).map(([k, v]) => (typeof v === 'number' ? `${k} ${v}` : String(v))).join(', ') || 'all';
+  return { id, title: spec.title, seeds: spec.seeds, firstSeed: spec.firstSeed ?? 1, rows: rows.map(label) };
+}
+
+/** Replays one row of a saved experiment, at one seed: the same graph and dice for every row. */
+function simExperiment(id: string, row: number, seed: number) {
+  const spec = loadExperiment(id);
+  const rows = expand(spec);
+  if (!rows[row]) throw new Error(`no row ${row} in ${id}`);
+  return replayOf(rows[row].scenario, seed, experimentRows(id).rows[row], spec.title);
 }
 
 function sim(id: string, setting: string, seed: number) {
@@ -245,6 +276,9 @@ const server = createServer(async (req, res) => {
     }
     if (url.pathname === '/api/spaces') return send(200, spaceIds().map((id) => ({ id, title: loadSpace(id).spec.title })));
     if (url.pathname === '/api/settings') return send(200, SETTINGS);
+    if (url.pathname === '/api/sim/rows') return send(200, experimentRows(url.searchParams.get('experiment') ?? ''));
+    if (url.pathname === '/api/sim/experiments') return send(200, allCards().filter((c) => c.kind === 'simulation' && existsSync(join(ROOT, 'config', 'experiments', `${c.id}.yaml`))).map((c) => ({ id: c.id, title: c.title, date: c.date })));
+    if (url.pathname === '/api/sim' && url.searchParams.get('experiment')) return send(200, simExperiment(url.searchParams.get('experiment')!, Number(url.searchParams.get('row') ?? 0), Number(url.searchParams.get('seed') ?? 1)));
     if (url.pathname === '/api/sim') return send(200, sim(url.searchParams.get('space') ?? 'abstract-field', url.searchParams.get('setting') ?? 'oso', Number(url.searchParams.get('seed') ?? 1)));
     if (url.pathname === '/api/pilot/runs') return send(200, leanAvailable() ? pilotRuns() : []);
     if (url.pathname === '/api/community/runs') return send(200, leanAvailable() ? communityRuns() : []);
