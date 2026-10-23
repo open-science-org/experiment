@@ -13,7 +13,7 @@
 
 **The two sets of rules:**
 - **Traditional:** results stay private until a big piece of work is finished. The author keeps all the credit.
-- **OSO:** every result is published at once. The author keeps a share α of the credit (0.8), called the absorption rate; the rest flows back to the results it built on.
+- **OSO:** every result is published at once. Each result absorbs a share α of the credit for its author (0.8), called the absorption rate; the rest flows back to the results it built on.
 
 **What a test measures:** how far the team gets (the hardest result found), how many targets it solves, and how much money that takes.
 

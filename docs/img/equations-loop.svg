@@ -39,7 +39,7 @@
     <text x="341" y="88">pick the x with the best Uᵢ,ₓ</text>
     <text x="636" y="88">πᵢ,ₓ = min(1, sᵢ pₓ)</text>
     <text x="636" y="398">share if gain ≥ scoop risk</text>
-    <text x="341" y="398">author keeps α, 1−α flows back</text>
+    <text x="341" y="398">idea absorbs α, 1−α flows back</text>
     <text x="46" y="398">Ēᵢ ← 0.7 Ēᵢ + 0.3 × earned</text>
   </g>
 

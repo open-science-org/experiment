@@ -50,7 +50,7 @@ agents:
   deciders: {}           # per-archetype deciders, e.g. { gamer: { kind: random } }; default behaviour.decider
 
 rules:                   # the only thing that differs between traditional research and OSO
-  alpha: 1               # absorption rate: share of incoming value a result keeps (traditional: 1)
+  alpha: 1               # absorption rate: how much of incoming value a result absorbs (traditional: 1)
   c: 0                   # share of each mint paid to what it built on (traditional: 0)
   mint: 1
   screen: 0.5            # chance the validation screen rejects a trivial result (θ)
