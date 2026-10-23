@@ -42,11 +42,11 @@
    },
    {
     "condition": "sometimes wrong",
-    "osoLead": 2.5199999999999996
+    "osoLead": 2.54
    },
    {
     "condition": "costly and sometimes wrong",
-    "osoLead": 2.2199999999999998
+    "osoLead": 2.21
    }
   ],
   "sensitivity": [
@@ -122,7 +122,7 @@
    }
   ],
   "seeds": 100,
-  "commit": "ead6740+",
+  "commit": "4bd670b+",
   "date": "2026-10-23"
  },
  "settings": [
@@ -286,7 +286,7 @@
    "OSO frontier": "7.4",
    "OSO lead": "+2.5",
    "traditional targets": "3.3",
-   "OSO targets": "5.4"
+   "OSO targets": "5.5"
   },
   {
    "shared knowledge": "costly and sometimes wrong",

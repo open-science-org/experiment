@@ -209,6 +209,7 @@ const server = createServer(async (req, res) => {
       if (url.pathname === '/api/experiments/check') return send(200, design.checkExperiment(b.design as design.Design));
       if (url.pathname === '/api/experiments/run') return job(design.runExperimentJob(b.design as design.Design, b.overwrite === true));
       if (url.pathname === '/api/name/ai') return send(200, { name: design.aiName(b.design as design.RaceDesign) });
+      if (url.pathname === '/api/simple/graph') return send(200, design.graphPreview(b.graph as design.GraphControls));
       if (url.pathname === '/api/simple/check') return send(200, design.checkSimple(b.design as design.SimpleDesign));
       if (url.pathname === '/api/simple/run') return job(design.runSimpleJob(b.design as design.SimpleDesign, b.overwrite === true));
       if (url.pathname === '/api/persona/text') return send(200, { text: design.personaText(b.persona as design.Persona) });

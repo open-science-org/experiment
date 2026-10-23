@@ -124,7 +124,7 @@ export function worldFigure(w: World, title: string, areaNames: string[] = []): 
   out.push(`<svg xmlns="http://www.w3.org/2000/svg" class="viz" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${esc(title)}">`);
   out.push(`<style>${STYLE}</style><rect class="bg" width="${W}" height="${H}" rx="8"/>`);
   out.push(`<text class="title" x="20" y="30">${esc(title)}</text>`);
-  out.push(`<text class="sub" x="20" y="50">${w.n} results · ${w.targets.length} targets · ${w.deadEnd.filter(Boolean).length} dead ends · columns are levels (deeper to the right); lines join a result to what it builds on</text>`);
+  out.push(`<text class="sub" x="20" y="50">${w.n} ideas · ${w.targets.length} targets · ${w.deadEnd.filter(Boolean).length} dead ends · columns are levels (deeper to the right); lines join an idea to what it builds on</text>`);
   for (let l = 1; l <= w.levels; l++) {
     const r0 = perLevel[l]?.[0];
     if (r0 === undefined) continue;

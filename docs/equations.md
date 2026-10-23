@@ -7,7 +7,7 @@ Every rule of the experiment as a formula, in the order a run uses them. Each fo
 
 ![A tree of ideas, levels left to right: z1, z2 and y2 at level 1; y1 at level 2, built on z1 and z2; x at level 3, built on y1 and y2, with a bounty of 16](img/equations-tree.svg)
 
-- **This tree is a small layered graph** ([section 3.1](#31-the-layered-graph-the-simulations-default)); the definitions in sections 1 and 2 hold for any idea graph.
+- **This tree follows the written topics' rule** ([section 3.2](#32-the-written-topics-parents-required)); the definitions in sections 1 and 2 hold for any idea graph, and [section 3.1](#31-the-generator) generates graphs of any shape.
 - **Ideas** are the circles in the tree. Every idea is the same kind of thing; they differ only in their level, chance of success, bounty and links. An idea with a bounty is what other pages call a **target**.
 - **Arrows** go from a parent to the idea built on it. The number on an arrow is the **link weight**. Credit flows the other way, against the arrows.
 - **Levels** run left to right, easiest first. An idea **before** $x$ is one $x$ builds on, directly or through others ($y_1$, $y_2$, $z_1$, $z_2$). An idea **after** $x$ is built on $x$.
@@ -46,7 +46,7 @@ Grouped by what they belong to, in the order of the sections below. A hat marks 
 | $w_{y \to x}$ | link weight: contributions scaled to add up to 1 | $w_{y_1 \to x} = 62.5\%$ | |
 | $\text{share}(x, z)$ | part of value entering $x$ that reaches $z$'s author ($z$ is $x$ or an idea before it) | $\text{share}(x, y_1) = 0.1$ | |
 
-**The layered graph** ([section 3.1](#31-the-layered-graph-the-simulations-default))
+**The written topics** ([section 3.2](#32-the-written-topics-parents-required))
 
 | Symbol | Meaning | In the example | Default |
 | --- | --- | --- | --- |
@@ -140,7 +140,7 @@ Work is what ties ideas together: knowing other ideas can make $x$ cheaper to fi
 
 ## 2. The idea graph
 
-The ideas and how they help each other form the **idea graph** of a problem space. Everything in this section is a property of the graph (and of $\alpha$), not of what agents do. Section 3 gives two concrete graphs.
+The ideas and how they help each other form the **idea graph** of a problem space. Everything in this section is a property of the graph (and of $\alpha$), not of what agents do. Section 3 generates them.
 
 **Parents.** $y$ is a **parent** of $x$, written $y \to x$, if knowing $y$ lowers the work for $x$: $W_x(K \cup \{y\}) < W_x(K)$. A parent can be **required** (without it $x$ cannot be attempted: the work is infinite) or just **helpful**. An idea **before** $x$ is a parent, a parent's parent, and so on; an idea **after** $x$ is one built on $x$. A **root** has no parents.
 
@@ -158,11 +158,40 @@ $$\text{share}(x, x) = \alpha \quad (1 \text{ for a root}) \qquad \text{share}(x
 
 The shares from one idea add up to 1, so value is never lost or created. With $\alpha = 1$ (traditional), $\text{share}(x, x) = 1$ and nothing passes back.
 
-## 3. Two idea graphs
+## 3. Generating idea graphs
 
-### 3.1 The layered graph (the simulation's default)
+### 3.1 The generator
 
-This is the graph every simulation result so far uses, and the one in the example tree.
+One generator makes idea graphs of any shape, with three groups of controls that can be set separately. Each idea is a **sequence of bits** (like coin tosses): part of it is made of pieces of its parents' sequences, the rest is new.
+
+| Group | Control | What it sets | Default |
+| --- | --- | --- | --- |
+| **Structure** | levels, ideas per level | how deep and how wide the graph is | 6, 8 |
+| | parents per idea | how many earlier ideas an idea builds on, on average | 2 |
+| | skip | chance a parent comes from an older level instead of the level just below | 0.2 |
+| **Difficulty** | length $L_1$, growth $g$ | an idea at level $\ell$ is a sequence of $L_\ell = L_1 + g\,(\ell - 1)$ bits | 3, 2 |
+| **Attribution** | composition $\kappa$ | the share of an idea's bits that are pieces of its parents' sequences | 0.7 |
+| Bounties | ideas with a bounty | how many top-level ideas carry one, of $B_0 \cdot 2^{\ell - 1}$ | 2 |
+
+**Building one idea** $x$ at level $\ell$: it takes $\kappa\,L_\ell$ bits from its parents, one contiguous piece from each in equal shares, and adds $L_\ell - \kappa L_\ell$ new bits of its own. Write $\text{bits}(x)$ for its set of bits.
+
+**An attempt.** Every bit inside an idea the agent knows is resolved. An attempt at $x$ works with chance
+
+$$p_x(K) = 2^{-\,|\text{bits}(x) \,\setminus\, \text{bits resolved by } K|} \qquad W_x(K) = 2^{\,|\text{unresolved bits}|} \text{ attempts}$$
+
+Any idea can be attempted at any time: parents are **helpful, not required**. Knowing a parent resolves the bits the child took from it.
+
+**Link weight:** the bits each parent resolves inside the child. A bit that several parents contain is split equally among them, which is exactly the Shapley value for this case:
+
+$$\phi_{y \to x} = \sum_{b \,\in\, \text{bits}(x) \cap \text{bits}(y)} \frac{1}{\big|\{y' \to x : b \in \text{bits}(y')\}\big|} \qquad w_{y \to x} = \frac{\phi_{y \to x}}{\sum_{y' \to x} \phi_{y' \to x}}$$
+
+*Example:* $y$ = HHT and $x$ = HHTHHH ($x$ took all 3 of $y$'s bits and added 3). From scratch, $W_x = 2^6 = 64$ attempts; knowing $y$, $W_x = 2^3 = 8$. If $x$ instead has two parents HHTH and THHH that overlap in TH, each resolves 4 of $x$'s 6 bits; the 2 shared bits are split, so each contributes $2 + 1 = 3$: weights 50% each.
+
+**What the controls do** (12 identical agents, 10 runs; level reached of 6): with the defaults, traditional reaches 1.2 and OSO 6.0. Lower composition (0.2) makes parents help little, and even OSO stalls at 3.9; higher composition (0.95) makes parents do most of the work, and traditional reaches 5.4, because an agent's own private ideas help it too. Longer sequences, more parents or more levels make it harder for traditional much faster than for OSO.
+
+### 3.2 The written topics: parents required
+
+The topics written so far (abstract field, drug discovery, battery, Lean tree) and every result saved before October 23 use this rule: an idea can be attempted only once all its parents are known. The example tree follows it.
 
 - **Chance per attempt** falls with the level, once every parent is known; all parents are required:
 
@@ -185,17 +214,9 @@ $$w_{y \to x} = \frac{1/p_y}{\sum_{y' \to x} 1/p_{y'}}$$
 | $y_2$ | 0.075 | $0.2 \times 0.375$; $y_2$ is a root and keeps it all |
 | $z_1$, $z_2$ | 0.0125 each | $0.2 \times 0.625 \times 0.2 \times 0.5$ |
 
-### 3.2 The sequence graph (an example; not built in the simulator yet)
+### 3.3 The Lean graph
 
-A different graph from the same definition, where parents help without being required.
-
-- **Ideas** are sequences of H and T, such as HHTHHH. The **level** is the sequence's length.
-- **Work:** each attempt finds one letter not yet known, with chance 1/2. So the work is 2 attempts per unknown letter: $W_x(K) = 2 \times (\text{letters of } x \text{ not covered by ideas in } K)$.
-- **Parents:** $y$ helps $x$ when $y$ appears inside $x$; knowing it fixes those letters.
-
-*Example:* $W_{\text{HHTHHH}} = 12$ attempts from scratch. Knowing HHT covers half the letters, so $W = 6$: **half the work done**. HHT and HHH together cover all of it, and each saves 6: weights 50% and 50%.
-
-*Why the Shapley value:* the parents HHTH and THHH overlap (they share TH). Each alone covers 4 letters and saves 8, but together they save 12, not 16. Averaged over both orders, each contributes $(8 + 4)/2 = 6$, so the weights are 50% each and add up correctly.
+The AI-model tests use a third kind, described in [section 12](#12-ai-model-tests-what-changes): theorems and lemmas, with work measured rather than set.
 
 ## 4. An attempt
 
@@ -236,7 +257,7 @@ Value enters an idea in two ways, and then spreads through the graph by $\text{s
 - **A bounty** $B_x$ enters $x$ when $x$ is first published. The author of each $z$ gets $B_x \, \text{share}(x, z)$.
 - **A mint's cited part** $c\,m$ enters $x$'s parents by link weight when $x$ is published (section 6), and spreads on from each parent the same way.
 
-*Example* ($\alpha = 0.8$): $x$'s bounty of 16 pays **$x$ 12.8, $y_1$ 1.6, $y_2$ 1.2, $z_1$ 0.2, $z_2$ 0.2** ($16 \times$ the shares in section 3.1). Under traditional rules ($\alpha = 1$), $x$ keeps all 16.
+*Example* ($\alpha = 0.8$): $x$'s bounty of 16 pays **$x$ 12.8, $y_1$ 1.6, $y_2$ 1.2, $z_1$ 0.2, $z_2$ 0.2** ($16 \times$ the shares in section 3.2). Under traditional rules ($\alpha = 1$), $x$ keeps all 16.
 
 ## 8. Choosing what to attempt
 

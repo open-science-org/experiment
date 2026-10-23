@@ -150,6 +150,14 @@
   .kind .khead { display: flex; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 6px; }
   .kind .khead b { font-size: 14px; }
   .examples .btn { font-size: 12px; padding: 3px 9px; }
+  .gen-groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  @media (max-width: 800px) { .gen-groups { grid-template-columns: 1fr; } }
+  .gen-groups fieldset { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; margin: 0; }
+  .gen-groups legend { font-weight: 700; font-size: 13px; padding: 0 4px; }
+  .gen-groups label { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; margin: 4px 0; }
+  .gen-groups input { width: 70px; }
+  .gen-groups p { margin: 4px 0 0; font-size: 12px; }
+  .gen-preview { margin: 10px 0; } .gen-preview svg { max-width: 100%; height: auto; }
   .agents-help { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0 0 12px; font-size: 13px; }
   @media (max-width: 800px) { .agents-help { grid-template-columns: 1fr; } }
   .agents-help > * { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
@@ -220,9 +228,35 @@
       <button class="btn" role="tab" data-model="full">Full model</button>
     </div>
     <div class="step" id="n-simple">
-      <p class="muted" style="margin-top:0">Only two settings change between societies. <b>α</b>, the absorption rate: the share of incoming value an idea keeps for its author (1 = nothing flows back). <b>β</b>: the chance an intermediate idea is published as soon as it is proved (0 = closed, 1 = open). Everything else is held fixed: 12 identical agents, equal money every round, no mint (bounties are the only value), no validation, and the topic's idea graph and bounties. <a href="#/equations?m=simple">The equations →</a></p>
+      <p class="muted" style="margin-top:0">Only two settings change between societies. <b>α</b>, the absorption rate: the share of incoming value an idea keeps for its author (1 = nothing flows back). <b>β</b>: the chance an intermediate idea is published as soon as it is proved (0 = closed, 1 = open). Everything else is held fixed: 12 identical agents, equal money every round, no mint (bounties are the only value), no validation. The idea graph is generated from the controls below, or taken from a topic. <a href="#/equations?m=simple">The equations →</a></p>
       <div class="row"><label>Question <input id="s-question" placeholder="What do you want to find out?" style="width:560px"></label></div>
-      <div class="row"><label>Topic <select id="s-space"></select></label><label>Measure <select id="s-measure"></select></label><label>Runs per society <input id="s-seeds" type="number" min="1" max="1000" value="50" style="width:70px"></label></div>
+      <div class="row choice" role="radiogroup" aria-label="Idea graph"><b>Idea graph</b>
+        <label><input type="radio" name="s-graph" value="generated" checked> Generated <span class="info" title="Drawn from the controls below; every run draws its own graph.">ⓘ</span></label>
+        <label><input type="radio" name="s-graph" value="topic"> A topic <span class="info" title="A field written out on the Topics page.">ⓘ</span></label>
+      </div>
+      <div class="row" id="s-topic-row"><label>Topic <select id="s-space"></select></label></div>
+      <div id="s-gen">
+        <div class="gen-groups">
+          <fieldset><legend>Structure</legend>
+            <label>levels <input type="number" id="g-levels" min="1" max="15" step="1"></label>
+            <label>ideas per level <input type="number" id="g-width" min="1" max="30" step="1"></label>
+            <label>parents per idea <input type="number" id="g-parents" min="1" max="6" step="0.5"></label>
+            <label>skip <span class="info" title="Chance a parent comes from an older level instead of the level just below.">ⓘ</span> <input type="number" id="g-skip" min="0" max="1" step="0.05"></label>
+          </fieldset>
+          <fieldset><legend>Difficulty</legend>
+            <label>length at level 1 (bits) <input type="number" id="g-length" min="1" max="12" step="1"></label>
+            <label>more bits per level <input type="number" id="g-lengthGrowth" min="0" max="6" step="0.5"></label>
+            <p class="muted">An attempt works with chance 2<sup>−bits left</sup>.</p>
+          </fieldset>
+          <fieldset><legend>Attribution</legend>
+            <label>composition <span class="info" title="Share of an idea's bits made of pieces of its parents' sequences. Higher: parents help more, and earn more flow-back.">ⓘ</span> <input type="number" id="g-composition" min="0" max="1" step="0.05"></label>
+            <label>ideas with a bounty (top level) <input type="number" id="g-targets" min="1" max="10" step="1"></label>
+            <label>budget <input type="number" id="s-budget" min="10" max="100000" step="10" value="1200"></label>
+          </fieldset>
+        </div>
+        <div class="gen-preview"><div id="g-stats" class="muted"></div><div id="g-svg"></div></div>
+      </div>
+      <div class="row"><label>Measure <select id="s-measure"></select></label><label>Runs per society <input id="s-seeds" type="number" min="1" max="1000" value="50" style="width:70px"></label></div>
       <div class="row"><label>α values <input id="s-alphas" value="1, 0.8, 0.5, 0.2" style="width:200px"></label><span class="muted">1 = nothing flows back; lower = more flows back to the ideas it built on</span></div>
       <div class="row"><label>β values <input id="s-betas" value="0, 0.25, 0.5, 0.75, 1" style="width:200px"></label><span class="muted">0 = publish only with the target; 1 = publish every idea at once</span></div>
       <div class="row"><button class="btn primary" id="s-run">Run</button><span id="s-summary" class="muted"></span></div>
@@ -788,9 +822,28 @@ function showModel(m) {
   $('n-full').classList.toggle('hidden', m !== 'full');
 }
 const numbers = (txt) => txt.split(',').map((x) => x.trim()).filter(Boolean).map(Number);
+const GRAPH_KEYS = ['levels', 'width', 'parents', 'skip', 'length', 'lengthGrowth', 'composition', 'targets'];
+const generated = () => document.querySelector('input[name=s-graph]:checked')?.value !== 'topic';
+const graphControls = () => Object.fromEntries(GRAPH_KEYS.map((k) => [k, Number($('g-' + k).value)]));
 function simpleDesign() {
   return { id: '', question: $('s-question').value.trim(), space: $('s-space').value, measure: $('s-measure').value,
+    ...(generated() ? { graph: graphControls(), budget: Number($('s-budget').value) } : {}),
     alphas: numbers($('s-alphas').value), betas: numbers($('s-betas').value), seeds: Number($('s-seeds').value) };
+}
+let previewTimer = null;
+function graphPreview() {
+  clearTimeout(previewTimer);
+  previewTimer = setTimeout(async () => {
+    const g = await post('/api/simple/graph', { graph: graphControls() });
+    $('g-stats').innerHTML = g.ok ? `One draw: <b>${g.ideas}</b> ideas, <b>${g.parents.toFixed(1)}</b> parents each on average, top sequences of <b>${g.topLength}</b> bits, <b>${Math.round(g.composition * 100)}%</b> of each idea from its parents, ${g.targets} with a bounty, ${g.deadEnds} dead ends. Each run draws its own graph.` : `<span class="no">${esc(g.error)}</span>`;
+    $('g-svg').innerHTML = g.ok ? g.svg : '';
+  }, 250);
+}
+function applyGraphMode() {
+  $('s-gen').classList.toggle('hidden', !generated());
+  $('s-topic-row').classList.toggle('hidden', generated());
+  if (generated()) graphPreview();
+  simpleCheck();
 }
 async function simpleCheck() {
   const c = await post('/api/simple/check', { design: simpleDesign() });
@@ -802,6 +855,10 @@ function initSimple() {
   simpleReady = true;
   $('s-space').innerHTML = $('e-space').innerHTML; $('s-space').value = $('e-space').value;
   $('s-measure').innerHTML = $('e-measure').innerHTML; $('s-measure').value = 'frontier';
+  for (const [k, v] of Object.entries(D.opts.graphDefaults)) $('g-' + k).value = v;
+  for (const k of GRAPH_KEYS) $('g-' + k).addEventListener('input', () => { graphPreview(); simpleCheck(); });
+  $('s-budget').addEventListener('input', simpleCheck);
+  for (const r of document.querySelectorAll('input[name=s-graph]')) r.onchange = applyGraphMode;
   const fresh = () => simpleCheck();
   for (const id of ['s-space', 's-measure', 's-seeds', 's-alphas', 's-betas']) $(id).addEventListener('input', simpleCheck);
   $('s-run').onclick = async () => {
@@ -823,7 +880,7 @@ function initSimple() {
     } catch (e) { btn.disabled = false; btn.textContent = 'Run'; $('s-job').classList.remove('hidden'); $('s-job').textContent = e.message; }
   };
   for (const b of $('n-model').querySelectorAll('button')) b.onclick = () => { location.hash = '#/new?model=' + b.dataset.model; };
-  simpleCheck();
+  applyGraphMode();
 }
 
 async function enterNew() {

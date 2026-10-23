@@ -21,7 +21,7 @@
   .t1 { fill: var(--s1); } .t2 { fill: var(--s2); } .t3 { fill: var(--s3); }
 </style><rect class="bg" width="700" height="376" rx="8"/>
 <text class="title" x="20" y="30">The research tree: A solid-state battery</text>
-<text class="sub" x="20" y="50">20 results · 2 targets · 6 dead ends · columns are levels (deeper to the right); lines join a result to what it builds on</text>
+<text class="sub" x="20" y="50">20 ideas · 2 targets · 6 dead ends · columns are levels (deeper to the right); lines join an idea to what it builds on</text>
 <text class="tick" x="70" y="70" text-anchor="middle">level 1</text>
 <text class="tick" x="70" y="84" text-anchor="middle">p ≈ 50.0%</text>
 <text class="tick" x="200" y="70" text-anchor="middle">level 2</text>

@@ -8,9 +8,9 @@ import { parse, stringify } from 'yaml';
 import { loadTasks } from '../lean/tasks.ts';
 import { COLUMNS } from '../engine/measures.ts';
 import { Rng } from '../engine/rng.ts';
-import { worlds } from '../engine/world.ts';
+import { ideasWorld, worlds } from '../engine/world.ts';
 import { expand, type ExperimentSpec, type Level } from '../experiments/experiment.ts';
-import { expandPaths, getPath, merge } from '../engine/config.ts';
+import { expandPaths, getPath, loadScenario, merge } from '../engine/config.ts';
 import { EXPERIMENTS_DIR, ROOT, SPACES_DIR } from '../paths.ts';
 import { SENSITIVITY } from '../report/battery.ts';
 import { worldFigure } from '../report/figures.ts';
@@ -140,6 +140,7 @@ export function options() {
     settings: SETTINGS,
     parameters: PARAMETERS,
     traits: TRAITS,
+    graphDefaults: GRAPH_DEFAULTS,
     kinds: KINDS,
     personas: PERSONAS,
     personaFeatures: PERSONA_FEATURES,
@@ -546,7 +547,37 @@ export { parse as parseYaml };
  * bounties are the only value), no validation (θ = 0; no agent games, so nothing trivial is submitted),
  * and the topic's own idea graph and bounties.
  */
-export interface SimpleDesign { id: string; title?: string; question?: string; space: string; alphas: number[]; betas: number[]; seeds: number; measure?: string }
+/** The generator's controls (world kind 'ideas'): structure, difficulty and attribution. */
+export interface GraphControls { levels: number; width: number; parents: number; skip: number; length: number; lengthGrowth: number; composition: number; targets: number }
+export const GRAPH_DEFAULTS: GraphControls = { levels: 6, width: 8, parents: 2, skip: 0.2, length: 3, lengthGrowth: 2, composition: 0.7, targets: 2 };
+const GRAPH_RANGES: Record<keyof GraphControls, [number, number]> = { levels: [1, 15], width: [1, 30], parents: [1, 6], skip: [0, 1], length: [1, 12], lengthGrowth: [0, 6], composition: [0, 1], targets: [1, 10] };
+
+/** The simple model's design: a topic, or a generated idea graph (graph), and the α and β values. */
+export interface SimpleDesign { id: string; title?: string; question?: string; space: string; graph?: GraphControls; budget?: number; alphas: number[]; betas: number[]; seeds: number; measure?: string }
+
+function checkGraph(g: GraphControls) {
+  for (const [k, [lo, hi]] of Object.entries(GRAPH_RANGES)) {
+    const v = Number(g[k as keyof GraphControls]);
+    if (!Number.isFinite(v) || v < lo || v > hi) throw new Error(`idea graph: ${k} must be between ${lo} and ${hi}`);
+  }
+}
+
+/** A generated idea graph, drawn, with its numbers: for the preview on the New page. */
+export function graphPreview(g: GraphControls, seed = 1) {
+  try {
+    checkGraph(g);
+    const w = ideasWorld({ ...g, bountyBase: 4, bountyGrowth: 2, attemptLimit: 24 }, new Rng(seed));
+    const withParents = w.prereqs.filter((ps) => ps.length);
+    const inherited = w.bits!.map((b, x) => { const from = new Set(w.prereqs[x].flatMap((y) => w.bits![y])); return b.filter((bit) => from.has(bit)).length / b.length; });
+    return {
+      ok: true, svg: worldFigure(w, 'The idea graph (one draw)'),
+      ideas: w.n, targets: w.targets.length, deadEnds: w.deadEnd.filter(Boolean).length,
+      parents: withParents.reduce((a, ps) => a + ps.length, 0) / Math.max(1, withParents.length),
+      topLength: Math.max(...w.bits!.map((b) => b.length)),
+      composition: inherited.filter((_, x) => w.prereqs[x].length).reduce((a, b) => a + b, 0) / Math.max(1, withParents.length),
+    };
+  } catch (e) { return { ok: false, error: (e as Error).message }; }
+}
 
 export const SIMPLE_FIXED = { 'rules.c': 0, 'budget.allocation.rho': 0, 'rules.mint': 0, 'rules.screen': 0 };
 export const SIMPLE_AGENTS = 12;
@@ -568,10 +599,11 @@ export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
   check(d.alphas, 'α', 0.05, 1); check(d.betas, 'β', 0, 1);
   if (d.alphas.length * d.betas.length > 60) throw new Error('at most 60 societies (α values × β values)');
   if (!(d.seeds >= 1 && d.seeds <= 1000)) throw new Error('runs per society must be between 1 and 1000');
+  if (d.graph) return simpleOnGraph(d, d.graph);
   const { space } = withCalibratedBudget(loadSpace(d.space));
   // Every agent kind the topic has is set to 0, then 12 plain agents: the mix is replaced whole.
   const mix = Object.fromEntries([...Object.keys(space.scenario.agents.mix), 'plain'].map((k) => [k, k === 'plain' ? SIMPLE_AGENTS : 0]));
-  const levels: Level[] = d.alphas.flatMap((a) => d.betas.map((b) => ({ label: societyLabel(a, b), set: { 'rules.alpha': a, 'rules.visibility': { kind: 'chance', beta: b } } })));
+  const levels = societies(d);
   const measure = d.measure && COLUMNS[d.measure] ? d.measure : 'frontier';
   return {
     id: d.id,
@@ -587,6 +619,32 @@ export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
     fixed: `the field "${space.spec.title}", ${SIMPLE_AGENTS} identical agents, equal money each round, no mint, no validation`,
     measure,
     tags: simpleTags(d, space.spec.title),
+  };
+}
+
+const societies = (d: SimpleDesign): Level[] => d.alphas.flatMap((a) => d.betas.map((b) => ({ label: societyLabel(a, b), set: { 'rules.alpha': a, 'rules.visibility': { kind: 'chance', beta: b } } })));
+const graphText = (g: GraphControls) => `${g.levels} levels × ${g.width} ideas, ${g.parents} parents each, sequences of ${g.length} bits growing by ${g.lengthGrowth} per level, composition ${g.composition}`;
+
+/** The simple model on a generated idea graph: each run draws its own graph from the controls. */
+function simpleOnGraph(d: SimpleDesign, g: GraphControls): ExperimentSpec {
+  checkGraph(g);
+  const budget = d.budget ?? 1200;
+  if (!(budget >= 10 && budget <= 100000)) throw new Error('the budget must be between 10 and 100,000');
+  const mix = Object.fromEntries([...Object.keys(loadScenario(null).agents.mix), 'plain'].map((k) => [k, k === 'plain' ? SIMPLE_AGENTS : 0]));
+  const measure = d.measure && COLUMNS[d.measure] ? d.measure : 'frontier';
+  return {
+    id: d.id,
+    title: d.title || d.question || `Simple model on a generated idea graph: α × β`,
+    description: `The simple model on a generated idea graph (${graphText(g)}); each run draws its own graph. Only α and β vary. Held fixed: ${SIMPLE_AGENTS} identical agents, a budget of ${budget} split equally every round (ρ = 0), no mint, no validation.`,
+    seeds: d.seeds,
+    set: merge(expandPaths({ world: { kind: 'ideas', ...g }, 'budget.X': budget, 'measures.targetLevel': g.levels, ...SIMPLE_FIXED }), { agents: { mix } }) as Record<string, unknown>,
+    factors: [{ name: 'society', levels: societies(d) }],
+    columns: [...new Set([measure, 'frontier', 'value', 'roi', 'sharing', 'targetsSolved', 'cost'])],
+    question: d.question || `On a generated idea graph, how far does a society get for the same money, by α and β?`,
+    compare: `α in {${d.alphas.join(', ')}} × β in {${d.betas.join(', ')}}`,
+    fixed: `a generated idea graph (${graphText(g)}), ${SIMPLE_AGENTS} identical agents, budget ${budget} split equally, no mint, no validation`,
+    measure,
+    tags: ['simulation', 'simple model', 'generated idea graph', 'ideas', `levels ${g.levels}`, `parents ${g.parents}`, `length ${g.length}`, `composition ${g.composition}`, 'alpha', 'beta'],
   };
 }
 
@@ -628,10 +686,12 @@ function unique(base: string, taken: (id: string) => boolean): string {
 }
 const experimentTaken = (id: string) => existsSync(join(EXPERIMENTS_DIR, `${id}.yaml`));
 
-export function simpleName(d: Pick<SimpleDesign, 'space' | 'alphas' | 'betas'>): string {
+export function simpleName(d: Pick<SimpleDesign, 'space' | 'alphas' | 'betas' | 'graph'>): string {
   const a = d.alphas.length > 1, b = d.betas.length > 1;
   const varies = a && b ? 'alpha-beta' : a ? `alpha-at-beta-${num(d.betas[0] ?? 0)}` : b ? `beta-at-alpha-${num(d.alphas[0] ?? 1)}` : `alpha-${num(d.alphas[0] ?? 1)}-beta-${num(d.betas[0] ?? 0)}`;
-  return unique(`simple-${slug(d.space)}-${varies}`, experimentTaken);
+  // A generated graph is named by its controls: levels × width, parents, length + growth, composition.
+  const where = d.graph ? `ideas-${d.graph.levels}x${d.graph.width}-p${num(d.graph.parents)}-len${num(d.graph.length)}g${num(d.graph.lengthGrowth)}-comp${num(d.graph.composition)}` : slug(d.space);
+  return unique(`simple-${where}-${varies}`, experimentTaken);
 }
 
 export function fullName(d: Pick<Design, 'space' | 'settings' | 'vary' | 'agents'>): string {
