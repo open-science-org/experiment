@@ -36,6 +36,8 @@ export interface Card {
   chart?: string;
   /** Set when the result must not be used, with the reason. The card stays, marked. */
   invalid?: string;
+  /** Search words: model, topic, what was compared. */
+  tags?: string[];
 }
 
 const table = (rows: Record<string, string | number>[]) => {
@@ -111,7 +113,7 @@ export function allCards(): Card[] {
 export function writeIndex(): void {
   const cards = allCards();
   const link = (c: Card) => `[${c.title}](${relative(RESULTS_DIR, join(ROOT, c.page)).replace(/\\/g, '/')})`;
-  const rows = cards.map((c) => ({ date: c.date, kind: c.kind, experiment: link(c), question: c.design.question, answer: c.invalid ? `Not valid: ${c.invalid}` : c.answer, cost: c.cost ?? '–' }));
+  const rows = cards.map((c) => ({ date: c.date, kind: c.kind, experiment: link(c), name: `\`${c.id}\``, question: c.design.question, answer: c.invalid ? `Not valid: ${c.invalid}` : c.answer, cost: c.cost ?? '–' }));
   writeFileSync(join(RESULTS_DIR, 'README.md'), `# Experiments
 
 Every experiment in this repository, newest first. Each has a short card: the question, the answer computed from the measure declared before the run, a small table, the design and its caveats. The run-by-run log of saved simulations is [LOG.md](LOG.md).

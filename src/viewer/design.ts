@@ -215,6 +215,7 @@ const FLOW_BACK = ['oso', 'osoChoice', 'creditOnly'];
  * the traditional ones as they are.
  */
 export function experimentFor(d: Design): ExperimentSpec {
+  if (!d.id) d = { ...d, id: fullName(d) };
   if (!ID.test(d.id)) throw new Error('the experiment name must be kebab-case (a-z, 0-9, hyphens)');
   if (!d.settings.length) throw new Error('choose at least one rule setting');
   for (const s of d.settings) if (!SETTINGS[s]) throw new Error(`unknown setting ${s}`);
@@ -286,6 +287,7 @@ export function experimentFor(d: Design): ExperimentSpec {
     compare: `${d.settings.map((s) => SETTINGS[s]).join(', ')}${varied.length ? `, by ${varied.map((v) => param(v.path).label).join(' and ')}` : ''}`,
     fixed: `the field "${space.spec.title}"${changed.length ? `, with ${changed.join(', ')}` : ''}`,
     measure: d.measure && COLUMNS[d.measure] ? d.measure : (d.columns[0] ?? 'frontier'),
+    tags: ['simulation', 'full model', d.space, space.spec.title, ...d.settings.map((s) => SETTINGS[s]), ...varied.map((v) => param(v.path).label), ...(d.agents ? ['own agents'] : [])],
   };
 }
 
@@ -293,7 +295,7 @@ export function checkExperiment(d: Design) {
   try {
     const spec = experimentFor(d);
     const rows = expand(spec);
-    return { ok: true, rows: rows.length, runs: rows.length * spec.seeds, exists: existsSync(join(EXPERIMENTS_DIR, `${d.id}.yaml`)), yaml: stringify(spec, { lineWidth: 100 }), labels: rows.slice(0, 40).map((r) => r.labels) };
+    return { ok: true, rows: rows.length, runs: rows.length * spec.seeds, exists: existsSync(join(EXPERIMENTS_DIR, `${d.id}.yaml`)), yaml: stringify(spec, { lineWidth: 100 }), labels: rows.slice(0, 40).map((r) => r.labels), name: fullName(d) };
   } catch (e) {
     return { ok: false, error: (e as Error).message };
   }
@@ -557,6 +559,7 @@ export function societyLabel(alpha: number, beta: number): string {
 }
 
 export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
+  if (!d.id) d = { ...d, id: simpleName(d) };
   if (!ID.test(d.id)) throw new Error('the experiment name must be kebab-case (a-z, 0-9, hyphens)');
   const check = (xs: number[], name: string, lo: number, hi: number) => {
     if (!xs.length) throw new Error(`give at least one value of ${name}`);
@@ -583,6 +586,7 @@ export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
     compare: `α in {${d.alphas.join(', ')}} × β in {${d.betas.join(', ')}}`,
     fixed: `the field "${space.spec.title}", ${SIMPLE_AGENTS} identical agents, equal money each round, no mint, no validation`,
     measure,
+    tags: simpleTags(d, space.spec.title),
   };
 }
 
@@ -590,7 +594,7 @@ export function checkSimple(d: SimpleDesign) {
   try {
     const spec = simpleExperimentFor(d);
     const rows = expand(spec);
-    return { ok: true, rows: rows.length, runs: rows.length * spec.seeds, exists: existsSync(join(EXPERIMENTS_DIR, `${d.id}.yaml`)) };
+    return { ok: true, rows: rows.length, runs: rows.length * spec.seeds, exists: existsSync(join(EXPERIMENTS_DIR, `${d.id}.yaml`)), name: simpleName(d) };
   } catch (e) {
     return { ok: false, error: (e as Error).message };
   }
@@ -602,4 +606,47 @@ export function runSimpleJob(d: SimpleDesign, overwrite = false): Job {
   if (existsSync(file) && !overwrite) throw new Error(`an experiment called "${spec.id}" already exists; change its name`);
   writeFileSync(file, `# Designed in the experiment app (simple model).\n${stringify(spec, { lineWidth: 100 })}`);
   return cliJob('experiment', `Simple model: ${spec.title}`, [spec.id, '--save'], () => ({ doc: `results/${spec.id}/summary.md` }));
+}
+
+/* ------------------------------------------------------------------------------------------- Names */
+
+// Canonical names: what an experiment is, then the date, so names sort, read and search well.
+//   simple-<topic>-<what varies>-<yyyymmdd>            e.g. simple-abstract-field-alpha-beta-20261023
+//   full-<topic>-<settings>[-by-<parameter>]-<yyyymmdd> e.g. full-drug-discovery-traditional-vs-oso-by-alpha-20261023
+//   ai-<model>-x<agents>-<rules>-<yyyymmdd>            e.g. ai-deepseek-v4-1-flash-x4-traditional-vs-oso-20261023
+// A name already taken gets -2, -3, …
+
+const slug = (s: string) => s.toLowerCase().replace(/([a-z])([A-Z])/g, '$1-$2').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const num = (x: number) => String(x).replace('.', '-');
+const today = () => new Date().toISOString().slice(0, 10).replace(/-/g, '');
+
+function unique(base: string, taken: (id: string) => boolean): string {
+  const b = base.length > 90 ? base.slice(0, 90).replace(/-[^-]*$/, '') : base;
+  const stem = `${b}-${today()}`;
+  if (!taken(stem)) return stem;
+  for (let k = 2; ; k++) if (!taken(`${stem}-${k}`)) return `${stem}-${k}`;
+}
+const experimentTaken = (id: string) => existsSync(join(EXPERIMENTS_DIR, `${id}.yaml`));
+
+export function simpleName(d: Pick<SimpleDesign, 'space' | 'alphas' | 'betas'>): string {
+  const a = d.alphas.length > 1, b = d.betas.length > 1;
+  const varies = a && b ? 'alpha-beta' : a ? `alpha-at-beta-${num(d.betas[0] ?? 0)}` : b ? `beta-at-alpha-${num(d.alphas[0] ?? 1)}` : `alpha-${num(d.alphas[0] ?? 1)}-beta-${num(d.betas[0] ?? 0)}`;
+  return unique(`simple-${slug(d.space)}-${varies}`, experimentTaken);
+}
+
+export function fullName(d: Pick<Design, 'space' | 'settings' | 'vary' | 'agents'>): string {
+  const settings = d.settings.length > 4 ? `${d.settings.length}-settings` : d.settings.map(slug).join('-vs-');
+  const varied = d.vary.filter((v) => v.path && v.values.length).map((v) => slug(v.path.split('.').pop()!));
+  return unique(`full-${slug(d.space)}-${settings}${varied.length ? `-by-${varied.join('-and-')}` : ''}${d.agents ? '-own-agents' : ''}`, experimentTaken);
+}
+
+export function aiName(d: Pick<RaceDesign, 'labs' | 'rules'>): string {
+  const models = [...new Set(d.labs.map((l) => slug(l.model.split('/').pop() ?? l.model)))];
+  const who = models.length === 1 ? `${models[0]}-x${d.labs.length}` : `${models.length}-models-x${d.labs.length}`;
+  return unique(`ai-${who}-${d.rules.join('-vs-')}`, (id) => existsSync(join(ROOT, 'lean', 'runs', `${id}.config.json`)) || existsSync(join(ROOT, 'results', 'community', id)));
+}
+
+/** Search words for a card: the model, the topic, what was compared. */
+export function simpleTags(d: SimpleDesign, topicTitle: string): string[] {
+  return ['simulation', 'simple model', d.space, topicTitle, 'alpha', 'beta', 'absorption rate', 'publishing'];
 }

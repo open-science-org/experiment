@@ -213,6 +213,7 @@ function simulationCard(spec: ExperimentSpec, out: Output, n: number, date: stri
     },
     answer, table: short, caveats: spec.caveats ?? ['A simulation with guessed parameters: it shows how the rules play out, not that they work.'],
     page: `results/${spec.id}/summary.md`,
+    ...(spec.tags?.length ? { tags: spec.tags } : {}),
   };
 }
 

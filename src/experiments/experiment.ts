@@ -42,6 +42,8 @@ export interface ExperimentSpec {
   measure?: string;
   better?: 'higher' | 'lower';
   caveats?: string[];
+  /** Search words shown on the card: model, topic, what was compared. */
+  tags?: string[];
 }
 
 export interface Row {
@@ -59,7 +61,7 @@ export interface Output {
   results: RunResult[][];
 }
 
-const SPEC_KEYS = ['id', 'title', 'description', 'seeds', 'firstSeed', 'scenario', 'set', 'factors', 'patches', 'exclude', 'columns', 'analysis', 'question', 'compare', 'fixed', 'measure', 'better', 'caveats'];
+const SPEC_KEYS = ['id', 'title', 'description', 'seeds', 'firstSeed', 'scenario', 'set', 'factors', 'patches', 'exclude', 'columns', 'analysis', 'question', 'compare', 'fixed', 'measure', 'better', 'caveats', 'tags'];
 
 let presetCache: Record<string, Record<string, unknown>> | null = null;
 export function preset(name: string): Record<string, unknown> {

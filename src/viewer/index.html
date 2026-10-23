@@ -253,7 +253,7 @@
       <article id="r-card" class="doc hidden"></article>
       <details id="n-more"><summary>More options</summary>
         <div id="more-sim">
-          <div class="row"><label>Name <input id="e-id" value="my-experiment" style="width:180px"></label><label>Title <input id="e-title" placeholder="optional" style="width:220px"></label><label><input type="checkbox" id="e-overwrite"> replace an experiment with this name</label></div>
+          <div class="row"><label>Name <input id="e-id" value="" placeholder="filled in for you" style="width:360px"></label><label>Title <input id="e-title" placeholder="optional" style="width:220px"></label><label><input type="checkbox" id="e-overwrite"> replace an experiment with this name</label></div>
           <h3 class="section">Settings</h3>
           <div class="params-wrap">
             <div><div class="row"><button class="btn" id="e-reset">Reset</button><span class="muted" id="e-changed"></span></div><div id="e-params"></div></div>
@@ -274,7 +274,7 @@
           <details><summary class="muted">The experiment file</summary><pre id="e-yaml"></pre></details>
         </div>
         <div id="more-ai" class="hidden">
-          <div class="row"><label>Name <input id="r-id" value="my-test" style="width:150px"></label><label>Money per agent, $ <input id="r-budget" type="number" min="0.05" max="20" step="0.05" value="0.15" style="width:80px"></label><label>Rounds <input id="r-rounds" type="number" min="1" max="200" value="30" style="width:70px"></label></div>
+          <div class="row"><label>Name <input id="r-id" value="" placeholder="filled in for you" style="width:320px"></label><label>Money per agent, $ <input id="r-budget" type="number" min="0.05" max="20" step="0.05" value="0.15" style="width:80px"></label><label>Rounds <input id="r-rounds" type="number" min="1" max="200" value="30" style="width:70px"></label></div>
           <h3 class="section">Agents <span class="info" title="Each agent is an AI model with a way of working. Both sides get the same agents.">ⓘ</span></h3>
           <div class="labs" id="r-labs"></div>
           <div class="row"><button class="btn" id="r-add">Add an agent</button></div>
@@ -428,6 +428,8 @@ async function openDoc(path) {
   } catch (e) { $('doc-body').innerHTML = `<p>${esc(e.message)}</p>`; }
 }
 
+let resultsQuery = '';
+const KINDWORD = { race: 'ai models', 'model pilot': 'ai models', 'field report': 'topic report simulation', simulation: 'simulation' };
 async function drawResults() {
   OV = null;
   const ov = await overviewData();
@@ -465,16 +467,26 @@ async function drawResults() {
       <h3>${esc(c.title.replace(/^(Real agents, OSO vs traditional|Lean pilot): /, ''))}</h3>
       <p class="q">${esc(c.design.question)}</p>
       <p class="a">${esc(c.invalid ? 'Not valid: ' + c.invalid : c.answer)}</p>
-      <div class="meta">${esc(c.date)} · ${esc(c.design.runs)}${c.cost ? ' · ' + esc(c.cost) : ''}</div></a>`;
+      <div class="meta">${esc(c.date)} · ${esc(c.design.runs)}${c.cost ? ' · ' + esc(c.cost) : ''}</div><div class="meta"><code>${esc(c.id)}</code></div></a>`;
   const section = (g) => {
     const body = `<div class="fields">${g.cards.map(card).join('')}</div>`;
     const head = `${esc(g.title)} <span class="muted">· ${g.cards.length} · ${esc(g.note)}</span>`;
     return g.fold ? `<details class="group"><summary><h2>${head}</h2></summary>${body}</details>` : `<section class="group"><h2>${head}</h2>${body}</section>`;
   };
+  const q = resultsQuery.trim().toLowerCase();
+  const words = q.split(/\s+/).filter(Boolean);
+  // Greek letters match their names too: "alpha" finds α.
+  const GREEK = { α: 'alpha', β: 'beta', ρ: 'rho', θ: 'theta', ψ: 'psi', κ: 'kappa', η: 'eta', τ: 'tau' };
+  const hay = (c) => { const t = [c.id, c.title, c.kind, KINDWORD[c.kind] ?? '', c.date, c.design.question, c.design.compare, c.design.fixed, c.answer, ...(c.tags ?? [])].join(' ').toLowerCase(); return t + ' ' + t.replace(/[αβρθψκητ]/g, (g) => ` ${GREEK[g]} `); };
+  const found = words.length ? cards.filter((c) => words.every((w) => hay(c).includes(w))) : null;
   $('view-overview').innerHTML = `
+    <div class="row search"><input id="r-search" type="search" placeholder="Search results: name, topic, model, α, β, a question…" value="${esc(resultsQuery)}" style="width:420px"><span class="muted">${found ? `${found.length} found` : `${cards.length} results`}</span></div>
+    ${found ? `<section class="group"><h2>Search <span class="muted">· ${found.length} of ${cards.length}</span></h2><div class="fields">${found.map(card).join('') || '<p class="muted">Nothing matches.</p>'}</div></section>` : `
     <h2 class="first">At a glance <span class="muted">· OSO orange, traditional blue</span></h2>
     <div class="glance">${glance}</div>
-    ${groups.map(section).join('') || '<p class="muted">Nothing yet.</p>'}`;
+    ${groups.map(section).join('') || '<p class="muted">Nothing yet.</p>'}`}`;
+  const box = $('r-search');
+  box.oninput = () => { resultsQuery = box.value; const at = box.selectionStart; drawResults().then(() => { $('r-search').focus(); $('r-search').setSelectionRange(at, at); }); };
 }
 
 /* Live: tabs */
@@ -578,6 +590,7 @@ function raceDesign() {
   };
 }
 async function raceCost() {
+  if (!$('r-id').dataset.typed && R.labs?.length) { try { $('r-id').value = (await post('/api/name/ai', { design: raceDesign() })).name; } catch {} }
   const d = raceDesign(), max = d.budget * d.labs.length * d.rules.length * d.repeats;
   let bal = '';
   try { const b = await api('/api/balance'); if (b.ok && b.remaining != null) bal = ` · $${b.remaining.toFixed(2)} left on your key`; } catch {}
@@ -585,7 +598,7 @@ async function raceCost() {
   return max;
 }
 async function startRace() {
-  const d = raceDesign(), max = await raceCost();
+  const max = await raceCost(), d = raceDesign();
   if (!d.rules.length) { alert('Tick Traditional, OSO or both.'); return; }
   if (!confirm(`Run "${d.id}"? It can cost up to $${max.toFixed(2)}.`)) return;
   try {
@@ -776,12 +789,12 @@ function showModel(m) {
 }
 const numbers = (txt) => txt.split(',').map((x) => x.trim()).filter(Boolean).map(Number);
 function simpleDesign() {
-  return { id: $('s-id').value, question: $('s-question').value.trim(), space: $('s-space').value, measure: $('s-measure').value,
+  return { id: '', question: $('s-question').value.trim(), space: $('s-space').value, measure: $('s-measure').value,
     alphas: numbers($('s-alphas').value), betas: numbers($('s-betas').value), seeds: Number($('s-seeds').value) };
 }
 async function simpleCheck() {
   const c = await post('/api/simple/check', { design: simpleDesign() });
-  $('s-summary').innerHTML = c.ok ? `${c.rows} societies × ${$('s-seeds').value} runs = ${c.runs.toLocaleString()} runs` : `<span class="no">${esc(c.error)}</span>`;
+  $('s-summary').innerHTML = c.ok ? `${c.rows} societies × ${$('s-seeds').value} runs = ${c.runs.toLocaleString()} runs · <code>${esc(c.name)}</code>` : `<span class="no">${esc(c.error)}</span>`;
   return c;
 }
 function initSimple() {
@@ -789,9 +802,7 @@ function initSimple() {
   simpleReady = true;
   $('s-space').innerHTML = $('e-space').innerHTML; $('s-space').value = $('e-space').value;
   $('s-measure').innerHTML = $('e-measure').innerHTML; $('s-measure').value = 'frontier';
-  $('n-simple').insertAdjacentHTML('beforeend', '<input type="hidden" id="s-id">');
-  const fresh = () => { $('s-id').value = `simple-${new Date().toISOString().slice(0, 19).replace(/[-:T]/g, '')}`; };
-  fresh();
+  const fresh = () => simpleCheck();
   for (const id of ['s-space', 's-measure', 's-seeds', 's-alphas', 's-betas']) $(id).addEventListener('input', simpleCheck);
   $('s-run').onclick = async () => {
     const c = await simpleCheck(); if (!c.ok) return;
@@ -825,8 +836,9 @@ async function enterNew() {
     for (const r of document.querySelectorAll('input[name=who]')) r.onchange = applyWho;
     $('n-run').onclick = () => (who() === 'ai' ? startRace() : runSim());
     // A fresh name each time, so nothing is overwritten by accident.
-    const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
-    $('e-id').value = `exp-${stamp}`; $('r-id').value = `test-${stamp}`;
+    // Names are canonical (model, topic, what is compared, date) and fill in by themselves; typing one keeps it.
+    $('e-id').value = ''; $('r-id').value = '';
+    for (const id of ['e-id', 'r-id']) $(id).addEventListener('input', () => { $(id).dataset.typed = $(id).value ? '1' : ''; });
     $('e-question').addEventListener('input', () => { if (!$('e-title').value) designCheck(); });
     $('n-examples').insertAdjacentHTML('beforeend', EXAMPLES.map((x, k) => `<button class="btn" data-x="${k}" title="${esc(x.question)}">${esc(x.label)}</button>`).join(''));
     for (const b of $('n-examples').querySelectorAll('button')) b.onclick = () => useExample(EXAMPLES[b.dataset.x]);
@@ -925,7 +937,7 @@ async function enterDesign() {
         if (job.status !== 'done') return;
         $('e-job').classList.add('hidden');
         // A fresh name for the next run, so it does not collide with this one.
-        $('e-id').value = `exp-${new Date().toISOString().slice(0, 19).replace(/[-:T]/g, '')}`;
+        $('e-id').value = ''; $('e-id').dataset.typed = ''; designCheck();
         const d = await api('/api/doc?path=' + encodeURIComponent(job.result.doc));
         $('e-result').innerHTML = d.html + `<p><a href="#/live?tab=sim&space=${esc(currentDesign().space)}">Watch a simulation of this field →</a></p>`;
         $('e-result').classList.remove('hidden');
@@ -1181,7 +1193,8 @@ function designCheck() {
       if (!D.opts) return done(null);
       const c = await post('/api/experiments/check', { design: currentDesign() });
       if (who() !== 'sim') return done(c);
-      $('e-summary').innerHTML = c.ok ? `${c.runs.toLocaleString()} runs in all${c.exists ? ' · <span class="no">this name is taken (More options)</span>' : ''}` : `<span class="no">${esc(c.error)}</span>`;
+      if (c.ok && !$('e-id').dataset.typed) $('e-id').value = c.name;
+      $('e-summary').innerHTML = c.ok ? `${c.runs.toLocaleString()} runs in all · <code>${esc($('e-id').value || c.name)}</code>${c.exists ? ' · <span class="no">this name is taken (More options)</span>' : ''}` : `<span class="no">${esc(c.error)}</span>`;
       $('e-yaml').textContent = c.ok ? c.yaml : '';
       done(c);
     }, 250);
