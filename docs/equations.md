@@ -8,7 +8,7 @@ Every rule of the experiment as a formula, in the order a run uses them. Each fo
 ![A tree of ideas, levels left to right: z1, z2 and y2 at level 1; y1 at level 2, built on z1 and z2; x at level 3, built on y1 and y2, with a prize of 16](img/equations-tree.svg)
 
 - **Ideas** are the nodes. Every idea is the same kind of thing; they differ only in their level, chance of success, prize and links. An idea with a prize is what other pages call a **target**.
-- **Arrows** go from a parent to the idea built on it. The number on an arrow is the **link weight**.
+- **Arrows** go from a parent to the idea built on it. The number on an arrow is the **link weight**. Credit flows the other way, against the arrows.
 - **Levels** run left to right, easiest first. An idea **before** $x$ is one $x$ builds on, directly or through others ($y_1$, $y_2$, $z_1$, $z_2$). An idea **after** $x$ is built on $x$.
 - **The letters are the formulas' own:** $x$ is the idea in question, $y$ its parents, $z$ ideas further back, $u$ ideas after it. When an example looks at another idea, it says so (for example "for $y_1$").
 
@@ -16,7 +16,7 @@ Every rule of the experiment as a formula, in the order a run uses them. Each fo
 
 ![One round as a loop of six steps: 1 money, 2 choose what to try, 3 try, 4 share or keep, 5 rewards, 6 earnings, which feed the next round's money through rho. Dashed: alpha and c send credit back to earlier ideas, which changes what agents choose to try and share](img/equations-loop.svg)
 
-A run is $R$ rounds (120 by default). A **round** is one pass through steps 1 to 6: that round's money $X/R$ is split among the agents, each makes the tries it can afford, new ideas are shared or kept, rewards are paid and recent earnings are updated. The **next round** starts again at step 1, with the money split by those updated earnings. Each step's box names its section and symbols. Two loops feed back:
+A run is $R$ rounds (120 by default). A **round** is one pass through steps 1 to 6: that round's money $\text{Budget}/R$ is split among the agents, each makes the tries it can afford, new ideas are shared or kept, rewards are paid and recent earnings are updated. The **next round** starts again at step 1, with the money split by those updated earnings. Each step's box names its section and symbols. Two loops feed back:
 
 - **Money follows earnings ($\rho$).** Earnings in step 6 set next round's money in step 1. This happens under both rules.
 - **Credit flows back (absorption rate $\alpha$, and $c$).** Rewards in step 5 reach earlier ideas, so agents expect more from building and sharing (steps 2 and 4). This is where traditional ($\alpha = 1$, $c = 0$) and OSO ($\alpha = 0.8$, $c = 0.15$) differ.
@@ -33,8 +33,10 @@ Grouped by what they belong to, in the order of the sections below. A hat marks 
 | $y \to x$ | $y$ is a parent of $x$: $x$ builds on $y$ | $y_1 \to x$ | |
 | $z,\ u$ | an idea before $x$, an idea after $x$ | $z_1$ is before $x$ | |
 | $\ell_x$ | level | $\ell_x = 3$ | |
-| $p_x$ | chance one try at it works | $p_x = 0.18$ | $0.5 \times 0.6^{\ell - 1}$ |
-| $B_x$ | prize: 0 for most ideas | $B_x = 16$, $B_{y_1} = 0$ | $4 \times 2^{\ell - 1}$ for ideas with a prize |
+| $p_x$ | chance one try at it works | $p_x = 0.18$ | $p_0\,\eta^{\ell - 1}$ |
+| $p_0,\ \eta$ | chance at level 1, and how much harder each level is | | 0.5, 0.6 |
+| $B_x$ | prize: 0 for most ideas | $B_x = 16$, $B_{y_1} = 0$ | $B_0 \cdot 2^{\ell - 1}$ for ideas with a prize |
+| $B_0$ | prize of a level-1 idea with a prize | | 4 |
 | $w_{y \to x}$ | link weight: how much $x$ owes parent $y$ | $w_{y_1 \to x} = 62.5\%$ | from difficulty |
 
 **A try** ([section 2](#2-a-try))
@@ -44,12 +46,13 @@ Grouped by what they belong to, in the order of the sections below. A hat marks 
 | $i$ | an agent | 12 agents |
 | $s_i$ | skill | 1 (explorer 0.5) |
 | $\pi_{i,x}$ | chance agent $i$'s try at $x$ works | |
+| $n^{\text{fail}},\ \lambda$ | failed tries (optional learning), and how much others' public failures count | |
 
 **Money** ([section 3](#3-money-each-round))
 
 | Symbol | Meaning | Default |
 | --- | --- | --- |
-| $X,\ R$ | total money, number of rounds | 1200, 120 |
+| $\text{Budget},\ R,\ N$ | total money, number of rounds, number of agents | 1200, 120, 12 |
 | $k_i$ | cost of one try | 1 (explorer 0.3) |
 | $\rho$ | how far money follows past earnings | 0.5 |
 | $b_i,\ \bar E_i$ | agent $i$'s money this round, its recent earnings | |
@@ -59,7 +62,7 @@ Grouped by what they belong to, in the order of the sections below. A hat marks 
 | Symbol | Meaning | In the example | Default |
 | --- | --- | --- | --- |
 | $m$ | tokens minted for each new idea | | 1 |
-| $c$ | share of each mint passed to the parents | | traditional 0, OSO 0.15 |
+| $c$ | cited share: part of each mint passed to the parents | | traditional 0, OSO 0.15 |
 | $m_x$ | what $x$'s author gets from its mint | $m_{y_1} = 0.85$ | $(1-c)\,m$; $m$ for a root |
 | $\theta$ | chance a trivial idea is rejected | | 0.5 |
 | $g_i$ | gaming: share of tries spent on trivial ideas, for their mint | | 0 (gamer 0.6) |
@@ -69,14 +72,14 @@ Grouped by what they belong to, in the order of the sections below. A hat marks 
 | Symbol | Meaning | In the example | Default |
 | --- | --- | --- | --- |
 | $\alpha$ | absorption rate: how much of the value entering an idea it absorbs (for its author); the rest passes to its parents | $x$ keeps 12.8 of 16 | traditional 1, OSO 0.8 |
-| $\text{share}(x, z)$ | part of value entering $x$ that reaches $z$'s author | $\text{share}(x, y_1) = 0.1$ | |
+| $\text{share}(x, z)$ | part of value entering $x$ that reaches $z$'s author ($z$ is $x$ or an idea before it) | $\text{share}(x, y_1) = 0.1$ | |
 | $F_x$ | flow-back: what authoring $x$ earns from later work | $F_{y_1} = 1.675$ | |
 
 **Choosing what to try** ([section 6](#6-choosing-what-to-try))
 
 | Symbol | Meaning | Default |
 | --- | --- | --- |
-| $\text{win}_x$ | chance of being first at $x$ | |
+| $\text{rivals}_x,\ \text{win}_x$ | agents that could try $x$ now, and the chance of being first | |
 | $h_x$ | rounds until value from later ideas arrives | |
 | $B^{\text{after}}_x$ | the largest prize after $x$ | |
 | $\delta_i$ | patience: how much later payoffs count | 0.85 to 0.98 |
@@ -98,7 +101,7 @@ Grouped by what they belong to, in the order of the sections below. A hat marks 
 | Symbol | Meaning | Default |
 | --- | --- | --- |
 | $\omega_i$ | reuse: chance a round of taking up a published idea | 0.6 to 1 |
-| $a$ | cost to take up an idea (optional) | 0 |
+| $a$ | uptake cost: money to take up an idea (optional) | 0 |
 | $e$ | chance a proof is wrong (optional) | 0 |
 
 **Measures** ([section 9](#9-measures))
@@ -137,15 +140,15 @@ A specialist's skill is $\times 1.6$ in its own area and $\times 0.4$ elsewhere.
 
 *Example:* a cheap explorer ($s = 0.5$) trying $x$: $\pi = 0.5 \times 0.18 = 0.09$, about one success in eleven tries.
 
-**Learning from failure** (optional). Each failed try makes the next one likelier. $n^{\text{fail}}_{i,x}$ counts $i$'s own failures on $x$, and $n^{\text{fail, public}}_x$ the failures others made public:
+**Learning from failure** (optional). Each failed try makes the next one likelier. $n^{\text{fail}}_{i,x}$ counts $i$'s own failures on $x$, and $n^{\text{fail, public}}_x$ the failures others made public, which count $\lambda$ times as much:
 
-$$\pi_{i,x} = \min\!\Big(\text{cap},\ s_i \, p_x \big(1 + \text{gain}\,(n^{\text{fail}}_{i,x} + w_{\text{shared}} \, n^{\text{fail, public}}_{x})\big)\Big)$$
+$$\pi_{i,x} = \min\!\Big(\text{cap},\ s_i \, p_x \big(1 + \text{gain}\,(n^{\text{fail}}_{i,x} + \lambda \, n^{\text{fail, public}}_{x})\big)\Big)$$
 
 ## 3. Money each round
 
-Each round releases $X/R$. Agent $i$ gets part of it equally (out of $N$ agents) and part by its recent earnings $\bar E_i$:
+Each round releases $\text{Budget}/R$. Agent $i$ gets part of it equally (out of $N$ agents) and part by its recent earnings $\bar E_i$:
 
-$$b_i = \frac{X}{R}\left[\frac{1-\rho}{N} + \rho\,\frac{\bar E_i}{\sum_{i'} \bar E_{i'}}\right] \qquad \bar E_i \leftarrow 0.7\,\bar E_i + 0.3 \times \text{this round's earnings}$$
+$$b_i = \frac{\text{Budget}}{R}\left[\frac{1-\rho}{N} + \rho\,\frac{\bar E_i}{\sum_{i'} \bar E_{i'}}\right] \qquad \bar E_i \leftarrow 0.7\,\bar E_i + 0.3 \times \text{this round's earnings}$$
 
 It makes $\lfloor b_i / k_i \rfloor$ tries and keeps the rest for the next round. The run stops when the money is spent or every prize is won.
 
@@ -173,9 +176,9 @@ A prize enters its idea when the idea is first published.
 
 Each round, an agent looks at its **frontier**: ideas it does not know yet whose parents it all knows. It scores each one.
 
-**Chance of being first** at $x$, when $n_x$ agents could try it now:
+**Chance of being first** at $x$, when $\text{rivals}_x$ agents (itself included) could try it now:
 
-$$\text{win}_x = \frac{1}{\max(1,\ n_x)}$$
+$$\text{win}_x = \frac{1}{\max(1,\ \text{rivals}_x)}$$
 
 **Rounds until value from later ideas arrives:** 5 per level between $x$ and the ideas with a prize after it (1 if there are none).
 
@@ -215,7 +218,7 @@ A private idea earns its mint only if its author later wins a prize after it, wh
 
 **Uptake.** Each round, agent $i$ takes up each published idea it does not know with chance $\omega_i$, and can then build on it.
 
-**Costly knowledge** (optional). Taking up an idea costs $a$ from the round's money, while the agent can afford it.
+**Uptake cost** (optional). Taking up an idea costs $a$ from the round's money, while the agent can afford it.
 
 **Wrong results** (optional). A successful proof is wrong with chance $e$, and anything built on a wrong idea is wrong too. Ideas with a prize are checked: one resting on a wrong idea is rejected, and the wrong ideas under it are withdrawn.
 
@@ -248,7 +251,7 @@ $$|\bar v_A - \bar v_B| > 2\sqrt{SE_A^2 + SE_B^2} \qquad SE = \frac{\text{standa
 Sections 3 to 5 stay; the rest changes like this:
 
 - **A try** works when Lean accepts the proof. $p_x$ is not set but measured.
-- **Prizes:** $B_x = 4 \cdot 2^{\,d_x - 1}$ for the posted theorems, where $d_x$ is the depth in the reference tree.
+- **Prizes:** $B_x = B_0 \cdot 2^{\,\ell_x - 1}$ for the posted theorems, where $\ell_x$ is the theorem's level (its depth in the reference tree).
 - **Money** is dollars, as charged by the model provider, and each lab gets the same budget.
 - **Link weight** uses the money spent to prove each parent, $\text{spent}_y$, as the stand-in for the work it saves:
 

@@ -35,7 +35,7 @@
 
   <!-- formulas -->
   <g font-size="14.5" font-style="italic" font-family="Georgia, 'Times New Roman', serif" fill="#2b2b2b">
-    <text x="46" y="88">bᵢ = X/R · [ (1−ρ)/N + ρ Ēᵢ/ΣĒ ]</text>
+    <text x="46" y="88">bᵢ = Budget/R · [ (1−ρ)/N + ρ Ēᵢ/ΣĒ ]</text>
     <text x="341" y="88">pick the x with the best Uᵢ,ₓ</text>
     <text x="636" y="88">πᵢ,ₓ = min(1, sᵢ pₓ)</text>
     <text x="636" y="398">share if gain ≥ scoop risk</text>
@@ -45,7 +45,7 @@
 
   <!-- symbols in each step -->
   <g font-size="12" fill="#4a4a4a">
-    <text x="46" y="116">X, R: total money, rounds</text>
+    <text x="46" y="116">Budget, R: total money, rounds</text>
     <text x="46" y="134">N: agents · Ēᵢ: recent earnings</text>
     <text x="46" y="152"><tspan font-weight="700" fill="#2b2b2b">ρ</tspan>: how far money follows earnings</text>
     <text x="46" y="170">0 equal · 0.5 default · 1 all by earnings</text>

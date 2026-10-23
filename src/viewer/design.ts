@@ -73,7 +73,7 @@ export const PARAMETERS: Parameter[] = [
   { path: 'attribution.noise', label: 'attribution error', group: 'guess', min: 0, max: 1, step: 0.05, values: [0, 0.1, 0.3, 0.6],
     short: 'error in the ledger\'s weights of what each result built on',
     explain: 'Flow-back is split by how much a result used each thing it built on. In Lean these weights are exact; elsewhere they are estimated. With error, part of the flow-back goes to the wrong results, which weakens the incentive to do foundational work.' },
-  { path: 'knowledge.absorbCost', label: 'cost to absorb a result', group: 'guess', min: 0, max: 2, step: 0.05, values: [0, 0.25, 0.5, 1],
+  { path: 'knowledge.absorbCost', label: 'uptake cost: money to take up a result', group: 'guess', min: 0, max: 2, step: 0.05, values: [0, 0.25, 0.5, 1],
     short: 'compute an agent spends to take up each published result',
     explain: 'Before building on a published result, an agent must read and understand it. At 0 sharing is free; at 1, taking up a result costs as much as an attempt. This is the main cost of an open, crowded literature.' },
   { path: 'knowledge.errorRate', label: 'chance a proof is wrong', group: 'guess', min: 0, max: 0.5, step: 0.01, values: [0, 0.05, 0.1, 0.2],
@@ -132,7 +132,7 @@ const COLUMN_INFO: Record<string, string> = {
   breadth: 'share of targets solved', waste: 'share of compute on results no target needed', credit: 'how well bounty pay matches contribution',
   sharing: 'share of intermediate results published at once', hoarded: 'results proved but never published', reuse: 'how often published results were built on',
   duplicates: 'proofs of already-published results', targetsSolved: 'targets solved', gamerShare: "the gamer's share of all pay",
-  trivialSpend: 'compute spent on trivial results', rejected: 'targets rejected for resting on wrong results', retracted: 'results retracted as wrong', absorbSpend: 'compute spent absorbing published results',
+  trivialSpend: 'compute spent on trivial results', rejected: 'targets rejected for resting on wrong results', retracted: 'results retracted as wrong', absorbSpend: 'compute spent taking up published results',
 };
 
 export function options() {
