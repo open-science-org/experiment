@@ -124,7 +124,7 @@ All payments use one ledger, with the rules of OIP-8 and OIP-14.
   - c · m flows to the results it built on, through the waterfall.
 - **Bounty.** When a target is first published, its bounty B enters it through the waterfall.
 - **Waterfall.** Value entering a result is split:
-  - its author keeps a share **α**;
+  - its author keeps a share **α**, the absorption rate;
   - the rest, 1 − α, flows to its prerequisites in proportion to their attribution weights, and the split repeats at each of them;
   - a root keeps everything that reaches it.
 - **Attribution weights.** The weight of the link from a prerequisite j to a result x is **how much j contributed to x: the work j saves.** That is the extra cost of getting x if j did not exist. A result's weights are these contributions, scaled to sum to 1.
@@ -204,7 +204,7 @@ The rules are the only thing that differs between the settings compared. Two axe
 
 | Axis | Parameter | Traditional | OSO |
 | --- | --- | --- | --- |
-| **Flow-back:** does value reach the work a result built on? | α (share a result keeps) and c (share of each mint paid to what it built on) | α = 1, c = 0: nothing flows back | e.g. α = 0.8, c = 0.15 |
+| **Flow-back:** does value reach the work a result built on? | α, the absorption rate (share a result keeps), and c (share of each mint paid to what it built on) | α = 1, c = 0: nothing flows back | e.g. α = 0.8, c = 0.15 |
 | **Visibility:** when is work published? | visibility rule | finished-only | immediate, or agent's choice |
 
 | | Flow-back off | Flow-back on |

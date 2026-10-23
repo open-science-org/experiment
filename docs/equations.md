@@ -19,7 +19,7 @@ Every rule of the experiment as a formula, in the order a run uses them. Each fo
 Each step's box names its section and symbols. Two loops feed back:
 
 - **Money follows earnings ($\rho$).** Earnings in step 6 set next round's money in step 1. This happens under both rules.
-- **Credit flows back ($\alpha$, $c$).** Rewards in step 5 reach earlier ideas, so agents expect more from building and sharing (steps 2 and 4). This is where traditional ($\alpha = 1$, $c = 0$) and OSO ($\alpha = 0.8$, $c = 0.15$) differ.
+- **Credit flows back (absorption rate $\alpha$, and $c$).** Rewards in step 5 reach earlier ideas, so agents expect more from building and sharing (steps 2 and 4). This is where traditional ($\alpha = 1$, $c = 0$) and OSO ($\alpha = 0.8$, $c = 0.15$) differ.
 
 ## Symbols
 
@@ -68,7 +68,7 @@ Grouped by what they belong to, in the order of the sections below. A hat marks 
 
 | Symbol | Meaning | In the example | Default |
 | --- | --- | --- | --- |
-| $\alpha$ | share of incoming value an idea's author keeps | $x$ keeps 12.8 of 16 | traditional 1, OSO 0.8 |
+| $\alpha$ | absorption rate: share of incoming value an idea's author keeps | $x$ keeps 12.8 of 16 | traditional 1, OSO 0.8 |
 | $\text{share}(x, z)$ | part of value entering $x$ that reaches $z$'s author | $\text{share}(x, y_1) = 0.1$ | |
 | $F_x$ | flow-back: what authoring $x$ earns from later work | $F_{y_1} = 1.675$ | |
 
@@ -161,7 +161,7 @@ Every new idea mints $m$ tokens. Its author gets $m_x = (1-c)\,m$, and $c\,m$ go
 
 ## 5. Value flow
 
-Value entering idea $x$ (a prize, or part of a mint) is split: $x$'s author keeps $\alpha$, and $1-\alpha$ flows to its parents by link weight, where the same split repeats. $\text{share}(x, z)$ is the part that reaches the author of $z$, where $z$ is $x$ itself or an idea before it:
+Value entering idea $x$ (a prize, or part of a mint) is split: $x$'s author keeps $\alpha$, the **absorption rate**, and $1-\alpha$ flows to its parents by link weight, where the same split repeats. $\text{share}(x, z)$ is the part that reaches the author of $z$, where $z$ is $x$ itself or an idea before it:
 
 $$\text{share}(x, x) = \alpha \quad (1 \text{ for a root}) \qquad \text{share}(x, z) = \sum_{y \to x} (1-\alpha)\, w_{y \to x}\, \text{share}(y, z)$$
 

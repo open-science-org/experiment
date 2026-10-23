@@ -170,7 +170,7 @@ These values are guesses chosen to give a diverse population. They were not meas
 | No flow-back, choice | 1 | 0 | agent's choice |
 | OSO (choice) | 0.8 | 0.15 | agent's choice |
 
-- **α** is the share of incoming value a result keeps; the rest flows to its prerequisites.
+- **α**, the absorption rate, is the share of incoming value a result keeps; the rest flows to its prerequisites.
 - **c** is the share of each new result's mint paid to what it built on.
 - **Visibility:**
   - **finished-only:** a result stays private until its author proves a target that depends on it. The author's whole private bundle under that target is then published, oldest first.

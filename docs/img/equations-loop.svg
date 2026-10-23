@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 615" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-label="One round as a loop of six steps. 1 Money: each agent gets b_i, part equal and part by recent earnings, weighted by rho. 2 Choose what to try: the idea with the best score U. 3 Try: success chance pi = s times p, number of tries b over k. 4 Share or keep: publish if the gain beats the scoop risk. 5 Rewards: the mint and the prize; the author keeps alpha and 1 minus alpha flows back to the ideas it built on; traditional alpha 1 and c 0, OSO alpha 0.8 and c 0.15. 6 Earnings: recent earnings E bar, which feed the next round's money through rho. An inner dashed loop: expected flow-back changes what agents choose to try and whether they share.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 615" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-label="One round as a loop of six steps. 1 Money: each agent gets b_i, part equal and part by recent earnings, weighted by rho. 2 Choose what to try: the idea with the best score U. 3 Try: success chance pi = s times p, number of tries b over k. 4 Share or keep: publish if the gain beats the scoop risk. 5 Rewards: the mint and the prize; the author keeps alpha, the absorption rate, and 1 minus alpha flows back to the ideas it built on; traditional alpha 1 and c 0, OSO alpha 0.8 and c 0.15. 6 Earnings: recent earnings E bar, which feed the next round's money through rho. An inner dashed loop: expected flow-back changes what agents choose to try and whether they share.">
   <defs>
     <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6b6b6b"/></marker>
     <marker id="arrInk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2b2b2b"/></marker>
@@ -120,6 +120,6 @@
   <g font-size="12.5" fill="#4a4a4a">
     <text x="30" y="552">Solid: one round, steps 1 to 6. The thick arrow closes the loop: <tspan font-weight="700" fill="#2b2b2b">ρ</tspan> sets how much of next round's money follows earnings.</text>
     <text x="30" y="572">Dashed: <tspan font-weight="700" fill="#2b2b2b">α</tspan> and <tspan font-weight="700" fill="#2b2b2b">c</tspan> send credit back to earlier ideas, which changes what agents expect to earn, so what they try and share.</text>
-    <text x="30" y="592">α decides who earns; ρ decides how much those earnings buy.</text>
+    <text x="30" y="592">α, the absorption rate, decides who earns; ρ decides how much those earnings buy.</text>
   </g>
 </svg>

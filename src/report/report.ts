@@ -169,7 +169,7 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
   writeFileSync(join(outDir, 'figures', 'alpha.svg'), lineChart({
     title: 'Does flow-back make agents share?',
     subtitle: `Agents choose whether to publish each intermediate result. Lower α: more value flows back to what a result built on.`,
-    xLabel: 'α (share of value a result keeps)', yLabel: 'Share',
+    xLabel: 'Absorption rate α (share of value a result keeps)', yLabel: 'Share',
     series: [
       { name: 'Results shared', slot: 1, points: alphaPoints.map((p) => [p.alpha, p.sharing]) },
       { name: `Runs reaching level ${L}`, slot: 2, points: alphaPoints.map((p) => [p.alpha, p.reach]) },

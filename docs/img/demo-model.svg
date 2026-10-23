@@ -201,7 +201,7 @@
     <text x="330" y="648" font-weight="700" fill="#c2410c">Traditional</text>
     <text x="480" y="648" font-weight="700" fill="#2f6f5e">OSO</text>
     <line x1="50" y1="657" x2="610" y2="657" stroke="#d6d2ca"/>
-    <text x="50" y="680">α  share of incoming value a result keeps</text>
+    <text x="50" y="680">α  absorption rate: share a result keeps</text>
     <text x="330" y="680">1</text><text x="480" y="680">0.8</text>
     <text x="50" y="704">c  share of each mint paid to what it built on</text>
     <text x="330" y="704">0</text><text x="480" y="704">0.15</text>
