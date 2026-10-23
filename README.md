@@ -4,7 +4,7 @@
 
 This repository simulates communities of research agents and compares two sets of rules on the same field, agents and budget:
 - **traditional:** work is published only when it is finished, and nothing flows back to the work it built on;
-- **OSO:** results are published as they are found, and part of the value of each result flows back to what it built on.
+- **OSO:** ideas are published as they are found, and part of the value of each idea flows back to what it built on.
 
 Traditional research is a special case of OSO's rules (α = 1, c = 0, finished work only), so one model covers both. The model is defined once in the **[demo experiment specification](docs/design.md)**; this repository implements it.
 
@@ -27,7 +27,7 @@ npm run sim -- report all                            # every space, plus the ind
 npm run sim -- check my-space.yaml                   # validate a hand-written space
 ```
 
-- **A problem space** ([spaces/](spaces/)) is one YAML file: a title, a plain-language description, a glossary (what a result, a target and an attempt mean in this field), and the scenario settings that differ from the defaults. Copy [drug-discovery.yaml](spaces/drug-discovery.yaml) to write one by hand; a small field with a known structure can list its results one by one, like [solid-state-battery.yaml](spaces/solid-state-battery.yaml).
+- **A problem space** ([spaces/](spaces/)) is one YAML file: a title, a plain-language description, a glossary (what an idea, a target and an attempt mean in this field), and the scenario settings that differ from the defaults. Copy [drug-discovery.yaml](spaces/drug-discovery.yaml) to write one by hand; a small field with a known structure can list its ideas one by one, like [solid-state-battery.yaml](spaces/solid-state-battery.yaml).
 - **`new`** asks Claude (`claude-opus-5-5`) to write the space from your description. The file is validated and test-run, and any errors go back to the model to fix, up to three times. It needs `ANTHROPIC_API_KEY`. If the model declines, the API retries on a fallback model (server-side fallbacks, on by default).
 - **The budget is calibrated** for every space that does not set one: it is the smallest budget at which the OSO community solves about 90% of the targets. Every field is then hard but not hopeless, and the question is what the same money buys traditional research.
 - **`report`** runs the same experiments on every space ([battery.ts](src/report/battery.ts)) and writes `reports/<id>/report.md` with the same sections, always:
@@ -56,7 +56,7 @@ npm run sim -- plugins                          # list worlds, rules, policies, 
 npm test                                        # the tests
 ```
 
-The [simulator doc](docs/simulator.md) explains everything in detail: the simple model and its exact check, the default setup, configuration and plugins, the measures, the saved results, and the limits. Saved results are listed in [results/LOG.md](results/LOG.md).
+The [simulator doc](docs/simulator.md) explains everything in detail: the simple model and its exact check, the default setup, configuration and plugins, the measures, the saved results, and the limits. Saved ideas are listed in [ideas/LOG.md](results/LOG.md).
 
 ## The Lean pilot
 
@@ -81,7 +81,7 @@ npm run pilot -- world <run>                    # measured chances -> worlds/lea
 
 ## Experiments: designed, then summarized the same way
 
-Every experiment, of any kind, declares before it runs: the **question**, what is **compared**, what is **held the same**, the one **main measure** and which way is better, and how many **runs**. Its result is a short **card**: the question, the **answer** computed from that measure (best row against the best traditional row, judged against two standard errors), a small table, the design in one line, and at most three caveats; everything else is folded away under *Details*. Measures looked at after a run are labelled *exploratory*.
+Every experiment, of any kind, declares before it runs: the **question**, what is **compared**, what is **held the same**, the one **main measure** and which way is better, and how many **runs**. Its idea is a short **card**: the question, the **answer** computed from that measure (best row against the best traditional row, judged against two standard errors), a small table, the design in one line, and at most three caveats; everything else is folded away under *Details*. Measures looked at after a run are labelled *exploratory*.
 
 [results/README.md](results/README.md) lists every experiment with its question and answer, newest first. It is rebuilt whenever a result is saved.
 
@@ -117,7 +117,7 @@ The app runs on this machine only, and never shows `lean/` (the private answers)
 | [src/](src/) | `engine/` (the environment), `experiments/`, `spaces/`, `report/`, and the command line |
 | [docs/](docs/) | [How it works](docs/README.md), the [full design](docs/design.md) and the [simulator in detail](docs/simulator.md) |
 | [worlds/](worlds/) | Data for worlds read from files, such as the Lean reference tree |
-| [vendor/oso-ledger/](vendor/oso-ledger/) | A pinned copy of the [app](https://github.com/open-science-org/app)'s ledger. The tests check that the simulator's waterfall pays exactly what the real ledger pays; `npm run sync-ledger` refreshes it |
+| [vendor/oso-ledger/](vendor/oso-ledger/) | A pinned copy of the [app](https://github.com/open-science-org/app)'s ledger. The tests check that the simulator's flow-back pays exactly what the real ledger pays; `npm run sync-ledger` refreshes it |
 | [lean/](lean/) | The Lean problem set (public part) |
 | [src/viewer/](src/viewer/) | The viewer: a local server and one page |
 | [test/](test/) | Tests |

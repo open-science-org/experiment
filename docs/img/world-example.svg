@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 670" width="1120" height="670" font-family="Helvetica, Arial, sans-serif" font-size="12">
 <rect width="1120" height="670" fill="#fff"/>
-<text x="20" y="32" font-size="18" font-weight="700">One simulated world (seed 1): 80 results, 7 targets, 29 dead ends</text>
-<text x="20" y="54" fill="#5f5d58">Columns are levels (harder to the right). Lines join a result to its prerequisites. Colour = area; grey = dead end (no target depends on it); stars = targets with bounties.</text>
+<text x="20" y="32" font-size="18" font-weight="700">One simulated world (seed 1): 80 ideas, 7 targets, 29 dead ends</text>
+<text x="20" y="54" fill="#5f5d58">Columns are levels (harder to the right). Lines join an idea to its parents. Colour = area; grey = dead end (no target depends on it); stars = targets with bounties.</text>
 <text x="90" y="68" text-anchor="middle" font-weight="700">level 1</text>
 <text x="90" y="82" text-anchor="middle" fill="#5f5d58">p = 50.0%</text>
 <text x="220" y="68" text-anchor="middle" font-weight="700">level 2</text>

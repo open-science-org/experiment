@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 450" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-label="An example tree of ideas, levels from left to right. Level 1: z1, z2 and y2. Level 2: y1, built on z1 and z2. Level 3: x, built on y1 and y2, with a prize of 16; the others have no prize. Arrows go from a parent to the idea built on it, labelled with the link weight.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 450" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-label="An example tree of ideas, levels from left to right. Level 1: z1, z2 and y2. Level 2: y1, built on z1 and z2. Level 3: x, built on y1 and y2, with a bounty of 16; the others have no bounty. Arrows go from a parent to the idea built on it, labelled with the link weight.">
   <defs>
     <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6b6b6b"/></marker>
   </defs>
@@ -46,6 +46,6 @@
   <!-- the prize's flow-back at α = 0.8 -->
   <g font-size="12">
     <rect x="70" y="390" width="560" height="40" rx="6" fill="#f6f6f4"/>
-    <text x="84" y="415" fill="#2b2b2b"><tspan font-weight="700">x's prize 16 at α = 0.8:</tspan> x keeps 12.8 · y₁ gets 2.0, keeps 1.6 · y₂ 1.2 · z₁ 0.2 · z₂ 0.2</text>
+    <text x="84" y="415" fill="#2b2b2b"><tspan font-weight="700">x's bounty 16 at α = 0.8:</tspan> x keeps 12.8 · y₁ gets 2.0, keeps 1.6 · y₂ 1.2 · z₁ 0.2 · z₂ 0.2</text>
   </g>
 </svg>

@@ -9,11 +9,11 @@
 - **Results:** [log of saved runs](../results/LOG.md)
 
 > **TL;DR.**
-> - **The experiment.** The v1 demo compares two communities of AI research agents, given the same budget and the same problems. One works under traditional incentives, the other under OSO incentives. The question is which produces more value: faster, cheaper, and harder results.
-> - **This doc is the canonical specification.** It defines the research environment once, independent of any problem: results, attempts, success, sharing, rewards, rounds and measures.
+> - **The experiment.** The v1 demo compares two communities of AI research agents, given the same budget and the same problems. One works under traditional incentives, the other under OSO incentives. The question is which produces more value: faster, cheaper, and harder ideas.
+> - **This doc is the canonical specification.** It defines the research environment once, independent of any problem: ideas, attempts, success, sharing, rewards, rounds and measures.
 > - **Two instantiations so far.**
->   - **The simulation:** results are abstract, and an attempt succeeds with a set chance. It is cheap and runs thousands of experiments.
->   - **The Lean experiment:** results are real theorems, and an attempt succeeds when Lean accepts the agent's proof.
+>   - **The simulation:** ideas are abstract, and an attempt succeeds with a set chance. It is cheap and runs thousands of experiments.
+>   - **The Lean experiment:** ideas are real theorems, and an attempt succeeds when Lean accepts the agent's proof.
 > - **More complex experiments** are new instantiations of the same specification: new worlds, success oracles, agents or rules.
 > - **Traditional research is not a separate system.** It is one setting of OSO's rules.
 > - **Anyone can add a problem space,** by hand or by describing it in words, and get the same canonical report for it (section 8).
@@ -24,7 +24,7 @@
 
 **Question.** For the same budget, does a community of AI research agents working under OSO incentives produce more verified value than the same agents under traditional incentives?
 
-**Hypothesis.** Hiding unfinished work makes every agent repeat the steps others have already done. Paying credit back to the work a result builds on makes sharing worthwhile. Together these should let a community reach harder results for the same money.
+**Hypothesis.** Hiding unfinished work makes every agent repeat the steps others have already done. Paying credit back to the work an idea builds on makes sharing worthwhile. Together these should let a community reach harder ideas for the same money.
 
 **Why now.** AI agents doing research will flood the literature, and they cost money. Whoever funds them wants the most research value per dollar.
 
@@ -37,50 +37,50 @@
 
 This section is canonical: both instantiations, and any future one, follow it. Where an element is decided by the instantiation, the text says so and section 6 says how.
 
-### 2.1 Results and the research tree
+### 2.1 Ideas and the research tree
 
 | Term | Definition |
 | --- | --- |
-| **Result** | One unit of research output. In the simulation, an abstract node; in the Lean experiment, a theorem |
-| **Prerequisite** | A result that another result builds on. A result can be attempted only by an agent that knows all its prerequisites |
-| **Research tree** | All results and their prerequisite links: a directed acyclic graph (DAG) |
-| **Root** | A result with no prerequisites |
-| **Level** | 1 for a root; otherwise 1 + the highest level among the result's prerequisites. Higher levels are deeper, and usually harder |
-| **Target** | A result with a public bounty. Targets are announced at the start |
-| **Dead end** | A result that no target depends on. It can be proved, but leads nowhere |
-| **Trivial result** | A result with no value that costs almost nothing to produce, such as spam |
-| **Frontier of an agent** | The results the agent can attempt now: those it does not know whose prerequisites it all knows |
+| **Idea** | One unit of research output. In the simulation, an abstract idea; in the Lean experiment, a theorem |
+| **Parent** | An idea that another idea builds on. An idea can be attempted only by an agent that knows all its parents |
+| **Research tree** | All ideas and their parent links: a directed acyclic graph (DAG) |
+| **Root** | An idea with no parents |
+| **Level** | 1 for a root; otherwise 1 + the highest level among the idea's parents. Higher levels are deeper, and usually harder |
+| **Target** | An idea with a public bounty. Targets are announced at the start |
+| **Dead end** | An idea that no target depends on. It can be proved, but leads nowhere |
+| **Trivial idea** | An idea with no value that costs almost nothing to produce, such as spam |
+| **Frontier of an agent** | The ideas the agent can attempt now: those it does not know whose parents it all knows |
 
-Agents see the targets, their bounties, and the results they know. They do not see the rest of the tree. In the simulation the whole tree exists in advance and is hidden. In the Lean experiment, intermediate results do not exist until an agent states them.
+Agents see the targets, their bounties, and the ideas they know. They do not see the rest of the tree. In the simulation the whole tree exists in advance and is hidden. In the Lean experiment, intermediate ideas do not exist until an agent states them.
 
 ### 2.2 Attempts and success
 
 | Term | Definition |
 | --- | --- |
-| **Attempt** | One try by one agent at one result on its frontier. It costs compute: the agent's cost per attempt |
-| **Success** | The attempt worked: the agent has now proved the result and knows it. Nothing else counts as success |
-| **Failure** | The attempt did not work. The compute is spent and nothing is gained, except what a learning oracle carries forward (below) |
+| **Attempt** | One attempt by one agent at one idea on its frontier. It costs money: the agent's cost per attempt |
+| **Success** | The attempt worked: the agent has now proved the idea and knows it. Nothing else counts as success |
+| **Failure** | The attempt did not work. The money is spent and nothing is gained, except what a learning oracle carries forward (below) |
 | **Success oracle** | What decides whether an attempt succeeds. It is set by the instantiation (section 6) |
-| **Success chance p** | The probability that an attempt succeeds. The simulation sets it from the result's level and the agent's skill; in the Lean experiment it is measured, not set |
-| **Duplicate** | A success on a result someone else has already published. It earns nothing and counts as waste |
+| **Success chance p** | The probability that an attempt succeeds. The simulation sets it from the idea's level and the agent's skill; in the Lean experiment it is measured, not set |
+| **Duplicate** | A success on an idea someone else has already published. It earns nothing and counts as waste |
 
 **One rule for success, two oracles:**
 - **Simulation:** an attempt succeeds with chance p. The simulator draws a random number between 0 and 1, and the attempt succeeds if the number is below p.
 - **Lean:** an attempt succeeds if Lean's checker accepts the proof the agent wrote.
 
-**Learning from failure (optional).** With a learning oracle, each failed attempt raises the next chance on that result. The rule `publishFailures` makes failed attempts public, so other agents learn from them too.
+**Learning from failure (optional).** With a learning oracle, each failed attempt raises the next chance on that idea. The rule `publishFailures` makes failed attempts public, so other agents learn from them too.
 
 ### 2.3 Knowledge and sharing
 
 | Term | Definition |
 | --- | --- |
-| **Knowledge of an agent** | The results it can build on: those it proved itself, plus published results it has taken up |
-| **Publish** | Make a proved result public. Its prover becomes its **author of record**, if nobody published it first |
-| **Visibility rule** | When a proved result is published (section 3): only together with a target that uses it, after a delay, at once, or when the agent decides |
-| **Uptake** | Another agent adding a published result to its knowledge. Each agent takes up each published result with its reuse chance per round |
-| **Private result** | Proved but not published. Other agents know nothing about it, not even that it exists, so they may prove it again |
+| **Knowledge of an agent** | The ideas it can build on: those it proved itself, plus published ideas it has taken up |
+| **Publish** | Make a proved idea public. Its prover becomes its **author of record**, if nobody published it first |
+| **Visibility rule** | When a proved idea is published (section 3): only together with a target that uses it, after a delay, at once, or when the agent decides |
+| **Uptake** | Another agent adding a published idea to its knowledge. Each agent takes up each published idea with its reuse chance per round |
+| **Private idea** | Proved but not published. Other agents know nothing about it, not even that it exists, so they may prove it again |
 
-**Publishing a result always publishes the private results it depends on,** so a published result never rests on hidden work.
+**Publishing an idea always publishes the private ideas it depends on,** so a published idea never rests on hidden work.
 
 **What an agent knows** (the information model):
 
@@ -88,79 +88,79 @@ Agents see the targets, their bounties, and the results they know. They do not s
 | --- | --- | --- |
 | The targets and their bounties | ✓ | |
 | The rules (α, c, visibility, mint, bounties) | ✓ | |
-| Its own proved results, published or private | | ✓ (its own) |
-| Published results | ✓, once taken up | |
-| Another agent's private results | | nobody else |
-| How many agents can attempt each result now (in the simulation, used to estimate the race) | ✓ | |
+| Its own proved ideas, published or private | | ✓ (its own) |
+| Published ideas | ✓, once taken up | |
+| Another agent's private ideas | | nobody else |
+| How many agents can attempt each idea now (in the simulation, used to estimate the race) | ✓ | |
 | The rest of the research tree, including dead ends | | nobody |
 
 **What sharing conveys depends on the instantiation:**
 
-| A published result tells other agents | Simulation | Lean experiment |
+| A published idea tells other agents | Simulation | Lean experiment |
 | --- | --- | --- |
-| That the result is proved, so they may build on it | ✓ | ✓ |
-| Its statement, so which intermediate results are worth having | — (results are abstract) | ✓ |
+| That the idea is proved, so they may build on it | ✓ | ✓ |
+| Its statement, so which intermediate ideas are worth having | — (ideas are abstract) | ✓ |
 | How it was proved, so the method can be reused | — | ✓ (the proof is readable) |
 | That it is correct | ✓ (always) | ✓ (checked by Lean) |
 | Failed attempts | Only with the rule `publishFailures` (and a learning oracle) | Could be added as the same rule |
 
-By default the simulation captures only one effect of sharing: **nobody has to prove a shared result again.** It omits the transfer of know-how, and assumes shared results are free to absorb and always correct.
+By default the simulation captures only one effect of sharing: **nobody has to prove a shared idea again.** It omits the transfer of know-how, and assumes shared ideas are free to take up and always correct.
 
 **Costly and fallible knowledge (optional).** Two settings remove the last two assumptions:
-- **Absorbing costs compute** (`absorbCost`): an agent pays it for each published result it takes up, from its compute for the round.
-- **Proofs can be wrong** (`errorRate`), and anything built on a wrong result is wrong too:
-  - targets are checked, so a target proof that rests on a wrong result is rejected;
-  - the wrong results it rested on come to light and are retracted, and every agent that took them up loses them;
+- **Taking up costs money** (`absorbCost`): an agent pays it for each published idea it takes up, from its money for the round.
+- **Proofs can be wrong** (`errorRate`), and anything built on a wrong idea is wrong too:
+  - targets are checked, so a target proof that rests on a wrong idea is rejected;
+  - the wrong ideas it rested on come to light and are retracted, and every agent that took them up loses them;
   - mints already paid stay, under OIP-11's rule of no clawback.
 
-  In the Lean experiment proofs are never wrong, because Lean checks them; absorbing costs reading tokens.
+  In the Lean experiment proofs are never wrong, because Lean checks them; taking up costs reading tokens.
 
 ### 2.4 Rewards
 
 All payments use one ledger, with the rules of OIP-8 and OIP-14.
 
-- **Mint.** Every newly published, non-trivial result mints m:
+- **Mint.** Every newly published, non-trivial idea mints m:
   - its author gets (1 − c) · m (all of m for a root);
-  - c · m flows to the results it built on, through the waterfall.
-- **Bounty.** When a target is first published, its bounty B enters it through the waterfall.
-- **Waterfall.** Value entering a result is split:
-  - the result absorbs a share **α** for its author (the absorption rate);
-  - the rest, 1 − α, flows to its prerequisites in proportion to their attribution weights, and the split repeats at each of them;
+  - c · m flows to the ideas it built on, through flow-back.
+- **Bounty.** When a target is first published, its bounty B enters it through flow-back.
+- **Flow-back.** Value entering an idea is split:
+  - the idea absorbs a share **α** for its author (the absorption rate);
+  - the rest, 1 − α, flows to its parents in proportion to their link weights, and the split repeats at each of them;
   - a root keeps everything that reaches it.
-- **Attribution weights.** The weight of the link from a prerequisite j to a result x is **how much j contributed to x: the work j saves.** That is the extra cost of getting x if j did not exist. A result's weights are these contributions, scaled to sum to 1.
-  - When prerequisites overlap (either one would do, or they only help together), each one's contribution is averaged over every order in which they could be added (the Shapley value), so the split stays fair.
-  - A prerequisite that helps without being needed contributes the work it saves, not its whole cost.
+- **Link weights.** The weight of the link from a parent y to an idea x is **how much y contributed to x: the work y saves.** That is the extra cost of getting x if y did not exist. An idea's weights are these contributions, scaled to sum to 1.
+  - When parents overlap (either one would do, or they only help together), each one's contribution is averaged over every order in which they could be added (the Shapley value), so the split stays fair.
+  - A parent that helps without being needed contributes the work it saves, not its whole cost.
   - Each instantiation says how it measures this, and how close the measure is to the definition (section 6).
-- **Validation screen.** A trivial result is rejected with probability **θ** and then earns nothing. This is OSO's admission check (OIP-11).
+- **Validation screen.** A trivial idea is rejected with probability **θ** and then earns nothing. This is OSO's admission check (OIP-11).
 
-### 2.5 Budget and compute
+### 2.5 Budget and money
 
 | Term | Definition |
 | --- | --- |
-| **Budget X** | Total compute the funder spends in a run |
-| **Round** | One step of the run. Each round releases X / T compute, where T is the number of rounds |
-| **Allocation** | How a round's compute is split among agents. The default is half equally, half in proportion to recent earnings (ρ = 0.5), so earnings buy future compute |
+| **Budget** | Total money the funder spends in a run |
+| **Round** | One step of the run. Each round releases Budget / R, where R is the number of rounds |
+| **Allocation** | How a round's money is split among agents. The default is half equally, half in proportion to recent earnings (ρ = 0.5), so earnings buy future money |
 | **Stop** | A run ends when the budget is spent, or as soon as every target is solved |
 
 ### 2.6 One round
 
-1. **Allocate** compute to agents (section 2.5).
-2. **Attempt.** Each agent spends its compute on attempts, in an interleaved random order so that agents race. For each attempt:
-   - the agent chooses a result on its frontier, or farms a trivial result;
+1. **Allocate** money to agents (section 2.5).
+2. **Attempt.** Each agent spends its money on attempts, in an interleaved random order so that agents race. For each attempt:
+   - the agent chooses an idea on its frontier, or farms a trivial idea;
    - the success oracle decides the outcome;
-   - **on success:** the result is now known to the agent; a duplicate earns nothing; otherwise the visibility rule decides whether to publish it now.
-3. **Publish and pay.** Each publication makes the agent the author of record and pays mints and bounties through the waterfall.
-4. **Take up.** Agents take up newly published results.
+   - **on success:** the idea is now known to the agent; a duplicate earns nothing; otherwise the visibility rule decides whether to publish it now.
+3. **Publish and pay.** Each publication makes the agent the author of record and pays mints and bounties through flow-back.
+4. **Take up.** Agents take up newly published ideas.
 5. **Record** the measures (section 5).
 
-![The whole loop: compute budgets, agents, the research tree, visibility and the ledger, with earnings buying future compute](img/demo-model.svg)
+![The whole loop: budgets, agents, the research tree, visibility and the ledger, with earnings buying future money](img/demo-model.svg)
 
 The figure shows one round as a loop. Numbers in brackets are sections of this specification.
 
 ### 2.7 Worked example: why sharing helps
 
 **The setup:**
-- **Results:** three in a row. **A**; then **B**, which needs A; then **C**, which needs B. C is the target.
+- **Ideas:** three in a row. **A**; then **B**, which needs A; then **C**, which needs B. C is the target.
 - **Agents:** two, each with one attempt per round.
 - **Success chance:** every attempt succeeds with chance p = 50%.
 
@@ -204,7 +204,7 @@ The rules are the only thing that differs between the settings compared. Two axe
 
 | Axis | Parameter | Traditional | OSO |
 | --- | --- | --- | --- |
-| **Flow-back:** does value reach the work a result built on? | α, the absorption rate (how much of incoming value a result absorbs), and c (share of each mint paid to what it built on) | α = 1, c = 0: nothing flows back | e.g. α = 0.8, c = 0.15 |
+| **Flow-back:** does value reach the work an idea built on? | α, the absorption rate (how much of incoming value an idea absorbs), and c (share of each mint paid to what it built on) | α = 1, c = 0: nothing flows back | e.g. α = 0.8, c = 0.15 |
 | **Visibility:** when is work published? | visibility rule | finished-only | immediate, or agent's choice |
 
 | | Flow-back off | Flow-back on |
@@ -217,7 +217,7 @@ The rules are the only thing that differs between the settings compared. Two axe
 - **Publishing failed attempts** (`publishFailures`) is a further visibility option; it matters when agents learn from failure.
 - **The mechanism test** uses agent's-choice visibility. OSO claims flow-back makes sharing the rational choice, so agents should share more when flow-back is on. A sweep of α finds the threshold α\* where they start to.
 
-The mint m, the bounties, the screen θ and the compute allocation are held the same across the compared settings.
+The mint m, the bounties, the screen θ and the money allocation are held the same across the compared settings.
 
 ## 4. Agents
 
@@ -228,20 +228,20 @@ Every agent, simulated or LLM, is described by eight traits. In the simulation t
 | Trait | Meaning |
 | --- | --- |
 | Skill | How likely its attempts are to succeed |
-| Conjecture quality | How well it judges which results are worth attempting |
-| Cost per attempt | Compute per attempt (model price, in the Lean experiment) |
+| Conjecture quality | How well it judges which ideas are worth attempting |
+| Cost per attempt | Money per attempt (model price, in the Lean experiment) |
 | Time horizon | How much it values rewards that arrive later |
 | Risk attitude | Preference for safe steps vs. long shots |
 | Reuse | How readily it builds on others' published work |
 | Sharing disposition | Intrinsic willingness to publish, beyond what pays |
-| Gaming | Share of its effort spent on trivial results |
+| Gaming | Share of its effort spent on trivial ideas |
 
 A population is a mix of **archetypes**, each a set of trait values: foundation builder, target racer, cheap explorer, specialist, free rider, gamer. The simulator's values are in [scenarios/default.yaml](../config/scenarios/default.yaml).
 
 ### 4.2 How agents decide
 
 **Simulated agents** follow a formula ([the simulator doc, section 2.5](../docs/simulator.md#25-decisions)):
-- they score each frontier result by its expected value under the rules: mint, bounty, value as a stepping stone to a target, and flow-back, adjusted for success chance, impatience and risk;
+- they score each frontier idea by its expected value under the rules: mint, bounty, value as a stepping stone to a target, and flow-back, adjusted for success chance, impatience and risk;
 - they mostly pick the best, with some randomness;
 - under agent's-choice visibility, they publish a lemma when what sharing earns outweighs the risk of being scooped.
 
@@ -255,15 +255,15 @@ Value is measured on several axes, because a setting can be fast but expensive, 
 
 | Measure | Definition |
 | --- | --- |
-| **Frontier** | The highest level among published results, by spend. As a curve over spend, this is the headline figure |
-| **Reach** | Share of runs in which a result of level L\* was published |
+| **Frontier** | The highest level among published ideas, by spend. As a curve over spend, this is the headline figure |
+| **Reach** | Share of runs in which an idea of level L\* was published |
 | **Speed** | The first round in which level L\* was published |
-| **Cost** | Compute spent by that round |
-| **Productivity** | Published, non-trivial results per unit of spend |
+| **Cost** | Money spent by that round |
+| **Productivity** | Published, non-trivial ideas per unit of spend |
 | **Breadth** | Share of targets solved |
-| **Waste** | Share of spend on duplicates and redundant attempts, dead ends and trivial results |
+| **Waste** | Share of spend on duplicates and redundant attempts, dead ends and trivial ideas |
 | **Reliability** | Spread of the measures across runs |
-| **Credit accuracy** | How closely bounty pay matches true contribution. Contribution comes from the tree: each solved target's bounty is split over every result in its proof, in proportion to the result's difficulty. High trivially when one agent proves a whole chain alone, so compare it between settings that share work |
+| **Credit accuracy** | How closely bounty pay matches true contribution. Contribution comes from the tree: each solved target's bounty is split over every idea in its proof, in proportion to the idea's difficulty. High trivially when one agent proves a whole chain alone, so compare it between settings that share work |
 
 **Diagnostics** explain the outcomes: sharing rate, hoarding, publication lag, reuse, duplicates, and pay by archetype.
 
@@ -271,17 +271,17 @@ Value is measured on several axes, because a setting can be fast but expensive, 
 
 | Element | Simulation | Lean experiment |
 | --- | --- | --- |
-| Results | Abstract nodes, all existing in advance | Lean theorems; intermediate ones stated by agents |
+| Ideas | Abstract ideas, all existing in advance | Lean theorems; intermediate ones stated by agents |
 | Research tree | Generated (random layers, a chain), or read from a file, such as the Lean reference tree | Defined by what proofs use; a reference tree from our own proofs |
-| Targets and bounties | Configured | Posted theorems; bounty from measured depth |
+| Targets and bounties | Configured | Posted theorems; bounty from measured level |
 | Success oracle | Chance p, from the level and the agent's skill; optionally learning from own and public failures | Lean's checker |
 | Success chance p | Set (0.5 × 0.6^(level − 1) by default) | Measured in the pilot |
-| What sharing conveys | That the result is proved | The statement and the proof |
-| Cost and correctness of shared results | Free and correct by default; optionally a cost to absorb, and wrong results that are retracted | Reading costs tokens; Lean guarantees correctness |
-| Attribution weights | The work a prerequisite saves: finding it again costs about 1/p tries, so weights are proportional to 1/p (exact, or with noise to test a ledger that gets them wrong) | Which theorems a proof uses is exact; how much each contributed is measured for now by the money spent to prove it (the work saved if it had to be proved again from scratch) |
-| Trivial results | Farmed by gaming agents; screen θ | Statements closed by one cheap tactic; rejected by the screen |
+| What sharing conveys | That the idea is proved | The statement and the proof |
+| Cost and correctness of shared ideas | Free and correct by default; optionally an uptake cost, and wrong ideas that are retracted | Reading costs tokens; Lean guarantees correctness |
+| Link weights | The work a parent saves: finding it again costs about 1/p attempts, so weights are proportional to 1/p (exact, or with noise to test a ledger that gets them wrong) | Which theorems a proof uses is exact; how much each contributed is measured for now by the money spent to prove it (the work saved if it had to be proved again from scratch) |
+| Trivial ideas | Farmed by gaming agents; screen θ | Statements closed by one cheap tactic; rejected by the screen |
 | Agents | Formula agents with set traits | LLM agents; traits from model and prompt, measured |
-| Cost | Compute units | Tokens and checking time |
+| Cost | Money units | Tokens and checking time |
 | Status | Built; results logged | Problem set built and verified; harness not built |
 
 ### 6.1 The simulation
@@ -294,7 +294,7 @@ Value is measured on several axes, because a setting can be fast but expensive, 
 - failure modes;
 - which settings, budgets and numbers of runs the Lean experiment needs.
 
-**What it cannot show:** that OSO works with real research. Results are given rather than invented, sharing conveys no know-how, and agents follow a formula. Learning from failure, the cost of absorbing results and wrong results are optional mechanics, with guessed parameters.
+**What it cannot show:** that OSO works with real research. Ideas are given rather than invented, sharing conveys no know-how, and agents follow a formula. Learning from failure, the cost of taking up ideas and wrong ideas are optional mechanics, with guessed parameters.
 
 ### 6.2 The Lean experiment
 
@@ -303,7 +303,7 @@ The problem set has three areas, in Lean 4 with no Mathlib:
 - **B:** sorting;
 - **C:** 2 × 2 integer matrices.
 
-There are eight posted targets, including two that cross areas, and hidden reference proofs that Lean has checked. Agents propose statements and proofs, Lean checks them, and the same rules, ledger and measures apply. Success chances are measured in a pilot and can be fed back into the simulation as a world read from a file, with the reference tree and the measured chance per result.
+There are eight posted targets, including two that cross areas, and hidden reference proofs that Lean has checked. Agents propose statements and proofs, Lean checks them, and the same rules, ledger and measures apply. Success chances are measured in a pilot and can be fed back into the simulation as a world read from a file, with the reference tree and the measured chance per idea.
 
 ## 7. Defining an experiment
 
@@ -321,7 +321,7 @@ Each element is replaceable without changing the others:
 | Extension point | Built today | Examples of more complex experiments |
 | --- | --- | --- |
 | World | Random layers, chain, DAG from a file, the Lean reference tree | The Lean reference tree with measured p; a real field's citation graph |
-| Knowledge | Free and correct; costly to absorb; fallible, with retraction | Partial results; reviews that catch errors before a target does |
+| Knowledge | Free and correct; costly to take up; fallible, with retraction | Partial ideas; reviews that catch errors before a target does |
 | Success oracle | Chance p; learning from own and public failures | Lean checker |
 | Agents (deciders) | Formula agents; a random baseline; different deciders per archetype | LLM agents; mixed populations of formula and LLM agents |
 | Visibility | Finished-only, delayed, immediate, agent's choice | Batched publication; sharing failed attempts |
@@ -337,7 +337,7 @@ The framework is meant to be used beyond the cases built so far. Anyone can desc
 
 **A problem space** is one file ([spaces/](../spaces/)). It holds:
 - a title, a one-sentence summary and a plain-language description of the field;
-- a **glossary** of what a result, a target, an attempt, an area and an agent mean in that field;
+- a **glossary** of what an idea, a target, an attempt, an area and an agent mean in that field;
 - the area names;
 - the scenario: the research tree, success chances, targets, agents and anything else that differs from the defaults.
 
@@ -358,7 +358,7 @@ The framework is meant to be used beyond the cases built so far. Anyone can desc
 | 3. The six settings | Section 3's settings, with the standard measures |
 | 4. Does flow-back make agents share? | Sharing and reach as α falls, with α\* |
 | 5. When sharing is costly or sometimes wrong | The lead under free, costly, fallible, and costly-and-fallible knowledge |
-| 6. Sensitivity to the parameters | OSO's lead as each parameter is varied alone. Two groups: those communities, funders or the protocol set (α, c, mint per result, validation screen θ, how far compute follows earnings ρ), and those we guessed about agents (ψ, κ, perception noise, choice randomness, attribution error). Also α × c together. Because communities will set these values, the result must hold across them. |
+| 6. Sensitivity to the parameters | OSO's lead as each parameter is varied alone. Two groups: those communities, funders or the protocol set (α, c, mint per idea, validation screen θ, how far money follows earnings ρ), and those we guessed about agents (ψ, κ, perception noise, choice randomness, attribution error). Also α × c together. Because communities will set these values, the result must hold across them. |
 | What this shows | The limits, plus the space's own notes |
 | Reproduce | The command, the space file, the data, and the simulator commit |
 
@@ -374,13 +374,13 @@ All from the simulation; every run is [logged](../results/LOG.md) with the commi
 | Six settings | Traditional, OSO and the mixed corners | [summary](../results/settings/summary.md) |
 | α sweep | Sharing and outcomes as α falls, under agent's choice | [summary](../results/alpha-sweep/summary.md) |
 | α × ψ × c | Where sharing becomes rational | [summary](../results/alpha-psi/summary.md) |
-| Sensitivity | How much the gap depends on the gaming agent and the compute loop | [summary](../results/sensitivity/summary.md) |
+| Sensitivity | How much the gap depends on the gaming agent and the funding loop | [summary](../results/sensitivity/summary.md) |
 | Lean tree | The six settings on the Lean problem set's reference tree | [summary](../results/lean-tree/summary.md) |
 | Failures | Learning from own failures vs. from public failures | [summary](../results/failures/summary.md) |
-| Costly sharing | Absorbing cost × error rate, traditional vs. OSO | [summary](../results/costly-sharing/summary.md) |
+| Costly sharing | Uptake cost × error rate, traditional vs. OSO | [summary](../results/costly-sharing/summary.md) |
 | Complex | All of the above together, on the Lean tree | [summary](../results/complex/summary.md) |
 
-On the default world (8 levels, 7 targets, 12 agents, X = 1,200; 100 runs each):
+On the default world (8 levels, 7 targets, 12 agents, a budget of 1,200; 100 runs each):
 
 | Setting | Frontier (level) | Runs reaching level 7 | Cost to level 7 |
 | --- | --- | --- | --- |
@@ -392,7 +392,7 @@ On the default world (8 levels, 7 targets, 12 agents, X = 1,200; 100 runs each):
 What they show so far:
 
 1. **The simple model matches the mathematics.** With N agents on one chain, shared progress reaches about N times deeper than hidden progress, for N from 1 to 16.
-2. **Sharing does most of the work.** In the simulation, this is largely built in, because shared results are free to absorb (section 2.3).
+2. **Sharing does most of the work.** In the simulation, this is largely built in, because shared ideas are free to take up (section 2.3).
 3. **Flow-back makes agents choose to share only well below α = 0.8.** The share of lemmas shared is:
    - 0.23 at α = 1;
    - 0.22 at 0.8;
@@ -402,12 +402,12 @@ What they show so far:
    With a lower scoop risk (ψ = 0.1), it is already 0.61 at α = 0.5. So α\* exists in the model, but it depends on ψ, which is a guess.
 4. **The cited mint share c barely matters,** because the mint is small next to the bounties.
 5. **Flow-back makes credit more accurate when work is shared:** 0.57 vs. 0.47.
-6. **About half the default gap comes from one gaming agent and the compute loop.** Under traditional rules nobody else earns until they win a target, so earnings-driven funding goes to the spammer. Without it, traditional reaches 7.0 and the gap shrinks from 2.2 levels to 1.0.
+6. **About half the default gap comes from one gaming agent and the funding loop.** Under traditional rules nobody else earns until they win a target, so earnings-driven funding goes to the spammer. Without it, traditional reaches 7.0 and the gap shrinks from 2.2 levels to 1.0.
 
-7. **On the real shape of the Lean problem set,** OSO solves all 8 targets in every run, at 125 compute to depth 5. Traditional solves 4.8 of 8, at 303. Agents also share more by choice there (0.42 at α = 0.8), because the tree has many shallow results that carry little scoop risk.
+7. **On the real shape of the Lean problem set,** OSO solves all 8 targets in every run, for 125 units of money to level 5. Traditional solves 4.8 of 8, at 303. Agents also share more by choice there (0.42 at α = 0.8), because the tree has many shallow ideas that carry little scoop risk.
 8. **Learning from public failures helps OSO most.** Cost to reach level 7 is 485 with no learning, 367 learning from own failures, and 284 learning from everyone's public failures. Traditional benefits less (957, 865, 810), because its agents climb apart.
-9. **When sharing costs compute and results can be wrong, OSO's lead narrows but holds on depth.** At absorbing cost 1 and a 15% error rate, OSO still reaches level 6.6 against 4.5, but its lead in targets solved shrinks from 2.7 to 0.4. Errors hurt OSO more in absolute terms (21 retractions against 10), because wrong results spread to more agents.
-10. **With everything combined on the Lean tree,** OSO stays ahead, but publishing failures adds nothing once absorbing is costly.
+9. **When sharing costs money and ideas can be wrong, OSO's lead narrows but holds on level.** At uptake cost 1 and a 15% error rate, OSO still reaches level 6.6 against 4.5, but its lead in targets solved shrinks from 2.7 to 0.4. Errors hurt OSO more in absolute terms (21 retractions against 10), because wrong ideas spread to more agents.
+10. **With everything combined on the Lean tree,** OSO stays ahead, but publishing failures adds nothing once taking up is costly.
 
 These are a first calibration of a model, not evidence about real research.
 
@@ -418,9 +418,9 @@ These are a first calibration of a model, not evidence about real research.
 - **Measures fixed before the runs.**
 - **For LLM agents:**
   - check that targets are not memorized;
-  - check that deep targets need intermediate results;
+  - check that deep targets need intermediate ideas;
   - account exactly for tokens.
-- **What would count against OSO:** flow-back adds nothing beyond visibility, or OSO's lead comes only from trivial results.
+- **What would count against OSO:** flow-back adds nothing beyond visibility, or OSO's lead comes only from trivial ideas.
 
 ## 11. Phases and open decisions
 
@@ -448,8 +448,8 @@ What the design defines but the tests do not yet measure, or measure only with a
 | --- | --- | --- | --- |
 | **Link strength when parents overlap** (either one would do, or they only help together) | Each parent counted alone, as if it had to be found again from scratch | Credit can go to a parent that was not really needed, or be split unfairly between two that help only together | Shapley split: the work each parent saves, averaged over every order of adding them |
 | **Link strength when a parent helps without being needed** | The parent's whole cost | It overpays a shortcut that saved a little work | The work saved: the cost of getting the child without that parent, minus the cost with it |
-| **Link strength in the AI tests** | The money spent to prove each used result | Matches the definition only if every used result would have to be proved again from scratch | Re-prove the child without each parent and measure the extra work (extra Lean checks and model calls) |
-| **Minting many real but useless results** | Only trivial results are modelled as gaming, caught half the time by the screen θ | An agent can keep publishing small true results that no one needs, to collect the mint | Model it, then test paying the mint only when a result is used, against paying it on publication |
-| **How real agents respond to credit** | Formula agents in the simulation; in the AI tests sharing is set by the rules, not chosen | In the simulation, credit (α) only changes behaviour when agents choose what to share, and then only at low α | AI tests where labs choose what to publish, at several values of α |
-| **Agent traits and the scoop risk ψ** | Guesses | ψ is the setting the simulation is most sensitive to | Measure from AI-model tests: how often a published result helps a rival win |
+| **Link strength in the AI tests** | The money spent to prove each used idea | Matches the definition only if every used idea would have to be proved again from scratch | Re-prove the child without each parent and measure the extra work (extra Lean checks and model calls) |
+| **Minting many real but useless ideas** | Only trivial ideas are modelled as gaming, caught half the time by the screen θ | An agent can keep publishing small true ideas that no one needs, to collect the mint | Model it, then test paying the mint only when an idea is used, against paying it on publication |
+| **How real agents respond to credit** | Formula agents in the simulation; in the AI tests sharing is set by the rules, not chosen | In the simulation, credit (α) only changes behaviour when agents choose what to share, and then only at low α | AI tests where agents choose what to publish, at several values of α |
+| **Agent traits and the scoop risk ψ** | Guesses | ψ is the setting the simulation is most sensitive to | Measure from AI-model tests: how often a published idea helps a rival win |
 | **Real cost of AI-model tests before 21 October 2026** | List prices; OpenRouter charged about 5.6× more | Dollar amounts in those results are too low; the comparison between sides holds (same factor) | Fixed for new tests: budgets count the actual charge, and only companies within 2× the cheapest are used |
