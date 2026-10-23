@@ -138,7 +138,7 @@ Every run draws a new world from its seed. Within an experiment, the same seed g
 
 There are 12 agents. Each has eight traits:
 
-| Archetype | Count | Skill | Conjecture q | Cost k | Horizon δ | Risk γ | Reuse ω | Sharing β | Gaming g |
+| Archetype | Count | Skill | Conjecture q | Cost k | Horizon δ | Risk γ | Reuse ω | Openness o | Gaming g |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Foundation builder | 3 | 1.0 | 0.7 | 1.0 | 0.98 | 0.2 | 0.9 | 0.5 | 0 |
 | Target racer | 3 | 1.0 | 0.5 | 1.0 | 0.85 | −0.2 | 0.6 | 0 | 0 |
@@ -154,7 +154,7 @@ What each trait does:
 - **Horizon** δ discounts value that arrives later, per round.
 - **Risk** γ penalizes uncertain payoffs; negative means risk-seeking.
 - **Reuse** ω is the chance per round of taking up an idea someone else published.
-- **Sharing** β is the intrinsic value of publishing, in units of the mint.
+- **Openness** o is the intrinsic value of publishing, in units of the mint. (β is the share of intermediate ideas a society publishes: see the [Equations page, section 9](equations.md).)
 - **Gaming** g is the share of attempts spent farming trivial ideas.
 
 These values are guesses chosen to give a diverse population. They were not measured.
@@ -245,7 +245,7 @@ U = V · ( π − γ · √(π·(1 − π)) )
 **Whether to publish** (agent's choice only). Publish idea x now if:
 
 ```
-β·m  +  mint lost by waiting  +  δ^h · F̂ · κ   ≥   α · B̂_after · win · ψ
+o·m  +  mint lost by waiting  +  δ^h · F̂ · κ   ≥   α · B̂_after · win · ψ
 ```
 
 - **mint lost by waiting** = m_x × (1 − δ^h · win): publishing earns the mint now, while a private idea is published, and paid, only if its author later wins a target after it.

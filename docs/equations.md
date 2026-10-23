@@ -102,11 +102,13 @@ Grouped by what they belong to, in the order of the sections below. A hat marks 
 | $V_{i,x},\ U_{i,x}$ | what $x$ is worth to $i$, and its score | |
 | $\tau,\ \varepsilon$ | choice randomness, chance of a random pick | 0.3, 0.05 |
 
-**Choosing whether to share** ([section 9](#9-choosing-whether-to-share))
+**Choosing whether to share** ([section 9](#9-choosing-whether-to-share-where-β-comes-from))
 
 | Symbol | Meaning | Default |
 | --- | --- | --- |
-| $\beta_i$ | liking for sharing | −1 to 0.5 |
+| $o_i$ | openness: how much the agent likes publishing for its own sake | −1 to 0.5 |
+| $\beta$ | share of intermediate ideas published at once: set by the rules, or the result of agents' choices | 0 traditional, 1 OSO |
+| $\beta_{i,x}$ | chance agent $i$ publishes idea $x$ at once | |
 | $\psi$ | scoop risk: how much publishing helps a rival win | 0.5 |
 | $\kappa$ | how much publishing raises an idea's use | 1 |
 
@@ -268,15 +270,59 @@ $$U_{i,x} = V_{i,x}\left(\pi_{i,x} - \gamma_i \sqrt{\pi_{i,x}(1-\pi_{i,x})}\righ
 
 $$P(x) = \frac{\exp\!\big((U_{i,x} - U^{\max}_i)/(\tau\, |U^{\max}_i|)\big)}{\sum_{x' \text{ in the frontier}} \exp\!\big((U_{i,x'} - U^{\max}_i)/(\tau\, |U^{\max}_i|)\big)}$$
 
-## 9. Choosing whether to share
+## 9. Choosing whether to share: where β comes from
 
-Only in the settings where agents choose; ideas with a bounty are always published. Agent $i$ publishes idea $x$ at once if what sharing brings is at least the risk it adds:
+$\beta$ is the **share of intermediate ideas** (ideas without a bounty) that are published in the round they are proved. It is a measure of how open a society is: 0 is closed, 1 is fully open. Ideas with a bounty are always published.
 
-$$\underbrace{\beta_i\, m}_{\text{liking for sharing}} + \underbrace{m_x\big(1 - \delta_i^{h_x}\, \text{win}_x\big)}_{\text{mint lost by waiting}} + \underbrace{\delta_i^{h_x}\, \hat F_x\, \kappa}_{\text{credit when others use it}} \;\ge\; \underbrace{\alpha\, \hat B^{\text{after}}_x\, \text{win}_x\, \psi}_{\text{scoop risk}}$$
+Two settings fix it by rule: traditional and the other finished-only settings publish an idea only with the target that rests on it ($\beta \approx 0$); OSO and the other immediate settings publish everything at once ($\beta = 1$). In the settings where agents choose, $\beta$ is not set: it comes out of every agent's decision about every idea it proves, in four steps.
 
-A private idea earns its mint only if its author later wins a bounty after it, which is why waiting can lose it. With no bounty after $x$, the whole mint is lost by waiting.
+**Step 1. One decision.** Agent $i$ has just proved idea $x$. It publishes $x$ at once if what sharing brings is at least the risk sharing adds:
 
-*Example,* for $y_1$ under OSO, with 3 agents able to attempt it ($\text{win} = 1/3$), $\delta = 0.9$ ($0.9^5 = 0.59$), no liking for sharing, and true estimates. Sharing brings $0.85 \times (1 - 0.59/3) + 0.59 \times 1.675 \approx 1.67$. The scoop risk is $0.8 \times 16 \times \tfrac13 \times 0.5 \approx 2.13$. The agent keeps $y_1$ private. At $\alpha = 0.3$ the risk falls to 0.8 and $F_{y_1}$ rises, so it shares.
+$$\underbrace{o_i\, m}_{\text{openness}} + \underbrace{m_x\big(1 - \delta_i^{h_x}\, \text{win}_x\big)}_{\text{mint lost by waiting}} + \underbrace{\delta_i^{h_x}\, \hat F_x\, \kappa}_{\text{credit when others use it}} \;\ge\; \underbrace{\alpha\, \hat B^{\text{after}}_x\, \text{win}_x\, \psi}_{\text{scoop risk}}$$
+
+- **Openness** $o_i$: how much the agent likes publishing for its own sake, in units of the mint (its kind sets it: foundation builder 0.5, free rider −1).
+- **Mint lost by waiting:** a private idea is paid its mint only if its author later wins a bounty after it, which happens with chance about $\delta_i^{h_x}\,\text{win}_x$ in today's value. With no bounty after $x$, the whole mint is lost by waiting.
+- **Credit when others use it:** the flow-back $F_x$ (section 8) the idea will earn once later ideas are built on it, counted at today's value.
+- **Scoop risk:** publishing helps rivals win the bounty after $x$; $\psi$ is how much it raises their chance.
+
+**Step 2. Both sides depend on α.** The flow-back grows and then shrinks as $\alpha$ falls, because an idea receives $1-\alpha$ of what flows from later ideas but keeps only $\alpha$ of what reaches it. The scoop risk falls in a straight line with $\alpha$. For $y_1$ in the example tree (one step before $x$, link weight 0.625, bounty 16 after it):
+
+$$F_{y_1}(\alpha) = \underbrace{16 \times 0.625\,(1-\alpha)\,\alpha}_{\text{from } x\text{'s bounty}} + \underbrace{0.15 \times 0.625\,\alpha}_{\text{from } x\text{'s mint}} \qquad \text{scoop risk} = \alpha \times 16 \times \text{win} \times \psi$$
+
+**Step 3. A threshold.** With 3 agents able to attempt $y_1$ ($\text{win} = 1/3$), patience $\delta = 0.9$ ($\delta^{h} = 0.9^5 = 0.59$), openness 0 and exact estimates:
+
+| $\alpha$ | 0.95 | 0.8 | 0.6 | 0.5 | 0.3 | 0.1 |
+| --- | --- | --- | --- | --- | --- | --- |
+| $F_{y_1}$ | 0.56 | 1.68 | 2.46 | 2.55 | 2.13 | 0.91 |
+| sharing brings | 1.02 | 1.67 | 2.13 | 2.19 | 1.94 | 1.22 |
+| scoop risk | 2.53 | 2.13 | 1.60 | 1.33 | 0.80 | 0.27 |
+| publishes? | no | no | yes | yes | yes | yes |
+
+The two sides cross at $\alpha^* \approx 0.72$: this agent publishes $y_1$ when $\alpha \le 0.72$.
+
+**Step 4. From one decision to $\beta$.** Agents see $\hat F_x$ and $\hat B^{\text{after}}_x$ through their judgement: each is the true value times $(1 + \sigma_0 (1-q_i)\,\xi)$, with $\xi$ a random normal number (section 8). So for a given agent and idea, publishing happens with a probability, not a yes or no:
+
+$$\beta_{i,x} = P\big(\text{sharing brings} \ge \text{scoop risk}\big) \quad \text{over the agent's estimation errors}$$
+
+For $y_1$ above:
+
+| Judgement $q$ | $\alpha = 0.8$ | $\alpha = 0.5$ | $\alpha = 0.3$ |
+| --- | --- | --- | --- |
+| 1 (exact) | 0 | 1 | 1 |
+| 0.7 (foundation builder) | 0.26 | 0.92 | 0.99 |
+| 0.3 (explorer, gamer) | 0.39 | 0.74 | 0.88 |
+
+A society's $\beta$ is the average over every decision in a run, by every agent, about every intermediate idea it proves:
+
+$$\beta = \frac{\text{intermediate ideas published in the round they were proved}}{\text{intermediate ideas proved}}$$
+
+It is the **sharing** measure on the result cards. Measured on the default field, with agents choosing ([α sweep](../results/alpha-sweep/summary.md), 100 runs each):
+
+| $\alpha$ | 1 | 0.8 | 0.6 | 0.5 | 0.4 | 0.3 | 0.2 | 0.1 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| $\beta$ | 0.23 | 0.22 | 0.25 | 0.28 | 0.34 | 0.47 | 0.63 | 0.77 |
+
+Even with no flow-back ($\alpha = 1$), about a quarter of ideas are published: dead ends (no bounty after them, so nothing to be scooped and the whole mint lost by waiting) and agents with high openness. $\beta$ rises steeply only once $\alpha \le 0.4$, because the scoop risk is the whole bounty after $x$, while the flow-back to an intermediate idea is only a share of it. Everything here rests on $\psi$, which is a guess (see [not yet measured](design.md#12-not-yet-measured)).
 
 ## 10. Sharing and its costs
 

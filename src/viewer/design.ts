@@ -95,7 +95,7 @@ export const TRAITS = [
   { key: 'horizon', label: 'horizon', min: 0.5, max: 1, step: 0.01, explain: 'Patience. Near 1, the agent values payoffs that come many rounds later, such as a bounty several levels up; lower, it wants payoffs now.' },
   { key: 'risk', label: 'risk attitude', min: -1, max: 1, step: 0.05, explain: 'Above 0, the agent avoids long shots and prefers sure things; below 0, it chases long shots such as hard targets.' },
   { key: 'reuse', label: 'reuse', min: 0, max: 1, step: 0.05, explain: 'Chance each round of picking up an idea someone else published, so it can build on it. Sharing only helps if agents reuse.' },
-  { key: 'sharing', label: 'sharing', min: -1, max: 1, step: 0.05, explain: 'How much the agent likes publishing for its own sake: above 0 it likes it, below 0 it dislikes it. Only matters when agents choose what to share.' },
+  { key: 'sharing', label: 'openness', min: -1, max: 1, step: 0.05, explain: 'How much the agent likes publishing for its own sake: above 0 it likes it, below 0 it dislikes it. Only matters when agents choose what to share.' },
   { key: 'gaming', label: 'gaming', min: 0, max: 1, step: 0.05, explain: 'Share of attempts spent on trivial ideas, just to collect the small reward each one pays.' },
 ];
 
