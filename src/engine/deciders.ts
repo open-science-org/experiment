@@ -2,6 +2,7 @@
 // The environment (frontier, success, publishing, payment) stays in model.ts; a decider only decides.
 // A decider must use only what its agent knows (specification, section 2.3), and draw randomness
 // only from `ctx.s.rng`, so runs stay reproducible.
+import { chanceOf } from './difficulty.ts';
 import { skillIn } from './agents.ts';
 import type { State } from './model.ts';
 import { Registry } from './registry.ts';
@@ -55,7 +56,7 @@ deciders.register('formula', {
     const score = (i: number, r: number) => {
       const { alpha, c, mint: m } = sc.rules;
       const t = s.agents[i].traits;
-      const pi = Math.min(1, skillIn(s.agents[i], world.area[r], sc.agents.specialist) * world.p[r]);
+      const pi = Math.min(1, skillIn(s.agents[i], world.area[r], sc.agents.specialist) * chanceOf(s, i, r));
       const win = 1 / (1 + Math.max(0, s.rivalsAt[r] - 1));
       const later = t.horizon ** delay(s, r);
       const mint = world.prereqs[r].length ? (1 - c) * m : m;

@@ -6,6 +6,7 @@ import type { Scenario } from './config.ts';
 import { deciders, type Choice, type Decider } from './deciders.ts';
 import { measure, type RunResult } from './measures.ts';
 import { oracles, type Oracle } from './oracles.ts';
+import { chanceOf, frontier, gatedFrontier } from './difficulty.ts';
 import { Rng } from './rng.ts';
 import { allocations, visibilities, type Visibility } from './rules.ts';
 import { ledgerWeights, shares, worlds, type World } from './world.ts';
@@ -36,6 +37,8 @@ export interface State {
   share: Float64Array[];
   w: number[][];
   known: Set<number>[];
+  /** Bumped whenever an agent's knowledge changes (lets the bits it has resolved be cached). */
+  knowVersion: Int32Array;
   proved: Set<number>[];
   author: Int32Array;
   pubRound: Int32Array;
@@ -72,13 +75,19 @@ export interface State {
   trace?: TraceEvent[];
 }
 
-/** Pays value v entering result x through the waterfall to the authors of x and its ancestors. */
-function payInto(s: State, x: number, v: number, bounty = false) {
+/**
+ * Pays value v entering idea x through flow-back to the authors of x and the ideas before it. An idea
+ * nobody has published (possible when ideas have bits: an agent can solve x without its parents) has no
+ * author; its share goes to `fallback`, by default x's author, who did that work.
+ */
+function payInto(s: State, x: number, v: number, bounty = false, fallback = s.author[x]) {
   const row = s.share[x];
   const pay = (r: number) => {
     const amount = v * row[r];
-    s.roundEarnings[s.author[r]] += amount;
-    if (bounty) s.bountyEarnings[s.author[r]] += amount;
+    const who = s.author[r] >= 0 ? s.author[r] : fallback;
+    if (who < 0) return;
+    s.roundEarnings[who] += amount;
+    if (bounty) s.bountyEarnings[who] += amount;
   };
   pay(x);
   for (const a of s.world.ancestors[x]) if (row[a] > 0) pay(a);
@@ -92,7 +101,7 @@ function publishOne(s: State, i: number, x: number) {
   s.trace?.push({ r: s.round, k: 'publish', a: i, x });
   const ps = world.prereqs[x];
   s.roundEarnings[i] += ps.length ? (1 - c) * mint : mint;
-  ps.forEach((j, k) => payInto(s, j, c * mint * s.w[x][k]));
+  ps.forEach((j, k) => payInto(s, j, c * mint * s.w[x][k], false, i));
   if (world.isTarget[x]) payInto(s, x, world.bounty[x], true);
   if (s.flawed[i].has(x)) s.publishedFlawed[x] = 1;
   // Free knowledge is taken up at once; costly knowledge at the start of the next round (absorb).
@@ -105,6 +114,7 @@ function publishOne(s: State, i: number, x: number) {
 /** Agent a takes up published result x: it can now build on it. */
 function takeUp(s: State, a: number, x: number) {
   s.known[a].add(x);
+  s.knowVersion[a]++;
   if (s.publishedFlawed[x]) s.flawed[a].add(x);
   s.trace?.push({ r: s.round, k: 'takeup', a, x });
 }
@@ -138,6 +148,7 @@ function absorb(s: State, a: number, budget: number): number {
 function retract(s: State, i: number, x: number) {
   const drop = (a: number) => {
     s.known[a].delete(x);
+    s.knowVersion[a]++;
     s.proved[a].delete(x);
     s.flawed[a].delete(x);
   };
@@ -159,14 +170,9 @@ function publishBundle(s: State, i: number, x: number) {
   for (const r of bundle) if (s.author[r] < 0) publishOne(s, i, r);
 }
 
+/** The ideas agent i can attempt now (difficulty.ts: all parents known, or any idea when ideas have bits). */
 export function frontierOf(s: State, i: number): number[] {
-  const out: number[] = [];
-  const k = s.known[i];
-  for (let r = 0; r < s.world.n; r++) {
-    if (k.has(r)) continue;
-    if (s.world.prereqs[r].every((j) => k.has(j))) out.push(r);
-  }
-  return out;
+  return frontier(s, i);
 }
 
 /** One attempt by agent i: its decider chooses, the oracle decides, the visibility rule publishes. */
@@ -191,7 +197,7 @@ function attempt(s: State, i: number, decider: Decider) {
   const key = i * world.n + r;
   s.spend += k;
   s.spendOn.set(key, (s.spendOn.get(key) ?? 0) + k);
-  const p = Math.min(1, skillIn(agent, world.area[r], s.sc.agents.specialist) * world.p[r]);
+  const p = Math.min(1, skillIn(agent, world.area[r], s.sc.agents.specialist) * chanceOf(s, i, r));
   const failures = s.failures.get(key) ?? 0;
   const othersFailures = s.publicFailures[r] - (s.sc.rules.publishFailures ? failures : 0);
   if (!s.oracle.succeeds({ agent: i, result: r, p, failures, othersFailures, rng: s.rng, payload: choice.payload })) {
@@ -216,6 +222,7 @@ function attempt(s: State, i: number, decider: Decider) {
 
   s.proved[i].add(r);
   s.known[i].add(r);
+  s.knowVersion[i]++;
   if (s.firstProof[r] < 0) s.firstProof[r] = s.round;
   if (s.author[r] >= 0) {
     s.duplicates++;
@@ -262,6 +269,7 @@ export function run(sc: Scenario, seed: number, record?: { events: TraceEvent[];
     visibility: visibilities.create(sc.rules.visibility, 'rules.visibility'),
     oracle: oracles.create(sc.success.oracle, 'success.oracle'),
     known: agents.map(() => new Set()),
+    knowVersion: new Int32Array(agents.length),
     proved: agents.map(() => new Set()),
     author: new Int32Array(world.n).fill(-1),
     pubRound: new Int32Array(world.n).fill(-1),
@@ -323,7 +331,8 @@ export function run(sc: Scenario, seed: number, record?: { events: TraceEvent[];
     s.scheduled.delete(t);
     // How many agents can currently attempt each result, to estimate the race for it.
     s.rivalsAt = new Int32Array(world.n);
-    for (const a of agents) for (const r of frontierOf(s, a.id)) s.rivalsAt[r]++;
+    // Rivals are agents that know all of an idea's parents: the ones really racing for it.
+    for (const a of agents) for (const r of gatedFrontier(s, a.id)) s.rivalsAt[r]++;
     for (const i of turns) attempt(s, i, deciderFor[i]);
     // Uptake of published results by agents who have not yet taken them up (reuse); costly
     // knowledge is absorbed at the start of each round instead.

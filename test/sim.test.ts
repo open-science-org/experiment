@@ -342,3 +342,31 @@ test('the simple model (α, β): beta sets the share of ideas published at once'
   assert.ok(Math.abs(half - 0.5) < 0.12, `beta 0.5 publishes about half (${half})`);
   assert.ok(all > 0.95, `beta 1 publishes everything (${all})`);
 });
+
+test('the idea graph generator: structure, length and composition are set separately', async () => {
+  const { ideasWorld } = await import('../src/engine/world.ts');
+  const { Rng } = await import('../src/engine/rng.ts');
+  const base = { levels: 5, width: 6, parents: 2, skip: 0.2, length: 3, lengthGrowth: 2, composition: 0.7, targets: 2, bountyBase: 4, bountyGrowth: 2, attemptLimit: 24 };
+  const w = ideasWorld(base, new Rng(7));
+  assert.equal(w.n, 30);
+  // Difficulty: an idea at level l is a sequence of length + lengthGrowth·(l − 1) bits.
+  for (let x = 0; x < w.n; x++) assert.equal(w.bits![x].length, 3 + 2 * (w.level[x] - 1));
+  // Attribution: link weights add up to 1, and a parent resolves only bits that are inside the child.
+  for (let x = 0; x < w.n; x++) if (w.prereqs[x].length) assert.ok(Math.abs(w.weights[x].reduce((a, b) => a + b, 0) - 1) < 1e-9);
+  // Composition 0: nothing is inherited, so knowing the parents leaves the whole sequence to find.
+  const none = ideasWorld({ ...base, composition: 0 }, new Rng(7));
+  for (let x = 0; x < none.n; x++) assert.equal(none.p[x], 2 ** -none.bits![x].length);
+  assert.equal(w.targets.length, 2);
+});
+
+test('with bits, knowing an idea resolves its bits inside every later idea (the HHT, HHTHHH case)', async () => {
+  const { finishWorld } = await import('../src/engine/world.ts');
+  const { chanceOf, frontier } = await import('../src/engine/difficulty.ts');
+  // y = bits 0-2 (HHT); x = y's bits plus 3 new ones (HHTHHH): knowing y halves the bits left.
+  const w = finishWorld({ level: [1, 2], area: [0, 0], p: [1 / 8, 1 / 8], prereqs: [[], [0]], bounty: [0, 16], bits: [[0, 1, 2], [0, 1, 2, 3, 4, 5]] });
+  const v = { world: w, known: [new Set<number>(), new Set([0])], knowVersion: new Int32Array(2) };
+  assert.equal(chanceOf(v, 0, 1), 2 ** -6, 'from scratch: all six bits');
+  assert.equal(chanceOf(v, 1, 1), 2 ** -3, 'knowing y: half the work done');
+  assert.ok(frontier(v, 0).includes(1), 'x can be attempted without knowing y');
+  assert.deepEqual(w.weights[1], [1]);
+});

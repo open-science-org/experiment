@@ -6,6 +6,7 @@ import { isAbsolute, join } from 'node:path';
 import type { Scenario } from './config.ts';
 import { Registry } from './registry.ts';
 import type { Rng } from './rng.ts';
+import { bitsWeights } from './difficulty.ts';
 
 export interface World {
   n: number;
@@ -28,6 +29,10 @@ export interface World {
   deadEnd: boolean[];
   /** Optional names, for worlds read from a file. */
   names?: string[];
+  /** Ideas as bit sequences (the `ideas` generator): the bit ids each idea contains, its parents' shares included. */
+  bits?: number[][];
+  /** With bits: ideas needing more unresolved bits than this are not attempted. */
+  attemptLimit?: number;
 }
 
 export type WorldMaker = (success: Scenario['success'], rng: Rng) => World;
@@ -35,12 +40,13 @@ export type WorldMaker = (success: Scenario['success'], rng: Rng) => World;
 export const worlds = new Registry<Record<string, unknown>, WorldMaker>('world');
 
 /** Fills in everything derived from levels, prerequisites, p and bounties. */
-export function finishWorld(base: { level: number[]; area: number[]; p: number[]; prereqs: number[][]; bounty: number[]; names?: string[] }): World {
+export function finishWorld(base: { level: number[]; area: number[]; p: number[]; prereqs: number[][]; bounty: number[]; names?: string[]; bits?: number[][]; attemptLimit?: number }): World {
   const { level, area, p, prereqs, bounty } = base;
   const n = level.length;
   const children: number[][] = Array.from({ length: n }, () => []);
   prereqs.forEach((ps, r) => ps.forEach((j) => children[j].push(r)));
-  const weights = prereqs.map((ps) => {
+  // Link weights: the work each parent saves. With bits, the bits it resolves (Shapley); otherwise 1/p.
+  const weights = base.bits ? bitsWeights(prereqs, base.bits) : prereqs.map((ps) => {
     const raw = ps.map((j) => 1 / p[j]);
     const sum = raw.reduce((a, b) => a + b, 0);
     return raw.map((x) => x / sum);
@@ -63,6 +69,7 @@ export function finishWorld(base: { level: number[]; area: number[]; p: number[]
   return {
     n, levels: Math.max(0, ...level), level, area, p, prereqs, children, weights, isTarget, bounty, targets,
     ancestors, targetsBelow, deadEnd, names: base.names,
+    ...(base.bits ? { bits: base.bits, attemptLimit: base.attemptLimit ?? 24 } : {}),
   };
 }
 
@@ -260,3 +267,87 @@ export function attributionValue(world: World, share: Float64Array[], w: number[
   }
   return S;
 }
+
+/* ----------------------------------------------------------------------------- The idea graph generator */
+
+export interface IdeasParams extends Record<string, unknown> {
+  /** Structure: levels, ideas per level, parents per idea on average, and the chance a parent comes from an
+   *  older level instead of the level just below. */
+  levels: number;
+  width: number;
+  parents: number;
+  skip: number;
+  /** Difficulty: the sequence length (bits) of a level-1 idea, and how many bits longer each level up is. */
+  length: number;
+  lengthGrowth: number;
+  /** Attribution: the share of an idea's length made of pieces of its parents' sequences (0: none, 1: all
+   *  it can). The rest are its own new bits. */
+  composition: number;
+  /** Bounties: how many ideas at the top level carry one, and its size: bountyBase · bountyGrowth^(level − 1). */
+  targets: number;
+  bountyBase: number;
+  bountyGrowth: number;
+  /** Ideas needing more unresolved bits than this are not attempted. */
+  attemptLimit: number;
+}
+
+/**
+ * A general idea graph (docs/equations.md, section 3). Every idea is a bit sequence: a share of it is made of
+ * pieces of its parents' sequences, the rest is new. Structure, difficulty (length) and attribution
+ * (composition) are set separately.
+ */
+export function ideasWorld(params: IdeasParams, rng: Rng): World {
+  const { levels, width } = params;
+  if (!(levels >= 1 && width >= 1)) throw new Error('ideas: levels and width must be at least 1');
+  if (!(params.composition >= 0 && params.composition <= 1)) throw new Error('ideas: composition must be between 0 and 1');
+  const level: number[] = [], prereqs: number[][] = [], bits: number[][] = [];
+  const byLevel: number[][] = [];
+  let nextBit = 0;
+  for (let l = 1; l <= levels; l++) {
+    byLevel[l] = [];
+    const length = Math.max(1, Math.round(params.length + params.lengthGrowth * (l - 1)));
+    for (let k = 0; k < width; k++) {
+      const x = level.length;
+      const ps = new Set<number>();
+      if (l > 1) {
+        const extra = Math.max(0, params.parents - 1);
+        const count = Math.min(1 + Math.floor(extra) + (rng.chance(extra - Math.floor(extra)) ? 1 : 0), byLevel[l - 1].length + (l > 2 ? width : 0));
+        for (let t = 0; t < count * 6 && ps.size < count; t++) {
+          const from = rng.chance(params.skip) && l > 2 ? 1 + rng.int(l - 2) : l - 1;
+          ps.add(byLevel[from][rng.int(byLevel[from].length)]);
+        }
+      }
+      const parents = [...ps].sort((u, v) => u - v);
+      // Inherited: composition × length bits, taken as one contiguous piece from each parent, in equal shares.
+      const want = parents.length ? Math.min(length - 1, Math.round(params.composition * length)) : 0;
+      const inherited = new Set<number>();
+      parents.forEach((y, j) => {
+        const seq = bits[y];
+        const share = Math.round(want * (j + 1) / parents.length) - Math.round(want * j / parents.length);
+        const take = Math.min(seq.length, Math.max(0, share));
+        if (!take) return;
+        const start = rng.int(seq.length - take + 1);
+        for (const b of seq.slice(start, start + take)) inherited.add(b);
+      });
+      const own = Math.max(1, length - inherited.size);
+      level.push(l); prereqs.push(parents);
+      bits.push([...inherited, ...Array.from({ length: own }, () => nextBit++)]);
+      byLevel[l].push(x);
+    }
+  }
+  // Chance per attempt once every parent is known: only the idea's own new bits are left.
+  const p = bits.map((b, x) => {
+    const fromParents = new Set(prereqs[x].flatMap((y) => bits[y]));
+    return 2 ** -b.filter((bit) => !fromParents.has(bit)).length;
+  });
+  const bounty = new Array<number>(level.length).fill(0);
+  const top = byLevel[levels], nT = Math.min(params.targets, top.length);
+  for (let k = 0; k < nT; k++) bounty[top[Math.floor((k + 0.5) * top.length / nT)]] = params.bountyBase * params.bountyGrowth ** (levels - 1);
+  return finishWorld({ level, area: level.map(() => 0), p, prereqs, bounty, bits, attemptLimit: params.attemptLimit });
+}
+
+worlds.register<IdeasParams>('ideas', {
+  description: 'A general idea graph: ideas are bit sequences, part pieces of their parents\' sequences (composition), part new; set structure (levels, width, parents, skip), difficulty (length, lengthGrowth) and attribution (composition) separately',
+  defaults: { levels: 6, width: 8, parents: 2, skip: 0.2, length: 3, lengthGrowth: 2, composition: 0.7, targets: 2, bountyBase: 4, bountyGrowth: 2, attemptLimit: 24 },
+  create: (params) => (_success, rng) => ideasWorld(params, rng),
+});
