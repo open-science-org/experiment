@@ -2,13 +2,13 @@
  "chart": "results/alpha-sweep/figures/compare.svg",
  "id": "alpha-sweep",
  "kind": "simulation",
- "date": "2026-10-22",
+ "date": "2026-10-23",
  "title": "α sweep under agent's-choice visibility",
  "design": {
   "question": "Does flow-back make agents choose to share?",
   "compare": "α from 1 (traditional) down to 0.1, agents choosing what to publish",
   "fixed": "the field, agents and budget",
-  "measure": "share of results published at once",
+  "measure": "share of ideas published at once",
   "better": "higher",
   "runs": "100 runs per row"
  },

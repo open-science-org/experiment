@@ -21,92 +21,92 @@
   .t1 { fill: var(--s1); } .t2 { fill: var(--s2); } .t3 { fill: var(--s3); }
 </style><rect class="bg" width="560" height="540" rx="8"/>
 <text class="title" x="20" y="30">The flow-back levers together</text>
-<text class="sub" x="20" y="50">Share of intermediate results agents choose to publish; below it, the hardest level reached.</text>
+<text class="sub" x="20" y="50">Share of intermediate ideas agents choose to publish; below it, the hardest level reached.</text>
 <text class="axis" x="315" y="76" text-anchor="middle">c, cited share of the mint</text>
 <text class="tick" x="167" y="98" text-anchor="middle">0%</text>
 <text class="tick" x="241" y="98" text-anchor="middle">5%</text>
 <text class="tick" x="315" y="98" text-anchor="middle">15%</text>
 <text class="tick" x="389" y="98" text-anchor="middle">30%</text>
 <text class="tick" x="463" y="98" text-anchor="middle">50%</text>
-<text class="axis" transform="translate(30 295) rotate(-90)" text-anchor="middle">α, retention</text>
+<text class="axis" transform="translate(30 295) rotate(-90)" text-anchor="middle">α, absorption rate</text>
 <text class="tick" x="118" y="151" text-anchor="end">0.95</text>
-<rect x="131" y="111" width="72" height="72" rx="4" style="fill:#6da7ec"><title>α, retention 0.95, c, cited share of the mint 0%: 37% · level 4.9</title></rect>
+<rect x="131" y="111" width="72" height="72" rx="4" style="fill:#6da7ec"><title>α, absorption rate 0.95, c, cited share of the mint 0%: 37% · level 4.9</title></rect>
 <text x="167" y="147" text-anchor="middle" style="fill:#0b0b0b;font-size:14px;font-weight:700">37%</text>
 <text x="167" y="164" text-anchor="middle" style="fill:#0b0b0b;font-size:10px">level 4.9</text>
-<rect x="205" y="111" width="72" height="72" rx="4" style="fill:#6da7ec"><title>α, retention 0.95, c, cited share of the mint 5%: 36% · level 5.0</title></rect>
+<rect x="205" y="111" width="72" height="72" rx="4" style="fill:#6da7ec"><title>α, absorption rate 0.95, c, cited share of the mint 5%: 36% · level 5.0</title></rect>
 <text x="241" y="147" text-anchor="middle" style="fill:#0b0b0b;font-size:14px;font-weight:700">36%</text>
 <text x="241" y="164" text-anchor="middle" style="fill:#0b0b0b;font-size:10px">level 5.0</text>
-<rect x="279" y="111" width="72" height="72" rx="4" style="fill:#6da7ec"><title>α, retention 0.95, c, cited share of the mint 15%: 37% · level 4.8</title></rect>
+<rect x="279" y="111" width="72" height="72" rx="4" style="fill:#6da7ec"><title>α, absorption rate 0.95, c, cited share of the mint 15%: 37% · level 4.8</title></rect>
 <text x="315" y="147" text-anchor="middle" style="fill:#0b0b0b;font-size:14px;font-weight:700">37%</text>
 <text x="315" y="164" text-anchor="middle" style="fill:#0b0b0b;font-size:10px">level 4.8</text>
-<rect x="353" y="111" width="72" height="72" rx="4" style="fill:#6da7ec"><title>α, retention 0.95, c, cited share of the mint 30%: 36% · level 4.7</title></rect>
+<rect x="353" y="111" width="72" height="72" rx="4" style="fill:#6da7ec"><title>α, absorption rate 0.95, c, cited share of the mint 30%: 36% · level 4.7</title></rect>
 <text x="389" y="147" text-anchor="middle" style="fill:#0b0b0b;font-size:14px;font-weight:700">36%</text>
 <text x="389" y="164" text-anchor="middle" style="fill:#0b0b0b;font-size:10px">level 4.7</text>
-<rect x="427" y="111" width="72" height="72" rx="4" style="fill:#6da7ec"><title>α, retention 0.95, c, cited share of the mint 50%: 37% · level 4.9</title></rect>
+<rect x="427" y="111" width="72" height="72" rx="4" style="fill:#6da7ec"><title>α, absorption rate 0.95, c, cited share of the mint 50%: 37% · level 4.9</title></rect>
 <text x="463" y="147" text-anchor="middle" style="fill:#0b0b0b;font-size:14px;font-weight:700">37%</text>
 <text x="463" y="164" text-anchor="middle" style="fill:#0b0b0b;font-size:10px">level 4.9</text>
 <text class="tick" x="118" y="225" text-anchor="end">0.8</text>
-<rect x="131" y="185" width="72" height="72" rx="4" style="fill:#5598e7"><title>α, retention 0.8, c, cited share of the mint 0%: 42% · level 5.0</title></rect>
+<rect x="131" y="185" width="72" height="72" rx="4" style="fill:#5598e7"><title>α, absorption rate 0.8, c, cited share of the mint 0%: 42% · level 5.0</title></rect>
 <text x="167" y="221" text-anchor="middle" style="fill:#0b0b0b;font-size:14px;font-weight:700">42%</text>
 <text x="167" y="238" text-anchor="middle" style="fill:#0b0b0b;font-size:10px">level 5.0</text>
-<rect x="205" y="185" width="72" height="72" rx="4" style="fill:#5598e7"><title>α, retention 0.8, c, cited share of the mint 5%: 43% · level 5.2</title></rect>
+<rect x="205" y="185" width="72" height="72" rx="4" style="fill:#5598e7"><title>α, absorption rate 0.8, c, cited share of the mint 5%: 43% · level 5.2</title></rect>
 <text x="241" y="221" text-anchor="middle" style="fill:#0b0b0b;font-size:14px;font-weight:700">43%</text>
 <text x="241" y="238" text-anchor="middle" style="fill:#0b0b0b;font-size:10px">level 5.2</text>
-<rect x="279" y="185" width="72" height="72" rx="4" style="fill:#5598e7"><title>α, retention 0.8, c, cited share of the mint 15%: 42% · level 5.2</title></rect>
+<rect x="279" y="185" width="72" height="72" rx="4" style="fill:#5598e7"><title>α, absorption rate 0.8, c, cited share of the mint 15%: 42% · level 5.2</title></rect>
 <text x="315" y="221" text-anchor="middle" style="fill:#0b0b0b;font-size:14px;font-weight:700">42%</text>
 <text x="315" y="238" text-anchor="middle" style="fill:#0b0b0b;font-size:10px">level 5.2</text>
-<rect x="353" y="185" width="72" height="72" rx="4" style="fill:#5598e7"><title>α, retention 0.8, c, cited share of the mint 30%: 43% · level 5.2</title></rect>
+<rect x="353" y="185" width="72" height="72" rx="4" style="fill:#5598e7"><title>α, absorption rate 0.8, c, cited share of the mint 30%: 43% · level 5.2</title></rect>
 <text x="389" y="221" text-anchor="middle" style="fill:#0b0b0b;font-size:14px;font-weight:700">43%</text>
 <text x="389" y="238" text-anchor="middle" style="fill:#0b0b0b;font-size:10px">level 5.2</text>
-<rect x="427" y="185" width="72" height="72" rx="4" style="fill:#5598e7"><title>α, retention 0.8, c, cited share of the mint 50%: 43% · level 5.2</title></rect>
+<rect x="427" y="185" width="72" height="72" rx="4" style="fill:#5598e7"><title>α, absorption rate 0.8, c, cited share of the mint 50%: 43% · level 5.2</title></rect>
 <text x="463" y="221" text-anchor="middle" style="fill:#0b0b0b;font-size:14px;font-weight:700">43%</text>
 <text x="463" y="238" text-anchor="middle" style="fill:#0b0b0b;font-size:10px">level 5.2</text>
 <text class="tick" x="118" y="299" text-anchor="end">0.6</text>
-<rect x="131" y="259" width="72" height="72" rx="4" style="fill:#2a78d6"><title>α, retention 0.6, c, cited share of the mint 0%: 58% · level 5.8</title></rect>
+<rect x="131" y="259" width="72" height="72" rx="4" style="fill:#2a78d6"><title>α, absorption rate 0.6, c, cited share of the mint 0%: 58% · level 5.8</title></rect>
 <text x="167" y="295" text-anchor="middle" style="fill:#ffffff;font-size:14px;font-weight:700">58%</text>
 <text x="167" y="312" text-anchor="middle" style="fill:#ffffff;font-size:10px">level 5.8</text>
-<rect x="205" y="259" width="72" height="72" rx="4" style="fill:#2a78d6"><title>α, retention 0.6, c, cited share of the mint 5%: 58% · level 5.9</title></rect>
+<rect x="205" y="259" width="72" height="72" rx="4" style="fill:#2a78d6"><title>α, absorption rate 0.6, c, cited share of the mint 5%: 58% · level 5.9</title></rect>
 <text x="241" y="295" text-anchor="middle" style="fill:#ffffff;font-size:14px;font-weight:700">58%</text>
 <text x="241" y="312" text-anchor="middle" style="fill:#ffffff;font-size:10px">level 5.9</text>
-<rect x="279" y="259" width="72" height="72" rx="4" style="fill:#2a78d6"><title>α, retention 0.6, c, cited share of the mint 15%: 57% · level 5.9</title></rect>
+<rect x="279" y="259" width="72" height="72" rx="4" style="fill:#2a78d6"><title>α, absorption rate 0.6, c, cited share of the mint 15%: 57% · level 5.9</title></rect>
 <text x="315" y="295" text-anchor="middle" style="fill:#ffffff;font-size:14px;font-weight:700">57%</text>
 <text x="315" y="312" text-anchor="middle" style="fill:#ffffff;font-size:10px">level 5.9</text>
-<rect x="353" y="259" width="72" height="72" rx="4" style="fill:#2a78d6"><title>α, retention 0.6, c, cited share of the mint 30%: 58% · level 5.8</title></rect>
+<rect x="353" y="259" width="72" height="72" rx="4" style="fill:#2a78d6"><title>α, absorption rate 0.6, c, cited share of the mint 30%: 58% · level 5.8</title></rect>
 <text x="389" y="295" text-anchor="middle" style="fill:#ffffff;font-size:14px;font-weight:700">58%</text>
 <text x="389" y="312" text-anchor="middle" style="fill:#ffffff;font-size:10px">level 5.8</text>
-<rect x="427" y="259" width="72" height="72" rx="4" style="fill:#2a78d6"><title>α, retention 0.6, c, cited share of the mint 50%: 58% · level 5.8</title></rect>
+<rect x="427" y="259" width="72" height="72" rx="4" style="fill:#2a78d6"><title>α, absorption rate 0.6, c, cited share of the mint 50%: 58% · level 5.8</title></rect>
 <text x="463" y="295" text-anchor="middle" style="fill:#ffffff;font-size:14px;font-weight:700">58%</text>
 <text x="463" y="312" text-anchor="middle" style="fill:#ffffff;font-size:10px">level 5.8</text>
 <text class="tick" x="118" y="373" text-anchor="end">0.4</text>
-<rect x="131" y="333" width="72" height="72" rx="4" style="fill:#184f95"><title>α, retention 0.4, c, cited share of the mint 0%: 81% · level 6.9</title></rect>
+<rect x="131" y="333" width="72" height="72" rx="4" style="fill:#184f95"><title>α, absorption rate 0.4, c, cited share of the mint 0%: 81% · level 6.9</title></rect>
 <text x="167" y="369" text-anchor="middle" style="fill:#ffffff;font-size:14px;font-weight:700">81%</text>
 <text x="167" y="386" text-anchor="middle" style="fill:#ffffff;font-size:10px">level 6.9</text>
-<rect x="205" y="333" width="72" height="72" rx="4" style="fill:#184f95"><title>α, retention 0.4, c, cited share of the mint 5%: 81% · level 7.0</title></rect>
+<rect x="205" y="333" width="72" height="72" rx="4" style="fill:#184f95"><title>α, absorption rate 0.4, c, cited share of the mint 5%: 81% · level 7.0</title></rect>
 <text x="241" y="369" text-anchor="middle" style="fill:#ffffff;font-size:14px;font-weight:700">81%</text>
 <text x="241" y="386" text-anchor="middle" style="fill:#ffffff;font-size:10px">level 7.0</text>
-<rect x="279" y="333" width="72" height="72" rx="4" style="fill:#184f95"><title>α, retention 0.4, c, cited share of the mint 15%: 80% · level 6.9</title></rect>
+<rect x="279" y="333" width="72" height="72" rx="4" style="fill:#184f95"><title>α, absorption rate 0.4, c, cited share of the mint 15%: 80% · level 6.9</title></rect>
 <text x="315" y="369" text-anchor="middle" style="fill:#ffffff;font-size:14px;font-weight:700">80%</text>
 <text x="315" y="386" text-anchor="middle" style="fill:#ffffff;font-size:10px">level 6.9</text>
-<rect x="353" y="333" width="72" height="72" rx="4" style="fill:#184f95"><title>α, retention 0.4, c, cited share of the mint 30%: 80% · level 6.9</title></rect>
+<rect x="353" y="333" width="72" height="72" rx="4" style="fill:#184f95"><title>α, absorption rate 0.4, c, cited share of the mint 30%: 80% · level 6.9</title></rect>
 <text x="389" y="369" text-anchor="middle" style="fill:#ffffff;font-size:14px;font-weight:700">80%</text>
 <text x="389" y="386" text-anchor="middle" style="fill:#ffffff;font-size:10px">level 6.9</text>
-<rect x="427" y="333" width="72" height="72" rx="4" style="fill:#1c5cab"><title>α, retention 0.4, c, cited share of the mint 50%: 79% · level 6.9</title></rect>
+<rect x="427" y="333" width="72" height="72" rx="4" style="fill:#1c5cab"><title>α, absorption rate 0.4, c, cited share of the mint 50%: 79% · level 6.9</title></rect>
 <text x="463" y="369" text-anchor="middle" style="fill:#ffffff;font-size:14px;font-weight:700">79%</text>
 <text x="463" y="386" text-anchor="middle" style="fill:#ffffff;font-size:10px">level 6.9</text>
 <text class="tick" x="118" y="447" text-anchor="end">0.2</text>
-<rect x="131" y="407" width="72" height="72" rx="4" style="fill:#104281"><title>α, retention 0.2, c, cited share of the mint 0%: 92% · level 7.0</title></rect>
+<rect x="131" y="407" width="72" height="72" rx="4" style="fill:#104281"><title>α, absorption rate 0.2, c, cited share of the mint 0%: 92% · level 7.0</title></rect>
 <text x="167" y="443" text-anchor="middle" style="fill:#ffffff;font-size:14px;font-weight:700">92%</text>
 <text x="167" y="460" text-anchor="middle" style="fill:#ffffff;font-size:10px">level 7.0</text>
-<rect x="205" y="407" width="72" height="72" rx="4" style="fill:#104281"><title>α, retention 0.2, c, cited share of the mint 5%: 92% · level 7.0</title></rect>
+<rect x="205" y="407" width="72" height="72" rx="4" style="fill:#104281"><title>α, absorption rate 0.2, c, cited share of the mint 5%: 92% · level 7.0</title></rect>
 <text x="241" y="443" text-anchor="middle" style="fill:#ffffff;font-size:14px;font-weight:700">92%</text>
 <text x="241" y="460" text-anchor="middle" style="fill:#ffffff;font-size:10px">level 7.0</text>
-<rect x="279" y="407" width="72" height="72" rx="4" style="fill:#104281"><title>α, retention 0.2, c, cited share of the mint 15%: 92% · level 7.0</title></rect>
+<rect x="279" y="407" width="72" height="72" rx="4" style="fill:#104281"><title>α, absorption rate 0.2, c, cited share of the mint 15%: 92% · level 7.0</title></rect>
 <text x="315" y="443" text-anchor="middle" style="fill:#ffffff;font-size:14px;font-weight:700">92%</text>
 <text x="315" y="460" text-anchor="middle" style="fill:#ffffff;font-size:10px">level 7.0</text>
-<rect x="353" y="407" width="72" height="72" rx="4" style="fill:#104281"><title>α, retention 0.2, c, cited share of the mint 30%: 92% · level 7.0</title></rect>
+<rect x="353" y="407" width="72" height="72" rx="4" style="fill:#104281"><title>α, absorption rate 0.2, c, cited share of the mint 30%: 92% · level 7.0</title></rect>
 <text x="389" y="443" text-anchor="middle" style="fill:#ffffff;font-size:14px;font-weight:700">92%</text>
 <text x="389" y="460" text-anchor="middle" style="fill:#ffffff;font-size:10px">level 7.0</text>
-<rect x="427" y="407" width="72" height="72" rx="4" style="fill:#104281"><title>α, retention 0.2, c, cited share of the mint 50%: 91% · level 6.9</title></rect>
+<rect x="427" y="407" width="72" height="72" rx="4" style="fill:#104281"><title>α, absorption rate 0.2, c, cited share of the mint 50%: 91% · level 6.9</title></rect>
 <text x="463" y="443" text-anchor="middle" style="fill:#ffffff;font-size:14px;font-weight:700">91%</text>
 <text x="463" y="460" text-anchor="middle" style="fill:#ffffff;font-size:10px">level 6.9</text>
 </svg>

@@ -2,7 +2,7 @@
  "chart": "results/exp-202610220210/figures/compare.svg",
  "id": "exp-202610220210",
  "kind": "simulation",
- "date": "2026-10-22",
+ "date": "2026-10-23",
  "title": "exp-202610220210",
  "design": {
   "question": "Traditional vs OSO (immediate) vs OSO (choice) vs Flow-back, finished-only vs No flow-back, immediate vs No flow-back, choice on An abstract research field: which gets furthest?",

@@ -16,7 +16,7 @@
 **Caveats:**
 - A simulation with guessed parameters: it shows how the rules play out if the field works as described.
 - OSO's lead as the market-set parameters vary: 0.1 to 3.0 levels.
-- The structure is a simplified sketch, and the success chances follow the default model by depth; neither is from the battery literature.
+- The structure is a simplified sketch, and the success chances follow the default model by level; neither is from the battery literature.
 
 <details><summary>Details</summary>
 

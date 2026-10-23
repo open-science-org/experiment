@@ -8,7 +8,7 @@
 
 ![Cheap AI models: who reaches the targets for less money](figures/progress.svg)
 
-| rules | money to 2 targets | targets that count | all targets | spent | ROI (value per $) | work done twice | used another lab's result |
+| rules | money to 2 targets | targets that count | all targets | spent | ROI (value per $) | work done twice | used another agent's idea |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Traditional | $0.27 ± 0.12 | 0.8 ± 0.8 of 4 | 3.4 ± 1.1 of 8 | $0.07 | 1041.2 ± 537.9 | 3.6 ± 2.1 | 0.0 ± 0.0 |
 | OSO | $0.27 ± 0.11 | 0.8 ± 0.8 of 4 | 2.4 ± 1.7 of 8 | $0.08 | 1011.0 ± 588.9 | 1.8 ± 0.8 | 2.4 ± 2.2 |
@@ -35,9 +35,9 @@
 Fixed before the runs (2026-10-21), to test what the earlier cheap-model test suggested: that OSO reached the targets for about half the money. Same labs, targets and helper results as that test; money per lab cut to $0.08 so the budget runs out. Main measure: money spent to solve 2 of the targets that count (A3, X2, B5, A5); a run that never gets there counts as its whole budget. Lower is better. Verdict against two standard errors, 5 runs per side.
 
 - **Counted targets:** A3, X2, B5, A5. The others are warm-ups: solved, they are reported but do not count.
-- **Labs:** lab 1: `deepseek/deepseek-v4.1-flash` as Foundation builder; lab 2: `deepseek/deepseek-v4.1-flash` as Foundation builder; lab 3: `deepseek/deepseek-v4.1-flash` as Target racer; lab 4: `deepseek/deepseek-v4.1-flash` as Neutral. The same labs and personas on both sides.
-- **Budget:** $0.08 per lab at list prices; up to 30 rounds. **Posted conjectures:** 12, bounty 1 each; their ids (K1, …) are neutral, and their statements are given to the labs but not listed here.
-- **Rules:** traditional: results private until their lab proves a target, then published with it; OSO: everything published at once, α = 0.8, c = 0.15, mint 1.
+- **Agents:** agent 1: `deepseek/deepseek-v4.1-flash` as Foundation builder; agent 2: `deepseek/deepseek-v4.1-flash` as Foundation builder; agent 3: `deepseek/deepseek-v4.1-flash` as Target racer; agent 4: `deepseek/deepseek-v4.1-flash` as Neutral. The same agents and personas on both sides.
+- **Budget:** $0.08 per agent at list prices; up to 30 rounds. **Posted conjectures:** 12, bounty 1 each; their ids (K1, …) are neutral, and their statements are given to the agents but not listed here.
+- **Rules:** traditional: ideas private until their agent proves a target, then published with it; OSO: everything published at once, α = 0.8, c = 0.15, mint 1.
 
 ## Every run
 

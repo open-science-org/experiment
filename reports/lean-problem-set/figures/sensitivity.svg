@@ -32,14 +32,14 @@
 <text class="tick" x="557.7750098334864" y="482" text-anchor="middle">+2.0</text>
 <text class="axis" x="450" y="504" text-anchor="middle">OSO lead in hardest level reached</text>
 <text class="label" x="20" y="108">Set by communities, funders or the protocol</text>
-<text class="tick" x="28" y="134">α, retention</text>
+<text class="tick" x="28" y="134">α, absorption rate</text>
 <line class="line c1" x1="313.9045496263274" x2="656.8965517241379" y1="130" y2="130" style="stroke-opacity:0.45;stroke-width:6"/>
 <line class="base" x1="379.9855775534286" x2="379.9855775534286" y1="121" y2="139" style="stroke-width:2.5"/>
-<circle class="dot f1" cx="656.9" cy="130" r="4.5"><title>α, retention = 0.2: +2.6</title></circle>
-<circle class="dot f1" cx="644.3" cy="130" r="4.5"><title>α, retention = 0.4: +2.5</title></circle>
-<circle class="dot f1" cx="479.1" cy="130" r="4.5"><title>α, retention = 0.6: +1.5</title></circle>
-<circle class="dot f1" cx="380.0" cy="130" r="4.5"><title>α, retention = 0.8: +0.9</title></circle>
-<circle class="dot f1" cx="313.9" cy="130" r="4.5"><title>α, retention = 0.95: +0.4</title></circle>
+<circle class="dot f1" cx="656.9" cy="130" r="4.5"><title>α, absorption rate = 0.2: +2.6</title></circle>
+<circle class="dot f1" cx="644.3" cy="130" r="4.5"><title>α, absorption rate = 0.4: +2.5</title></circle>
+<circle class="dot f1" cx="479.1" cy="130" r="4.5"><title>α, absorption rate = 0.6: +1.5</title></circle>
+<circle class="dot f1" cx="380.0" cy="130" r="4.5"><title>α, absorption rate = 0.8: +0.9</title></circle>
+<circle class="dot f1" cx="313.9" cy="130" r="4.5"><title>α, absorption rate = 0.95: +0.4</title></circle>
 <text class="tick" x="305.9045496263274" y="134" text-anchor="end" style="font-size:10px">0.95</text>
 <text class="tick" x="664.8965517241379" y="134" style="font-size:10px">0.2</text>
 <text class="tick" x="28" y="164">c, cited share of the mint</text>
@@ -52,14 +52,14 @@
 <circle class="dot f1" cx="375.3" cy="160" r="4.5"><title>c, cited share of the mint = 50%: +0.8</title></circle>
 <text class="tick" x="338.9450635898779" y="164" text-anchor="end" style="font-size:10px">0%</text>
 <text class="tick" x="387.9855775534286" y="164" style="font-size:10px">15%</text>
-<text class="tick" x="28" y="194">mint per result</text>
+<text class="tick" x="28" y="194">mint per idea</text>
 <line class="line c1" x1="260.41038416153145" x2="507.42755998426657" y1="190" y2="190" style="stroke-opacity:0.45;stroke-width:6"/>
 <line class="base" x1="379.9855775534286" x2="379.9855775534286" y1="181" y2="199" style="stroke-width:2.5"/>
-<circle class="dot f1" cx="260.4" cy="190" r="4.5"><title>mint per result = 0: +0.1</title></circle>
-<circle class="dot f1" cx="384.7" cy="190" r="4.5"><title>mint per result = 0.5: +0.9</title></circle>
-<circle class="dot f1" cx="380.0" cy="190" r="4.5"><title>mint per result = 1: +0.9</title></circle>
-<circle class="dot f1" cx="417.7" cy="190" r="4.5"><title>mint per result = 2: +1.1</title></circle>
-<circle class="dot f1" cx="507.4" cy="190" r="4.5"><title>mint per result = 4: +1.7</title></circle>
+<circle class="dot f1" cx="260.4" cy="190" r="4.5"><title>mint per idea = 0: +0.1</title></circle>
+<circle class="dot f1" cx="384.7" cy="190" r="4.5"><title>mint per idea = 0.5: +0.9</title></circle>
+<circle class="dot f1" cx="380.0" cy="190" r="4.5"><title>mint per idea = 1: +0.9</title></circle>
+<circle class="dot f1" cx="417.7" cy="190" r="4.5"><title>mint per idea = 2: +1.1</title></circle>
+<circle class="dot f1" cx="507.4" cy="190" r="4.5"><title>mint per idea = 4: +1.7</title></circle>
 <text class="tick" x="252.41038416153145" y="194" text-anchor="end" style="font-size:10px">0</text>
 <text class="tick" x="515.4275599842665" y="194" style="font-size:10px">4</text>
 <text class="tick" x="28" y="224">θ, validation screen</text>
@@ -72,14 +72,14 @@
 <circle class="dot f1" cx="356.4" cy="220" r="4.5"><title>θ, validation screen = 95%: +0.7</title></circle>
 <text class="tick" x="309.0512652419037" y="224" text-anchor="end" style="font-size:10px">0%</text>
 <text class="tick" x="422.59944932476725" y="224" style="font-size:10px">75%</text>
-<text class="tick" x="28" y="254">ρ, compute follows earnings</text>
+<text class="tick" x="28" y="254">ρ, money follows earnings</text>
 <line class="line c1" x1="260.41038416153145" x2="458.6534679428347" y1="250" y2="250" style="stroke-opacity:0.45;stroke-width:6"/>
 <line class="base" x1="379.9855775534286" x2="379.9855775534286" y1="241" y2="259" style="stroke-width:2.5"/>
-<circle class="dot f1" cx="458.7" cy="250" r="4.5"><title>ρ, compute follows earnings = 0%: +1.4</title></circle>
-<circle class="dot f1" cx="458.7" cy="250" r="4.5"><title>ρ, compute follows earnings = 25%: +1.4</title></circle>
-<circle class="dot f1" cx="380.0" cy="250" r="4.5"><title>ρ, compute follows earnings = 50%: +0.9</title></circle>
-<circle class="dot f1" cx="269.9" cy="250" r="4.5"><title>ρ, compute follows earnings = 75%: +0.2</title></circle>
-<circle class="dot f1" cx="260.4" cy="250" r="4.5"><title>ρ, compute follows earnings = 100%: +0.1</title></circle>
+<circle class="dot f1" cx="458.7" cy="250" r="4.5"><title>ρ, money follows earnings = 0%: +1.4</title></circle>
+<circle class="dot f1" cx="458.7" cy="250" r="4.5"><title>ρ, money follows earnings = 25%: +1.4</title></circle>
+<circle class="dot f1" cx="380.0" cy="250" r="4.5"><title>ρ, money follows earnings = 50%: +0.9</title></circle>
+<circle class="dot f1" cx="269.9" cy="250" r="4.5"><title>ρ, money follows earnings = 75%: +0.2</title></circle>
+<circle class="dot f1" cx="260.4" cy="250" r="4.5"><title>ρ, money follows earnings = 100%: +0.1</title></circle>
 <text class="tick" x="252.41038416153145" y="254" text-anchor="end" style="font-size:10px">100%</text>
 <text class="tick" x="466.6534679428347" y="254" style="font-size:10px">25%</text>
 <text class="label" x="20" y="292">Guessed: how agents think and see</text>

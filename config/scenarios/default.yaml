@@ -6,12 +6,12 @@
 world:
   kind: layered          # a random DAG in levels (also: chain, file)
   levels: 8
-  width: 10              # results per level
-  maxPrereqs: 3          # each result builds on 1 to maxPrereqs others
-  skipProb: 0.25         # chance an extra prerequisite comes from any lower level
+  width: 10              # ideas per level
+  maxPrereqs: 3          # each idea builds on 1 to maxPrereqs others
+  skipProb: 0.25         # chance an extra parent comes from any lower level
   areas: 3
-  areaStickiness: 0.8    # chance a result stays in its main prerequisite's area
-  targets:               # targets placed per level, among results with the most ancestors
+  areaStickiness: 0.8    # chance an idea stays in its main parent's area
+  targets:               # targets placed per level, among ideas with the most ancestors
     - { level: 3, count: 2 }
     - { level: 5, count: 2 }
     - { level: 7, count: 2 }
@@ -26,7 +26,7 @@ success:                 # success chance per attempt, before skill: p = p0 · e
     kind: chance         # what decides an attempt: succeeds with chance p (also: learning)
 
 attribution:
-  noise: 0               # noise in the ledger's attribution weights (0 = exact, as in Lean)
+  noise: 0               # noise in the ledger's link weights (0 = exact, as in Lean)
 
 agents:
   archetypes:            # traits of each archetype (see docs/simulator.md, section 2.2)
@@ -50,21 +50,21 @@ agents:
   deciders: {}           # per-archetype deciders, e.g. { gamer: { kind: random } }; default behaviour.decider
 
 rules:                   # the only thing that differs between traditional research and OSO
-  alpha: 1               # absorption rate: how much of incoming value a result absorbs (traditional: 1)
+  alpha: 1               # absorption rate: how much of incoming value an idea absorbs (traditional: 1)
   c: 0                   # share of each mint paid to what it built on (traditional: 0)
   mint: 1
-  screen: 0.5            # chance the validation screen rejects a trivial result (θ)
+  screen: 0.5            # chance the validation screen rejects a trivial idea (θ)
   publishFailures: false # make failed attempts public, so others learn from them (with oracle: learning)
   visibility:
     kind: finished-only  # also: immediate, delayed (d), choice
 
-knowledge:                # properties of shared results (specification, section 2.3)
-  absorbCost: 0          # compute an agent spends to take up each published result
-  errorRate: 0           # chance a proof is wrong; wrong results spread to what builds on them;
-                         # a target check rejects them and retracts the wrong results it rested on
+knowledge:                # properties of shared ideas (specification, section 2.3)
+  absorbCost: 0          # money an agent spends to take up each published idea
+  errorRate: 0           # chance a proof is wrong; wrong ideas spread to what builds on them;
+                         # a target check rejects them and retracts the wrong ideas it rested on
 
 budget:
-  X: 1200                # total compute
+  X: 1200                # total money
   rounds: 120
   perAgentPerRound: null # if set, rounds = X / (number of agents × perAgentPerRound)
   stopWhenSolved: true   # a funder stops paying once every target is solved
@@ -83,7 +83,7 @@ behaviour:
   perceptionNoise: 1     # σ0: scale of the noise in perceived values
   kappa: 1               # publish rule: how much publishing raises a lemma's use
   psi: 0.5               # publish rule: scoop risk
-  roundsPerLevel: 5      # expected rounds per level of depth, for discounting
+  roundsPerLevel: 5      # expected rounds per level of level, for discounting
 
 measures:
   targetLevel: 7         # level L* for the speed and cost measures

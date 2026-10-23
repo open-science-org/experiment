@@ -78,7 +78,7 @@ Write ONE problem-space file as YAML in a single \`\`\`yaml code block, and noth
 - title: a short title.
 - summary: one sentence.
 - description: a paragraph in plain words: what the field is, what its stages or areas are, what progress means.
-- glossary: { result, target, attempt, area (optional), agent (optional) }: what each term means in this field, as short noun phrases.
+- glossary: { idea, target, attempt, area (optional), agent (optional) }: what each term means in this field, as short noun phrases.
 - areas: names of the areas, in index order (optional).
 - scenario: overrides of the default scenario below. Change only what the field needs. Usually: world, success, measures.targetLevel, and sometimes agents.mix.
 - notes: caveats, such as which numbers are guesses (optional).

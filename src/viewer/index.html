@@ -245,11 +245,11 @@
             <aside class="explainer" id="e-explain" aria-live="polite"></aside>
           </div>
           <h3 class="section">Agents</h3>
-          <p class="muted" style="margin:0 0 8px">Each round, every agent picks the most promising result it can try, and pays for the try. Its kind sets how it picks. The values are guesses, not measurements.</p>
+          <p class="muted" style="margin:0 0 8px">Each round, every agent picks the most promising idea it can attempt, and pays for the attempt. Its kind sets how it picks. The values are guesses, not measurements.</p>
           <div class="agents-help">
             <details open><summary><b>What the settings mean</b></summary><dl id="a-legend"></dl></details>
             <div class="matters"><b>How much this matters</b>
-              <p>Under OSO rules, every team tried reaches about the top (8 of 8). Under traditional rules, the team matters: from 4.9 (all foundation builders) to 7.7 (all cheap explorers). Removing one kind changes little, except the <b>gamer</b> (traditional goes from 5.7 to 6.6 without it) and <b>cheap tries</b> (explorers get about 3× more tries for the same money).</p>
+              <p>Under OSO rules, every team tried reaches about the top (8 of 8). Under traditional rules, the team matters: from 4.9 (all foundation builders) to 7.7 (all cheap explorers). Removing one kind changes little, except the <b>gamer</b> (traditional goes from 5.7 to 6.6 without it) and <b>cheap attempts</b> (explorers get about 3× more attempts for the same money).</p>
               <p><a href="#/doc/results/agent-kinds/summary.md">See the test →</a></p></div>
           </div>
           <div class="row"><button class="btn" id="a-reset">Reset</button><button class="btn" id="a-add">Add a kind</button><span class="muted" id="a-summary"></span></div>
@@ -259,14 +259,14 @@
           <details><summary class="muted">The experiment file</summary><pre id="e-yaml"></pre></details>
         </div>
         <div id="more-ai" class="hidden">
-          <div class="row"><label>Name <input id="r-id" value="my-test" style="width:150px"></label><label>Money per lab, $ <input id="r-budget" type="number" min="0.05" max="20" step="0.05" value="0.15" style="width:80px"></label><label>Rounds <input id="r-rounds" type="number" min="1" max="200" value="30" style="width:70px"></label></div>
-          <h3 class="section">Labs <span class="info" title="Each lab is an AI model with a way of working. Both sides get the same labs.">ⓘ</span></h3>
+          <div class="row"><label>Name <input id="r-id" value="my-test" style="width:150px"></label><label>Money per agent, $ <input id="r-budget" type="number" min="0.05" max="20" step="0.05" value="0.15" style="width:80px"></label><label>Rounds <input id="r-rounds" type="number" min="1" max="200" value="30" style="width:70px"></label></div>
+          <h3 class="section">Agents <span class="info" title="Each agent is an AI model with a way of working. Both sides get the same agents.">ⓘ</span></h3>
           <div class="labs" id="r-labs"></div>
-          <div class="row"><button class="btn" id="r-add">Add a lab</button></div>
+          <div class="row"><button class="btn" id="r-add">Add an agent</button></div>
           <h3 class="section">Targets that count <span class="info" title="The test is judged on these, chosen before it runs.">ⓘ</span></h3>
           <div class="row"><a href="#" id="r-suggest">Suggest from earlier tests</a><span class="muted" id="r-suggest-note"></span></div>
           <div class="choice" id="r-counted"></div>
-          <div class="row"><label>Post helper results <span class="info" title="Smaller results the targets need, listed for every lab to prove.">ⓘ</span> <select id="r-conj"><option value="none">none</option><option value="direct" selected>the ones the targets use directly</option><option value="all">all the ones they rest on</option></select></label></div>
+          <div class="row"><label>Post helper ideas <span class="info" title="Smaller ideas the targets need, listed for every agent to prove.">ⓘ</span> <select id="r-conj"><option value="none">none</option><option value="direct" selected>the ones the targets use directly</option><option value="all">all the ones they rest on</option></select></label></div>
         </div>
       </details>
     </div>
@@ -305,7 +305,7 @@
         <input type="range" id="sim-scrub" min="0" max="0" value="0" aria-label="Round">
         <span class="clock" id="sim-clock">Round 0</span>
       </div>
-      <p class="muted" style="margin:0 0 8px">A round is one step of the run: that round's compute is handed out, each agent makes the tries it can afford, new results are shared or kept, and rewards are paid. What each agent earned in recent rounds sets its share of the next round's compute (ρ). Step through the rounds with the buttons above.</p>
+      <p class="muted" style="margin:0 0 8px">A round is one step of the run: that round's money is handed out, each agent makes the attempts it can afford, new ideas are shared or kept, and rewards are paid. What each agent earned in recent rounds sets its share of the next round's money (ρ). Step through the rounds with the buttons above.</p>
       <div class="legend" id="sim-legend"></div>
       <div class="panes"><div class="pane" id="pane-left"></div><div class="pane" id="pane-right"></div></div>
     </div>
@@ -319,7 +319,7 @@
         <span class="clock" id="pilot-clock"></span>
         <label><input type="checkbox" id="pilot-follow" checked> Follow live</label>
       </div>
-      <p class="note">✓ proved · ✕ not proved · the number is how many tries it took. Click one to see it.</p>
+      <p class="note">✓ proved · ✕ not proved · the number is how many attempts it took. Click one to see it.</p>
       <div class="cards" id="pilot-cards"></div>
       <div class="grid"><table class="pilot" id="pilot-grid"></table></div>
     </div>
@@ -335,7 +335,7 @@
       </div>
       <div id="f-existing" class="hidden"><select id="f-pick"></select><a id="f-report-link" href="#"></a></div>
       <div id="f-describe">
-        <textarea id="f-desc" class="prose" rows="3" placeholder="For example: protein design. Labs start from known folds, then design binders, then enzymes. Three enzymes are the prizes."></textarea>
+        <textarea id="f-desc" class="prose" rows="3" placeholder="For example: protein design. Agents start from known folds, then design binders, then enzymes. Three enzymes are the bounties."></textarea>
         <div class="row"><button class="btn primary" id="f-draft">Draft it</button><span class="muted">An AI model writes the file. A few cents.</span></div>
       </div>
       <div id="f-edit" class="hidden">
@@ -441,7 +441,7 @@ async function drawResults() {
     { title: 'AI models', note: 'Real models proving theorems; Lean checks every proof.', cards: cards.filter((c) => (c.kind === 'race' || c.kind === 'model pilot') && !c.invalid) },
     { title: 'Topics', note: 'One full report per research topic (simulation).', cards: cards.filter((c) => c.kind === 'field report') },
     { title: 'Questions answered by simulation', note: 'Each one changes one thing and compares.', cards: cards.filter((c) => c.kind === 'simulation' && !mine(c)) },
-    { title: 'Your quick tries', note: 'Made on the New page.', cards: cards.filter(mine), fold: true },
+    { title: 'Your quick tests', note: 'Made on the New page.', cards: cards.filter(mine), fold: true },
     { title: 'Not valid', note: 'Kept for the record; do not use.', cards: cards.filter((c) => c.invalid), fold: true },
   ].filter((g) => g.cards.length);
   const card = (c) => `<a class="res field" href="#/doc/${esc(c.page)}">
@@ -515,7 +515,7 @@ function featureControl(i, f, p) {
   let ctl = '';
   if (f.type === 'slider') ctl = `<input type="range" min="0" max="1" step="0.05" value="${p[f.key]}" data-i="${i}" data-f="${f.key}" aria-label="${esc(f.label)}"><div class="ends"><span>${esc(f.left)}</span><span>${esc(f.right)}</span></div>`;
   else if (f.type === 'select') ctl = `<select data-i="${i}" data-f="${f.key}" aria-label="${esc(f.label)}">${Object.entries(f.options).map(([k, v]) => `<option value="${k}" ${p[f.key] === k ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select>`;
-  else if (f.type === 'toggle') ctl = `<label><input type="checkbox" data-i="${i}" data-f="${f.key}" ${p[f.key] ? 'checked' : ''}> sees and cites other labs' results</label>`;
+  else if (f.type === 'toggle') ctl = `<label><input type="checkbox" data-i="${i}" data-f="${f.key}" ${p[f.key] ? 'checked' : ''}> sees and cites other agents' ideas</label>`;
   else if (f.type === 'number') ctl = `<input type="number" min="${f.min}" max="${f.max}" value="${p[f.key]}" data-i="${i}" data-f="${f.key}" style="width:60px" aria-label="${esc(f.label)}"> repairs per action`;
   else ctl = '<span class="muted">—</span>';
   return `<div class="feat" title="${esc(f.explain)}"><div class="fl"><b>${esc(f.label)}</b> <span class="info" title="${esc(f.explain)}">ⓘ</span>${kind}</div>${ctl}</div>`;
@@ -524,7 +524,7 @@ function drawLabs() {
   const mopts = (sel) => R.models.map((m) => `<option value="${esc(m.id)}" ${m.id === sel ? 'selected' : ''}>${esc(m.id)} · $${m.input.toFixed(2)} / $${m.output.toFixed(2)} per M tokens</option>`).join('');
   const popts = (sel) => R.personas.map((p) => `<option ${p.name === sel ? 'selected' : ''}>${esc(p.name)}</option>`).join('') + (R.personas.some((p) => p.name === sel) ? '' : `<option selected>${esc(sel)}</option>`);
   $('r-labs').innerHTML = R.labs.map((l, i) => `<div class="lab">
-      <div class="lhead"><b>Lab ${i + 1}</b>
+      <div class="lhead"><b>Agent ${i + 1}</b>
         <label><span class="part">Model</span><select data-i="${i}" class="r-model">${mopts(l.model)}</select></label>
         <label><span class="part">Way of working</span><select data-i="${i}" class="r-persona">${popts(l.persona.name)}</select></label>
         <span><button class="btn r-edit" data-i="${i}">${l.open ? 'Done' : 'Adjust'}</button> <button class="btn r-del" data-i="${i}" ${R.labs.length < 2 ? 'disabled' : ''}>Remove</button></span></div>
@@ -550,7 +550,7 @@ async function told(i) {
     const { text } = await post('/api/persona/text', { persona: R.labs[i].persona });
     const el = $('told-' + i);
     const l = R.labs[i];
-    if (el) el.innerHTML = `<span class="muted">Told:</span> ${text ? esc(text) : '<i class="muted">nothing extra</i>'} <span class="muted">· ${l.persona.reuse ? 'sees others\' work' : 'works alone'} · ${l.persona.persistence} fixes per try · ${esc(l.persona.thoroughness)} effort</span>`;
+    if (el) el.innerHTML = `<span class="muted">Told:</span> ${text ? esc(text) : '<i class="muted">nothing extra</i>'} <span class="muted">· ${l.persona.reuse ? 'sees others\' work' : 'works alone'} · ${l.persona.persistence} fixes per attempt · ${esc(l.persona.thoroughness)} effort</span>`;
   } catch {}
 }
 function raceDesign() {
@@ -681,12 +681,12 @@ function drawSide(k, acts) {
     if (a.kind === 'target' && a.ok && !solvedBy.has(a.target)) solvedBy.set(a.target, a.agent);
   }
   const spent = labs.reduce((x, l) => x + l.spent, 0), budget = o.budget * o.agents.length;
-  const chips = C.run.targets.map((t) => { const by = solvedBy.get(t.id); return `<span class="mark ${by !== undefined ? 'ok' : ''}" title="${t.id}: depth ${t.depth}, bounty ${t.bounty}${by !== undefined ? `, solved by lab ${by + 1}` : ''}" style="cursor:default">${t.id}${by !== undefined ? ` · lab ${by + 1}` : ''}</span>`; }).join('');
+  const chips = C.run.targets.map((t) => { const by = solvedBy.get(t.id); return `<span class="mark ${by !== undefined ? 'ok' : ''}" title="${t.id}: level ${t.depth}, bounty ${t.bounty}${by !== undefined ? `, solved by agent ${by + 1}` : ''}" style="cursor:default">${t.id}${by !== undefined ? ` · agent ${by + 1}` : ''}</span>`; }).join('');
   const labRows = labs.map((l) => `<tr><td>${l.i + 1}</td><td>${esc(l.model)}${l.passed ? ' <span class="muted">(passed)</span>' : ''}</td><td>${l.actions}</td><td>${l.ok}</td><td style="width:35%"><div class="meter" style="width:${Math.min(100, 100 * l.spent / o.budget).toFixed(1)}%"></div></td><td>$${l.spent.toFixed(2)}</td></tr>`).join('');
   const feed = [...acts].sort((a, b) => b.t - a.t).slice(0, 40).map((a) => {
     const what = a.kind === 'target' ? `target <b>${esc(a.target ?? '?')}</b>` : a.kind === 'lemma' ? `lemma <code>${esc(a.entry ?? a.name ?? '?')}</code>` : a.kind === 'pass' ? 'passed' : 'no action';
     const res = a.kind === 'pass' ? '' : a.ok ? (a.reason ? `<span class="muted">accepted (${esc(a.reason)})</span>` : '<span class="ok">✓ accepted</span>') : `<span class="no">✕ ${esc(a.reason ?? 'not accepted')}</span>`;
-    return `<div style="padding:3px 0;border-bottom:1px solid var(--line)"><button class="mark" data-k="${k}" data-t="${a.t}" data-agent="${a.agent}" title="Show the turns">${a.turns}</button>round ${a.round} · lab ${a.agent + 1} · ${what} ${res} <span class="muted">· $${(a.cost ?? a.listCost).toFixed(3)}</span></div>`;
+    return `<div style="padding:3px 0;border-bottom:1px solid var(--line)"><button class="mark" data-k="${k}" data-t="${a.t}" data-agent="${a.agent}" title="Show the turns">${a.turns}</button>round ${a.round} · agent ${a.agent + 1} · ${what} ${res} <span class="muted">· $${(a.cost ?? a.listCost).toFixed(3)}</span></div>`;
   }).join('');
   el.innerHTML = `<h2>${k === 'oso' ? 'OSO' : 'Traditional'}${side.finished && acts.length === side.actions.length ? ' <span class="muted">· finished</span>' : ''}</h2>
     <div class="stats">
@@ -697,11 +697,11 @@ function drawSide(k, acts) {
       <div class="stat">Failed attempts<b>${failed}</b></div>
     </div>
     <div style="margin:6px 0 10px">${chips}</div>
-    <table class="agents"><thead><tr><th>lab</th><th>model</th><th>actions</th><th>accepted</th><th colspan="2">spent of $${o.budget}</th></tr></thead><tbody>${labRows}</tbody></table>
+    <table class="agents"><thead><tr><th>agent</th><th>model</th><th>actions</th><th>accepted</th><th colspan="2">spent of $${o.budget}</th></tr></thead><tbody>${labRows}</tbody></table>
     <div class="log" style="max-height:340px">${feed || 'No actions yet.'}</div>`;
   for (const b of el.querySelectorAll('.log .mark')) b.onclick = () => {
     const a = C.run[b.dataset.k].actions.find((x) => String(x.t) === b.dataset.t && String(x.agent) === b.dataset.agent);
-    $('drawer-body').innerHTML = `<h3>Round ${a.round} · lab ${a.agent + 1} (${esc(a.model)}) · ${b.dataset.k === 'oso' ? 'OSO' : 'traditional'}</h3><p class="muted">${a.kind === 'target' ? 'Target ' + esc(a.target) : 'Lemma ' + esc(a.entry ?? a.name ?? '')} · ${a.ok ? 'accepted' : 'not accepted'}${a.reason ? ' (' + esc(a.reason) + ')' : ''} · ${a.turns} turn(s) · $${(a.cost ?? a.listCost).toFixed(3)}${a.cost === undefined ? ' at list price' : ''}${a.servedBy?.length ? ' · served by ' + esc([...new Set(a.servedBy)].join(', ')) : ''}${a.uses?.length ? ` · used ${a.uses.map((u) => esc(u.replace(/^OSO\./, ''))).join(', ')}` : ''}</p>` +
+    $('drawer-body').innerHTML = `<h3>Round ${a.round} · agent ${a.agent + 1} (${esc(a.model)}) · ${b.dataset.k === 'oso' ? 'OSO' : 'traditional'}</h3><p class="muted">${a.kind === 'target' ? 'Target ' + esc(a.target) : 'Lemma ' + esc(a.entry ?? a.name ?? '')} · ${a.ok ? 'accepted' : 'not accepted'}${a.reason ? ' (' + esc(a.reason) + ')' : ''} · ${a.turns} turn(s) · $${(a.cost ?? a.listCost).toFixed(3)}${a.cost === undefined ? ' at list price' : ''}${a.servedBy?.length ? ' · served by ' + esc([...new Set(a.servedBy)].join(', ')) : ''}${a.uses?.length ? ` · used ${a.uses.map((u) => esc(u.replace(/^OSO\./, ''))).join(', ')}` : ''}</p>` +
       a.transcript.map((t, n) => `<div class="turn"><h4>Turn ${n + 1}${t.errors.length ? ' <span class="no">✕ rejected</span>' : n === a.transcript.length - 1 && a.ok ? ' <span class="ok">✓ accepted</span>' : ''}</h4>${t.errors.length ? `<pre class="err">${esc(t.errors.join('\n\n'))}</pre>` : ''}${t.proof ? `<pre>${esc(t.proof)}</pre>` : `<pre>${esc(t.text.slice(0, 2000))}</pre>`}</div>`).join('');
     $('drawer').classList.add('open');
   };
@@ -741,8 +741,8 @@ const EXAMPLES = [
   { label: 'Does OSO beat traditional here?', question: 'For the same money, does OSO get further than traditional research on this topic?', settings: ['traditional', 'oso'], measure: 'frontier' },
   { label: 'Sharing or credit: which one helps?', question: 'Is it sharing at once, or credit flowing back, that makes OSO get further?', settings: ['traditional', 'oso', 'sharingOnly', 'creditOnly'], measure: 'frontier' },
   { label: 'How much credit makes agents share?', question: 'When agents choose what to publish, how low must α be before most of them share?', settings: ['osoChoice'], measure: 'sharing', vary: { 'rules.alpha': '0.8, 0.5, 0.3, 0.1' } },
-  { label: 'What if shared results are sometimes wrong?', question: 'Does OSO still get further when some shared results are wrong?', settings: ['traditional', 'oso'], measure: 'frontier', vary: { 'knowledge.errorRate': '0, 0.05, 0.15' } },
-  { label: 'Does a bigger mint help or feed gaming?', question: 'Does a bigger mint per result make agents share more, or just pay the gamer?', settings: ['traditional', 'oso', 'osoChoice'], measure: 'frontier', vary: { 'rules.mint': '0, 1, 4' } },
+  { label: 'What if shared ideas are sometimes wrong?', question: 'Does OSO still get further when some shared ideas are wrong?', settings: ['traditional', 'oso'], measure: 'frontier', vary: { 'knowledge.errorRate': '0, 0.05, 0.15' } },
+  { label: 'Does a bigger mint help or feed gaming?', question: 'Does a bigger mint per idea make agents share more, or just pay the gamer?', settings: ['traditional', 'oso', 'osoChoice'], measure: 'frontier', vary: { 'rules.mint': '0, 1, 4' } },
 ];
 function useExample(x) {
   $('e-question').value = x.question;
@@ -819,7 +819,7 @@ async function enterDesign() {
   // Step 2
   const SETTING_NOTES = {
     traditional: 'publish only finished work; nothing flows back',
-    oso: 'publish every result at once; value flows back',
+    oso: 'publish every idea at once; value flows back',
     osoChoice: 'value flows back; agents choose what to publish',
     creditOnly: 'value flows back, but only finished work is published',
     sharingOnly: 'publish at once, but nothing flows back',
@@ -876,7 +876,7 @@ async function checkField() {
   const c = await post('/api/spaces/check', { yaml: $('f-yaml').value });
   if (!c.ok) { $('f-result').innerHTML = `<p class="no">Not valid yet:</p><pre class="err">${esc(c.error)}</pre>`; return c; }
   const s = c.summary;
-  $('f-result').innerHTML = `<p><span class="ok">Valid</span>, and a test run works. <b>${esc(c.title)}</b> (<code>${esc(c.id)}</code>${c.exists ? ', <span class="no">a field with this id exists</span>' : ''}): ${s.results} results in ${s.levels} levels, ${s.targets} targets, ${s.deadEnds} dead ends; ${s.agents} agents; budget ${s.budget}${s.calibrated ? ' (calibrated: the smallest budget at which OSO solves about 90% of the targets)' : ''}.</p><div class="preview">${c.svg}</div>`;
+  $('f-result').innerHTML = `<p><span class="ok">Valid</span>, and a test run works. <b>${esc(c.title)}</b> (<code>${esc(c.id)}</code>${c.exists ? ', <span class="no">a field with this id exists</span>' : ''}): ${s.results} ideas in ${s.levels} levels, ${s.targets} targets, ${s.deadEnds} dead ends; ${s.agents} agents; budget ${s.budget}${s.calibrated ? ' (calibrated: the smallest budget at which OSO solves about 90% of the targets)' : ''}.</p><div class="preview">${c.svg}</div>`;
   return c;
 }
 
@@ -1017,11 +1017,11 @@ const EXPLAIN = {
   'rules.c': (c) => {
     const a = val('rules.alpha'), m = 10, toB = m * c * 0.6, toC = m * c * 0.4;
     const v = { T: m * (1 - c), B: toB * a, C: toC * a, A1: toB * (1 - a) * 0.5, A2: toB * (1 - a) * 0.5 + toC * (1 - a) };
-    return { svg: exampleTree({ values: v, max: 10, labels: Object.fromEntries(Object.entries(v).map(([k, x]) => [k, x.toFixed(2)])), notes: { T: 'new result: mints 10' } }),
+    return { svg: exampleTree({ values: v, max: 10, labels: Object.fromEntries(Object.entries(v).map(([k, x]) => [k, x.toFixed(2)])), notes: { T: 'new idea: mints 10' } }),
       cap: `T has just been validated and mints 10 tokens. At c = ${c}, T's authors get ${(m * (1 - c)).toFixed(1)} and ${(m * c).toFixed(1)} goes to what T built on (B 60%, C 40%), flowing on down at α = ${a}. So B, C and their foundations earn as soon as someone builds on them, not only when a bounty is won.` };
   },
   'rules.mint': (m) => ({ svg: exampleTree({ values: { A1: m, A2: m, B: m, C: m, T: m }, max: 5, labels: { A1: `+${m}`, A2: `+${m}`, B: `+${m}`, C: `+${m}`, T: `+${m}` }, notes: { T: 'plus its bounty' } }),
-    cap: `Every validated result mints ${m} tokens for its authors (less the cited share c under OSO rules). Five results here: ${(5 * m).toFixed(1)} tokens in all, before any bounty. A trivial result also earns ${m} if the validation screen lets it through, which is what gaming agents chase.` }),
+    cap: `Every validated idea mints ${m} tokens for its authors (less the cited share c under OSO rules). Five ideas here: ${(5 * m).toFixed(1)} tokens in all, before any bounty. A trivial idea also earns ${m} if the validation screen lets it through, which is what gaming agents chase.` }),
   'rules.screen': (th) => {
     const n = 10, rej = Math.round(th * n), m = val('rules.mint');
     let extra = '';
@@ -1030,15 +1030,15 @@ const EXPLAIN = {
       extra += `<rect x="${x - 13}" y="${y - 13}" width="26" height="26" rx="5" fill="var(--surface)" stroke="var(--ink-3)" stroke-dasharray="3 2"/>` + (bad ? `<path d="M${x - 8},${y - 8} L${x + 8},${y + 8} M${x + 8},${y - 8} L${x - 8},${y + 8}" stroke="var(--bad)" stroke-width="2"/>` : `<text x="${x}" y="${y + 4}" text-anchor="middle" font-size="10" fill="var(--ink)">+${m}</text>`);
     }
     extra += `<text x="200" y="300" text-anchor="middle" font-size="11" fill="var(--ink-2)">ten trivial submissions</text>`;
-    return { svg: exampleTree({ extra, height: 310 }), cap: `A gaming agent submits trivial results that add nothing to the tree. At θ = ${th}, validators reject about ${rej} of 10 (✕); the other ${n - rej} earn the mint (${m} each) like real results.` };
+    return { svg: exampleTree({ extra, height: 310 }), cap: `A gaming agent submits trivial ideas that add nothing to the tree. At θ = ${th}, validators reject about ${rej} of 10 (✕); the other ${n - rej} earn the mint (${m} each) like real ideas.` };
   },
   'budget.allocation.rho': (rho) => {
     const e = [0, 10, 30], tot = 40, per = 30;
     const c = e.map((x) => per * ((1 - rho) / 3 + rho * x / tot));
-    return { svg: bars([['agent 1 (earned 0)', c[0]], ['agent 2 (earned 10)', c[1]], ['agent 3 (earned 30)', c[2]]], ' compute'),
-      cap: `30 compute to give out this round, to three agents who recently earned 0, 10 and 30. At ρ = ${rho}, ${Math.round((1 - rho) * 100)}% is split equally and ${Math.round(rho * 100)}% by earnings. High ρ funds whoever is winning, like a few big labs; under traditional rules that concentrates hidden work in few hands.` };
+    return { svg: bars([['agent 1 (earned 0)', c[0]], ['agent 2 (earned 10)', c[1]], ['agent 3 (earned 30)', c[2]]], ' money'),
+      cap: `30 money to give out this round, to three agents who recently earned 0, 10 and 30. At ρ = ${rho}, ${Math.round((1 - rho) * 100)}% is split equally and ${Math.round(rho * 100)}% by earnings. High ρ funds whoever is winning, like a few big agents; under traditional rules that concentrates hidden work in few hands.` };
   },
-  'budget.X': (X) => ({ svg: exampleTree({ notes: { T: 'target' } }), cap: `${X} compute for the whole run. Each attempt at a result costs the agent its cost per attempt (1 for most). The field's own budget, ${D.field['budget.X']}, is the smallest at which OSO solves about 90% of its targets; less makes the race tighter for both communities, more lets both finish.` }),
+  'budget.X': (X) => ({ svg: exampleTree({ notes: { T: 'target' } }), cap: `${X} money for the whole run. Each attempt at an idea costs the agent its cost per attempt (1 for most). The field's own budget, ${D.field['budget.X']}, is the smallest at which OSO solves about 90% of its targets; less makes the race tighter for both communities, more lets both finish.` }),
   'behaviour.psi': (psi) => decision(val('behaviour.kappa'), psi),
   'behaviour.kappa': (k) => decision(k, val('behaviour.psi')),
   'behaviour.perceptionNoise': (sg) => {
@@ -1065,13 +1065,13 @@ const EXPLAIN = {
   'knowledge.absorbCost': (k) => {
     const n = Math.min(3, Math.floor(1 / Math.max(1e-9, k))), left = Math.max(0, 1 - n * k);
     return { svg: exampleTree({ values: { A1: 60, A2: 60, B: 60 }, labels: { A1: 'new', A2: 'new', B: 'new' }, notes: { C: 'not yet published' } }),
-      cap: `Three results were just published. An agent with 1 compute this round pays ${k} to take up each before it can build on it: ${k === 0 ? 'free, so it takes up all three and keeps its whole compute for attempts' : `it can take up ${n} and has ${left.toFixed(2)} left for attempts`}. This is the cost of reading a crowded literature; it falls hardest on open, fast-sharing communities.` };
+      cap: `Three ideas were just published. An agent with 1 money this round pays ${k} to take up each before it can build on it: ${k === 0 ? 'free, so it takes up all three and keeps its whole money for attempts' : `it can take up ${n} and has ${left.toFixed(2)} left for attempts`}. This is the cost of reading a crowded literature; it falls hardest on open, fast-sharing communities.` };
   },
   'knowledge.errorRate': (e) => ({ svg: exampleTree({ values: { A2: 20, B: 70 }, labels: { B: 'wrong?' }, notes: { T: 'checked', B: `wrong with chance ${e}` }, dashed: ['B'] }),
-    cap: `Each proof is wrong with chance ${e}. If B is wrong, so is anything built on it; agents who took up B carry the error. When someone proves T on top of a wrong B, T's check fails: T is rejected and B is retracted. Sharing spreads wrong results further and faster, which is the main risk of sharing.` }),
+    cap: `Each proof is wrong with chance ${e}. If B is wrong, so is anything built on it; agents who took up B carry the error. When someone proves T on top of a wrong B, T's check fails: T is rejected and B is retracted. Sharing spreads wrong ideas further and faster, which is the main risk of sharing.` }),
   'success.p0': (p0) => pChances(p0, val('success.eta')),
   'success.eta': (eta) => pChances(val('success.p0'), eta),
-  'agents.mix.gamer': (g) => ({ svg: exampleTree({ notes: { T: 'target' } }), cap: `${g} gaming agent${g === 1 ? '' : 's'} in the community, in addition to the others. A gaming agent submits trivial results to collect the mint; the validation screen θ (now ${val('rules.screen')}) decides how often that pays.` }),
+  'agents.mix.gamer': (g) => ({ svg: exampleTree({ notes: { T: 'target' } }), cap: `${g} gaming agent${g === 1 ? '' : 's'} in the community, in addition to the others. A gaming agent submits trivial ideas to collect the mint; the validation screen θ (now ${val('rules.screen')}) decides how often that pays.` }),
 };
 function decision(kappa, psi) {
   const a = val('rules.alpha'), c = val('rules.c'), m = val('rules.mint');
@@ -1084,7 +1084,7 @@ function decision(kappa, psi) {
 function pChances(p0, eta) {
   const p = (l) => p0 * eta ** (l - 1);
   return { svg: exampleTree({ values: { A1: 100 * p(1), A2: 100 * p(1), B: 100 * p(2), C: 100 * p(2), T: 100 * p(3) }, labels: { A1: `${Math.round(100 * p(1))}%`, A2: `${Math.round(100 * p(1))}%`, B: `${Math.round(100 * p(2))}%`, C: `${Math.round(100 * p(2))}%`, T: `${(100 * p(3)).toFixed(1)}%` }, notes: { A1: 'level 1', B: 'level 2', T: 'level 3' } }),
-    cap: `Chance that one attempt succeeds: p₀ = ${p0} at level 1, times η = ${eta} for each level up. A level-3 result takes about ${Math.round(1 / Math.max(1e-9, p(3)))} attempts on average, and only once its inputs are known: under traditional rules every agent has to prove those inputs itself.` };
+    cap: `Chance that one attempt succeeds: p₀ = ${p0} at level 1, times η = ${eta} for each level up. A level-3 idea takes about ${Math.round(1 / Math.max(1e-9, p(3)))} attempts on average, and only once its inputs are known: under traditional rules every agent has to prove those inputs itself.` };
 }
 
 function explain() {
@@ -1093,7 +1093,7 @@ function explain() {
   const st = P[p.path];
   const v = st.vary ? Number(String(st.values).split(',')[0]) : st.value;
   const ex = EXPLAIN[p.path]?.(Number.isFinite(v) ? v : D.field[p.path]) ?? { svg: '', cap: '' };
-  $('e-explain').innerHTML = `<h3>${esc(p.label)}</h3><p>${esc(p.explain)}</p>${ex.svg}<p class="cap">${ex.cap}</p>${st.vary ? `<p class="cap">Varied: the example shows the first value, ${esc(String(st.values).split(',')[0])}.</p>` : ''}${ex.svg.includes('Example research tree') ? '<p class="cap muted">Example tree: A1 and A2 are foundations, B and C lemmas, T a target; arrows point from a result to what builds on it, labelled with how much it was used.</p>' : ''}`;
+  $('e-explain').innerHTML = `<h3>${esc(p.label)}</h3><p>${esc(p.explain)}</p>${ex.svg}<p class="cap">${ex.cap}</p>${st.vary ? `<p class="cap">Varied: the example shows the first value, ${esc(String(st.values).split(',')[0])}.</p>` : ''}${ex.svg.includes('Example research tree') ? '<p class="cap muted">Example tree: A1 and A2 are foundations, B and C lemmas, T a target; arrows point from an idea to what builds on it, labelled with how much it was used.</p>' : ''}`;
 }
 
 function currentDesign() {
@@ -1170,13 +1170,13 @@ function snapshots(run) {
         if (e.published) published[e.x] = -1; holders[e.x].delete(e.a);
         log.push(`${name(run, e.x)} was found wrong and retracted`);
       } else if (e.k === 'rejected') {
-        log.push(`agent ${e.a + 1}'s proof of target ${name(run, e.x)} was rejected: it rested on a wrong result`);
+        log.push(`agent ${e.a + 1}'s proof of target ${name(run, e.x)} was rejected: it rested on a wrong idea`);
       } else if (e.k === 'round') { earnings = e.earnings; spend = e.spend; level = e.level; }
     }
     const fails = [...tried.values()].reduce((a, c) => a + c.n - c.ok, 0);
     const trivial = (byRound.get(t) ?? []).filter((e) => e.k === 'trivial').length;
     if (fails) log.push(`${fails} failed attempt${fails > 1 ? 's' : ''}`);
-    if (trivial) log.push(`${trivial} trivial result${trivial > 1 ? 's' : ''} submitted (gaming the mint)`);
+    if (trivial) log.push(`${trivial} trivial idea${trivial > 1 ? 's' : ''} submitted (gaming the mint)`);
     snaps.push({ published: published.slice(), hidden: holders.map((h) => h.size), tried, proved: proved.slice(), pubs: pubs.slice(), earnings: earnings.slice(), spend, level, log });
   }
   return snaps;
@@ -1229,7 +1229,7 @@ function drawPane(pane, t) {
   const agents = run.agents.map((a) => `<tr><td>${a.id + 1}</td><td>${esc(a.archetype)}</td><td>${s.proved[a.id]}</td><td>${s.pubs[a.id]}</td><td style="width:40%"><div class="meter" style="width:${(100 * s.earnings[a.id] / maxE).toFixed(1)}%" title="${s.earnings[a.id].toFixed(1)}"></div></td><td>${s.earnings[a.id].toFixed(0)}</td></tr>`).join('');
   el.innerHTML = `<h2>${esc(run.setting.label)}${done ? ' <span class="muted">· run ended</span>' : ''}</h2>
     <div class="stats">
-      <div class="stat">Compute spent<b>${s.spend.toFixed(0)}<span class="muted"> / ${run.budget.X}</span></b></div>
+      <div class="stat">Money spent<b>${s.spend.toFixed(0)}<span class="muted"> / ${run.budget.X}</span></b></div>
       <div class="stat">Hardest level published<b>${s.level}<span class="muted"> / ${w.levels}</span></b></div>
       <div class="stat">Targets solved<b>${solved}<span class="muted"> / ${T}</span></b></div>
       <div class="stat">Published<b>${pubN}</b></div>

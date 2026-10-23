@@ -1,7 +1,7 @@
 id: failures
 title: 'Learning from failure: own failures vs. shared failures'
 description: >-
-  With the learning oracle, each failed attempt raises the next chance on that result by 10% of p.
+  With the learning oracle, each failed attempt raises the next chance on that idea by 10% of p.
   With rules.publishFailures, failed attempts are public, so agents also learn from others' failures
   (sharedWeight = 1). Compared under traditional and OSO (immediate) rules on the default world.
 question: "Does making failed attempts public help, and under which rules?"

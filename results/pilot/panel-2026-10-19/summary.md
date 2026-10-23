@@ -1,6 +1,6 @@
 # Five AI models: alone or with help
 
-**Question:** Can a model solve more when it is given the helper results (lemmas) a target needs?
+**Question:** Can a model solve more when it is given the helper ideas (lemmas) a target needs?
 
 **Answer:** With help, 3 of 5 models solved targets they never solved alone (gpt-5.6-terra, gemini-3.8-flash, deepseek-v4.1-flash). claude-opus-5.5 and claude-sonnet-5.5 solved everything alone.
 
@@ -14,11 +14,11 @@
 | gemini-3.8-flash | 14/16 | 11/16 | X1, A5 | 27.6k / 39.4k |
 | deepseek-v4.1-flash | 12/16 | 4/16 | A3, B5, X2, A5 | 21.5k / 58.8k |
 
-**Design** (fixed before the run): compared each model alone, and with the helper results each target needs · held the same: the 8 posted targets, 2 attempts each, up to 3 repairs, reasoning effort high, grind banned · measure: targets solved with help but never alone, higher is better · 2 tries per target, each way. Cost: $18.09.
+**Design** (fixed before the run): compared each model alone, and with the helper ideas each target needs · held the same: the 8 posted targets, 2 attempts each, up to 3 repairs, reasoning effort high, grind banned · measure: targets solved with help but never alone, higher is better · 2 attempts per target, each way. Cost: $18.09.
 
 **Caveats:**
-- The helper results were given, not found: this measures how much they help, not whether a model would think of them.
-- Only a few tries per target: the rates are rough.
+- The helper ideas were given, not found: this measures how much they help, not whether a model would think of them.
+- Only a few attempts per target: the rates are rough.
 
 <details><summary>Details</summary>
 
@@ -65,7 +65,7 @@ How many targets each model proved as it spent, working up the tree from the sha
 | X2 | 5 | 2/2 alone · 2/2 with | 2/2 alone · 2/2 with | 2/2 alone · 2/2 with | 2/2 alone · 2/2 with | 0/2 alone · 2/2 with |
 | A5 | 7 | 2/2 alone · 2/2 with | 2/2 alone · 2/2 with | 1/2 alone · 2/2 with | 0/2 alone · 1/2 with | 0/2 alone · 1/2 with |
 
-A target a model proves alone does not need its lemmas, for that model: shared lemmas then save cost, but do not make the result reachable. Ids are the anonymous ids of [worlds/lean-reference.json](../../../worlds/lean-reference.json). Runs: [panel-claude-opus-5.5](../panel-claude-opus-5.5/summary.md), [panel-claude-sonnet-5.5](../panel-claude-sonnet-5.5/summary.md), [panel-gpt-5.6-terra](../panel-gpt-5.6-terra/summary.md), [panel-gemini-3.8-flash](../panel-gemini-3.8-flash/summary.md), [panel-deepseek-v4.1-flash](../panel-deepseek-v4.1-flash/summary.md).
+A target a model proves alone does not need its lemmas, for that model: shared lemmas then save cost, but do not make the target reachable. Ids are the anonymous ids of [worlds/lean-reference.json](../../../worlds/lean-reference.json). Runs: [panel-claude-opus-5.5](../panel-claude-opus-5.5/summary.md), [panel-claude-sonnet-5.5](../panel-claude-sonnet-5.5/summary.md), [panel-gpt-5.6-terra](../panel-gpt-5.6-terra/summary.md), [panel-gemini-3.8-flash](../panel-gemini-3.8-flash/summary.md), [panel-deepseek-v4.1-flash](../panel-deepseek-v4.1-flash/summary.md).
 
 ## Notes
 

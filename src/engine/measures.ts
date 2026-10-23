@@ -132,9 +132,9 @@ const reached = (rs: RunResult[]) => rs.filter((r) => r.speed !== null);
 /** Every column an experiment can list under `columns:`. Add a measure by adding an entry. */
 /** Plain names of measures, for answers. */
 export const MEASURE_NAMES: Record<string, string> = {
-  frontier: 'hardest level published', targetsSolved: 'targets solved', cost: 'compute to reach the main level', speed: 'rounds to reach the main level',
-  value: 'value gained (prizes of targets solved)', roi: 'value gained per unit spent',
-  sharing: 'share of results published at once', reachTarget: 'share of runs reaching the main level', waste: 'wasted compute', credit: 'credit accuracy',
+  frontier: 'hardest level published', targetsSolved: 'targets solved', cost: 'money to reach the main level', speed: 'rounds to reach the main level',
+  value: 'value gained (bounties of targets solved)', roi: 'value gained per unit spent',
+  sharing: 'share of ideas published at once', reachTarget: 'share of runs reaching the main level', waste: 'wasted money', credit: 'credit accuracy',
 };
 
 /** Each column's number for one run (null when a run has none, e.g. cost when the level was not reached). */
@@ -155,7 +155,7 @@ export const COLUMNS: Record<string, Column> = {
   speed: { header: () => 'speed', value: (rs) => msd(reached(rs).map((r) => r.speed!), 0) },
   cost: { header: () => 'cost', value: (rs) => msd(reached(rs).map((r) => r.cost!), 0) },
   spend: { header: () => 'spend', value: (rs) => msd(rs.map((r) => r.spend), 0) },
-  productivity: { header: () => 'results per 100', value: (rs) => msd(rs.map((r) => r.productivity * 100), 1) },
+  productivity: { header: () => 'ideas per 100', value: (rs) => msd(rs.map((r) => r.productivity * 100), 1) },
   breadth: { header: () => 'breadth', value: (rs) => msd(rs.map((r) => r.breadth)) },
   waste: { header: () => 'waste', value: (rs) => msd(rs.map((r) => r.waste)) },
   credit: { header: () => 'credit', value: (rs) => msd(rs.map((r) => r.creditAccuracy)) },
@@ -176,5 +176,5 @@ export const COLUMNS: Record<string, Column> = {
   trivialSpend: { header: () => 'trivial spend', value: (rs) => msd(rs.map((r) => r.wasteParts.trivial)) },
   rejected: { header: () => 'rejected targets', value: (rs) => msd(rs.map((r) => r.rejectedTargets), 1) },
   retracted: { header: () => 'retracted', value: (rs) => msd(rs.map((r) => r.retracted), 1) },
-  absorbSpend: { header: () => 'absorb spend', value: (rs) => msd(rs.map((r) => r.absorbShare)) },
+  absorbSpend: { header: () => 'take up spend', value: (rs) => msd(rs.map((r) => r.absorbShare)) },
 };

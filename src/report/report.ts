@@ -154,8 +154,8 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
   const curveRuns = (label: string) => byLabel(settings, { setting: label });
   writeFileSync(join(outDir, 'figures', 'frontier.svg'), lineChart({
     title: `How far each community got for the money: ${spec.title}`,
-    subtitle: `Mean hardest level published, by compute spent (${seeds} runs per setting). Higher is better.`,
-    xLabel: 'Compute spent', yLabel: 'Hardest level published',
+    subtitle: `Mean hardest level published, by money spent (${seeds} runs per setting). Higher is better.`,
+    xLabel: 'Money spent', yLabel: 'Hardest level published',
     series: [
       { name: 'OSO (immediate)', slot: 2, points: frontierCurve(curveRuns('OSO (immediate)'), X) },
       { name: 'Traditional', slot: 1, points: frontierCurve(curveRuns('Traditional'), X) },
@@ -168,10 +168,10 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
   }));
   writeFileSync(join(outDir, 'figures', 'alpha.svg'), lineChart({
     title: 'Does flow-back make agents share?',
-    subtitle: `Agents choose whether to publish each intermediate result. Lower α: more value flows back to what a result built on.`,
-    xLabel: 'Absorption rate α (share of value a result absorbs)', yLabel: 'Share',
+    subtitle: `Agents choose whether to publish each intermediate idea. Lower α: more value flows back to what an idea built on.`,
+    xLabel: 'Absorption rate α (share of value an idea absorbs)', yLabel: 'Share',
     series: [
-      { name: 'Results shared', slot: 1, points: alphaPoints.map((p) => [p.alpha, p.sharing]) },
+      { name: 'Ideas shared', slot: 1, points: alphaPoints.map((p) => [p.alpha, p.sharing]) },
       { name: `Runs reaching level ${L}`, slot: 2, points: alphaPoints.map((p) => [p.alpha, p.reach]) },
     ],
     x: [0.1, 1], y: [0, 1], reverseX: true, markers: true,
@@ -206,7 +206,7 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
   const cFmt = (v: number) => `${Math.round(v * 100)}%`;
   writeFileSync(join(outDir, 'figures', 'flow-back-grid.svg'), heatmap({
     title: 'The flow-back levers together',
-    subtitle: 'Share of intermediate results agents choose to publish; below it, the hardest level reached.',
+    subtitle: 'Share of intermediate ideas agents choose to publish; below it, the hardest level reached.',
     rowLabel: 'α, absorption rate', colLabel: 'c, cited share of the mint',
     rows: GRID.alpha.map(String), cols: GRID.c.map(cFmt),
     values: GRID.alpha.map((a) => GRID.c.map((c) => gridCell(a, c).sharing)), range: [0, 1],
@@ -222,11 +222,11 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
   const sensRows = sens.flatMap((x) => x.points.map((q) => ({
     parameter: x.p.label, value: q.value + (q.v === x.base ? ' (this space)' : ''),
     'OSO frontier': f1(q.oso.frontier), 'traditional frontier': f1(q.trad.frontier), 'OSO lead': (q.lead >= 0 ? '+' : '') + f1(q.lead),
-    'OSO targets': f1(q.oso.targetsSolved), 'traditional targets': f1(q.trad.targetsSolved), 'results shared': pct(q.oso.sharing),
+    'OSO targets': f1(q.oso.targetsSolved), 'traditional targets': f1(q.trad.targetsSolved), 'ideas shared': pct(q.oso.sharing),
   })));
   const gridTable = GRID.alpha.map((a) => ({ 'α \\ c': a, ...Object.fromEntries(GRID.c.map((c) => { const g = gridCell(a, c); return [cFmt(c), `${pct(g.sharing)} · ${f1(g.frontier)}`]; })) }));
   const gamerNote = mostSensitive.p.id === 'rho' && (scenario.agents.mix.gamer ?? 0) > 0
-    ? ' Why ρ matters so much here: under traditional rules, when compute follows earnings, the first agent to earn takes the compute. In this community that is the gaming agent, which earns early from trivial results and then, holding all the compute, does the research too. Without a gaming agent the effect disappears (see the funding-rule-gamer experiment).'
+    ? ' Why ρ matters so much here: under traditional rules, when money follows earnings, the first agent to earn takes the money. In this community that is the gaming agent, which earns early from trivial ideas and then, holding all the money, does the research too. Without a gaming agent the effect disappears (see the funding-rule-gamer experiment).'
     : '';
   const sensitivityLine = `Across the tested values of the parameters a market or community sets, OSO's lead (agents choosing what to share) runs from **${marketMin.min >= 0 ? '+' : ''}${f1(marketMin.min)}** to **+${f1(Math.max(...market.map((x) => x.max)))}** levels. The smallest lead, at ${marketMin.p.label} = ${worst.value}, is ${worstText}. The lead is most sensitive to **${mostSensitive.p.label}**.${gamerNote}`;
 
@@ -243,7 +243,7 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
   };
 
   const costLine = (s: typeof trad, name: string) =>
-    s.reach > 0 ? `${name} ${Math.round(s.cost)} compute${s.reach < 1 ? ` (in the ${pct(s.reach)} of runs that got there)` : ''}` : `${name} never got there`;
+    s.reach > 0 ? `${name} ${Math.round(s.cost)} money${s.reach < 1 ? ` (in the ${pct(s.reach)} of runs that got there)` : ''}` : `${name} never got there`;
   const verdictText = {
     'OSO ahead': 'For the same money, the OSO community got further, or got there more cheaply, than the traditional one.',
     'no clear difference': 'For the same money, there is no clear difference between the two communities.',
@@ -254,10 +254,10 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
     const rs = [...Array(world.n).keys()].filter((r) => world.level[r] === l);
     return { level: l, results: rs.length, targets: rs.filter((r) => world.isTarget[r]).length, 'success chance per attempt': pct(mean(rs.map((r) => world.p[r]))) };
   });
-  const targetsTable = world.targets.map((t, k) => ({ target: world.names?.[t] ?? `T${k + 1}`, level: world.level[t], bounty: world.bounty[t], 'results it rests on': world.ancestors[t].size }));
+  const targetsTable = world.targets.map((t, k) => ({ target: world.names?.[t] ?? `T${k + 1}`, level: world.level[t], bounty: world.bounty[t], 'ideas it rests on': world.ancestors[t].size }));
 
   const settingsTable = settings.table.map((r) => r);
-  const alphaTable = alphaPoints.map((p) => ({ α: p.alpha, 'intermediate results shared': pct(p.sharing), frontier: f1(p.frontier), [`reach level ${L}`]: pct(p.reach), 'targets solved': f1(p.targetsSolved) }));
+  const alphaTable = alphaPoints.map((p) => ({ α: p.alpha, 'intermediate ideas shared': pct(p.sharing), frontier: f1(p.frontier), [`reach level ${L}`]: pct(p.reach), 'targets solved': f1(p.targetsSolved) }));
   const robTable = robustness.map((r) => ({
     'shared knowledge': r.condition,
     'traditional frontier': f1(r.traditional.frontier), 'OSO frontier': f1(r.oso.frontier), 'OSO lead': (r.osoLead >= 0 ? '+' : '') + f1(r.osoLead),
@@ -272,11 +272,11 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
 
 **${verdictText}**
 
-- **How far:** with a budget of ${X} compute, OSO reached level **${f1(oso.frontier)}** of ${world.levels} on average; traditional research reached **${f1(trad.frontier)}**.
+- **How far:** with a budget of ${X} money, OSO reached level **${f1(oso.frontier)}** of ${world.levels} on average; traditional research reached **${f1(trad.frontier)}**.
 - **Targets solved:** OSO solved **${f1(oso.targetsSolved)}** of ${T}; traditional solved **${f1(trad.targetsSolved)}**.
 - **Cost to reach level ${L}:** ${costLine(oso, 'OSO')}; ${costLine(trad, 'traditional')}.
-- **Return on the money (ROI):** OSO gained **${f2(oso.roi)}** in prize value per unit spent (${Math.round(oso.value)} for ${Math.round(oso.spend)}); traditional **${f2(trad.roi)}** (${Math.round(trad.value)} for ${Math.round(trad.spend)}). Value gained is the prizes of the targets solved.
-- **Does flow-back make agents share?** ${alphaStar !== null ? `When agents choose, sharing rises clearly (by 0.2 or more) once α is ${alphaStar} or lower.` : 'When agents choose, sharing does not rise clearly (by 0.2) for any α down to 0.1.'} At OSO's default α = 0.8, agents shared ${pct(choice.sharing)} of their intermediate results.
+- **Return on the money (ROI):** OSO gained **${f2(oso.roi)}** in bounty value per unit spent (${Math.round(oso.value)} for ${Math.round(oso.spend)}); traditional **${f2(trad.roi)}** (${Math.round(trad.value)} for ${Math.round(trad.spend)}). Value gained is the bounties of the targets solved.
+- **Does flow-back make agents share?** ${alphaStar !== null ? `When agents choose, sharing rises clearly (by 0.2 or more) once α is ${alphaStar} or lower.` : 'When agents choose, sharing does not rise clearly (by 0.2) for any α down to 0.1.'} At OSO's default α = 0.8, agents shared ${pct(choice.sharing)} of their intermediate ideas.
 - **Robustness:** OSO's lead in level is ${weakest.osoLead >= 0 ? 'smallest' : 'reversed'} when shared knowledge is **${weakest.condition}** (${weakest.osoLead >= 0 ? '+' : ''}${f1(weakest.osoLead)} levels).
 - **Sensitivity:** ${sensitivityLine}
 
@@ -288,13 +288,13 @@ ${spec.description}
 
 | In this space | means |
 | --- | --- |
-| a result | ${g.result} |
+| an idea | ${g.idea} |
 | a target | ${g.target} |
 | an attempt | ${g.attempt} |
 ${g.area ? `| an area | ${g.area} |\n` : ''}${g.agent ? `| an agent | ${g.agent} |\n` : ''}
 ![The research tree](figures/world.svg)
 
-The tree has ${world.n} results in ${world.levels} levels${spec.areas?.length ? ` and ${spec.areas.length} areas (${spec.areas.join(', ')})` : ''}. ${deadEnds} are dead ends: no target depends on them. ${world.targets.length} are targets:
+The tree has ${world.n} ideas in ${world.levels} levels${spec.areas?.length ? ` and ${spec.areas.length} areas (${spec.areas.join(', ')})` : ''}. ${deadEnds} are dead ends: no target depends on them. ${world.targets.length} are targets:
 
 ${markdownTable(targetsTable)}
 
@@ -302,21 +302,21 @@ How hard each level is, before an agent's skill:
 
 ${markdownTable(levelsTable)}
 
-The community has ${Object.values(scenario.agents.mix).reduce((a, b) => a + b, 0)} agents (${Object.entries(scenario.agents.mix).filter(([, n]) => n > 0).map(([a, n]) => `${n} ${a}`).join(', ')}) and a budget of ${X} compute over ${scenario.budget.rounds ?? '–'} rounds${calibrated ? ' (calibrated: the smallest budget at which OSO solves about 90% of the targets)' : ''}.
+The community has ${Object.values(scenario.agents.mix).reduce((a, b) => a + b, 0)} agents (${Object.entries(scenario.agents.mix).filter(([, n]) => n > 0).map(([a, n]) => `${n} ${a}`).join(', ')}) and a budget of ${X} money over ${scenario.budget.rounds ?? '–'} rounds${calibrated ? ' (calibrated: the smallest budget at which OSO solves about 90% of the targets)' : ''}.
 
 ## 2. Progress for the money
 
-![Hardest level published by compute spent](figures/frontier.svg)
+![Hardest level published by money spent](figures/frontier.svg)
 
-Each line is the mean, over ${seeds} runs, of the hardest level the community had published after spending that much compute. A line that ends early means every target was solved and the funder stopped paying.
+Each line is the mean, over ${seeds} runs, of the hardest level the community had published after spending that much money. A line that ends early means every target was solved and the funder stopped paying.
 
 ## 3. The six settings
 
-The rules are the only difference between rows ([specification, section 3](../../docs/design.md#3-the-rules)). Traditional: nothing flows back to what a result built on, and work is published only when finished. OSO: value flows back (α = 0.8, c = 0.15), and results are published at once or when the agent chooses.
+The rules are the only difference between rows ([specification, section 3](../../docs/design.md#3-the-rules)). Traditional: nothing flows back to what an idea built on, and work is published only when finished. OSO: value flows back (α = 0.8, c = 0.15), and ideas are published at once or when the agent chooses.
 
 ${markdownTable(settingsTable)}
 
-Values are mean ± standard deviation over runs. *frontier*: hardest level published; *reach L${L}*: share of runs reaching level ${L}; *speed*, *cost*: rounds and compute to reach it; *credit*: how closely bounty pay matches true contribution; *sharing*: share of intermediate results published as soon as they were proved.
+Values are mean ± standard deviation over runs. *frontier*: hardest level published; *reach L${L}*: share of runs reaching level ${L}; *speed*, *cost*: rounds and money to reach it; *credit*: how closely bounty pay matches true contribution; *sharing*: share of intermediate ideas published as soon as they were proved.
 
 ## 4. Does flow-back make agents share?
 
@@ -328,13 +328,13 @@ ${alphaStar !== null ? `Sharing rises clearly once α is ${alphaStar} or lower: 
 
 ## 5. When sharing is costly or sometimes wrong
 
-Absorbing a published result costs 0.5 compute; proofs are wrong 10% of the time, results built on a wrong result are wrong too, and targets reveal and retract them.
+Taking up a published idea costs 0.5; proofs are wrong 10% of the time, ideas built on a wrong idea are wrong too, and targets reveal and retract them.
 
 ${markdownTable(robTable)}
 
 ## 6. Sensitivity to the parameters
 
-In OSO, α and c are set by each community ([OIP-14](https://github.com/open-science-org/OIPs/blob/master/OIPS/oip-14.md)), validators decide how strict the screen is, funders decide how far compute follows earnings, and the mint may become a community parameter ([OIP-8](https://github.com/open-science-org/OIPs/blob/master/OIPS/oip-8.md)). Their values will be set by competing communities, not by us, so the result must hold across them. The parameters below the line are our guesses about how agents think.
+In OSO, α and c are set by each community ([OIP-14](https://github.com/open-science-org/OIPs/blob/master/OIPS/oip-14.md)), validators decide how strict the screen is, funders decide how far money follows earnings, and the mint may become a community parameter ([OIP-8](https://github.com/open-science-org/OIPs/blob/master/OIPS/oip-8.md)). Their values will be set by competing communities, not by us, so the result must hold across them. The parameters below the line are our guesses about how agents think.
 
 Each parameter is varied alone, from this space's settings, with agents choosing what to share (the realistic case: incentives matter only if sharing is a choice). The lead is OSO's hardest level reached minus traditional's under the same parameter value; α and c do not exist under traditional rules, so there it is compared with traditional's default.
 
@@ -352,7 +352,7 @@ The two flow-back levers together:
 
 ${markdownTable(gridTable)}
 
-Each cell: share of intermediate results published · hardest level reached.
+Each cell: share of intermediate ideas published · hardest level reached.
 
 <details><summary>Every tested value</summary>
 
@@ -362,7 +362,7 @@ ${markdownTable(sensRows)}
 
 ## What this shows and what it does not
 
-- **It is a simulation** of the [OSO demo specification](../../docs/design.md): results are abstract, success is chance, and agents follow a formula. It shows how the incentive rules play out *if* this space works as described, not that it does.
+- **It is a simulation** of the [OSO demo specification](../../docs/design.md): ideas are abstract, success is chance, and agents follow a formula. It shows how the incentive rules play out *if* this space works as described, not that it does.
 - **The parameters are guesses,** especially the success chances, the scoop risk ψ, and the costs and error rates in section 5. Section 6 varies each one alone; it does not vary them together, except α and c.
 - **By default, sharing is free and always correct,** which favours OSO; section 5 shows how much of the lead survives without that.
 ${spec.notes ? `- **Notes for this space:** ${spec.notes}\n` : ''}

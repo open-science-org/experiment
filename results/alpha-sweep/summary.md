@@ -19,7 +19,7 @@
 | 0.2 | 0.63 ± 0.10 | 7.6 ± 0.5 | 0.98 | 0.78 ± 0.48 |
 | 0.1 | 0.77 ± 0.07 | 7.8 ± 0.4 | 1.00 | 1.04 ± 0.47 |
 
-**Design** (fixed before the run): compared α from 1 (traditional) down to 0.1, agents choosing what to publish · held the same: the field, agents and budget · measure: share of results published at once, higher is better · 100 runs per row.
+**Design** (fixed before the run): compared α from 1 (traditional) down to 0.1, agents choosing what to publish · held the same: the field, agents and budget · measure: share of ideas published at once, higher is better · 100 runs per row.
 
 **Caveats:**
 - A simulation with guessed parameters: it shows how the rules play out, not that they work.
@@ -30,7 +30,7 @@ Agents choose whether to publish each lemma (section 2.5 of docs/simulator.md). 
 
 Values are mean ± standard deviation over runs.
 
-| α | frontier | reach L7 | speed | cost | ROI (value per spend) | spend | results per 100 | breadth | waste | credit | sharing | hoarded |
+| α | frontier | reach L7 | speed | cost | ROI (value per spend) | spend | ideas per 100 | breadth | waste | credit | sharing | hoarded |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | 6.0 ± 0.9 | 0.35 | 100 ± 16 | 990 ± 159 | 0.20 ± 0.17 | 1195 ± 2 | 3.5 ± 0.6 | 0.59 ± 0.13 | 0.66 ± 0.07 | 0.88 ± 0.12 | 0.23 ± 0.08 | 0.21 ± 0.10 |
 | 0.9 | 6.3 ± 0.8 | 0.44 | 97 ± 15 | 963 ± 149 | 0.22 ± 0.17 | 1194 ± 7 | 3.6 ± 0.6 | 0.60 ± 0.12 | 0.67 ± 0.07 | 0.87 ± 0.12 | 0.23 ± 0.08 | 0.19 ± 0.10 |
@@ -43,6 +43,6 @@ Values are mean ± standard deviation over runs.
 | 0.2 | 7.6 ± 0.5 | 0.98 | 74 ± 20 | 731 ± 202 | 0.78 ± 0.48 | 1104 ± 146 | 5.6 ± 1.1 | 0.85 ± 0.16 | 0.83 ± 0.06 | 0.85 ± 0.04 | 0.63 ± 0.10 | 0.01 ± 0.03 |
 | 0.1 | 7.8 ± 0.4 | 1.00 | 60 ± 16 | 596 ± 164 | 1.04 ± 0.47 | 1018 ± 188 | 6.5 ± 1.3 | 0.93 ± 0.12 | 0.86 ± 0.04 | 0.74 ± 0.06 | 0.77 ± 0.07 | 0.00 ± 0.01 |
 
-Code: commit `88a4b32` (with uncommitted changes). Experiment: [config/experiments/alpha-sweep.yaml](../../config/experiments/alpha-sweep.yaml). Command: `npm run sim -- alpha-sweep --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `ead6740` (with uncommitted changes). Experiment: [config/experiments/alpha-sweep.yaml](../../config/experiments/alpha-sweep.yaml). Command: `npm run sim -- alpha-sweep --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

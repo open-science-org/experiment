@@ -1,9 +1,9 @@
 id: sensitivity
-title: How much the traditional-vs-OSO gap depends on the gamer and the compute loop
+title: How much the traditional-vs-OSO gap depends on the gamer and the funding loop
 description: >-
   Traditional and OSO (immediate) under four variants. Under traditional rules only target winners and
-  spammers earn early, so the compute loop can hand the gaming agent most of the budget.
-question: "How much of OSO's lead depends on the gaming agent and the compute loop?"
+  spammers earn early, so the funding loop can hand the gaming agent most of the budget.
+question: "How much of OSO's lead depends on the gaming agent and the funding loop?"
 compare: "traditional and OSO, under four variants"
 fixed: "the field and budget"
 measure: frontier
@@ -13,7 +13,7 @@ factors:
   - name: variant
     levels:
       - { label: 'default (ρ = 0.5, θ = 0.5)' }
-      - { label: 'no compute loop (ρ = 0)', set: { budget.allocation.rho: 0 } }
+      - { label: 'no funding loop (ρ = 0)', set: { budget.allocation.rho: 0 } }
       - { label: 'strong screen (θ = 0.9)', set: { rules.screen: 0.9 } }
       - { label: no gamer, set: { agents.mix.gamer: 0 } }
   - name: setting

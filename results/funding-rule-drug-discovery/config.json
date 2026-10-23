@@ -1,7 +1,7 @@
 {
   "experiment": "funding-rule-drug-discovery",
-  "date": "2026-10-22",
-  "commit": "88a4b32",
+  "date": "2026-10-23",
+  "commit": "ead6740",
   "dirty": true,
   "command": "npm run sim -- funding-rule-drug-discovery --seeds 100 --save",
   "seeds": 100,
@@ -10,9 +10,9 @@
     "experiment": {
       "id": "funding-rule-drug-discovery",
       "title": "Does the funding rule decide the race? Drug discovery",
-      "description": "Designed in the app on the field \"Early-stage drug discovery\" (spaces/drug-discovery.yaml): Traditional vs OSO (immediate) vs OSO (choice), varying ρ, compute follows earnings. A varied parameter overrides the rule setting's own value.",
+      "description": "Designed in the app on the field \"Early-stage drug discovery\" (spaces/drug-discovery.yaml): Traditional vs OSO (immediate) vs OSO (choice), varying ρ, money follows earnings. A varied parameter overrides the rule setting's own value.",
       "question": "Does the funding rule decide the race in drug discovery?",
-      "compare": "how far compute follows earnings (ρ), under three rule settings",
+      "compare": "how far money follows earnings (ρ), under three rule settings",
       "fixed": "the drug-discovery field, agents and budget",
       "measure": "frontier",
       "better": "higher",
@@ -67,7 +67,7 @@
           ]
         },
         {
-          "name": "ρ, compute follows earnings",
+          "name": "ρ, money follows earnings",
           "path": "budget.allocation.rho",
           "values": [
             0,
@@ -253,7 +253,7 @@
       {
         "labels": {
           "setting": "Traditional",
-          "ρ, compute follows earnings": 0
+          "ρ, money follows earnings": 0
         },
         "overrides": {
           "rules": {
@@ -273,7 +273,7 @@
       {
         "labels": {
           "setting": "Traditional",
-          "ρ, compute follows earnings": 0.5
+          "ρ, money follows earnings": 0.5
         },
         "overrides": {
           "rules": {
@@ -293,7 +293,7 @@
       {
         "labels": {
           "setting": "Traditional",
-          "ρ, compute follows earnings": 1
+          "ρ, money follows earnings": 1
         },
         "overrides": {
           "rules": {
@@ -313,7 +313,7 @@
       {
         "labels": {
           "setting": "OSO (immediate)",
-          "ρ, compute follows earnings": 0
+          "ρ, money follows earnings": 0
         },
         "overrides": {
           "rules": {
@@ -333,7 +333,7 @@
       {
         "labels": {
           "setting": "OSO (immediate)",
-          "ρ, compute follows earnings": 0.5
+          "ρ, money follows earnings": 0.5
         },
         "overrides": {
           "rules": {
@@ -353,7 +353,7 @@
       {
         "labels": {
           "setting": "OSO (immediate)",
-          "ρ, compute follows earnings": 1
+          "ρ, money follows earnings": 1
         },
         "overrides": {
           "rules": {
@@ -373,7 +373,7 @@
       {
         "labels": {
           "setting": "OSO (choice)",
-          "ρ, compute follows earnings": 0
+          "ρ, money follows earnings": 0
         },
         "overrides": {
           "rules": {
@@ -393,7 +393,7 @@
       {
         "labels": {
           "setting": "OSO (choice)",
-          "ρ, compute follows earnings": 0.5
+          "ρ, money follows earnings": 0.5
         },
         "overrides": {
           "rules": {
@@ -413,7 +413,7 @@
       {
         "labels": {
           "setting": "OSO (choice)",
-          "ρ, compute follows earnings": 1
+          "ρ, money follows earnings": 1
         },
         "overrides": {
           "rules": {

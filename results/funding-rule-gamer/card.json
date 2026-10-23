@@ -2,7 +2,7 @@
  "chart": "results/funding-rule-gamer/figures/compare.svg",
  "id": "funding-rule-gamer",
  "kind": "simulation",
- "date": "2026-10-22",
+ "date": "2026-10-23",
  "title": "Is the funding-rule effect a gamer effect? Drug discovery",
  "design": {
   "question": "Is the funding-rule effect caused by the gaming agent?",

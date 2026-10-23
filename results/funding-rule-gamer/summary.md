@@ -28,7 +28,7 @@
 
 <details><summary>Details</summary>
 
-Traditional and OSO (immediate) on the drug-discovery field, as compute follows earnings (ρ) from 0 to 1, with and without the gaming agent. With ρ = 1 under traditional rules, the first agent to earn takes all the compute; the gamer earns first, from trivial results, and then does all the research.
+Traditional and OSO (immediate) on the drug-discovery field, as money follows earnings (ρ) from 0 to 1, with and without the gaming agent. With ρ = 1 under traditional rules, the first agent to earn takes all the money; the gamer earns first, from trivial ideas, and then does all the research.
 
 Values are mean ± standard deviation over runs.
 
@@ -47,6 +47,6 @@ Values are mean ± standard deviation over runs.
 | 0 | 1 | Traditional | 1.0 ± 2.3 | 0.3 ± 0.8 | 0.14 ± 0.36 | 1000 ± 187 | – |
 | 0 | 1 | OSO (immediate) | 6.0 ± 0.1 | 2.4 ± 1.1 | 2.01 ± 1.41 | 186 ± 86 | – |
 
-Code: commit `88a4b32` (with uncommitted changes). Experiment: [config/experiments/funding-rule-gamer.yaml](../../config/experiments/funding-rule-gamer.yaml). Command: `npm run sim -- funding-rule-gamer --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `ead6740` (with uncommitted changes). Experiment: [config/experiments/funding-rule-gamer.yaml](../../config/experiments/funding-rule-gamer.yaml). Command: `npm run sim -- funding-rule-gamer --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

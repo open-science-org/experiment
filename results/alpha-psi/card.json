@@ -2,13 +2,13 @@
  "chart": "results/alpha-psi/figures/compare.svg",
  "id": "alpha-psi",
  "kind": "simulation",
- "date": "2026-10-22",
+ "date": "2026-10-23",
  "title": "Where sharing becomes rational: α × scoop risk ψ × cited share c",
  "design": {
   "question": "At which α, scoop risk ψ and cited share c does sharing become worth it to agents?",
   "compare": "α × ψ × c, agents choosing what to publish",
   "fixed": "the field, agents and budget",
-  "measure": "share of results published at once",
+  "measure": "share of ideas published at once",
   "better": "higher",
   "runs": "100 runs per row"
  },

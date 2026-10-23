@@ -1,7 +1,7 @@
 {
   "experiment": "funding-rule-gamer",
-  "date": "2026-10-22",
-  "commit": "88a4b32",
+  "date": "2026-10-23",
+  "commit": "ead6740",
   "dirty": true,
   "command": "npm run sim -- funding-rule-gamer --seeds 100 --save",
   "seeds": 100,
@@ -10,7 +10,7 @@
     "experiment": {
       "id": "funding-rule-gamer",
       "title": "Is the funding-rule effect a gamer effect? Drug discovery",
-      "description": "Traditional and OSO (immediate) on the drug-discovery field, as compute follows earnings (ρ) from 0 to 1, with and without the gaming agent. With ρ = 1 under traditional rules, the first agent to earn takes all the compute; the gamer earns first, from trivial results, and then does all the research.",
+      "description": "Traditional and OSO (immediate) on the drug-discovery field, as money follows earnings (ρ) from 0 to 1, with and without the gaming agent. With ρ = 1 under traditional rules, the first agent to earn takes all the money; the gamer earns first, from trivial ideas, and then does all the research.",
       "question": "Is the funding-rule effect caused by the gaming agent?",
       "compare": "with or without the gaming agent × ρ × traditional or OSO",
       "fixed": "the drug-discovery field and budget",

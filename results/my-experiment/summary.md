@@ -31,6 +31,6 @@ Values are mean ± standard deviation over runs.
 | OSO (choice) | 5.0 ± 0.8 | 0.04 | 1100 ± 34 | 0.20 ± 0.08 | 3.0 ± 0.8 | 0.09 ± 0.05 |
 | Flow-back, finished-only | 4.2 ± 1.1 | 0.02 | 1145 ± 0 | 0.00 ± 0.00 | 2.6 ± 0.8 | 0.06 ± 0.05 |
 
-Code: commit `88a4b32` (with uncommitted changes). Experiment: [config/experiments/my-experiment.yaml](../../config/experiments/my-experiment.yaml). Command: `npm run sim -- my-experiment --seeds 50 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `ead6740` (with uncommitted changes). Experiment: [config/experiments/my-experiment.yaml](../../config/experiments/my-experiment.yaml). Command: `npm run sim -- my-experiment --seeds 50 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

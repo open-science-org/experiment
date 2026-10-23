@@ -36,18 +36,18 @@
 | 0.1 | 0.1 | 0 | 0.94 ± 0.03 | 7.9 ± 0.3 | 1.00 | 1.29 ± 0.42 |
 | 0.1 | 0.1 | 0.15 | 0.92 ± 0.04 | 7.9 ± 0.3 | 1.00 | 1.34 ± 0.52 |
 
-**Design** (fixed before the run): compared α × ψ × c, agents choosing what to publish · held the same: the field, agents and budget · measure: share of results published at once, higher is better · 100 runs per row.
+**Design** (fixed before the run): compared α × ψ × c, agents choosing what to publish · held the same: the field, agents and budget · measure: share of ideas published at once, higher is better · 100 runs per row.
 
 **Caveats:**
 - A simulation with guessed parameters: it shows how the rules play out, not that they work.
 
 <details><summary>Details</summary>
 
-Agent's-choice visibility. ψ is how much publishing a lemma raises a rival's chance of winning the target below it; c is the share of each mint paid to what a result built on.
+Agent's-choice visibility. ψ is how much publishing a lemma raises a rival's chance of winning the target below it; c is the share of each mint paid to what an idea built on.
 
 Values are mean ± standard deviation over runs.
 
-| ψ | α | c | frontier | reach L7 | speed | cost | ROI (value per spend) | spend | results per 100 | breadth | waste | credit | sharing | hoarded |
+| ψ | α | c | frontier | reach L7 | speed | cost | ROI (value per spend) | spend | ideas per 100 | breadth | waste | credit | sharing | hoarded |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 0.5 | 1 | 0 | 6.0 ± 0.9 | 0.35 | 100 ± 16 | 990 ± 159 | 0.20 ± 0.17 | 1195 ± 2 | 3.5 ± 0.6 | 0.59 ± 0.13 | 0.66 ± 0.07 | 0.88 ± 0.12 | 0.23 ± 0.08 | 0.21 ± 0.10 |
 | 0.5 | 0.8 | 0 | 6.4 ± 0.9 | 0.49 | 95 ± 18 | 943 ± 183 | 0.26 ± 0.24 | 1192 ± 15 | 3.7 ± 0.7 | 0.62 ± 0.15 | 0.68 ± 0.09 | 0.88 ± 0.11 | 0.24 ± 0.09 | 0.19 ± 0.12 |
@@ -77,6 +77,6 @@ Values are mean ± standard deviation over runs.
 | 0.1 | 0.1 | 0 | 7.9 ± 0.3 | 1.00 | 51 ± 14 | 510 ± 136 | 1.29 ± 0.42 | 926 ± 200 | 7.3 ± 1.6 | 0.97 ± 0.08 | 0.87 ± 0.04 | 0.75 ± 0.06 | 0.94 ± 0.03 | 0.00 ± 0.00 |
 | 0.1 | 0.1 | 0.15 | 7.9 ± 0.3 | 1.00 | 51 ± 15 | 503 ± 153 | 1.34 ± 0.52 | 897 ± 213 | 7.6 ± 2.0 | 0.97 ± 0.08 | 0.86 ± 0.04 | 0.76 ± 0.06 | 0.92 ± 0.04 | 0.00 ± 0.01 |
 
-Code: commit `88a4b32` (with uncommitted changes). Experiment: [config/experiments/alpha-psi.yaml](../../config/experiments/alpha-psi.yaml). Command: `npm run sim -- alpha-psi --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `ead6740` (with uncommitted changes). Experiment: [config/experiments/alpha-psi.yaml](../../config/experiments/alpha-psi.yaml). Command: `npm run sim -- alpha-psi --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

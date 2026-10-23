@@ -4,9 +4,9 @@
  "date": "2026-10-20",
  "title": "First AI test, OSO vs traditional",
  "design": {
-  "question": "For the same money, does an OSO community of AI labs solve more targets than a traditional one?",
+  "question": "For the same money, does an OSO community of AI agents solve more targets than a traditional one?",
   "compare": "traditional rules and OSO rules",
-  "fixed": "the same 4 labs, $0.4 each, no personas",
+  "fixed": "the same 4 agents, $0.4 each, no personas",
   "measure": "targets solved",
   "better": "higher",
   "runs": "1 run per side"
@@ -17,6 +17,7 @@
    "rules": "Traditional",
    "targets solved": "4 of 8",
    "spent": "$0.76 of $1.60",
+   "ROI (value per $)": 154,
    "lemmas accepted": 0,
    "duplicated work": 1
   },
@@ -24,6 +25,7 @@
    "rules": "OSO",
    "targets solved": "4 of 8",
    "spent": "$1.04 of $1.60",
+   "ROI (value per $)": 111,
    "lemmas accepted": 3,
    "duplicated work": 1
   }

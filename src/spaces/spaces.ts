@@ -19,7 +19,7 @@ export interface SpaceSpec {
   /** A paragraph: what the field is and what progress means in it. */
   description: string;
   /** What the specification's terms mean in this field. */
-  glossary: { result: string; target: string; attempt: string; area?: string; agent?: string };
+  glossary: { idea: string; target: string; attempt: string; area?: string; agent?: string };
   /** Names of the areas, in index order. */
   areas?: string[];
   /** A base scenario from config/scenarios/ (default: the default scenario). */
@@ -48,15 +48,17 @@ export function parseSpace(spec: SpaceSpec, where = 'space'): Space {
     if (typeof spec[k] !== 'string' || !spec[k].trim()) throw new Error(`${where}: "${k}" must be a non-empty string`);
   }
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(spec.id)) throw new Error(`${where}: id "${spec.id}" must be kebab-case (a-z, 0-9, hyphens)`);
-  const g = spec.glossary;
-  if (!g || typeof g !== 'object') throw new Error(`${where}: "glossary" must give result, target and attempt`);
-  for (const k of ['result', 'target', 'attempt'] as const) {
+  const g = spec.glossary as SpaceSpec['glossary'] & { result?: string };
+  if (!g || typeof g !== 'object') throw new Error(`${where}: "glossary" must give idea, target and attempt`);
+  // Older topic files call an idea a 'result'.
+  if (g.idea === undefined && typeof g.result === 'string') { g.idea = g.result; delete g.result; }
+  for (const k of ['idea', 'target', 'attempt'] as const) {
     if (typeof g[k] !== 'string' || !g[k].trim()) throw new Error(`${where}: glossary.${k} must be a non-empty string`);
   }
   const scenario = loadScenario(spec.scenarioFile ?? null, expandPaths(spec.scenario ?? {}));
   // Build one world to catch structural errors early (missing targets, bad prerequisites, ...).
   const world = worlds.create(scenario.world, `${where}: world`)(scenario.success, new Rng(1).fork(1));
-  if (!world.targets.length) throw new Error(`${where}: the world has no targets (results with a bounty)`);
+  if (!world.targets.length) throw new Error(`${where}: the world has no targets (ideas with a bounty)`);
   if (spec.areas && spec.areas.length < Math.max(...world.area) + 1) {
     throw new Error(`${where}: "areas" names ${spec.areas.length} areas but the world uses ${Math.max(...world.area) + 1}`);
   }

@@ -2,11 +2,11 @@
  "chart": "results/funding-rule-drug-discovery/figures/compare.svg",
  "id": "funding-rule-drug-discovery",
  "kind": "simulation",
- "date": "2026-10-22",
+ "date": "2026-10-23",
  "title": "Does the funding rule decide the race? Drug discovery",
  "design": {
   "question": "Does the funding rule decide the race in drug discovery?",
-  "compare": "how far compute follows earnings (ρ), under three rule settings",
+  "compare": "how far money follows earnings (ρ), under three rule settings",
   "fixed": "the drug-discovery field, agents and budget",
   "measure": "hardest level published",
   "better": "higher",
@@ -16,7 +16,7 @@
  "table": [
   {
    "setting": "Traditional",
-   "ρ, compute follows earnings": 0,
+   "ρ, money follows earnings": 0,
    "frontier": "0.6 ± 1.8",
    "targets solved": "0.1 ± 0.3",
    "cost": "965 ± 166",
@@ -24,7 +24,7 @@
   },
   {
    "setting": "Traditional",
-   "ρ, compute follows earnings": 0.5,
+   "ρ, money follows earnings": 0.5,
    "frontier": "2.7 ± 3.0",
    "targets solved": "0.7 ± 0.9",
    "cost": "847 ± 221",
@@ -32,7 +32,7 @@
   },
   {
    "setting": "Traditional",
-   "ρ, compute follows earnings": 1,
+   "ρ, money follows earnings": 1,
    "frontier": "5.7 ± 1.3",
    "targets solved": "2.3 ± 0.9",
    "cost": "673 ± 240",
@@ -40,7 +40,7 @@
   },
   {
    "setting": "OSO (immediate)",
-   "ρ, compute follows earnings": 0,
+   "ρ, money follows earnings": 0,
    "frontier": "6.0 ± 0.0",
    "targets solved": "2.9 ± 0.4",
    "cost": "200 ± 65",
@@ -48,7 +48,7 @@
   },
   {
    "setting": "OSO (immediate)",
-   "ρ, compute follows earnings": 0.5,
+   "ρ, money follows earnings": 0.5,
    "frontier": "6.0 ± 0.1",
    "targets solved": "2.8 ± 0.6",
    "cost": "223 ± 94",
@@ -56,7 +56,7 @@
   },
   {
    "setting": "OSO (immediate)",
-   "ρ, compute follows earnings": 1,
+   "ρ, money follows earnings": 1,
    "frontier": "6.0 ± 0.2",
    "targets solved": "2.4 ± 1.0",
    "cost": "222 ± 112",
@@ -64,7 +64,7 @@
   },
   {
    "setting": "OSO (choice)",
-   "ρ, compute follows earnings": 0,
+   "ρ, money follows earnings": 0,
    "frontier": "5.0 ± 0.9",
    "targets solved": "0.4 ± 0.8",
    "cost": "832 ± 241",
@@ -72,7 +72,7 @@
   },
   {
    "setting": "OSO (choice)",
-   "ρ, compute follows earnings": 0.5,
+   "ρ, money follows earnings": 0.5,
    "frontier": "5.4 ± 0.9",
    "targets solved": "1.0 ± 1.1",
    "cost": "756 ± 253",
@@ -80,7 +80,7 @@
   },
   {
    "setting": "OSO (choice)",
-   "ρ, compute follows earnings": 1,
+   "ρ, money follows earnings": 1,
    "frontier": "6.0 ± 0.3",
    "targets solved": "2.5 ± 0.9",
    "cost": "481 ± 226",

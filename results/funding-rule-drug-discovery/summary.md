@@ -6,7 +6,7 @@
 
 ![Does the funding rule decide the race? Drug discovery](figures/compare.svg)
 
-| setting | ρ, compute follows earnings | frontier | targets solved | cost | ROI (value per spend) |
+| setting | ρ, money follows earnings | frontier | targets solved | cost | ROI (value per spend) |
 | --- | --- | --- | --- | --- | --- |
 | Traditional | 0 | 0.6 ± 1.8 | 0.1 ± 0.3 | 965 ± 166 | 0.04 ± 0.12 |
 | Traditional | 0.5 | 2.7 ± 3.0 | 0.7 ± 0.9 | 847 ± 221 | 0.28 ± 0.39 |
@@ -18,18 +18,18 @@
 | OSO (choice) | 0.5 | 5.4 ± 0.9 | 1.0 ± 1.1 | 756 ± 253 | 0.43 ± 0.51 |
 | OSO (choice) | 1 | 6.0 ± 0.3 | 2.5 ± 0.9 | 481 ± 226 | 1.55 ± 1.01 |
 
-**Design** (fixed before the run): compared how far compute follows earnings (ρ), under three rule settings · held the same: the drug-discovery field, agents and budget · measure: hardest level published, higher is better · 100 runs per row.
+**Design** (fixed before the run): compared how far money follows earnings (ρ), under three rule settings · held the same: the drug-discovery field, agents and budget · measure: hardest level published, higher is better · 100 runs per row.
 
 **Caveats:**
 - A simulation with guessed parameters: it shows how the rules play out, not that they work.
 
 <details><summary>Details</summary>
 
-Designed in the app on the field "Early-stage drug discovery" (spaces/drug-discovery.yaml): Traditional vs OSO (immediate) vs OSO (choice), varying ρ, compute follows earnings. A varied parameter overrides the rule setting's own value.
+Designed in the app on the field "Early-stage drug discovery" (spaces/drug-discovery.yaml): Traditional vs OSO (immediate) vs OSO (choice), varying ρ, money follows earnings. A varied parameter overrides the rule setting's own value.
 
 Values are mean ± standard deviation over runs.
 
-| setting | ρ, compute follows earnings | frontier | targets solved | cost | gamer share of pay | sharing | ROI (value per spend) |
+| setting | ρ, money follows earnings | frontier | targets solved | cost | gamer share of pay | sharing | ROI (value per spend) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Traditional | 0 | 0.6 ± 1.8 | 0.1 ± 0.3 | 965 ± 166 | 0.91 | 0.00 ± 0.00 | 0.04 ± 0.12 |
 | Traditional | 0.5 | 2.7 ± 3.0 | 0.7 ± 0.9 | 847 ± 221 | 0.99 | 0.00 ± 0.00 | 0.28 ± 0.39 |
@@ -41,6 +41,6 @@ Values are mean ± standard deviation over runs.
 | OSO (choice) | 0.5 | 5.4 ± 0.9 | 1.0 ± 1.1 | 756 ± 253 | 0.93 | 0.41 ± 0.12 | 0.43 ± 0.51 |
 | OSO (choice) | 1 | 6.0 ± 0.3 | 2.5 ± 0.9 | 481 ± 226 | 0.70 | 0.41 ± 0.12 | 1.55 ± 1.01 |
 
-Code: commit `88a4b32` (with uncommitted changes). Experiment: [config/experiments/funding-rule-drug-discovery.yaml](../../config/experiments/funding-rule-drug-discovery.yaml). Command: `npm run sim -- funding-rule-drug-discovery --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `ead6740` (with uncommitted changes). Experiment: [config/experiments/funding-rule-drug-discovery.yaml](../../config/experiments/funding-rule-drug-discovery.yaml). Command: `npm run sim -- funding-rule-drug-discovery --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

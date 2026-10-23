@@ -2,7 +2,7 @@
  "chart": "results/settings/figures/compare.svg",
  "id": "settings",
  "kind": "simulation",
- "date": "2026-10-22",
+ "date": "2026-10-23",
  "title": "The six rule settings on the default world",
  "design": {
   "question": "On the default field, which rule setting gets furthest for the same budget?",

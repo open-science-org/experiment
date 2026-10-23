@@ -89,6 +89,6 @@ Values are mean ± standard deviation over runs.
 | all explorers | OSO (immediate) | 8.0 ± 0.0 | 1.00 | 280 ± 69 | 2.54 ± 0.63 | 1.00 ± 0.00 | – |
 | all explorers | OSO (choice) | 7.8 ± 0.5 | 0.98 | 632 ± 212 | 1.18 ± 0.51 | 0.30 ± 0.08 | – |
 
-Code: commit `88a4b32` (with uncommitted changes). Experiment: [config/experiments/agent-kinds.yaml](../../config/experiments/agent-kinds.yaml). Command: `npm run sim -- agent-kinds --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `ead6740` (with uncommitted changes). Experiment: [config/experiments/agent-kinds.yaml](../../config/experiments/agent-kinds.yaml). Command: `npm run sim -- agent-kinds --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

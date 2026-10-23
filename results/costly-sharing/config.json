@@ -1,7 +1,7 @@
 {
   "experiment": "costly-sharing",
-  "date": "2026-10-22",
-  "commit": "88a4b32",
+  "date": "2026-10-23",
+  "commit": "ead6740",
   "dirty": true,
   "command": "npm run sim -- costly-sharing --seeds 100 --save",
   "seeds": 100,
@@ -9,10 +9,10 @@
   "config": {
     "experiment": {
       "id": "costly-sharing",
-      "title": "Sharing isn't free: absorbing costs and wrong results",
-      "description": "Taking up a published result costs `absorbCost` compute, and each proof is wrong with chance `errorRate`; results built on a wrong result are wrong, and a target check rejects them and retracts the wrong results. Where does OSO's advantage shrink or vanish? Default world.",
-      "question": "Does OSO's lead survive when absorbing results costs compute, or results are sometimes wrong?",
-      "compare": "absorb cost × error rate × traditional or OSO",
+      "title": "Sharing isn't free: taking up costs and wrong ideas",
+      "description": "Taking up a published idea costs `absorbCost` money, and each proof is wrong with chance `errorRate`; ideas built on a wrong idea are wrong, and a target check rejects them and retracts the wrong ideas. Where does OSO's advantage shrink or vanish? Default world.",
+      "question": "Does OSO's lead survive when taking up ideas costs money, or ideas are sometimes wrong?",
+      "compare": "uptake cost × error rate × traditional or OSO",
       "fixed": "the field, agents and budget",
       "measure": "frontier",
       "better": "higher",
@@ -32,7 +32,7 @@
           ]
         },
         {
-          "name": "absorb cost",
+          "name": "uptake cost",
           "path": "knowledge.absorbCost",
           "values": [
             0,
@@ -244,7 +244,7 @@
       {
         "labels": {
           "setting": "Traditional",
-          "absorb cost": 0,
+          "uptake cost": 0,
           "error rate": 0
         },
         "overrides": {
@@ -264,7 +264,7 @@
       {
         "labels": {
           "setting": "Traditional",
-          "absorb cost": 0,
+          "uptake cost": 0,
           "error rate": 0.05
         },
         "overrides": {
@@ -284,7 +284,7 @@
       {
         "labels": {
           "setting": "Traditional",
-          "absorb cost": 0,
+          "uptake cost": 0,
           "error rate": 0.15
         },
         "overrides": {
@@ -304,7 +304,7 @@
       {
         "labels": {
           "setting": "Traditional",
-          "absorb cost": 0.25,
+          "uptake cost": 0.25,
           "error rate": 0
         },
         "overrides": {
@@ -324,7 +324,7 @@
       {
         "labels": {
           "setting": "Traditional",
-          "absorb cost": 0.25,
+          "uptake cost": 0.25,
           "error rate": 0.05
         },
         "overrides": {
@@ -344,7 +344,7 @@
       {
         "labels": {
           "setting": "Traditional",
-          "absorb cost": 0.25,
+          "uptake cost": 0.25,
           "error rate": 0.15
         },
         "overrides": {
@@ -364,7 +364,7 @@
       {
         "labels": {
           "setting": "Traditional",
-          "absorb cost": 0.5,
+          "uptake cost": 0.5,
           "error rate": 0
         },
         "overrides": {
@@ -384,7 +384,7 @@
       {
         "labels": {
           "setting": "Traditional",
-          "absorb cost": 0.5,
+          "uptake cost": 0.5,
           "error rate": 0.05
         },
         "overrides": {
@@ -404,7 +404,7 @@
       {
         "labels": {
           "setting": "Traditional",
-          "absorb cost": 0.5,
+          "uptake cost": 0.5,
           "error rate": 0.15
         },
         "overrides": {
@@ -424,7 +424,7 @@
       {
         "labels": {
           "setting": "Traditional",
-          "absorb cost": 1,
+          "uptake cost": 1,
           "error rate": 0
         },
         "overrides": {
@@ -444,7 +444,7 @@
       {
         "labels": {
           "setting": "Traditional",
-          "absorb cost": 1,
+          "uptake cost": 1,
           "error rate": 0.05
         },
         "overrides": {
@@ -464,7 +464,7 @@
       {
         "labels": {
           "setting": "Traditional",
-          "absorb cost": 1,
+          "uptake cost": 1,
           "error rate": 0.15
         },
         "overrides": {
@@ -484,7 +484,7 @@
       {
         "labels": {
           "setting": "OSO (immediate)",
-          "absorb cost": 0,
+          "uptake cost": 0,
           "error rate": 0
         },
         "overrides": {
@@ -504,7 +504,7 @@
       {
         "labels": {
           "setting": "OSO (immediate)",
-          "absorb cost": 0,
+          "uptake cost": 0,
           "error rate": 0.05
         },
         "overrides": {
@@ -524,7 +524,7 @@
       {
         "labels": {
           "setting": "OSO (immediate)",
-          "absorb cost": 0,
+          "uptake cost": 0,
           "error rate": 0.15
         },
         "overrides": {
@@ -544,7 +544,7 @@
       {
         "labels": {
           "setting": "OSO (immediate)",
-          "absorb cost": 0.25,
+          "uptake cost": 0.25,
           "error rate": 0
         },
         "overrides": {
@@ -564,7 +564,7 @@
       {
         "labels": {
           "setting": "OSO (immediate)",
-          "absorb cost": 0.25,
+          "uptake cost": 0.25,
           "error rate": 0.05
         },
         "overrides": {
@@ -584,7 +584,7 @@
       {
         "labels": {
           "setting": "OSO (immediate)",
-          "absorb cost": 0.25,
+          "uptake cost": 0.25,
           "error rate": 0.15
         },
         "overrides": {
@@ -604,7 +604,7 @@
       {
         "labels": {
           "setting": "OSO (immediate)",
-          "absorb cost": 0.5,
+          "uptake cost": 0.5,
           "error rate": 0
         },
         "overrides": {
@@ -624,7 +624,7 @@
       {
         "labels": {
           "setting": "OSO (immediate)",
-          "absorb cost": 0.5,
+          "uptake cost": 0.5,
           "error rate": 0.05
         },
         "overrides": {
@@ -644,7 +644,7 @@
       {
         "labels": {
           "setting": "OSO (immediate)",
-          "absorb cost": 0.5,
+          "uptake cost": 0.5,
           "error rate": 0.15
         },
         "overrides": {
@@ -664,7 +664,7 @@
       {
         "labels": {
           "setting": "OSO (immediate)",
-          "absorb cost": 1,
+          "uptake cost": 1,
           "error rate": 0
         },
         "overrides": {
@@ -684,7 +684,7 @@
       {
         "labels": {
           "setting": "OSO (immediate)",
-          "absorb cost": 1,
+          "uptake cost": 1,
           "error rate": 0.05
         },
         "overrides": {
@@ -704,7 +704,7 @@
       {
         "labels": {
           "setting": "OSO (immediate)",
-          "absorb cost": 1,
+          "uptake cost": 1,
           "error rate": 0.15
         },
         "overrides": {

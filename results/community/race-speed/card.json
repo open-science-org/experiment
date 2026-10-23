@@ -1,7 +1,7 @@
 {
  "id": "race-speed",
  "kind": "race",
- "date": "2026-10-22",
+ "date": "2026-10-23",
  "title": "Cheap AI models: who reaches the targets for less money",
  "design": {
   "question": "With the cheapest model, does an OSO community reach 2 of the targets that count for less money than a traditional one?",
@@ -21,7 +21,7 @@
    "spent": "$0.07",
    "ROI (value per $)": "1041.2 ± 537.9",
    "work done twice": "3.6 ± 2.1",
-   "used another lab's result": "0.0 ± 0.0"
+   "used another agent's idea": "0.0 ± 0.0"
   },
   {
    "rules": "OSO",
@@ -31,14 +31,14 @@
    "spent": "$0.08",
    "ROI (value per $)": "1011.0 ± 588.9",
    "work done twice": "1.8 ± 0.8",
-   "used another lab's result": "2.4 ± 2.2"
+   "used another agent's idea": "2.4 ± 2.2"
   }
  ],
  "caveats": [
   "Budgets were counted at list prices, but OpenRouter charged about 5.6× more ($3.56 against $0.69).",
   "Tests a lead first seen in the earlier cheap-model test, on fresh runs.",
   "One model and one small problem set.",
-  "Budgets were not binding: the communities spent 24% of theirs on average, because labs passed.",
+  "Budgets were not binding: the communities spent 24% of theirs on average, because agents passed.",
   "Values are mean ± standard deviation over runs."
  ],
  "cost": "$0.76 at list prices",

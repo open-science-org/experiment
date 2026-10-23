@@ -167,7 +167,7 @@ How hard each theorem of the Lean problem set is for a real agent. ${note}
 
 Theorem ids are the anonymous ids of [worlds/lean-reference.json](../../../worlds/lean-reference.json); statements and proofs are private until the experiment.
 
-## Success by depth (library)
+## Success by level (library)
 
 ${byDepth.length ? table(byDepth.map((d) => ({ depth: d.depth, theorems: d.theorems, attempts: d.attempts, proved: d.proved, 'success per attempt': pct(d.rate), 'tokens per attempt': k(d.tokens) }))) : 'No library attempts.'}
 
@@ -211,9 +211,9 @@ description: >-
   proved in one attempt (a proof plus a few repairs on Lean's errors) is measured, not assumed: a real
   agent attempted it with the theorems it rests on as its library (pilot ${runId}).
 glossary:
-  result: a theorem, with its proof
+  idea: a theorem, with its proof
   target: a posted theorem with a bounty
-  attempt: one try at writing a proof that Lean accepts, with a few repairs
+  attempt: one attempt at writing a proof that Lean accepts, with a few repairs
   area: a mathematical topic
 areas: [A sequence, B sorting, C matrices, across areas]
 scenarioFile: lean-tree
@@ -354,10 +354,10 @@ ${table(overall)}
 
 ${table(perTarget)}
 
-A target a model proves alone does not need its lemmas, for that model: shared lemmas then save cost, but do not make the result reachable. Ids are the anonymous ids of [worlds/lean-reference.json](../../../worlds/lean-reference.json). Runs: ${runIds.map((r) => `[${r}](../${r}/summary.md)`).join(', ')}.
+A target a model proves alone does not need its lemmas, for that model: shared lemmas then save cost, but do not make the target reachable. Ids are the anonymous ids of [worlds/lean-reference.json](../../../worlds/lean-reference.json). Runs: ${runIds.map((r) => `[${r}](../${r}/summary.md)`).join(', ')}.
 `;
   writeFileSync(join(dir, 'figures', 'models.svg'), barChart({
-    title: 'Targets solved, with help and alone (share of tries)',
+    title: 'Targets solved, with help and alone (share of attempts)',
     bars: models_.flatMap((m) => [
       { label: `${short(m.model)}, with help`, value: m.library.attempts ? m.library.proved / m.library.attempts : 0, slot: 2 as const, text: `${m.library.proved}/${m.library.attempts}` },
       { label: `${short(m.model)}, alone`, value: m.alone.attempts ? m.alone.proved / m.alone.attempts : 0, slot: 1 as const, text: `${m.alone.proved}/${m.alone.attempts}` },
@@ -370,10 +370,10 @@ A target a model proves alone does not need its lemmas, for that model: shared l
   writeCard(dir, {
     id, kind: 'model pilot', date: new Date().toISOString().slice(0, 10), title,
     design: {
-      question: 'Can a model solve more when it is given the helper results (lemmas) a target needs?',
-      compare: 'each model alone, and with the helper results each target needs',
+      question: 'Can a model solve more when it is given the helper ideas (lemmas) a target needs?',
+      compare: 'each model alone, and with the helper ideas each target needs',
       fixed: `the 8 posted targets, ${r0.attempts} attempts each, up to ${r0.repairs} repairs, reasoning effort ${r0.model.effort}, grind ${r0.allowGrind ? 'allowed' : 'banned'}`,
-      measure: 'targets solved with help but never alone', better: 'higher', runs: `${r0.attempts} tries per target, each way`,
+      measure: 'targets solved with help but never alone', better: 'higher', runs: `${r0.attempts} attempts per target, each way`,
     },
     answer: (() => { const h = models_.filter((m) => m.needsLemmas.length); return `With help, ${h.length} of ${models_.length} models solved targets they never solved alone (${h.map((m) => short(m.model)).join(', ') || 'none'}). ${models_.filter((m) => m.alone.attempts && m.alone.proved === m.alone.attempts).map((m) => short(m.model)).join(' and ') || 'No model'} solved everything alone.`; })(),
     table: models_.map((m) => ({
@@ -381,7 +381,7 @@ A target a model proves alone does not need its lemmas, for that model: shared l
       'needed help for': m.needsLemmas.join(', ') || '–',
       'tokens per proof, with help / alone': m.library.tokensPerProof && m.alone.tokensPerProof ? `${(m.library.tokensPerProof / 1000).toFixed(1)}k / ${(m.alone.tokensPerProof / 1000).toFixed(1)}k` : '–',
     })),
-    caveats: ['The helper results were given, not found: this measures how much they help, not whether a model would think of them.', 'Only a few tries per target: the rates are rough.'],
+    caveats: ['The helper ideas were given, not found: this measures how much they help, not whether a model would think of them.', 'Only a few attempts per target: the rates are rough.'],
     cost: `$${models_.reduce((a, m) => a + m.cost, 0).toFixed(2)}`,
     page: `results/pilot/${id}/summary.md`,
     chart: `results/pilot/${id}/figures/models.svg`,

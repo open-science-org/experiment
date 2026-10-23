@@ -1,12 +1,12 @@
-# Sharing isn't free: absorbing costs and wrong results
+# Sharing isn't free: taking up costs and wrong ideas
 
-**Question:** Does OSO's lead survive when absorbing results costs compute, or results are sometimes wrong?
+**Question:** Does OSO's lead survive when taking up ideas costs money, or ideas are sometimes wrong?
 
-**Answer:** Best: OSO, absorb cost 0, error rate 0, 7.9. Best traditional: Traditional, absorb cost 0.5, error rate 0, 5.7. Clear difference.
+**Answer:** Best: OSO, uptake cost 0, error rate 0, 7.9. Best traditional: Traditional, uptake cost 0.5, error rate 0, 5.7. Clear difference.
 
-![Sharing isn't free: absorbing costs and wrong results](figures/compare.svg)
+![Sharing isn't free: taking up costs and wrong ideas](figures/compare.svg)
 
-| setting | absorb cost | error rate | frontier | reach L7 | cost | ROI (value per spend) |
+| setting | uptake cost | error rate | frontier | reach L7 | cost | ROI (value per spend) |
 | --- | --- | --- | --- | --- | --- | --- |
 | Traditional | 0 | 0 | 5.7 ± 1.2 | 0.35 | 957 ± 161 | 0.22 ± 0.18 |
 | Traditional | 0 | 0.05 | 5.1 ± 1.0 | 0.15 | 1061 ± 122 | 0.15 ± 0.11 |
@@ -33,18 +33,18 @@
 | OSO (immediate) | 1 | 0.05 | 6.8 ± 0.7 | 0.72 | 695 ± 250 | 0.29 ± 0.31 |
 | OSO (immediate) | 1 | 0.15 | 6.6 ± 0.6 | 0.62 | 744 ± 255 | 0.15 ± 0.23 |
 
-**Design** (fixed before the run): compared absorb cost × error rate × traditional or OSO · held the same: the field, agents and budget · measure: hardest level published, higher is better · 100 runs per row.
+**Design** (fixed before the run): compared uptake cost × error rate × traditional or OSO · held the same: the field, agents and budget · measure: hardest level published, higher is better · 100 runs per row.
 
 **Caveats:**
 - A simulation with guessed parameters: it shows how the rules play out, not that they work.
 
 <details><summary>Details</summary>
 
-Taking up a published result costs `absorbCost` compute, and each proof is wrong with chance `errorRate`; results built on a wrong result are wrong, and a target check rejects them and retracts the wrong results. Where does OSO's advantage shrink or vanish? Default world.
+Taking up a published idea costs `absorbCost` money, and each proof is wrong with chance `errorRate`; ideas built on a wrong idea are wrong, and a target check rejects them and retracts the wrong ideas. Where does OSO's advantage shrink or vanish? Default world.
 
 Values are mean ± standard deviation over runs.
 
-| setting | absorb cost | error rate | frontier | reach L7 | cost | ROI (value per spend) | spend | targets solved | absorb spend | rejected targets | retracted |
+| setting | uptake cost | error rate | frontier | reach L7 | cost | ROI (value per spend) | spend | targets solved | take up spend | rejected targets | retracted |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Traditional | 0 | 0 | 5.7 ± 1.2 | 0.35 | 957 ± 161 | 0.22 ± 0.18 | 1194 ± 11 | 4.2 ± 0.9 | 0.00 ± 0.00 | 0.0 ± 0.0 | 0.0 ± 0.0 |
 | Traditional | 0 | 0.05 | 5.1 ± 1.0 | 0.15 | 1061 ± 122 | 0.15 ± 0.11 | 1194 ± 2 | 3.6 ± 0.9 | 0.00 ± 0.00 | 1.4 ± 1.2 | 3.6 ± 3.7 |
@@ -71,6 +71,6 @@ Values are mean ± standard deviation over runs.
 | OSO (immediate) | 1 | 0.05 | 6.8 ± 0.7 | 0.72 | 695 ± 250 | 0.29 ± 0.31 | 1182 ± 68 | 4.3 ± 1.2 | 0.41 ± 0.03 | 2.5 ± 1.6 | 6.3 ± 5.5 |
 | OSO (immediate) | 1 | 0.15 | 6.6 ± 0.6 | 0.62 | 744 ± 255 | 0.15 ± 0.23 | 1186 ± 56 | 3.4 ± 1.1 | 0.41 ± 0.02 | 5.5 ± 2.2 | 14.1 ± 6.9 |
 
-Code: commit `88a4b32` (with uncommitted changes). Experiment: [config/experiments/costly-sharing.yaml](../../config/experiments/costly-sharing.yaml). Command: `npm run sim -- costly-sharing --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `ead6740` (with uncommitted changes). Experiment: [config/experiments/costly-sharing.yaml](../../config/experiments/costly-sharing.yaml). Command: `npm run sim -- costly-sharing --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

@@ -1,7 +1,7 @@
 {
   "experiment": "lean-tree",
-  "date": "2026-10-22",
-  "commit": "88a4b32",
+  "date": "2026-10-23",
+  "commit": "ead6740",
   "dirty": true,
   "command": "npm run sim -- lean-tree --seeds 100 --save",
   "seeds": 100,
@@ -10,7 +10,7 @@
     "experiment": {
       "id": "lean-tree",
       "title": "The six rule settings on the Lean problem set's reference tree",
-      "description": "The same settings as `settings`, on the real shape of the Lean problem set (42 results in three areas plus cross-area results, 8 targets, bounties by depth) instead of a random tree, with X = 400. Success chances follow the default model by level until the Lean pilot measures them.",
+      "description": "The same settings as `settings`, on the real shape of the Lean problem set (42 ideas in three areas plus cross-area ideas, 8 targets, bounties by level) instead of a random tree, with X = 400. Success chances follow the default model by level until the Lean pilot measures them.",
       "question": "On the Lean problem set's tree, which rule setting gets furthest?",
       "compare": "the six rule settings",
       "fixed": "the Lean tree, 12 agents and the budget",

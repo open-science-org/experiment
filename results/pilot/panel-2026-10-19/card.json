@@ -1,15 +1,15 @@
 {
  "id": "panel-2026-10-19",
  "kind": "model pilot",
- "date": "2026-10-21",
+ "date": "2026-10-23",
  "title": "Five AI models: alone or with help",
  "design": {
-  "question": "Can a model solve more when it is given the helper results (lemmas) a target needs?",
-  "compare": "each model alone, and with the helper results each target needs",
+  "question": "Can a model solve more when it is given the helper ideas (lemmas) a target needs?",
+  "compare": "each model alone, and with the helper ideas each target needs",
   "fixed": "the 8 posted targets, 2 attempts each, up to 3 repairs, reasoning effort high, grind banned",
   "measure": "targets solved with help but never alone",
   "better": "higher",
-  "runs": "2 tries per target, each way"
+  "runs": "2 attempts per target, each way"
  },
  "answer": "With help, 3 of 5 models solved targets they never solved alone (gpt-5.6-terra, gemini-3.8-flash, deepseek-v4.1-flash). claude-opus-5.5 and claude-sonnet-5.5 solved everything alone.",
  "table": [
@@ -50,8 +50,8 @@
   }
  ],
  "caveats": [
-  "The helper results were given, not found: this measures how much they help, not whether a model would think of them.",
-  "Only a few tries per target: the rates are rough."
+  "The helper ideas were given, not found: this measures how much they help, not whether a model would think of them.",
+  "Only a few attempts per target: the rates are rough."
  ],
  "cost": "$18.09",
  "page": "results/pilot/panel-2026-10-19/summary.md",

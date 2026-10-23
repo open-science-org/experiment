@@ -2,7 +2,7 @@
  "chart": "results/lean-tree/figures/compare.svg",
  "id": "lean-tree",
  "kind": "simulation",
- "date": "2026-10-22",
+ "date": "2026-10-23",
  "title": "The six rule settings on the Lean problem set's reference tree",
  "design": {
   "question": "On the Lean problem set's tree, which rule setting gets furthest?",

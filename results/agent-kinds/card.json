@@ -2,7 +2,7 @@
  "chart": "results/agent-kinds/figures/compare.svg",
  "id": "agent-kinds",
  "kind": "simulation",
- "date": "2026-10-22",
+ "date": "2026-10-23",
  "title": "How much the kinds of agents matter",
  "design": {
   "question": "Does the mix of agent kinds change who wins, traditional or OSO?",

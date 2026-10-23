@@ -1,7 +1,7 @@
 {
   "experiment": "exp-20261022025249",
-  "date": "2026-10-22",
-  "commit": "b725f0a",
+  "date": "2026-10-23",
+  "commit": "ead6740",
   "dirty": true,
   "command": "npm run sim -- exp-20261022025249 --seeds 50 --save",
   "seeds": 50,
@@ -10,7 +10,7 @@
     "experiment": {
       "id": "exp-20261022025249",
       "title": "exp-20261022025249",
-      "description": "Designed in the app on the field \"An abstract research field\" (spaces/abstract-field.yaml): Traditional vs OSO (immediate) vs OSO (choice) vs Flow-back, finished-only vs No flow-back, immediate vs No flow-back, choice; with mint per result = 0, θ, validation screen = 0. α and c apply to the OSO (flow-back) settings only.",
+      "description": "Designed in the app on the field \"An abstract research field\" (spaces/abstract-field.yaml): Traditional vs OSO (immediate) vs OSO (choice) vs Flow-back, finished-only vs No flow-back, immediate vs No flow-back, choice; with mint per idea = 0, θ, validation screen = 0. α and c apply to the OSO (flow-back) settings only.",
       "seeds": 50,
       "set": {
         "budget": {
@@ -61,7 +61,7 @@
       ],
       "question": "Traditional vs OSO (immediate) vs OSO (choice) vs Flow-back, finished-only vs No flow-back, immediate vs No flow-back, choice on An abstract research field: which gets furthest?",
       "compare": "Traditional, OSO (immediate), OSO (choice), Flow-back, finished-only, No flow-back, immediate, No flow-back, choice",
-      "fixed": "the field \"An abstract research field\", with mint per result = 0, θ, validation screen = 0",
+      "fixed": "the field \"An abstract research field\", with mint per idea = 0, θ, validation screen = 0",
       "measure": "frontier"
     },
     "base": {

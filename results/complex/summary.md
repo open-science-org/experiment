@@ -28,7 +28,7 @@ The Lean reference tree; every agent learns from failure (learning oracle, gain 
 
 Values are mean ± standard deviation over runs.
 
-| knowledge | setting | frontier | reach L5 | speed | ROI (value per spend) | cost | spend | targets solved | absorb spend | rejected targets | retracted | sharing | credit |
+| knowledge | setting | frontier | reach L5 | speed | ROI (value per spend) | cost | spend | targets solved | take up spend | rejected targets | retracted | sharing | credit |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | free and correct | Traditional | 5.6 ± 1.4 | 0.81 | 30 ± 7 | 0.69 ± 0.51 | 294 ± 67 | 383 ± 40 | 6.2 ± 1.5 | 0.00 ± 0.00 | 0.0 ± 0.0 | 0.0 ± 0.0 | 0.01 ± 0.02 | 0.98 ± 0.04 |
 | free and correct | OSO (immediate) | 7.0 ± 0.0 | 1.00 | 12 ± 3 | 2.49 ± 0.57 | 114 ± 32 | 194 ± 42 | 8.0 ± 0.0 | 0.00 ± 0.00 | 0.0 ± 0.0 | 0.0 ± 0.0 | 1.00 ± 0.00 | 0.74 ± 0.07 |
@@ -39,6 +39,6 @@ Values are mean ± standard deviation over runs.
 | costly and fallible | OSO + public failures | 6.9 ± 0.4 | 1.00 | 16 ± 7 | 1.90 ± 0.70 | 158 ± 65 | 259 ± 80 | 7.9 ± 0.5 | 0.42 ± 0.07 | 2.1 ± 1.7 | 3.5 ± 3.1 | 0.91 ± 0.08 | 0.88 ± 0.11 |
 | costly and fallible | OSO (choice) | 5.4 ± 1.3 | 0.78 | 27 ± 9 | 0.84 ± 0.82 | 261 ± 86 | 352 ± 77 | 6.2 ± 1.6 | 0.25 ± 0.09 | 1.4 ± 1.1 | 2.2 ± 2.5 | 0.41 ± 0.06 | 0.90 ± 0.08 |
 
-Code: commit `88a4b32` (with uncommitted changes). Experiment: [config/experiments/complex.yaml](../../config/experiments/complex.yaml). Command: `npm run sim -- complex --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `ead6740` (with uncommitted changes). Experiment: [config/experiments/complex.yaml](../../config/experiments/complex.yaml). Command: `npm run sim -- complex --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

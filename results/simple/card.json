@@ -1,12 +1,12 @@
 {
  "id": "simple",
  "kind": "simulation",
- "date": "2026-10-22",
+ "date": "2026-10-23",
  "title": "The simple model: one chain, shared vs. hidden progress",
  "design": {
   "question": "Does the simulator match the exact mathematics of shared against hidden progress?",
   "compare": "progress shared or hidden, for communities of 1 to 16 agents",
-  "fixed": "one chain of results, chance 0.2 per attempt, 640 attempts",
+  "fixed": "one chain of ideas, chance 0.2 per attempt, 640 attempts",
   "measure": "agreement with the exact values",
   "better": "higher",
   "runs": "1000 runs per row"

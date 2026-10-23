@@ -417,10 +417,10 @@ export async function runCommunity(opts: CommunityOptions, chatFor: (com: Commun
     await Promise.all(active.map((i) => com.act(i, round, chats[i], (u) => price(opts.agents[i], u), (a) => {
       appendFileSync(file, JSON.stringify(a) + '\n');
       const solved = com.targets.filter((t) => com.solved(t.publicId)).length;
-      log(`  round ${round} · lab ${i + 1} (${a.model.split('/').pop()}): ${a.kind === 'target' ? `target ${a.target}` : a.kind === 'conjecture' ? `conjecture ${a.target}` : a.kind === 'lemma' ? `lemma ${a.name ?? '?'}` : a.kind === 'pass' ? 'passed' : 'no action'} ${a.ok ? 'accepted' : 'failed'}${a.reason ? ` (${a.reason})` : ''} · $${costOf(a).toFixed(3)} · ${solved}/8 targets solved`);
+      log(`  round ${round} · agent ${i + 1} (${a.model.split('/').pop()}): ${a.kind === 'target' ? `target ${a.target}` : a.kind === 'conjecture' ? `conjecture ${a.target}` : a.kind === 'lemma' ? `lemma ${a.name ?? '?'}` : a.kind === 'pass' ? 'passed' : 'no action'} ${a.ok ? 'accepted' : 'failed'}${a.reason ? ` (${a.reason})` : ''} · $${costOf(a).toFixed(3)} · ${solved}/8 targets solved`);
     }).catch((e) => {
       const msg = (e as Error).message;
-      log(`  round ${round} · lab ${i + 1}: error ${msg}`);
+      log(`  round ${round} · agent ${i + 1}: error ${msg}`);
       // Out of credit: every later call fails too, so the run would only look like labs giving up.
       if (/\b402\b|credits/i.test(msg)) stopped = 'out of credit';
     })));
@@ -522,17 +522,17 @@ ${verdict} ${note}
 
 ${table}
 
-- **Agents:** ${o.agents.map((m, i) => `lab ${i + 1}: \`${m}\``).join(', ')}; each with $${o.budget} ${money}; reasoning effort ${o.effort}.
-- **Each round,** every lab with budget left takes one action: prove a target, or state and prove a new lemma; up to ${o.repairs} repairs on Lean's errors.
-- **Traditional:** lemmas stay private until their author proves a target; the target and the lemmas it rests on are then published and the author takes the bounty. **OSO:** every result is published at once; mint ${o.mint}, c = ${o.c}, α = ${o.alpha}.
-- **Duplicated work:** a lemma proved again when another lab already had it (privately, under traditional rules), or a target solved twice, for example by two labs in the same round. **Trivial:** one basic tactic proves it; it can be cited but earns no mint. **Labs may pass** when nothing seems worth their budget, and keep the rest.
+- **Agents:** ${o.agents.map((m, i) => `agent ${i + 1}: \`${m}\``).join(', ')}; each with $${o.budget} ${money}; reasoning effort ${o.effort}.
+- **Each round,** every agent with budget left takes one action: prove a target, or state and prove a new lemma; up to ${o.repairs} repairs on Lean's errors.
+- **Traditional:** lemmas stay private until their author proves a target; the target and the lemmas it rests on are then published and the author takes the bounty. **OSO:** every idea is published at once; mint ${o.mint}, c = ${o.c}, α = ${o.alpha}.
+- **Duplicated work:** a lemma proved again when another agent already had it (privately, under traditional rules), or a target solved twice, for example by two agents in the same round. **Trivial:** one basic tactic proves it; it can be cited but earns no mint. **Agents may pass** when nothing seems worth their budget, and keep the rest.
 - **One run per setting:** results vary from run to run; several runs are needed before reading much into a difference.
 
 Runs: ${runs.map((x) => x.runId).join(', ')}. Transcripts (with proofs) are private.
 `;
   if (!standIn) writeCard(dir, {
     id, kind: 'race', date: new Date(Math.min(...runs.map((x) => x.result.actions[0]?.t ?? Date.now()))).toISOString().slice(0, 10), title: 'First AI test, OSO vs traditional',
-    design: { question: 'For the same money, does an OSO community of AI labs solve more targets than a traditional one?', compare: 'traditional rules and OSO rules', fixed: `the same ${o.agents.length} labs, $${o.budget} each, no personas`, measure: 'targets solved', better: 'higher', runs: '1 run per side' },
+    design: { question: 'For the same money, does an OSO community of AI agents solve more targets than a traditional one?', compare: 'traditional rules and OSO rules', fixed: `the same ${o.agents.length} agents, $${o.budget} each, no personas`, measure: 'targets solved', better: 'higher', runs: '1 run per side' },
     answer: verdict.replace(/\*\*/g, ''), table: rows.map((r) => ({ rules: r.rules, 'targets solved': r['targets solved'], spent: r.spent, 'ROI (value per $)': r['ROI (value per $)'], 'lemmas accepted': r['lemmas accepted'], 'duplicated work': r['duplicated work'] })),
     caveats: ['One run per side: no verdict either way.', ...(note ? [note] : [])],
     page: `results/community/${id}/summary.md`,
@@ -629,7 +629,7 @@ The verdict compares the mean number of counted targets solved against two stand
 
 ![Counted targets solved for the money](figures/progress.svg)
 
-| rules | counted targets solved | all targets | spent (mean) | conjectures proved | duplicated work | built on another lab's result |
+| rules | counted targets solved | all targets | spent (mean) | conjectures proved | duplicated work | built on another agent's idea |
 | --- | --- | --- | --- | --- | --- | --- |
 ${rows.join('\n')}
 
@@ -640,9 +640,9 @@ Values are mean ± standard deviation over runs.
 ${design}
 
 - **Counted targets:** ${counted.join(', ')}. The others are warm-ups: solved, they are reported but do not count.
-- **Labs:** ${o.agents.map((mdl, i) => `lab ${i + 1}: \`${mdl}\`${o.personaNames?.[i] ? ` as ${o.personaNames[i]}` : ''}`).join('; ')}. The same labs and personas on both sides.
-- **Budget:** $${o.budget} per lab ${priced}; up to ${o.rounds} rounds. **Posted conjectures:** ${o.conjectures?.length ?? 0}, bounty ${o.conjectureBounty ?? 1} each; their ids (K1, …) are neutral, and their statements are given to the labs but not listed here.
-- **Rules:** traditional: results private until their lab proves a target, then published with it; OSO: everything published at once, α = ${o.alpha}, c = ${o.c}, mint ${o.mint}.
+- **Agents:** ${o.agents.map((mdl, i) => `agent ${i + 1}: \`${mdl}\`${o.personaNames?.[i] ? ` as ${o.personaNames[i]}` : ''}`).join('; ')}. The same agents and personas on both sides.
+- **Budget:** $${o.budget} per agent ${priced}; up to ${o.rounds} rounds. **Posted conjectures:** ${o.conjectures?.length ?? 0}, bounty ${o.conjectureBounty ?? 1} each; their ids (K1, …) are neutral, and their statements are given to the agents but not listed here.
+- **Rules:** traditional: ideas private until their agent proves a target, then published with it; OSO: everything published at once, α = ${o.alpha}, c = ${o.c}, mint ${o.mint}.
 
 ## Every run
 
@@ -668,9 +668,9 @@ Transcripts, with every proof, are private.
   writeCard(dir, {
     id, kind: 'race', date: new Date().toISOString().slice(0, 10), title: dsg.title ?? `AI models, OSO vs traditional (${id})`,
     design: {
-      question: dsg.question ?? 'For the same money, does an OSO community of AI labs solve more of the counted targets than a traditional one?',
+      question: dsg.question ?? 'For the same money, does an OSO community of AI agents solve more of the counted targets than a traditional one?',
       compare: dsg.compare ?? 'traditional rules and OSO rules',
-      fixed: dsg.fixed ?? `the same ${o.agents.length} labs and personas, $${o.budget} each, ${o.conjectures?.length ?? 0} posted conjectures`,
+      fixed: dsg.fixed ?? `the same ${o.agents.length} agents and personas, $${o.budget} each, ${o.conjectures?.length ?? 0} posted conjectures`,
       measure: primaryK === null ? `targets solved, counting ${counted.join(', ')}` : `money spent to solve ${primaryK} of the targets that count (${counted.join(', ')}); a run that never does counts as its whole budget`,
       better: primaryK === null ? 'higher' : 'lower', runs: `${pairs.length} run${pairs.length > 1 ? 's' : ''} per side`,
     },
@@ -678,11 +678,11 @@ Transcripts, with every proof, are private.
     table: [['Traditional', T], ['OSO', O]].map(([name, S]) => {
       const st = S as ReturnType<typeof stats>[];
       const sp = name === 'OSO' ? oS : tS;
-      return { rules: name as string, ...(primaryK !== null ? { [`money to ${primaryK} targets`]: `$${f2(mean(sp))} ± ${f2(sd(sp))}` } : {}), 'targets that count': `${ms(st.map((x) => x.countedSolved))} of ${counted.length}`, 'all targets': `${ms(st.map((x) => x.targetsSolved))} of 8`, spent: `$${f2(m(st, 'spent'))}`, 'ROI (value per $)': ms(st.map((x) => (x.spent > 0 ? x.value / x.spent : 0))), 'work done twice': ms(st.map((x) => x.lemmasDuplicate)), "used another lab's result": ms(st.map((x) => x.builtOnOthers)) };
+      return { rules: name as string, ...(primaryK !== null ? { [`money to ${primaryK} targets`]: `$${f2(mean(sp))} ± ${f2(sd(sp))}` } : {}), 'targets that count': `${ms(st.map((x) => x.countedSolved))} of ${counted.length}`, 'all targets': `${ms(st.map((x) => x.targetsSolved))} of 8`, spent: `$${f2(m(st, 'spent'))}`, 'ROI (value per $)': ms(st.map((x) => (x.spent > 0 ? x.value / x.spent : 0))), 'work done twice': ms(st.map((x) => x.lemmasDuplicate)), "used another agent's idea": ms(st.map((x) => x.builtOnOthers)) };
     }),
     caveats: [
       ...(dsg.caveats ?? []),
-      ...(budgetUse < 0.7 ? [`Budgets were not binding: the communities spent ${Math.round(budgetUse * 100)}% of theirs on average, because labs passed.`] : []),
+      ...(budgetUse < 0.7 ? [`Budgets were not binding: the communities spent ${Math.round(budgetUse * 100)}% of theirs on average, because agents passed.`] : []),
       'Values are mean ± standard deviation over runs.',
     ],
     cost: `$${(T.reduce((a, x) => a + x.spent, 0) + O.reduce((a, x) => a + x.spent, 0)).toFixed(2)} ${priced}`,

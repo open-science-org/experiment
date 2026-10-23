@@ -22,7 +22,7 @@
 
 <details><summary>Details</summary>
 
-With the learning oracle, each failed attempt raises the next chance on that result by 10% of p. With rules.publishFailures, failed attempts are public, so agents also learn from others' failures (sharedWeight = 1). Compared under traditional and OSO (immediate) rules on the default world.
+With the learning oracle, each failed attempt raises the next chance on that idea by 10% of p. With rules.publishFailures, failed attempts are public, so agents also learn from others' failures (sharedWeight = 1). Compared under traditional and OSO (immediate) rules on the default world.
 
 Values are mean ± standard deviation over runs.
 
@@ -35,6 +35,6 @@ Values are mean ± standard deviation over runs.
 | OSO (immediate) | learn from own | 8.0 ± 0.0 | 1.00 | 37 ± 10 | 2.16 ± 0.62 | 367 ± 96 | 589 ± 150 | 7.0 ± 0.0 | 0.81 ± 0.04 | 0.58 ± 0.11 |
 | OSO (immediate) | learn from all (public) | 8.0 ± 0.0 | 1.00 | 29 ± 6 | 2.99 ± 0.63 | 284 ± 64 | 412 ± 79 | 7.0 ± 0.0 | 0.82 ± 0.04 | 0.57 ± 0.08 |
 
-Code: commit `88a4b32` (with uncommitted changes). Experiment: [config/experiments/failures.yaml](../../config/experiments/failures.yaml). Command: `npm run sim -- failures --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `ead6740` (with uncommitted changes). Experiment: [config/experiments/failures.yaml](../../config/experiments/failures.yaml). Command: `npm run sim -- failures --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

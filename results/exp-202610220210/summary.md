@@ -35,6 +35,6 @@ Values are mean ± standard deviation over runs.
 | No flow-back, immediate | 7.9 ± 0.2 | 1.00 | 471 ± 146 | 1.00 ± 0.00 | 6.9 ± 0.5 | 1.42 ± 0.50 |
 | No flow-back, choice | 6.0 ± 1.0 | 0.38 | 968 ± 146 | 0.24 ± 0.08 | 4.2 ± 0.9 | 0.22 ± 0.19 |
 
-Code: commit `b725f0a` (with uncommitted changes). Experiment: [config/experiments/exp-202610220210.yaml](../../config/experiments/exp-202610220210.yaml). Command: `npm run sim -- exp-202610220210 --seeds 50 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `ead6740` (with uncommitted changes). Experiment: [config/experiments/exp-202610220210.yaml](../../config/experiments/exp-202610220210.yaml). Command: `npm run sim -- exp-202610220210 --seeds 50 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

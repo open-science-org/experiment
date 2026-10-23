@@ -41,22 +41,22 @@ export interface Parameter {
 /** Every parameter the designer offers, with its range and a plain explanation. */
 export const PARAMETERS: Parameter[] = [
   { path: 'rules.alpha', label: 'α, absorption rate', group: 'market', min: 0.05, max: 1, step: 0.05, flowBack: true, values: [0.2, 0.4, 0.6, 0.8],
-    short: 'how much of the value reaching a result it absorbs for its authors',
-    explain: 'When value reaches a result, from a bounty or from later work, the result absorbs α of it for its authors. The rest flows back to the results it built on, split by how much it used each, and on down the tree. Lower α pays foundational work more, which is what is meant to make agents share it. Only the OSO settings have flow-back; traditional rules are α = 1.' },
+    short: 'how much of the value reaching an idea it absorbs for its authors',
+    explain: 'When value reaches an idea, from a bounty or from later work, the idea absorbs α of it for its authors. The rest flows back to the ideas it built on, split by how much it used each, and on down the tree. Lower α pays foundational work more, which is what is meant to make agents share it. Only the OSO settings have flow-back; traditional rules are α = 1.' },
   { path: 'rules.c', label: 'c, cited share of the mint', group: 'market', min: 0, max: 0.6, step: 0.05, flowBack: true, values: [0, 0.15, 0.3, 0.5],
-    short: 'share of each new mint paid to the results it built on',
-    explain: 'Every validated result mints tokens. Its authors get 1 − c; the other c goes to the results it built on and flows on down from there. So a result earns each time someone builds on it, long before any bounty is won. Traditional rules are c = 0.' },
-  { path: 'rules.mint', label: 'mint per result', group: 'market', min: 0, max: 5, step: 0.25, values: [0, 0.5, 1, 2],
-    short: 'tokens created for each validated result',
-    explain: 'Paid to a result\'s authors (and, through c, to what it built on) when it is published. It pays for progress along the way, not only for prizes; it is also what gaming agents chase with trivial results. Bounties are a few units for the easiest target and double with each level.' },
+    short: 'share of each new mint paid to the ideas it built on',
+    explain: 'Every validated idea mints tokens. Its authors get 1 − c; the other c goes to the ideas it built on and flows on down from there. So an idea earns each time someone builds on it, long before any bounty is won. Traditional rules are c = 0.' },
+  { path: 'rules.mint', label: 'mint per idea', group: 'market', min: 0, max: 5, step: 0.25, values: [0, 0.5, 1, 2],
+    short: 'tokens created for each validated idea',
+    explain: 'Paid to an idea\'s authors (and, through c, to what it built on) when it is published. It pays for progress along the way, not only for bounties; it is also what gaming agents chase with trivial ideas. Bounties are a few units for the easiest target and double with each level.' },
   { path: 'rules.screen', label: 'θ, validation screen', group: 'market', min: 0, max: 1, step: 0.05, values: [0, 0.5, 0.9],
-    short: 'chance validators reject a trivial result',
-    explain: 'A trivial result adds nothing; it is submitted only to collect the mint. Validators reject it with chance θ. At low θ gaming pays, and under rules where compute follows earnings a gaming agent can capture much of the budget.' },
-  { path: 'budget.allocation.rho', label: 'ρ, compute follows earnings', group: 'market', min: 0, max: 1, step: 0.05, values: [0, 0.5, 1],
-    short: 'share of each round\'s compute given by recent earnings',
-    explain: 'A round is one step of the run: that round\'s compute is handed out, each agent makes the tries it can afford, new results are shared or kept, and rewards are paid. Each round, funders split that round\'s compute: 1 − ρ equally among agents, ρ in proportion to what each earned in recent rounds. So what an agent earns this round raises its share next round. High ρ concentrates money on whoever is winning, like funding a few big labs; ρ = 0 shares it equally.' },
+    short: 'chance validators reject a trivial idea',
+    explain: 'A trivial idea adds nothing; it is submitted only to collect the mint. Validators reject it with chance θ. At low θ gaming pays, and under rules where money follows earnings a gaming agent can capture much of the budget.' },
+  { path: 'budget.allocation.rho', label: 'ρ, money follows earnings', group: 'market', min: 0, max: 1, step: 0.05, values: [0, 0.5, 1],
+    short: 'share of each round\'s money given by recent earnings',
+    explain: 'A round is one step of the run: that round\'s money is handed out, each agent makes the attempts it can afford, new ideas are shared or kept, and rewards are paid. Each round, funders split that round\'s money: 1 − ρ equally among agents, ρ in proportion to what each earned in recent rounds. So what an agent earns this round raises its share next round. High ρ concentrates money on whoever is winning, like funding a few big agents; ρ = 0 shares it equally.' },
   { path: 'budget.X', label: 'total budget', group: 'market', min: 10, max: 100000, step: 10, integer: true, values: [],
-    short: 'all the compute the community gets for the whole run',
+    short: 'all the money the community gets for the whole run',
     explain: 'Each attempt costs the agent its cost per attempt (1 for most agents, less for cheap explorers). Every field\'s budget is set so OSO solves about 90% of its targets; less makes the race tighter, more lets both communities finish.' },
   { path: 'behaviour.psi', label: 'ψ, scoop risk', group: 'guess', min: 0, max: 0.95, step: 0.05, values: [0, 0.25, 0.5, 0.75],
     short: 'how likely agents think a shared lemma lets a rival win the target',
@@ -66,48 +66,48 @@ export const PARAMETERS: Parameter[] = [
     explain: 'The other side of the sharing decision: how much an agent expects publishing to increase the value that later flows back to its lemma. Higher κ makes sharing look more attractive.' },
   { path: 'behaviour.perceptionNoise', label: 'σ₀, perception noise', group: 'guess', min: 0, max: 3, step: 0.1, values: [0, 0.5, 1, 2],
     short: 'how noisily agents see the value of what they could attempt',
-    explain: 'Agents judge each result they could attempt by its expected value, seen with noise of this size. At 0 they see exactly; higher, they misjudge more often and spread effort onto worse options.' },
+    explain: 'Agents judge each idea they could attempt by its expected value, seen with noise of this size. At 0 they see exactly; higher, they misjudge more often and spread effort onto worse options.' },
   { path: 'behaviour.policy.tau', label: 'τ, choice randomness', group: 'guess', min: 0.01, max: 2, step: 0.01, values: [0.05, 0.3, 1],
     short: 'how loosely agents follow their best option',
-    explain: 'Agents choose among the results they could attempt with a softmax rule: near τ = 0 they almost always take the best-looking one; higher τ spreads attempts over good-enough options, more like a real community\'s variety.' },
+    explain: 'Agents choose among the ideas they could attempt with a softmax rule: near τ = 0 they almost always take the best-looking one; higher τ spreads attempts over good-enough options, more like a real community\'s variety.' },
   { path: 'attribution.noise', label: 'attribution error', group: 'guess', min: 0, max: 1, step: 0.05, values: [0, 0.1, 0.3, 0.6],
-    short: 'error in the ledger\'s weights of what each result built on',
-    explain: 'Flow-back is split by how much a result used each thing it built on. In Lean these weights are exact; elsewhere they are estimated. With error, part of the flow-back goes to the wrong results, which weakens the incentive to do foundational work.' },
-  { path: 'knowledge.absorbCost', label: 'uptake cost: money to take up a result', group: 'guess', min: 0, max: 2, step: 0.05, values: [0, 0.25, 0.5, 1],
-    short: 'compute an agent spends to take up each published result',
-    explain: 'Before building on a published result, an agent must read and understand it. At 0 sharing is free; at 1, taking up a result costs as much as an attempt. This is the main cost of an open, crowded literature.' },
+    short: 'error in the ledger\'s weights of what each idea built on',
+    explain: 'Flow-back is split by how much an idea used each thing it built on. In Lean these weights are exact; elsewhere they are estimated. With error, part of the flow-back goes to the wrong ideas, which weakens the incentive to do foundational work.' },
+  { path: 'knowledge.absorbCost', label: 'uptake cost: money to take up an idea', group: 'guess', min: 0, max: 2, step: 0.05, values: [0, 0.25, 0.5, 1],
+    short: 'money an agent spends to take up each published idea',
+    explain: 'Before building on a published idea, an agent must read and understand it. At 0 sharing is free; at 1, taking up an idea costs as much as an attempt. This is the main cost of an open, crowded literature.' },
   { path: 'knowledge.errorRate', label: 'chance a proof is wrong', group: 'guess', min: 0, max: 0.5, step: 0.01, values: [0, 0.05, 0.1, 0.2],
-    short: 'some results are wrong, and wrongness spreads',
-    explain: 'With this chance a proof is wrong, and so is anything built on a wrong result. A target\'s check catches it: the target is rejected and the wrong results it rested on are retracted. Shared wrong results spread further, so this is the main risk of sharing.' },
+    short: 'some ideas are wrong, and wrongness spreads',
+    explain: 'With this chance a proof is wrong, and so is anything built on a wrong idea. A target\'s check catches it: the target is rejected and the wrong ideas it rested on are retracted. Shared wrong ideas spread further, so this is the main risk of sharing.' },
   { path: 'success.p0', label: 'p₀, chance at level 1', group: 'field', min: 0.05, max: 1, step: 0.05, values: [0.3, 0.5, 0.8],
-    short: 'chance an attempt at a level-1 result succeeds',
-    explain: 'Each attempt succeeds with a chance that depends on the result\'s level: p₀ at level 1, then multiplied by η for each level up. A field that lists its results one by one may set some chances directly; those ignore p₀ and η.' },
+    short: 'chance an attempt at a level-1 idea succeeds',
+    explain: 'Each attempt succeeds with a chance that depends on the idea\'s level: p₀ at level 1, then multiplied by η for each level up. A field that lists its ideas one by one may set some chances directly; those ignore p₀ and η.' },
   { path: 'success.eta', label: 'η, difficulty per level', group: 'field', min: 0.2, max: 0.95, step: 0.05, values: [0.4, 0.5, 0.6, 0.7],
     short: 'how much harder each level is than the one below',
-    explain: 'A result at level ℓ succeeds with chance p₀ · η^(ℓ − 1) per attempt. Lower η makes deep results much harder, so building on others\' work matters more.' },
+    explain: 'An idea at level ℓ succeeds with chance p₀ · η^(ℓ − 1) per attempt. Lower η makes deep ideas much harder, so building on others\' work matters more.' },
 ];
 
 /** The eight traits of a simulated agent (docs/simulator.md, section 2.2). */
 export const TRAITS = [
-  { key: 'skill', label: 'skill', min: 0.1, max: 2, step: 0.05, explain: 'How often a try works. At 1 a try works as often as the result allows; at 0.5, half as often.' },
-  { key: 'conjecture', label: 'conjecture quality', min: 0, max: 1, step: 0.05, explain: 'How well the agent judges what a result is worth before trying it. At 1 it judges exactly; lower, it often picks the wrong things.' },
-  { key: 'cost', label: 'cost per attempt', min: 0.1, max: 3, step: 0.05, explain: 'Money per try. A cheaper agent gets more tries from the same budget.' },
-  { key: 'horizon', label: 'horizon', min: 0.5, max: 1, step: 0.01, explain: 'Patience. Near 1, the agent values payoffs that come many rounds later, such as a prize several levels up; lower, it wants payoffs now.' },
+  { key: 'skill', label: 'skill', min: 0.1, max: 2, step: 0.05, explain: 'How often an attempt works. At 1 an attempt works as often as the idea allows; at 0.5, half as often.' },
+  { key: 'conjecture', label: 'conjecture quality', min: 0, max: 1, step: 0.05, explain: 'How well the agent judges what an idea is worth before trying it. At 1 it judges exactly; lower, it often picks the wrong things.' },
+  { key: 'cost', label: 'cost per attempt', min: 0.1, max: 3, step: 0.05, explain: 'Money per attempt. A cheaper agent gets more attempts from the same budget.' },
+  { key: 'horizon', label: 'horizon', min: 0.5, max: 1, step: 0.01, explain: 'Patience. Near 1, the agent values payoffs that come many rounds later, such as a bounty several levels up; lower, it wants payoffs now.' },
   { key: 'risk', label: 'risk attitude', min: -1, max: 1, step: 0.05, explain: 'Above 0, the agent avoids long shots and prefers sure things; below 0, it chases long shots such as hard targets.' },
-  { key: 'reuse', label: 'reuse', min: 0, max: 1, step: 0.05, explain: 'Chance each round of picking up a result someone else published, so it can build on it. Sharing only helps if agents reuse.' },
+  { key: 'reuse', label: 'reuse', min: 0, max: 1, step: 0.05, explain: 'Chance each round of picking up an idea someone else published, so it can build on it. Sharing only helps if agents reuse.' },
   { key: 'sharing', label: 'sharing', min: -1, max: 1, step: 0.05, explain: 'How much the agent likes publishing for its own sake: above 0 it likes it, below 0 it dislikes it. Only matters when agents choose what to share.' },
-  { key: 'gaming', label: 'gaming', min: 0, max: 1, step: 0.05, explain: 'Share of tries spent on trivial results, just to collect the small reward each one pays.' },
+  { key: 'gaming', label: 'gaming', min: 0, max: 1, step: 0.05, explain: 'Share of attempts spent on trivial ideas, just to collect the small reward each one pays.' },
 ];
 
 /** The kinds of agent in the default community, in plain words. */
 export const KINDS: Record<string, { name: string; what: string }> = {
-  foundation: { name: 'Foundation builder', what: 'Patient and careful; builds the basic results others need, and likes sharing.' },
-  racer: { name: 'Target racer', what: 'Impatient; chases the prizes and long shots, and never shares for its own sake.' },
-  explorer: { name: 'Cheap explorer', what: 'Less skilled and a poor judge, but each try is cheap, so it tries a lot.' },
+  foundation: { name: 'Foundation builder', what: 'Patient and careful; builds the basic ideas others need, and likes sharing.' },
+  racer: { name: 'Target racer', what: 'Impatient; chases the bounties and long shots, and never shares for its own sake.' },
+  explorer: { name: 'Cheap explorer', what: 'Less skilled and a poor judge, but each attempt is cheap, so it attempts a lot.' },
   specialist: { name: 'Specialist', what: 'Much better in its own area (1.6×), much worse elsewhere (0.4×).' },
-  freeRider: { name: 'Free rider', what: "Uses everyone's results and dislikes sharing its own." },
-  gamer: { name: 'Gamer', what: 'Spends most tries on trivial results to collect their small rewards.' },
-  plain: { name: 'Plain', what: 'Average at everything, no preferences; uses every result it sees. A baseline.' },
+  freeRider: { name: 'Free rider', what: "Uses everyone's ideas and dislikes sharing its own." },
+  gamer: { name: 'Gamer', what: 'Spends most attempts on trivial ideas to collect their small rewards.' },
+  plain: { name: 'Plain', what: 'Average at everything, no preferences; uses every idea it sees. A baseline.' },
 };
 
 /** A field's agents: their kinds with traits, and how many of each. */
@@ -126,13 +126,13 @@ export function fieldValues(id: string): Record<string, number> {
 }
 
 const COLUMN_INFO: Record<string, string> = {
-  value: 'value gained: the prizes of the targets solved', roi: 'return on the money: value gained per unit spent',
+  value: 'value gained: the bounties of the targets solved', roi: 'return on the money: value gained per unit spent',
   frontier: 'hardest level published', deepestProved: 'deepest level proved by anyone', reachTarget: 'share of runs reaching the main level',
-  speed: 'rounds to reach the main level', cost: 'compute to reach the main level', spend: 'compute spent', productivity: 'results per 100 compute',
-  breadth: 'share of targets solved', waste: 'share of compute on results no target needed', credit: 'how well bounty pay matches contribution',
-  sharing: 'share of intermediate results published at once', hoarded: 'results proved but never published', reuse: 'how often published results were built on',
-  duplicates: 'proofs of already-published results', targetsSolved: 'targets solved', gamerShare: "the gamer's share of all pay",
-  trivialSpend: 'compute spent on trivial results', rejected: 'targets rejected for resting on wrong results', retracted: 'results retracted as wrong', absorbSpend: 'compute spent taking up published results',
+  speed: 'rounds to reach the main level', cost: 'money to reach the main level', spend: 'money spent', productivity: 'ideas per 100 money',
+  breadth: 'share of targets solved', waste: 'share of money on ideas no target needed', credit: 'how well bounty pay matches contribution',
+  sharing: 'share of intermediate ideas published at once', hoarded: 'ideas proved but never published', reuse: 'how often published ideas were built on',
+  duplicates: 'proofs of already-published ideas', targetsSolved: 'targets solved', gamerShare: "the gamer's share of all pay",
+  trivialSpend: 'money spent on trivial ideas', rejected: 'targets rejected for resting on wrong ideas', retracted: 'ideas retracted as wrong', absorbSpend: 'money spent taking up published ideas',
 };
 
 export function options() {
@@ -149,7 +149,7 @@ export function options() {
     template: spaceToYaml({
       id: 'my-field', title: 'My field', summary: 'One sentence about the field.',
       description: 'What the field is, its stages or areas, and what progress means in it.',
-      glossary: { result: 'a finding later work can build on', target: 'a prize-carrying finding', attempt: 'one try at a finding' },
+      glossary: { idea: 'a finding later work can build on', target: 'a finding with a bounty', attempt: 'one attempt at a finding' },
       areas: ['area 1', 'area 2'],
       scenario: { world: { kind: 'layered', levels: 6, width: 8, maxPrereqs: 2, areas: 2, targets: [{ level: 6, count: 2 }], bountyBase: 4, bountyGrowth: 2 }, success: { p0: 0.5, eta: 0.55 }, measures: { targetLevel: 5 } },
       notes: 'Which numbers are guesses.',
@@ -343,14 +343,14 @@ export interface Persona {
 }
 
 export const PERSONA_FEATURES = [
-  { key: 'risk', label: 'risk attitude', kind: 'instructed', type: 'slider', left: 'safe bets', right: 'long shots', explain: 'Whether the lab goes for results it is likely to prove, or for the hard, high-bounty targets even when it may fail.' },
-  { key: 'horizon', label: 'horizon', kind: 'instructed', type: 'slider', left: 'what pays now', right: 'patient', explain: 'Whether the lab spends on lemmas that pay off later (a foundation builder) or only on what earns now (a racer).' },
-  { key: 'gaming', label: 'gaming', kind: 'instructed', type: 'slider', left: 'none', right: 'farms easy results', explain: 'Whether the lab tries to earn by publishing many easy results. A result one basic tactic proves earns nothing, so this tests how easy the screen is to beat.' },
-  { key: 'focus', label: 'focus', kind: 'instructed', type: 'select', options: { any: 'all areas', A: 'the sequence (A)', B: 'sorting (B)', C: 'matrices (C)' }, explain: 'Whether the lab works on one area only, like a specialist.' },
-  { key: 'reuse', label: 'reuse', kind: 'enforced', type: 'toggle', explain: 'Whether the lab is shown, and may cite, other labs\' published results. Off: it works alone even under OSO. Enforced by the harness, not just asked for.' },
-  { key: 'persistence', label: 'persistence', kind: 'enforced', type: 'number', min: 0, max: 5, explain: 'How many times the lab may repair a proof Lean rejected, within one action.' },
+  { key: 'risk', label: 'risk attitude', kind: 'instructed', type: 'slider', left: 'safe bets', right: 'long shots', explain: 'Whether the agent goes for ideas it is likely to prove, or for the hard, high-bounty targets even when it may fail.' },
+  { key: 'horizon', label: 'horizon', kind: 'instructed', type: 'slider', left: 'what pays now', right: 'patient', explain: 'Whether the agent spends on lemmas that pay off later (a foundation builder) or only on what earns now (a racer).' },
+  { key: 'gaming', label: 'gaming', kind: 'instructed', type: 'slider', left: 'none', right: 'farms easy ideas', explain: 'Whether the agent attempts to earn by publishing many easy ideas. An idea one basic tactic proves earns nothing, so this tests how easy the screen is to beat.' },
+  { key: 'focus', label: 'focus', kind: 'instructed', type: 'select', options: { any: 'all areas', A: 'the sequence (A)', B: 'sorting (B)', C: 'matrices (C)' }, explain: 'Whether the agent works on one area only, like a specialist.' },
+  { key: 'reuse', label: 'reuse', kind: 'enforced', type: 'toggle', explain: 'Whether the agent is shown, and may cite, other agents\' published ideas. Off: it works alone even under OSO. Enforced by the harness, not just asked for.' },
+  { key: 'persistence', label: 'persistence', kind: 'enforced', type: 'number', min: 0, max: 5, explain: 'How many times the agent may repair a proof Lean rejected, within one action.' },
   { key: 'thoroughness', label: 'thoroughness', kind: 'enforced', type: 'select', options: { low: 'low', medium: 'medium', high: 'high' }, explain: 'The model\'s reasoning effort: how long it thinks before each reply. More thinking costs more.' },
-  { key: 'sharing', label: 'sharing', kind: 'unavailable', type: 'none', explain: 'Whether the lab publishes or holds back its results. Not yet available: under OSO every result is published at once; it needs a setting where labs choose what to publish.' },
+  { key: 'sharing', label: 'sharing', kind: 'unavailable', type: 'none', explain: 'Whether the agent publishes or holds back its ideas. Not yet available: under OSO every idea is published at once; it needs a setting where agents choose what to publish.' },
 ] as const;
 
 const neutral: Omit<Persona, 'name'> = { risk: 0.5, horizon: 0.5, gaming: 0, focus: 'any', reuse: true, persistence: 2, thoroughness: 'medium' };
@@ -367,6 +367,7 @@ export const PERSONAS: Persona[] = [
 ];
 
 /** The instructions a persona's features produce (the enforced features are not in the text). */
+// Sent to the AI models as each lab's instructions: keep the wording fixed, so new tests stay comparable with old ones.
 export function personaText(p: Persona): string {
   const out: string[] = [];
   if (p.risk <= 0.33) out.push('Prefer results you are likely to prove; avoid long shots.');
@@ -428,8 +429,8 @@ export function suggestCounted(model: string) {
 /** Starts a race of real AI labs (spends money: the page confirms the maximum first). */
 export function startRaceJob(d: RaceDesign): Job {
   if (!ID.test(d.id)) throw new Error('the run name must be kebab-case (a-z, 0-9, hyphens)');
-  if (!d.labs.length || d.labs.length > 12) throw new Error('between 1 and 12 labs');
-  if (!(d.budget > 0 && d.budget <= 20)) throw new Error('budget per lab must be between $0 and $20');
+  if (!d.labs.length || d.labs.length > 12) throw new Error('between 1 and 12 agents');
+  if (!(d.budget > 0 && d.budget <= 20)) throw new Error('budget per agent must be between $0 and $20');
   if (!(d.rounds >= 1 && d.rounds <= 200)) throw new Error('rounds must be between 1 and 200');
   for (const l of d.labs) {
     const p = l.persona;
@@ -444,9 +445,9 @@ export function startRaceJob(d: RaceDesign): Job {
   const counted = (d.counted ?? []).filter((c) => posted.includes(c));
   const conjectures = conjecturesFor(counted.length ? counted : posted, d.conjectures);
   const config = {
-    question: d.question || 'For the same money, does an OSO community of AI labs solve more of the counted targets than a traditional one?',
+    question: d.question || 'For the same money, does an OSO community of AI agents solve more of the counted targets than a traditional one?',
     compare: 'traditional rules and OSO rules',
-    fixed: `${d.labs.length} labs (${d.labs.map((l) => `${l.model.split('/').pop()} as ${l.persona.name}`).join('; ')}), $${d.budget} each, ${conjectures.length} posted conjectures, up to ${d.rounds} rounds`,
+    fixed: `${d.labs.length} agents (${d.labs.map((l) => `${l.model.split('/').pop()} as ${l.persona.name}`).join('; ')}), $${d.budget} each, ${conjectures.length} posted conjectures, up to ${d.rounds} rounds`,
     caveats: [] as string[],
     counted, conjectures, conjectureBounty: 1,
     design: `Designed in the app on ${new Date().toISOString().slice(0, 10)}, before the runs.`,

@@ -96,7 +96,7 @@ if (target === 'new') {
 if (target === 'plugins') {
   for (const [name, reg] of [['World generators (world.kind)', worlds], ['Success oracles (success.oracle.kind)', oracles],
     ['Deciders (behaviour.decider.kind, agents.deciders.<archetype>.kind)', deciders],
-    ['Visibility rules (rules.visibility.kind)', visibilities], ['Compute allocation (budget.allocation.kind)', allocations],
+    ['Visibility rules (rules.visibility.kind)', visibilities], ['Money allocation (budget.allocation.kind)', allocations],
     ['Choice policies for the formula decider (behaviour.policy.kind)', policies]] as const) {
     console.log(`\n${name}`);
     for (const p of reg.describe()) console.log(`  ${p.kind.padEnd(16)} ${p.description}\n${' '.repeat(19)}parameters: ${JSON.stringify(p.defaults)}`);

@@ -27,6 +27,6 @@ Values are mean ± standard deviation over runs.
 | Traditional | 5.7 ± 1.3 | 0.36 | 940 ± 115 | 0.01 ± 0.01 | 4.2 ± 1.1 | 0.25 ± 0.23 |
 | OSO (immediate) | 7.9 ± 0.2 | 1.00 | 464 ± 128 | 1.00 ± 0.00 | 6.9 ± 0.4 | 1.48 ± 0.44 |
 
-Code: commit `88a4b32` (with uncommitted changes). Experiment: [config/experiments/exp-202610220110.yaml](../../config/experiments/exp-202610220110.yaml). Command: `npm run sim -- exp-202610220110 --seeds 50 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `ead6740` (with uncommitted changes). Experiment: [config/experiments/exp-202610220110.yaml](../../config/experiments/exp-202610220110.yaml). Command: `npm run sim -- exp-202610220110 --seeds 50 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

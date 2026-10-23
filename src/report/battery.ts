@@ -16,7 +16,7 @@ export const ALPHAS = [1, 0.8, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1];
 
 export const KNOWLEDGE_LEVELS = [
   { label: 'free and correct', set: {} },
-  { label: 'costly to absorb', set: { 'knowledge.absorbCost': 0.5 } },
+  { label: 'costly to take up', set: { 'knowledge.absorbCost': 0.5 } },
   { label: 'sometimes wrong', set: { 'knowledge.errorRate': 0.1 } },
   { label: 'costly and sometimes wrong', set: { 'knowledge.absorbCost': 0.5, 'knowledge.errorRate': 0.1 } },
 ];
@@ -37,7 +37,7 @@ export function battery(space: Space, seeds: number): ExperimentSpec[] {
       ...base,
       id: 'alpha',
       title: 'Does flow-back make agents share?',
-      description: "Agents choose whether to publish each intermediate result. α from 1 (traditional) down to 0.1; c = 0.15 (0 at α = 1).",
+      description: "Agents choose whether to publish each intermediate idea. α from 1 (traditional) down to 0.1; c = 0.15 (0 at α = 1).",
       set: { ...base.set, 'rules.c': 0.15, 'rules.visibility': { kind: 'choice' } },
       factors: [{ name: 'α', path: 'rules.alpha', values: ALPHAS }],
       patches: [{ when: { 'rules.alpha': 1 }, set: { 'rules.c': 0 } }],
@@ -47,7 +47,7 @@ export function battery(space: Space, seeds: number): ExperimentSpec[] {
       ...base,
       id: 'robustness',
       title: 'When sharing is costly or sometimes wrong',
-      description: 'Absorbing a published result costs 0.5 compute; proofs are wrong 10% of the time, and targets reveal and retract them.',
+      description: 'Taking up a published idea costs 0.5; proofs are wrong 10% of the time, and targets reveal and retract them.',
       factors: [
         { name: 'knowledge', levels: KNOWLEDGE_LEVELS },
         { name: 'setting', levels: SETTINGS_LEVELS.slice(0, 2) },
@@ -75,16 +75,16 @@ export interface SensitivityParam {
 const pctFmt = (v: number) => `${Math.round(v * 100)}%`;
 
 export const SENSITIVITY: SensitivityParam[] = [
-  { id: 'alpha', label: 'α, absorption rate', meaning: 'how much of the value reaching a result it absorbs; the rest flows back to what it built on', path: 'rules.alpha', values: [0.2, 0.4, 0.6, 0.8, 0.95], group: 'market', osoOnly: true },
-  { id: 'c', label: 'c, cited share of the mint', meaning: 'share of each new mint paid to the results it built on', path: 'rules.c', values: [0, 0.05, 0.15, 0.3, 0.5], group: 'market', osoOnly: true, format: pctFmt },
-  { id: 'mint', label: 'mint per result', meaning: 'tokens minted for each validated result, relative to bounties (the smallest bounty is a few units)', path: 'rules.mint', values: [0, 0.5, 1, 2, 4], group: 'market' },
-  { id: 'screen', label: 'θ, validation screen', meaning: 'chance validators reject a trivial result', path: 'rules.screen', values: [0, 0.25, 0.5, 0.75, 0.95], group: 'market', format: pctFmt },
-  { id: 'rho', label: 'ρ, compute follows earnings', meaning: 'share of each round\'s compute funders give by recent earnings rather than equally', path: 'budget.allocation.rho', values: [0, 0.25, 0.5, 0.75, 1], group: 'market', format: pctFmt },
+  { id: 'alpha', label: 'α, absorption rate', meaning: 'how much of the value reaching an idea it absorbs; the rest flows back to what it built on', path: 'rules.alpha', values: [0.2, 0.4, 0.6, 0.8, 0.95], group: 'market', osoOnly: true },
+  { id: 'c', label: 'c, cited share of the mint', meaning: 'share of each new mint paid to the ideas it built on', path: 'rules.c', values: [0, 0.05, 0.15, 0.3, 0.5], group: 'market', osoOnly: true, format: pctFmt },
+  { id: 'mint', label: 'mint per idea', meaning: 'tokens minted for each validated idea, relative to bounties (the smallest bounty is a few units)', path: 'rules.mint', values: [0, 0.5, 1, 2, 4], group: 'market' },
+  { id: 'screen', label: 'θ, validation screen', meaning: 'chance validators reject a trivial idea', path: 'rules.screen', values: [0, 0.25, 0.5, 0.75, 0.95], group: 'market', format: pctFmt },
+  { id: 'rho', label: 'ρ, money follows earnings', meaning: 'share of each round\'s money funders give by recent earnings rather than equally', path: 'budget.allocation.rho', values: [0, 0.25, 0.5, 0.75, 1], group: 'market', format: pctFmt },
   { id: 'psi', label: 'ψ, scoop risk', meaning: 'how likely agents think a shared lemma lets a rival take the target', path: 'behaviour.psi', values: [0, 0.25, 0.5, 0.75, 0.9], group: 'guess' },
   { id: 'kappa', label: 'κ, value of being used', meaning: 'how much agents think publishing raises a lemma\'s use', path: 'behaviour.kappa', values: [0, 0.5, 1, 2, 4], group: 'guess' },
   { id: 'noise', label: 'σ₀, perception noise', meaning: 'how noisily agents see the value of what they might attempt', path: 'behaviour.perceptionNoise', values: [0, 0.5, 1, 2], group: 'guess' },
   { id: 'tau', label: 'τ, choice randomness', meaning: 'how loosely agents follow their best option', path: 'behaviour.policy.tau', values: [0.05, 0.15, 0.3, 0.6, 1], group: 'guess' },
-  { id: 'attribution', label: 'attribution error', meaning: 'noise in the ledger\'s weights of what each result built on', path: 'attribution.noise', values: [0, 0.1, 0.3, 0.6], group: 'guess' },
+  { id: 'attribution', label: 'attribution error', meaning: 'noise in the ledger\'s weights of what each idea built on', path: 'attribution.noise', values: [0, 0.1, 0.3, 0.6], group: 'guess' },
 ];
 
 /** The flow-back grid: α × c, with agents choosing whether to share. */

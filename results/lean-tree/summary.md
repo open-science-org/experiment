@@ -22,7 +22,7 @@
 
 <details><summary>Details</summary>
 
-The same settings as `settings`, on the real shape of the Lean problem set (42 results in three areas plus cross-area results, 8 targets, bounties by depth) instead of a random tree, with X = 400. Success chances follow the default model by level until the Lean pilot measures them.
+The same settings as `settings`, on the real shape of the Lean problem set (42 ideas in three areas plus cross-area ideas, 8 targets, bounties by level) instead of a random tree, with X = 400. Success chances follow the default model by level until the Lean pilot measures them.
 
 Values are mean ± standard deviation over runs.
 
@@ -35,6 +35,6 @@ Values are mean ± standard deviation over runs.
 | No flow-back, choice | 4.9 ± 1.2 | 0.67 | 31 ± 7 | 0.49 ± 0.43 | 301 ± 74 | 386 ± 33 | 5.9 ± 1.4 | 0.73 ± 0.18 | 0.59 ± 0.13 | 0.84 ± 0.09 | 0.35 ± 0.05 | 0.68 |
 | OSO (choice) | 5.2 ± 1.2 | 0.76 | 28 ± 8 | 0.65 ± 0.60 | 273 ± 77 | 372 ± 54 | 6.3 ± 1.3 | 0.79 ± 0.17 | 0.62 ± 0.13 | 0.84 ± 0.08 | 0.42 ± 0.06 | 0.53 |
 
-Code: commit `88a4b32` (with uncommitted changes). Experiment: [config/experiments/lean-tree.yaml](../../config/experiments/lean-tree.yaml). Command: `npm run sim -- lean-tree --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `ead6740` (with uncommitted changes). Experiment: [config/experiments/lean-tree.yaml](../../config/experiments/lean-tree.yaml). Command: `npm run sim -- lean-tree --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

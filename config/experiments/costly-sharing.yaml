@@ -1,11 +1,11 @@
 id: costly-sharing
-title: "Sharing isn't free: absorbing costs and wrong results"
+title: "Sharing isn't free: taking up costs and wrong ideas"
 description: >-
-  Taking up a published result costs `absorbCost` compute, and each proof is wrong with chance
-  `errorRate`; results built on a wrong result are wrong, and a target check rejects them and
-  retracts the wrong results. Where does OSO's advantage shrink or vanish? Default world.
-question: "Does OSO's lead survive when absorbing results costs compute, or results are sometimes wrong?"
-compare: "absorb cost × error rate × traditional or OSO"
+  Taking up a published idea costs `absorbCost` money, and each proof is wrong with chance
+  `errorRate`; ideas built on a wrong idea are wrong, and a target check rejects them and
+  retracts the wrong ideas. Where does OSO's advantage shrink or vanish? Default world.
+question: "Does OSO's lead survive when taking up ideas costs money, or ideas are sometimes wrong?"
+compare: "uptake cost × error rate × traditional or OSO"
 fixed: "the field, agents and budget"
 measure: frontier
 better: higher
@@ -15,6 +15,6 @@ factors:
     levels:
       - { label: Traditional, preset: traditional }
       - { label: OSO (immediate), preset: oso }
-  - { name: absorb cost, path: knowledge.absorbCost, values: [0, 0.25, 0.5, 1] }
+  - { name: uptake cost, path: knowledge.absorbCost, values: [0, 0.25, 0.5, 1] }
   - { name: error rate, path: knowledge.errorRate, values: [0, 0.05, 0.15] }
 columns: [frontier, reachTarget, cost, roi, spend, targetsSolved, absorbSpend, rejected, retracted]
