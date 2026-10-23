@@ -18,7 +18,8 @@ The same as in the full model ([sections 1 to 3](equations.md#1-an-idea)): ideas
 | --- | --- |
 | Agents | 12 identical agents (skill 1, exact judgement, cost 1 per attempt, full reuse, no gaming) |
 | Money | the budget split equally: every agent gets $\text{Budget}/(R\,N)$ each round, whatever it earned ($\rho = 0$) |
-| Mint | $m = 1$ per new idea, all to its author ($c = 0$) |
+| Mint | off: $m = 0$, so bounties are the only value |
+| Validation | off: $\theta = 0$. No agent games, so nothing trivial is ever submitted |
 | Ideas and bounties | the topic's idea graph |
 
 ## One round
@@ -30,7 +31,7 @@ The same as in the full model ([sections 1 to 3](equations.md#1-an-idea)): ideas
 
 $$P(\text{published at once}) = \begin{cases} 1 & B_x > 0 \\ \beta & B_x = 0 \end{cases}$$
 
-5. **Rewards.** A published idea pays its author the mint $m$. A bounty $B_x$ enters $x$ when $x$ is first published and spreads back through the graph: the author of each idea $z$ that $x$ rests on gets $B_x\,\text{share}(x, z)$, with
+5. **Rewards.** There is no mint. A bounty $B_x$ enters $x$ when $x$ is first published and spreads back through the graph: the author of each idea $z$ that $x$ rests on gets $B_x\,\text{share}(x, z)$, with
 
 $$\text{share}(x, x) = \alpha \qquad \text{share}(x, z) = \sum_{y \to x} (1-\alpha)\, w_{y \to x}\, \text{share}(y, z)$$
 

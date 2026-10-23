@@ -540,12 +540,13 @@ export { parse as parseYaml };
 
 /**
  * The simple model: only α (absorption rate) and β (chance an intermediate idea is published at once) vary.
- * Everything else is held fixed: 12 identical agents, equal money every round (ρ = 0), the mint at 1 with
- * none passed on (c = 0), and the topic's own idea graph and bounties.
+ * Everything else is held fixed: 12 identical agents, equal money every round (ρ = 0), no mint (m = 0, so
+ * bounties are the only value), no validation (θ = 0; no agent games, so nothing trivial is submitted),
+ * and the topic's own idea graph and bounties.
  */
 export interface SimpleDesign { id: string; title?: string; question?: string; space: string; alphas: number[]; betas: number[]; seeds: number; measure?: string }
 
-export const SIMPLE_FIXED = { 'rules.c': 0, 'budget.allocation.rho': 0, 'rules.mint': 1 };
+export const SIMPLE_FIXED = { 'rules.c': 0, 'budget.allocation.rho': 0, 'rules.mint': 0, 'rules.screen': 0 };
 export const SIMPLE_AGENTS = 12;
 
 /** A society's name: closed (traditional), fully open (OSO), or in between. */
@@ -572,7 +573,7 @@ export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
   return {
     id: d.id,
     title: d.title || d.question || `Simple model on ${space.spec.title}: α × β`,
-    description: `The simple model on the field "${space.spec.title}" (spaces/${d.space}.yaml): only α and β vary. Held fixed: ${SIMPLE_AGENTS} identical agents, equal money every round (ρ = 0), the mint at 1 with none passed on (c = 0), the field's idea graph and bounties.`,
+    description: `The simple model on the field "${space.spec.title}" (spaces/${d.space}.yaml): only α and β vary. Held fixed: ${SIMPLE_AGENTS} identical agents, equal money every round (ρ = 0), no mint (m = 0), no validation (θ = 0), the field's idea graph and bounties.`,
     seeds: d.seeds,
     ...(space.spec.scenarioFile ? { scenario: space.spec.scenarioFile } : {}),
     set: merge(merge(expandPaths(space.spec.scenario ?? {}), expandPaths(SIMPLE_FIXED)), { agents: { mix } }) as Record<string, unknown>,
@@ -580,7 +581,7 @@ export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
     columns: [...new Set([measure, 'frontier', 'value', 'roi', 'sharing', 'targetsSolved', 'cost'])],
     question: d.question || `On ${space.spec.title}, how far does a society get for the same money, by α and β?`,
     compare: `α in {${d.alphas.join(', ')}} × β in {${d.betas.join(', ')}}`,
-    fixed: `the field "${space.spec.title}", ${SIMPLE_AGENTS} identical agents, equal money each round, mint 1 with c = 0`,
+    fixed: `the field "${space.spec.title}", ${SIMPLE_AGENTS} identical agents, equal money each round, no mint, no validation`,
     measure,
   };
 }
