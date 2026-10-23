@@ -1,4 +1,4 @@
-// Simulator tests: the waterfall against the ledger, the simple model against exact predictions,
+// Simulator tests: the waterfall against the ledger, the one-chain check against exact predictions,
 // traditional rules as a special case, accounting, reproducibility, the model's predictions, and
 // the configuration layer (validation, plugins, file worlds, experiment expansion).
 import { test } from 'node:test';
@@ -65,7 +65,7 @@ test("the simulator's waterfall pays what the ledger's OIP-14 waterfall pays", (
   }
 });
 
-test('the simple model matches its exact predictions', () => {
+test('the one-chain check matches its exact predictions', () => {
   const X = 320;
   const p = 0.2;
   for (const [N, kind] of [[4, 'immediate'], [4, 'finished-only']] as const) {
@@ -327,4 +327,18 @@ test("the app's page script parses", async () => {
   const script = /<script>([\s\S]*)<\/script>/.exec(html)?.[1] ?? '';
   assert.ok(script.length > 1000);
   assert.doesNotThrow(() => new Script(script), 'syntax error in src/viewer/index.html');
+});
+
+test('the simple model (α, β): beta sets the share of ideas published at once', async () => {
+  const { loadScenario } = await import('../src/engine/config.ts');
+  const { run } = await import('../src/engine/model.ts');
+  const share = (beta: number) => {
+    const sc = loadScenario(null, { rules: { visibility: { kind: 'chance', beta } } });
+    const rs = [1, 2, 3, 4, 5, 6].map((seed) => run(sc, seed));
+    return rs.reduce((a, r) => a + r.sharingRate, 0) / rs.length;
+  };
+  const [none, half, all] = [share(0), share(0.5), share(1)];
+  assert.ok(none < 0.05, `beta 0 publishes almost nothing at once (${none})`);
+  assert.ok(Math.abs(half - 0.5) < 0.12, `beta 0.5 publishes about half (${half})`);
+  assert.ok(all > 0.95, `beta 1 publishes everything (${all})`);
 });

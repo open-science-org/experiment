@@ -1,5 +1,5 @@
 id: simple
-title: 'The simple model: one chain, shared vs. hidden progress'
+title: 'The one-chain check: shared vs. hidden progress'
 description: >-
   A single chain of 300 ideas, each with success chance p = 0.2 per attempt; N identical agents;
   X = 640 attempts in total, one per agent per round. Shared: every idea is published and taken up

@@ -370,7 +370,7 @@ All from the simulation; every run is [logged](../results/LOG.md) with the commi
 
 | Experiment | What it tests | Results |
 | --- | --- | --- |
-| Simple model | One chain, shared vs. hidden progress, against exact predictions | [summary](../results/simple/summary.md) |
+| One-chain check | One chain, shared vs. hidden progress, against exact predictions | [summary](../results/simple/summary.md) |
 | Six settings | Traditional, OSO and the mixed corners | [summary](../results/settings/summary.md) |
 | α sweep | Sharing and outcomes as α falls, under agent's choice | [summary](../results/alpha-sweep/summary.md) |
 | α × ψ × c | Where sharing becomes rational | [summary](../results/alpha-psi/summary.md) |
@@ -391,7 +391,7 @@ On the default world (8 levels, 7 targets, 12 agents, a budget of 1,200; 100 run
 
 What they show so far:
 
-1. **The simple model matches the mathematics.** With N agents on one chain, shared progress reaches about N times deeper than hidden progress, for N from 1 to 16.
+1. **The one-chain check matches the mathematics.** With N agents on one chain, shared progress reaches about N times deeper than hidden progress, for N from 1 to 16.
 2. **Sharing does most of the work.** In the simulation, this is largely built in, because shared ideas are free to take up (section 2.3).
 3. **Flow-back makes agents choose to share only well below α = 0.8.** The share of lemmas shared is:
    - 0.23 at α = 1;

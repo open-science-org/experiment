@@ -535,3 +535,70 @@ export function listJobs(): Job[] {
 }
 
 export { parse as parseYaml };
+
+/* ------------------------------------------------------------------------------------- The simple model */
+
+/**
+ * The simple model: only α (absorption rate) and β (chance an intermediate idea is published at once) vary.
+ * Everything else is held fixed: 12 identical agents, equal money every round (ρ = 0), the mint at 1 with
+ * none passed on (c = 0), and the topic's own idea graph and bounties.
+ */
+export interface SimpleDesign { id: string; title?: string; question?: string; space: string; alphas: number[]; betas: number[]; seeds: number; measure?: string }
+
+export const SIMPLE_FIXED = { 'rules.c': 0, 'budget.allocation.rho': 0, 'rules.mint': 1 };
+export const SIMPLE_AGENTS = 12;
+
+/** A society's name: closed (traditional), fully open (OSO), or in between. */
+export function societyLabel(alpha: number, beta: number): string {
+  if (alpha === 1 && beta === 0) return 'Traditional (α = 1, β = 0)';
+  if (beta === 1 && alpha < 1) return `OSO (α = ${alpha}, β = 1)`;
+  return `α = ${alpha}, β = ${beta}`;
+}
+
+export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
+  if (!ID.test(d.id)) throw new Error('the experiment name must be kebab-case (a-z, 0-9, hyphens)');
+  const check = (xs: number[], name: string, lo: number, hi: number) => {
+    if (!xs.length) throw new Error(`give at least one value of ${name}`);
+    for (const x of xs) if (!Number.isFinite(x) || x < lo || x > hi) throw new Error(`${name}: ${x} is outside ${lo} to ${hi}`);
+  };
+  check(d.alphas, 'α', 0.05, 1); check(d.betas, 'β', 0, 1);
+  if (d.alphas.length * d.betas.length > 60) throw new Error('at most 60 societies (α values × β values)');
+  if (!(d.seeds >= 1 && d.seeds <= 1000)) throw new Error('runs per society must be between 1 and 1000');
+  const { space } = withCalibratedBudget(loadSpace(d.space));
+  // Every agent kind the topic has is set to 0, then 12 plain agents: the mix is replaced whole.
+  const mix = Object.fromEntries([...Object.keys(space.scenario.agents.mix), 'plain'].map((k) => [k, k === 'plain' ? SIMPLE_AGENTS : 0]));
+  const levels: Level[] = d.alphas.flatMap((a) => d.betas.map((b) => ({ label: societyLabel(a, b), set: { 'rules.alpha': a, 'rules.visibility': { kind: 'chance', beta: b } } })));
+  const measure = d.measure && COLUMNS[d.measure] ? d.measure : 'frontier';
+  return {
+    id: d.id,
+    title: d.title || d.question || `Simple model on ${space.spec.title}: α × β`,
+    description: `The simple model on the field "${space.spec.title}" (spaces/${d.space}.yaml): only α and β vary. Held fixed: ${SIMPLE_AGENTS} identical agents, equal money every round (ρ = 0), the mint at 1 with none passed on (c = 0), the field's idea graph and bounties.`,
+    seeds: d.seeds,
+    ...(space.spec.scenarioFile ? { scenario: space.spec.scenarioFile } : {}),
+    set: merge(merge(expandPaths(space.spec.scenario ?? {}), expandPaths(SIMPLE_FIXED)), { agents: { mix } }) as Record<string, unknown>,
+    factors: [{ name: 'society', levels }],
+    columns: [...new Set([measure, 'frontier', 'value', 'roi', 'sharing', 'targetsSolved', 'cost'])],
+    question: d.question || `On ${space.spec.title}, how far does a society get for the same money, by α and β?`,
+    compare: `α in {${d.alphas.join(', ')}} × β in {${d.betas.join(', ')}}`,
+    fixed: `the field "${space.spec.title}", ${SIMPLE_AGENTS} identical agents, equal money each round, mint 1 with c = 0`,
+    measure,
+  };
+}
+
+export function checkSimple(d: SimpleDesign) {
+  try {
+    const spec = simpleExperimentFor(d);
+    const rows = expand(spec);
+    return { ok: true, rows: rows.length, runs: rows.length * spec.seeds, exists: existsSync(join(EXPERIMENTS_DIR, `${d.id}.yaml`)) };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
+}
+
+export function runSimpleJob(d: SimpleDesign, overwrite = false): Job {
+  const spec = simpleExperimentFor(d);
+  const file = join(EXPERIMENTS_DIR, `${spec.id}.yaml`);
+  if (existsSync(file) && !overwrite) throw new Error(`an experiment called "${spec.id}" already exists; change its name`);
+  writeFileSync(file, `# Designed in the experiment app (simple model).\n${stringify(spec, { lineWidth: 100 })}`);
+  return cliJob('experiment', `Simple model: ${spec.title}`, [spec.id, '--save'], () => ({ doc: `results/${spec.id}/summary.md` }));
+}

@@ -25,6 +25,7 @@
   .bar label { font-size: 13px; color: var(--ink-2); display: flex; gap: 6px; align-items: center; }
   select, input, button.btn { font: inherit; font-size: 13px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
   button.btn { cursor: pointer; }
+  a.btn { font-size: 13px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; text-decoration: none; display: inline-block; }
   button.btn.primary { background: var(--s1); color: #fff; border-color: var(--s1); }
   button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
   input[type=range] { flex: 1; min-width: 180px; padding: 0; accent-color: var(--s1); }
@@ -214,7 +215,21 @@
 
   <!-- New: one form for both kinds -->
   <section id="view-new" class="hidden">
-    <div class="step">
+    <div class="tabs" role="tablist" id="n-model" aria-label="Which model">
+      <button class="btn" role="tab" data-model="simple">Simple model (α, β)</button>
+      <button class="btn" role="tab" data-model="full">Full model</button>
+    </div>
+    <div class="step" id="n-simple">
+      <p class="muted" style="margin-top:0">Only two settings change between societies. <b>α</b>, the absorption rate: the share of incoming value an idea keeps for its author (1 = nothing flows back). <b>β</b>: the chance an intermediate idea is published as soon as it is proved (0 = closed, 1 = open). Everything else is held fixed: 12 identical agents, equal money every round, a mint of 1 with none passed on, and the topic's idea graph and bounties. <a href="#/equations?m=simple">The equations →</a></p>
+      <div class="row"><label>Question <input id="s-question" placeholder="What do you want to find out?" style="width:560px"></label></div>
+      <div class="row"><label>Topic <select id="s-space"></select></label><label>Measure <select id="s-measure"></select></label><label>Runs per society <input id="s-seeds" type="number" min="1" max="1000" value="50" style="width:70px"></label></div>
+      <div class="row"><label>α values <input id="s-alphas" value="1, 0.8, 0.5, 0.2" style="width:200px"></label><span class="muted">1 = nothing flows back; lower = more flows back to the ideas it built on</span></div>
+      <div class="row"><label>β values <input id="s-betas" value="0, 0.25, 0.5, 0.75, 1" style="width:200px"></label><span class="muted">0 = publish only with the target; 1 = publish every idea at once</span></div>
+      <div class="row"><button class="btn primary" id="s-run">Run</button><span id="s-summary" class="muted"></span></div>
+      <div id="s-job" class="joblog hidden" aria-live="polite"></div>
+      <article id="s-result" class="doc hidden"></article>
+    </div>
+    <div class="step" id="n-full">
       <div class="row"><label>Question <input id="e-question" placeholder="What do you want to find out?" style="width:560px"></label></div>
       <div class="row examples" id="n-examples"><span class="muted">Start from an example:</span></div>
       <div class="row choice" role="radiogroup" aria-label="Who does the work">
@@ -374,7 +389,7 @@ async function route() {
   if (old[path]) { const q = location.hash.split('?')[1]; location.hash = '#' + old[path] + (q ? (old[path].includes('?') ? '&' : '?') + q : ''); return; }
   const top = '/' + (path.split('/')[1] ?? '');
   for (const a of document.querySelectorAll('nav.side a')) {
-    const isEq = top === '/equations' || path === '/doc/docs/equations.md';
+    const isEq = top === '/equations' || /^\/doc\/docs\/equations(-simple)?\.md$/.test(path);
     const isHow = !isEq && (top === '/how' || (top === '/doc' && /^\/doc\/(docs\/|README\.md|lean\/)/.test(path)));
     const here = isEq ? a.getAttribute('href') === '#/equations' : isHow ? a.getAttribute('href') === '#/how' : a.getAttribute('href') === '#' + top || (top === '/doc' && a.getAttribute('href') === '#/');
     if (here) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
@@ -385,7 +400,7 @@ async function route() {
   if (path === '/live') { show('view-live'); return showTab(params().get('tab') ?? 'ai'); }
   if (path === '/topics' || path === '/fields') { show('view-fields'); return enterFields(); }
   if (path === '/how') { show('view-doc'); return openDoc('docs/README.md'); }
-  if (path === '/equations') { show('view-doc'); return openDoc('docs/equations.md'); }
+  if (path === '/equations') { show('view-doc'); return openDoc(params().get('m') === 'full' ? 'docs/equations.md' : 'docs/equations-simple.md'); }
   show('view-overview'); drawResults();
 }
 window.addEventListener('hashchange', route);
@@ -397,7 +412,8 @@ async function openDoc(path) {
     const field = /^reports\/([^/]+)\/report\.md$/.exec(d.path);
     const fieldId = /^reports\/([^/]+)\//.exec(d.path)?.[1];
     const howDoc = /^(docs\/|README\.md|lean\/)/.test(d.path);
-    $('doc-crumbs').innerHTML = howDoc ? (d.path === 'docs/README.md' ? '' : '<a href="#/how">← How it works</a>') : `<a href="#/">← Results</a>${fieldId ? ` · <a href="#/doc/reports/${fieldId}/report.md">Full report</a> · <a href="#/live?tab=sim&space=${fieldId}">Watch a simulation</a>` : ''}`;
+    const eqDoc = d.path === 'docs/equations.md' || d.path === 'docs/equations-simple.md';
+    $('doc-crumbs').innerHTML = eqDoc ? `<div class="tabs" role="tablist"><a class="btn" role="tab" href="#/equations?m=simple" aria-selected="${d.path.endsWith('simple.md')}">Simple model (α, β)</a><a class="btn" role="tab" href="#/equations?m=full" aria-selected="${!d.path.endsWith('simple.md')}">Full model</a></div>` : howDoc ? (d.path === 'docs/README.md' ? '' : '<a href="#/how">← How it works</a>') : `<a href="#/">← Results</a>${fieldId ? ` · <a href="#/doc/reports/${fieldId}/report.md">Full report</a> · <a href="#/live?tab=sim&space=${fieldId}">Watch a simulation</a>` : ''}`;
     $('doc-body').innerHTML = d.html;
     // Headings get ids like GitHub's, so in-page links (#what-this-shows-…) scroll instead of navigating.
     const slug = (t) => t.toLowerCase().trim().replace(/[^\p{L}\p{N}\s-]/gu, '').replace(/\s/g, '-');
@@ -752,8 +768,57 @@ function useExample(x) {
   drawParams(); designCheck();
 }
 let newReady = false;
+let simpleReady = false;
+function showModel(m) {
+  for (const b of $('n-model').querySelectorAll('button')) b.setAttribute('aria-selected', b.dataset.model === m);
+  $('n-simple').classList.toggle('hidden', m !== 'simple');
+  $('n-full').classList.toggle('hidden', m !== 'full');
+}
+const numbers = (txt) => txt.split(',').map((x) => x.trim()).filter(Boolean).map(Number);
+function simpleDesign() {
+  return { id: $('s-id').value, question: $('s-question').value.trim(), space: $('s-space').value, measure: $('s-measure').value,
+    alphas: numbers($('s-alphas').value), betas: numbers($('s-betas').value), seeds: Number($('s-seeds').value) };
+}
+async function simpleCheck() {
+  const c = await post('/api/simple/check', { design: simpleDesign() });
+  $('s-summary').innerHTML = c.ok ? `${c.rows} societies × ${$('s-seeds').value} runs = ${c.runs.toLocaleString()} runs` : `<span class="no">${esc(c.error)}</span>`;
+  return c;
+}
+function initSimple() {
+  if (simpleReady) return;
+  simpleReady = true;
+  $('s-space').innerHTML = $('e-space').innerHTML; $('s-space').value = $('e-space').value;
+  $('s-measure').innerHTML = $('e-measure').innerHTML; $('s-measure').value = 'frontier';
+  $('n-simple').insertAdjacentHTML('beforeend', '<input type="hidden" id="s-id">');
+  const fresh = () => { $('s-id').value = `simple-${new Date().toISOString().slice(0, 19).replace(/[-:T]/g, '')}`; };
+  fresh();
+  for (const id of ['s-space', 's-measure', 's-seeds', 's-alphas', 's-betas']) $(id).addEventListener('input', simpleCheck);
+  $('s-run').onclick = async () => {
+    const c = await simpleCheck(); if (!c.ok) return;
+    const btn = $('s-run');
+    try {
+      btn.disabled = true; btn.textContent = 'Running…';
+      const j = await post('/api/simple/run', { design: simpleDesign() });
+      $('s-result').classList.add('hidden');
+      $('s-job').classList.remove('hidden');
+      $('s-job').scrollIntoView({ block: 'start', behavior: 'smooth' });
+      follow(j.job, $('s-job'), async (job) => {
+        btn.disabled = false; btn.textContent = 'Run'; fresh();
+        if (job.status !== 'done') return;
+        $('s-job').classList.add('hidden');
+        const d = await api('/api/doc?path=' + encodeURIComponent(job.result.doc));
+        $('s-result').innerHTML = d.html; $('s-result').classList.remove('hidden'); OV = null;
+      });
+    } catch (e) { btn.disabled = false; btn.textContent = 'Run'; $('s-job').classList.remove('hidden'); $('s-job').textContent = e.message; }
+  };
+  for (const b of $('n-model').querySelectorAll('button')) b.onclick = () => { location.hash = '#/new?model=' + b.dataset.model; };
+  simpleCheck();
+}
+
 async function enterNew() {
   await enterDesign();
+  initSimple();
+  showModel(params().get('model') === 'full' || params().get('who') ? 'full' : 'simple');
   if (!newReady) {
     newReady = true;
     await initRace();

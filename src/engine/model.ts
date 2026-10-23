@@ -227,6 +227,7 @@ function attempt(s: State, i: number, decider: Decider) {
     publish: () => publishBundle(s, i, r),
     schedule: (at) => s.scheduled.set(at, [...(s.scheduled.get(at) ?? []), [i, r]]),
     agentWouldPublish: () => decider.wouldPublish(i, r, choice),
+    chance: (p) => s.rng.chance(p),
   });
 }
 

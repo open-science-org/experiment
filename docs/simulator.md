@@ -33,7 +33,7 @@ Everything about a run is configuration. The defaults are in [scenarios/default.
 
 Contents:
 - [0. The specification in the simulator](#0-the-specification-in-the-simulator)
-- [1. The simple model](#1-the-simple-model)
+- [1. The one-chain check](#1-the-one-chain-check)
 - [2. The default setup, as implemented](#2-the-default-setup-as-implemented)
 - [3. Configuration and extending](#3-configuration-and-extending)
 - [4. Measures](#4-measures)
@@ -63,7 +63,7 @@ Where each element of the [specification](design.md) lives:
 
 **The effects of sharing modelled here.** By default, a published idea lets other agents attempt what builds on it, after uptake. It carries no statement, method or failed attempts, and it is always correct and free to take up. Optional mechanics add public failures, a uptake cost, and wrong ideas (section 2.6) ([specification, section 2.3](design.md#23-knowledge-and-sharing)).
 
-## 1. The simple model
+## 1. The one-chain check
 
 Start here: it isolates the one effect everything else builds on, and it has an exact answer, so it also checks the simulator.
 
@@ -99,11 +99,11 @@ The measure is the deepest idea proved by anyone.
 
 This check also caught a flaw. The simulator's first random-number generator (mulberry32) lowered success rates by about 0.3%, about 3 standard errors over 7,000 runs. With xoshiro128\*\* the simulated level matched the exact value (127.97 vs. 128.0 over 4,000 runs). Commit `77f0d88`.
 
-**What the simple model leaves out:** incentives. Here visibility is imposed. The default setup adds the reasons agents would or wouldn't share, and what they get paid for.
+**What the one-chain check leaves out:** incentives. Here visibility is imposed. The default setup adds the reasons agents would or wouldn't share, and what they get paid for.
 
 ## 2. The default setup, as implemented
 
-The default scenario ([scenarios/default.yaml](../config/scenarios/default.yaml)), with the implementation details the [specification](design.md) leaves to each instantiation. Compared with the simple model, it adds five things:
+The default scenario ([scenarios/default.yaml](../config/scenarios/default.yaml)), with the implementation details the [specification](design.md) leaves to each instantiation. Compared with the one-chain check, it adds five things:
 1. **A branching world** with targets, bounties and dead ends.
 2. **Agents with different traits.**
 3. **Rewards:** a mint per idea and a bounty per target, paid through the OSO flow-back.
@@ -333,7 +333,7 @@ Components chosen by `kind` are plugins. `npm run sim -- plugins` lists them wit
 
 | Registry | In a scenario | Built in |
 | --- | --- | --- |
-| `worlds` (src/engine/world.ts) | `world.kind` | `layered` (random levels), `chain` (the simple model), `file` (any DAG from JSON) |
+| `worlds` (src/engine/world.ts) | `world.kind` | `layered` (random levels), `chain` (the one-chain check), `file` (any DAG from JSON) |
 | `visibilities` (src/engine/rules.ts) | `rules.visibility.kind` | `finished-only`, `immediate`, `delayed` (`d`), `choice` |
 | `allocations` (src/engine/rules.ts) | `budget.allocation.kind` | `earnings-share` (`rho`, `smoothing`), `equal` |
 | `oracles` (src/engine/oracles.ts) | `success.oracle.kind` | `chance` (succeeds with chance p), `learning` (`gain`, `cap`: each failure raises the next chance) |
@@ -461,7 +461,7 @@ The full grid over scoop risk ψ and cited share c is in [results/alpha-psi](../
 
 ### What the results say
 
-1. **Sharing does most of the work.** Immediate visibility reaches level 7 in every run at about half the cost, with or without flow-back. The simple model shows why: hidden progress makes every agent repeat the same steps. In this model the effect is largely built in (section 6).
+1. **Sharing does most of the work.** Immediate visibility reaches level 7 in every run at about half the cost, with or without flow-back. The one-chain check shows why: hidden progress makes every agent repeat the same steps. In this model the effect is largely built in (section 6).
 2. **Flow-back makes agents choose to share, but only when α is well below OSO's 0.8.**
    - **At 0.8:** sharing barely moves (0.22 vs. 0.23 at α = 1).
    - **At 0.3:** it doubles to 0.47.
@@ -491,7 +491,7 @@ It is a thought experiment with the arithmetic done exactly. The [specification,
 What the tests still use a stand-in or a guess for, in both kinds of test, is listed in [the design, section 12](design.md#12-not-yet-measured).
 
 What it is good for:
-- checking the mechanics (flow-back matches the ledger, and the simple model matches the mathematics);
+- checking the mechanics (flow-back matches the ledger, and the one-chain check matches the mathematics);
 - finding which parameters matter (ψ, α, ρ and the gamer, while c barely matters);
 - finding failure modes (spam capturing money);
 - choosing the settings, budget and number of runs for the experiment with LLM agents on real problems, which addresses gaps 1, 3 and 4.
@@ -501,7 +501,7 @@ What it is good for:
 | Path | Contents |
 | --- | --- |
 | `src/engine/` | The environment and its plugins: `model.ts` (one run), `world.ts` (worlds `layered`, `chain`, `graph`, `file`; flow-back shares; attribution value S), `agents.ts`, `rules.ts` (visibility, allocation, choice policies), `oracles.ts`, `deciders.ts`, `measures.ts` (measures and table columns), `config.ts` (scenario types, loading, merging, validation), `registry.ts`, `rng.ts` (seeded xoshiro128\*\*) |
-| `src/experiments/` | `experiment.ts` expands experiments into rows and runs them; `analytic.ts` holds the simple model's exact predictions |
+| `src/experiments/` | `experiment.ts` expands experiments into rows and runs them; `analytic.ts` holds the one-chain check's exact predictions |
 | `src/spaces/` | `spaces.ts` loads and validates problem spaces and calibrates budgets; `new-space.ts` has Claude write a space |
 | `src/report/` | `battery.ts` (the canonical experiments), `report.ts` (the canonical report and index), `figures.ts` (SVG charts), `draw-world.ts` |
 | `src/cli.ts`, `src/paths.ts` | The command line; where everything lives |
@@ -515,7 +515,7 @@ What it is good for:
 
 The tests (`npm test`) check:
 - flow-back against the ledger;
-- the simple model against its exact predictions;
+- the one-chain check against its exact predictions;
 - that lemmas have no flow-back value under traditional rules;
 - reproducibility from a seed;
 - that payouts equal mints plus solved bounties;

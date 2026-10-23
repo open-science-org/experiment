@@ -13,6 +13,8 @@ export interface ProofContext {
   schedule: (round: number) => void;
   /** The agent's own publish rule (docs/simulator.md, section 2.5). */
   agentWouldPublish: () => boolean;
+  /** A draw from the run's random stream: true with chance p. */
+  chance: (p: number) => boolean;
 }
 
 export interface Visibility {
@@ -37,6 +39,12 @@ visibilities.register<{ d: number }>('delayed', {
   description: 'A result is published d rounds after it is proved',
   defaults: { d: 1 },
   create: ({ d }) => ({ onProof: (ctx) => ctx.schedule(ctx.round + d) }),
+});
+
+visibilities.register<{ beta: number }>('chance', {
+  description: 'Targets are published; each other idea is published at once with chance beta, else with the target built on it (the simple model)',
+  defaults: { beta: 0.5 },
+  create: ({ beta }) => ({ onProof: (ctx) => { if (ctx.isTarget || ctx.chance(beta)) ctx.publish(); } }),
 });
 
 visibilities.register('choice', {

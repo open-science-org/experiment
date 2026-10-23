@@ -56,7 +56,7 @@ npm run sim -- plugins                          # list worlds, rules, policies, 
 npm test                                        # the tests
 ```
 
-The [simulator doc](docs/simulator.md) explains everything in detail: the simple model and its exact check, the default setup, configuration and plugins, the measures, the saved results, and the limits. Saved ideas are listed in [ideas/LOG.md](results/LOG.md).
+The [simulator doc](docs/simulator.md) explains everything in detail: the one-chain check and its exact check, the default setup, configuration and plugins, the measures, the saved results, and the limits. Saved ideas are listed in [ideas/LOG.md](results/LOG.md).
 
 ## The Lean pilot
 
