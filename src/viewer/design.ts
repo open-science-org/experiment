@@ -40,9 +40,9 @@ export interface Parameter {
 
 /** Every parameter the designer offers, with its range and a plain explanation. */
 export const PARAMETERS: Parameter[] = [
-  { path: 'rules.alpha', label: 'α, retention', group: 'market', min: 0.05, max: 1, step: 0.05, flowBack: true, values: [0.2, 0.4, 0.6, 0.8],
-    short: 'share of the value reaching a result that its authors keep',
-    explain: 'When value reaches a result, from a bounty or from later work, its authors keep α of it. The rest flows back to the results it built on, split by how much it used each, and on down the tree. Lower α pays foundational work more, which is what is meant to make agents share it. Only the OSO settings have flow-back; traditional rules are α = 1.' },
+  { path: 'rules.alpha', label: 'α, absorption rate', group: 'market', min: 0.05, max: 1, step: 0.05, flowBack: true, values: [0.2, 0.4, 0.6, 0.8],
+    short: 'how much of the value reaching a result it absorbs for its authors',
+    explain: 'When value reaches a result, from a bounty or from later work, the result absorbs α of it for its authors. The rest flows back to the results it built on, split by how much it used each, and on down the tree. Lower α pays foundational work more, which is what is meant to make agents share it. Only the OSO settings have flow-back; traditional rules are α = 1.' },
   { path: 'rules.c', label: 'c, cited share of the mint', group: 'market', min: 0, max: 0.6, step: 0.05, flowBack: true, values: [0, 0.15, 0.3, 0.5],
     short: 'share of each new mint paid to the results it built on',
     explain: 'Every validated result mints tokens. Its authors get 1 − c; the other c goes to the results it built on and flows on down from there. So a result earns each time someone builds on it, long before any bounty is won. Traditional rules are c = 0.' },
@@ -54,7 +54,7 @@ export const PARAMETERS: Parameter[] = [
     explain: 'A trivial result adds nothing; it is submitted only to collect the mint. Validators reject it with chance θ. At low θ gaming pays, and under rules where compute follows earnings a gaming agent can capture much of the budget.' },
   { path: 'budget.allocation.rho', label: 'ρ, compute follows earnings', group: 'market', min: 0, max: 1, step: 0.05, values: [0, 0.5, 1],
     short: 'share of each round\'s compute given by recent earnings',
-    explain: 'Each round, funders split the compute: 1 − ρ equally among agents, ρ in proportion to what each earned recently. High ρ concentrates money on whoever is winning, like funding a few big labs; ρ = 0 shares it equally.' },
+    explain: 'A round is one step of the run: that round\'s compute is handed out, each agent makes the tries it can afford, new results are shared or kept, and rewards are paid. Each round, funders split that round\'s compute: 1 − ρ equally among agents, ρ in proportion to what each earned in recent rounds. So what an agent earns this round raises its share next round. High ρ concentrates money on whoever is winning, like funding a few big labs; ρ = 0 shares it equally.' },
   { path: 'budget.X', label: 'total budget', group: 'market', min: 10, max: 100000, step: 10, integer: true, values: [],
     short: 'all the compute the community gets for the whole run',
     explain: 'Each attempt costs the agent its cost per attempt (1 for most agents, less for cheap explorers). Every field\'s budget is set so OSO solves about 90% of its targets; less makes the race tighter, more lets both communities finish.' },

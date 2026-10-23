@@ -16,7 +16,7 @@ Every rule of the experiment as a formula, in the order a run uses them. Each fo
 
 ![One round as a loop of six steps: 1 money, 2 choose what to try, 3 try, 4 share or keep, 5 rewards, 6 earnings, which feed the next round's money through rho. Dashed: alpha and c send credit back to earlier ideas, which changes what agents choose to try and share](img/equations-loop.svg)
 
-Each step's box names its section and symbols. Two loops feed back:
+A run is $R$ rounds (120 by default). A **round** is one pass through steps 1 to 6: that round's money $X/R$ is split among the agents, each makes the tries it can afford, new ideas are shared or kept, rewards are paid and recent earnings are updated. The **next round** starts again at step 1, with the money split by those updated earnings. Each step's box names its section and symbols. Two loops feed back:
 
 - **Money follows earnings ($\rho$).** Earnings in step 6 set next round's money in step 1. This happens under both rules.
 - **Credit flows back (absorption rate $\alpha$, and $c$).** Rewards in step 5 reach earlier ideas, so agents expect more from building and sharing (steps 2 and 4). This is where traditional ($\alpha = 1$, $c = 0$) and OSO ($\alpha = 0.8$, $c = 0.15$) differ.

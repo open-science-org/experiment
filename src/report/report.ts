@@ -207,7 +207,7 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
   writeFileSync(join(outDir, 'figures', 'flow-back-grid.svg'), heatmap({
     title: 'The flow-back levers together',
     subtitle: 'Share of intermediate results agents choose to publish; below it, the hardest level reached.',
-    rowLabel: 'α, retention', colLabel: 'c, cited share of the mint',
+    rowLabel: 'α, absorption rate', colLabel: 'c, cited share of the mint',
     rows: GRID.alpha.map(String), cols: GRID.c.map(cFmt),
     values: GRID.alpha.map((a) => GRID.c.map((c) => gridCell(a, c).sharing)), range: [0, 1],
     format: (v) => pct(v), note: (r, k) => `level ${f1(gridCell(GRID.alpha[r], GRID.c[k]).frontier)}`,

@@ -75,7 +75,7 @@ export interface SensitivityParam {
 const pctFmt = (v: number) => `${Math.round(v * 100)}%`;
 
 export const SENSITIVITY: SensitivityParam[] = [
-  { id: 'alpha', label: 'α, retention', meaning: 'share of the value reaching a result that it keeps; the rest flows back to what it built on', path: 'rules.alpha', values: [0.2, 0.4, 0.6, 0.8, 0.95], group: 'market', osoOnly: true },
+  { id: 'alpha', label: 'α, absorption rate', meaning: 'how much of the value reaching a result it absorbs; the rest flows back to what it built on', path: 'rules.alpha', values: [0.2, 0.4, 0.6, 0.8, 0.95], group: 'market', osoOnly: true },
   { id: 'c', label: 'c, cited share of the mint', meaning: 'share of each new mint paid to the results it built on', path: 'rules.c', values: [0, 0.05, 0.15, 0.3, 0.5], group: 'market', osoOnly: true, format: pctFmt },
   { id: 'mint', label: 'mint per result', meaning: 'tokens minted for each validated result, relative to bounties (the smallest bounty is a few units)', path: 'rules.mint', values: [0, 0.5, 1, 2, 4], group: 'market' },
   { id: 'screen', label: 'θ, validation screen', meaning: 'chance validators reject a trivial result', path: 'rules.screen', values: [0, 0.25, 0.5, 0.75, 0.95], group: 'market', format: pctFmt },
