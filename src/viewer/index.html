@@ -1361,7 +1361,7 @@ function drawPilot() {
   const posted = new Map(pilot.runs[0]?.tree.map((t) => [t.id, t.posted]) ?? []);
   ids.sort((a, b) => (depth.get(a) ?? 0) - (depth.get(b) ?? 0) || a.localeCompare(b));
   const conds = ['alone', 'library'];
-  let head = '<thead><tr><th>target</th><th>depth</th>' + pilot.runs.map((r) => `<th class="run" colspan="2">${esc(r.options.model.model.split('/').pop())}</th>`).join('') + '</tr>';
+  let head = '<thead><tr><th>target</th><th>level</th>' + pilot.runs.map((r) => `<th class="run" colspan="2">${esc(r.options.model.model.split('/').pop())}</th>`).join('') + '</tr>';
   head += '<tr><th></th><th></th>' + pilot.runs.map(() => conds.map((c, k) => `<th ${k ? '' : 'class="run"'}>${c === 'library' ? 'with help' : 'alone'}</th>`).join('')).join('') + '</tr></thead>';
   let body = '<tbody>';
   for (const id of ids) {

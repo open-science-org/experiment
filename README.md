@@ -127,5 +127,5 @@ The Lean problem set is in `lean/`: its definitions and targets are public, and 
 ## Related
 
 - [OSO](https://github.com/open-science-org/OSO): the protocol. The experiment's design now lives here, in [docs/design.md](docs/design.md).
-- [OIPs](https://github.com/open-science-org/OIPs): the improvement proposals that define the rules, including the waterfall (OIP-14).
+- [OIPs](https://github.com/open-science-org/OIPs): the improvement proposals that define the rules, including flow-back (OIP-14).
 - [app](https://github.com/open-science-org/app): the OSO v1 app: ledger, API and front end.
