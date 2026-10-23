@@ -69,7 +69,7 @@
 <circle cx="330" cy="136" r="6" style="fill:var(--dead)"><title>coating-at-scale · level 3 · manufacturing · dead end</title></circle>
 <circle cx="330" cy="176" r="6" style="fill:var(--s3)"><title>layer-lamination · level 3 · manufacturing</title></circle>
 <circle cx="460" cy="136" r="6" style="fill:var(--s3)"><title>pouch-assembly · level 4 · manufacturing</title></circle>
-<polygon points="460.0,165.0 462.9,172.0 470.5,172.6 464.7,177.5 466.5,184.9 460.0,180.9 453.5,184.9 455.3,177.5 449.5,172.6 457.1,172.0" style="fill:var(--s2);stroke:var(--ink);stroke-width:1.2"><title>agent-cell · level 4 · interfaces · target, bounty 100</title></polygon>
+<polygon points="460.0,165.0 462.9,172.0 470.5,172.6 464.7,177.5 466.5,184.9 460.0,180.9 453.5,184.9 455.3,177.5 449.5,172.6 457.1,172.0" style="fill:var(--s2);stroke:var(--ink);stroke-width:1.2"><title>lab-cell · level 4 · interfaces · target, bounty 100</title></polygon>
 <text class="tick" x="460" y="200" text-anchor="middle">100</text>
 <circle cx="590" cy="96" r="6" style="fill:var(--dead)"><title>high-rate-cell · level 5 · interfaces · dead end</title></circle>
 <polygon points="590.0,125.0 592.9,132.0 600.5,132.6 594.7,137.5 596.5,144.9 590.0,140.9 583.5,144.9 585.3,137.5 579.5,132.6 587.1,132.0" style="fill:var(--s2);stroke:var(--ink);stroke-width:1.2"><title>thousand-cycle-cell · level 5 · interfaces · target, bounty 400</title></polygon>

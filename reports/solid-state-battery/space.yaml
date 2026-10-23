@@ -12,7 +12,7 @@ glossary:
   target: a cell that meets a performance milestone
   attempt: one round of synthesis and testing
   area: a line of work
-  agent: an agent or startup
+  agent: a lab or startup
 areas:
   - electrolyte
   - interfaces
@@ -75,7 +75,7 @@ scenario:
         prereqs:
           - layer-lamination
         area: 2
-      - id: agent-cell
+      - id: lab-cell
         prereqs:
           - dendrite-suppression
           - layer-lamination
@@ -83,12 +83,12 @@ scenario:
         area: 1
       - id: high-rate-cell
         prereqs:
-          - agent-cell
+          - lab-cell
           - polymer-at-room-temperature
         area: 1
       - id: thousand-cycle-cell
         prereqs:
-          - agent-cell
+          - lab-cell
           - contact-under-cycling
           - pouch-assembly
         bounty: 400

@@ -13,7 +13,7 @@ glossary:
   target: a cell that meets a performance milestone
   attempt: one round of synthesis and testing
   area: a line of work
-  agent: an agent or startup
+  agent: a lab or startup
 areas: [electrolyte, interfaces, manufacturing]
 scenario:
   world:
@@ -34,9 +34,9 @@ scenario:
       - { id: coating-at-scale, prereqs: [interlayer-coating], area: 2 }
       - { id: layer-lamination, prereqs: [dry-film-process, thin-separator], area: 2 }
       - { id: pouch-assembly, prereqs: [layer-lamination], area: 2 }
-      - { id: agent-cell, prereqs: [dendrite-suppression, layer-lamination], bounty: 100, area: 1 }
-      - { id: high-rate-cell, prereqs: [agent-cell, polymer-at-room-temperature], area: 1 }
-      - { id: thousand-cycle-cell, prereqs: [agent-cell, contact-under-cycling, pouch-assembly], bounty: 400, area: 1 }
+      - { id: lab-cell, prereqs: [dendrite-suppression, layer-lamination], bounty: 100, area: 1 }
+      - { id: high-rate-cell, prereqs: [lab-cell, polymer-at-room-temperature], area: 1 }
+      - { id: thousand-cycle-cell, prereqs: [lab-cell, contact-under-cycling, pouch-assembly], bounty: 400, area: 1 }
       - { id: cathode-compatibility, prereqs: [air-stable-sulfide], area: 0 }
       - { id: recycling-route, prereqs: [pouch-assembly], area: 2 }
   success: { p0: 0.5, eta: 0.5 }
