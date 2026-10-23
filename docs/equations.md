@@ -12,6 +12,15 @@ Every rule of the experiment as a formula, in the order a run uses them. Each fo
 - **Levels** run left to right, easiest first. An idea **before** $x$ is one $x$ builds on, directly or through others ($y_1$, $y_2$, $z_1$, $z_2$). An idea **after** $x$ is built on $x$.
 - **The letters are the formulas' own:** $x$ is the idea in question, $y$ its parents, $z$ ideas further back, $u$ ideas after it. When an example looks at another idea, it says so (for example "for $y_1$").
 
+## One round, as a loop
+
+![One round as a loop of six steps: 1 money, 2 choose what to try, 3 try, 4 share or keep, 5 rewards, 6 earnings, which feed the next round's money through rho. Dashed: alpha and c send credit back to earlier ideas, which changes what agents choose to try and share](img/equations-loop.svg)
+
+Each step's box names its section and symbols. Two loops feed back:
+
+- **Money follows earnings ($\rho$).** Earnings in step 6 set next round's money in step 1. This happens under both rules.
+- **Credit flows back ($\alpha$, $c$).** Rewards in step 5 reach earlier ideas, so agents expect more from building and sharing (steps 2 and 4). This is where traditional ($\alpha = 1$, $c = 0$) and OSO ($\alpha = 0.8$, $c = 0.15$) differ.
+
 ## Symbols
 
 Grouped by what they belong to, in the order of the sections below. A hat marks an agent's own estimate: $\hat B$ is a prize as agent $i$ sees it.

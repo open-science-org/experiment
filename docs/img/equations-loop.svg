@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 615" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-label="One round as a loop of six steps. 1 Money: each agent gets b_i, part equal and part by recent earnings, weighted by rho. 2 Choose what to try: the idea with the best score U. 3 Try: success chance pi = s times p, number of tries b over k. 4 Share or keep: publish if the gain beats the scoop risk. 5 Rewards: the mint and the prize; the author keeps alpha and 1 minus alpha flows back to the ideas it built on; traditional alpha 1 and c 0, OSO alpha 0.8 and c 0.15. 6 Earnings: recent earnings E bar, which feed the next round's money through rho. An inner dashed loop: expected flow-back changes what agents choose to try and whether they share.">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6b6b6b"/></marker>
+    <marker id="arrInk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2b2b2b"/></marker>
+  </defs>
+  <rect width="900" height="615" rx="10" fill="#ffffff"/>
+
+  <!-- the six steps of a round: top row left to right, bottom row right to left -->
+  <g fill="#fafaf8" stroke="#d6d2ca" stroke-width="1.5">
+    <rect x="30" y="30" width="250" height="160" rx="10"/>
+    <rect x="325" y="30" width="250" height="160" rx="10"/>
+    <rect x="620" y="30" width="250" height="160" rx="10"/>
+    <rect x="620" y="340" width="250" height="172" rx="10"/>
+    <rect x="325" y="340" width="250" height="172" rx="10"/>
+    <rect x="30" y="340" width="250" height="172" rx="10"/>
+  </g>
+
+  <!-- titles -->
+  <g font-size="14" font-weight="700" fill="#2b2b2b">
+    <text x="46" y="56">1 · Money each round</text>
+    <text x="341" y="56">2 · Choose what to try</text>
+    <text x="636" y="56">3 · Try</text>
+    <text x="636" y="366">4 · Share or keep</text>
+    <text x="341" y="366">5 · Rewards</text>
+    <text x="46" y="366">6 · Earnings</text>
+  </g>
+  <g font-size="11" fill="#9a968e" text-anchor="end">
+    <text x="266" y="56">§3</text>
+    <text x="561" y="56">§6</text>
+    <text x="856" y="56">§2</text>
+    <text x="856" y="366">§7–8</text>
+    <text x="561" y="366">§4–5</text>
+    <text x="266" y="366">§3</text>
+  </g>
+
+  <!-- formulas -->
+  <g font-size="14.5" font-style="italic" font-family="Georgia, 'Times New Roman', serif" fill="#2b2b2b">
+    <text x="46" y="88">bᵢ = X/R · [ (1−ρ)/N + ρ Ēᵢ/ΣĒ ]</text>
+    <text x="341" y="88">pick the x with the best Uᵢ,ₓ</text>
+    <text x="636" y="88">πᵢ,ₓ = min(1, sᵢ pₓ)</text>
+    <text x="636" y="398">share if gain ≥ scoop risk</text>
+    <text x="341" y="398">author keeps α, 1−α flows back</text>
+    <text x="46" y="398">Ēᵢ ← 0.7 Ēᵢ + 0.3 × earned</text>
+  </g>
+
+  <!-- symbols in each step -->
+  <g font-size="12" fill="#4a4a4a">
+    <text x="46" y="116">X, R: total money, rounds</text>
+    <text x="46" y="134">N: agents · Ēᵢ: recent earnings</text>
+    <text x="46" y="152"><tspan font-weight="700" fill="#2b2b2b">ρ</tspan>: how far money follows earnings</text>
+    <text x="46" y="170">0 equal · 0.5 default · 1 all by earnings</text>
+
+    <text x="341" y="116">Vᵢ,ₓ: worth = mint + prize + flow-back</text>
+    <text x="341" y="134">winₓ: chance of being first</text>
+    <text x="341" y="152">δᵢ patience · γᵢ risk · qᵢ judgement</text>
+    <text x="341" y="170">τ, ε: choice randomness</text>
+
+    <text x="636" y="116">tries = bᵢ / kᵢ</text>
+    <text x="636" y="134">sᵢ: skill · pₓ: chance at level ℓₓ</text>
+    <text x="636" y="152">kᵢ: cost of one try</text>
+    <text x="636" y="170">a success is a new idea x</text>
+
+    <text x="636" y="426">βᵢ: liking for sharing</text>
+    <text x="636" y="444">ψ: scoop risk · κ: extra use</text>
+    <text x="636" y="462">ωᵢ: reuse of published ideas</text>
+    <text x="636" y="480">θ: screen for trivial ideas</text>
+
+    <text x="341" y="426">mint m: author (1−c)m, parents c·m</text>
+    <text x="341" y="444">prize Bₓ · share(x, z) · flow-back Fₓ</text>
+    <text x="341" y="462">gᵢ: gaming, tries spent on trivial ideas</text>
+
+    <text x="46" y="426">earned = mint + prize + flow-back</text>
+    <text x="46" y="444">smoothed, so one lucky round</text>
+    <text x="46" y="462">doesn't take over the budget</text>
+  </g>
+
+  <!-- the two rule settings: where traditional and OSO differ -->
+  <g font-size="12" font-weight="700">
+    <text x="341" y="484" fill="#2a78d6">Traditional: α = 1, c = 0</text>
+    <text x="341" y="501" fill="#eb6834">OSO: α = 0.8, c = 0.15</text>
+  </g>
+
+  <!-- the round: arrows between steps -->
+  <g stroke="#6b6b6b" stroke-width="2" fill="none" marker-end="url(#arr)">
+    <line x1="282" y1="110" x2="321" y2="110"/>
+    <line x1="577" y1="110" x2="616" y2="110"/>
+    <line x1="745" y1="192" x2="745" y2="336"/>
+    <line x1="618" y1="420" x2="579" y2="420"/>
+    <line x1="323" y1="420" x2="284" y2="420"/>
+  </g>
+  <g font-size="11.5" fill="#5f5d58" text-anchor="middle">
+    <text x="301" y="102">bᵢ</text>
+    <text x="596" y="102">x</text>
+    <text x="760" y="262" text-anchor="start">new idea</text>
+    <text x="598" y="412">shared</text>
+    <text x="303" y="412">tokens</text>
+  </g>
+
+  <!-- outer loop: earnings buy next round's money, through rho -->
+  <path d="M155 338 L155 194" stroke="#2b2b2b" stroke-width="3" fill="none" marker-end="url(#arrInk)"/>
+  <g fill="#2b2b2b">
+    <text x="170" y="258" font-size="22" font-style="italic" font-family="Georgia, 'Times New Roman', serif" font-weight="700">ρ</text>
+    <text x="190" y="256" font-size="12">next round:</text>
+    <text x="170" y="274" font-size="12">earnings buy money</text>
+  </g>
+
+  <!-- inner loop: credit flowing back changes what agents try and share -->
+  <g stroke="#9a968e" stroke-width="2" fill="none" stroke-dasharray="6 5" marker-end="url(#arr)">
+    <path d="M450 338 L450 194"/>
+    <path d="M520 338 C 560 290, 600 290, 640 338"/>
+  </g>
+  <g font-size="12" fill="#5f5d58">
+    <text x="462" y="250"><tspan font-weight="700" fill="#2b2b2b">α, c</tspan>: expected</text>
+    <text x="462" y="266">flow-back</text>
+    <text x="462" y="282">raises Vᵢ,ₓ</text>
+    <text x="546" y="296">credit if others use it</text>
+  </g>
+
+  <!-- caption -->
+  <g font-size="12.5" fill="#4a4a4a">
+    <text x="30" y="552">Solid: one round, steps 1 to 6. The thick arrow closes the loop: <tspan font-weight="700" fill="#2b2b2b">ρ</tspan> sets how much of next round's money follows earnings.</text>
+    <text x="30" y="572">Dashed: <tspan font-weight="700" fill="#2b2b2b">α</tspan> and <tspan font-weight="700" fill="#2b2b2b">c</tspan> send credit back to earlier ideas, which changes what agents expect to earn, so what they try and share.</text>
+    <text x="30" y="592">α decides who earns; ρ decides how much those earnings buy.</text>
+  </g>
+</svg>
