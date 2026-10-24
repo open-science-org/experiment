@@ -1,0 +1,105 @@
+{
+ "chart": "results/full-abstract-field-traditional-vs-osochoice-by-alpha-20261023/figures/compare.svg",
+ "id": "full-abstract-field-traditional-vs-osochoice-by-alpha-20261023",
+ "kind": "simulation",
+ "date": "2026-10-24",
+ "title": "full-abstract-field-traditional-vs-osochoice-by-alpha-20261023",
+ "design": {
+  "question": "When agents choose what to publish, how much do they share (β) at each α, and how far do they get?",
+  "compare": "Traditional, OSO (choice), by α, absorption rate",
+  "fixed": "the field \"An abstract research field\"",
+  "measure": "all of hardest level, targets solved, bounty value, ROI, money to the main level, waste",
+  "better": "higher",
+  "runs": "100 runs per row"
+ },
+ "answer": "Best overall: OSO (choice), α = 0. Against traditional, clearly better on hardest level, targets solved, bounty value, ROI and money to the main level; clearly worse on waste. (6 measures; a clear difference is more than 2.6 standard errors.)",
+ "answers": [
+  "hardest level: 8.00 against traditional 3.68, clearly better.",
+  "targets solved: 3.69 against traditional 0.67, clearly better.",
+  "bounty value: 1889 against traditional 343, clearly better.",
+  "ROI: 2.48 against traditional 0.36, clearly better.",
+  "money to the main level: 410 against traditional 686, clearly better.",
+  "waste: 0.89 against traditional 0.54, clearly worse."
+ ],
+ "table": [
+  {
+   "setting": "Traditional",
+   "frontier": "3.7 ± 4.0",
+   "targets solved": "0.7 ± 0.8",
+   "value gained": "343 ± 431",
+   "ROI (value per spend)": "0.36 ± 0.45",
+   "cost": "686 ± 163",
+   "waste": "0.54 ± 0.11"
+  },
+  {
+   "setting": "OSO (choice), α = 0.9",
+   "frontier": "7.1 ± 1.4",
+   "targets solved": "0.9 ± 0.9",
+   "value gained": "451 ± 473",
+   "ROI (value per spend)": "0.48 ± 0.51",
+   "cost": "650 ± 191",
+   "waste": "0.63 ± 0.09"
+  },
+  {
+   "setting": "OSO (choice), α = 0.8",
+   "frontier": "7.0 ± 1.6",
+   "targets solved": "1.1 ± 1.2",
+   "value gained": "548 ± 601",
+   "ROI (value per spend)": "0.59 ± 0.67",
+   "cost": "690 ± 182",
+   "waste": "0.64 ± 0.10"
+  },
+  {
+   "setting": "OSO (choice), α = 0.6",
+   "frontier": "7.4 ± 1.1",
+   "targets solved": "1.0 ± 1.0",
+   "value gained": "497 ± 517",
+   "ROI (value per spend)": "0.53 ± 0.57",
+   "cost": "701 ± 163",
+   "waste": "0.65 ± 0.08"
+  },
+  {
+   "setting": "OSO (choice), α = 0.4",
+   "frontier": "7.7 ± 0.7",
+   "targets solved": "1.1 ± 1.0",
+   "value gained": "568 ± 519",
+   "ROI (value per spend)": "0.60 ± 0.56",
+   "cost": "702 ± 172",
+   "waste": "0.68 ± 0.08"
+  },
+  {
+   "setting": "OSO (choice), α = 0.2",
+   "frontier": "7.8 ± 0.4",
+   "targets solved": "1.7 ± 1.2",
+   "value gained": "881 ± 600",
+   "ROI (value per spend)": "0.96 ± 0.69",
+   "cost": "615 ± 189",
+   "waste": "0.76 ± 0.08"
+  },
+  {
+   "setting": "OSO (choice), α = 0",
+   "frontier": "8.0 ± 0.0",
+   "targets solved": "3.7 ± 0.6",
+   "value gained": "1889 ± 306",
+   "ROI (value per spend)": "2.48 ± 0.72",
+   "cost": "410 ± 122",
+   "waste": "0.89 ± 0.04"
+  }
+ ],
+ "caveats": [
+  "A simulation with guessed parameters: it shows how the rules play out, not that they work."
+ ],
+ "page": "results/full-abstract-field-traditional-vs-osochoice-by-alpha-20261023/summary.md",
+ "tags": [
+  "simulation",
+  "full model",
+  "abstract-field",
+  "An abstract research field",
+  "Traditional",
+  "OSO (choice)",
+  "α, absorption rate",
+  "suite 2026-10-24",
+  "full model"
+ ],
+ "ranAt": "2026-10-24T06:58:19.785Z"
+}

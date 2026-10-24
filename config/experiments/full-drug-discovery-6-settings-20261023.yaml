@@ -1,0 +1,69 @@
+# Suite 2026-10-24: full model
+id: full-drug-discovery-6-settings-20261023
+title: full-drug-discovery-6-settings-20261023
+description: 'Designed in the app on the field "Early-stage drug discovery"
+  (spaces/drug-discovery.yaml): Traditional vs OSO (immediate) vs OSO (choice) vs Flow-back,
+  finished-only vs No flow-back, immediate vs No flow-back, choice. α and c apply to the OSO
+  (flow-back) settings only.'
+seeds: 100
+set:
+  world:
+    kind: ideas
+    levels: 6
+    width: 9
+    parents: 1.5
+    skip: 0.1
+    length: 2
+    lengthGrowth: 2
+    composition: 0.5
+    targets: 3
+    bountyBase: 2
+    bountyGrowth: 3
+  measures:
+    targetLevel: 6
+  budget:
+    X: 1400
+    rounds: 117
+    perAgentPerRound: null
+factors:
+  - name: setting
+    levels:
+      - label: Traditional
+        preset: traditional
+      - label: OSO (immediate)
+        preset: oso
+      - label: OSO (choice)
+        preset: osoChoice
+      - label: Flow-back, finished-only
+        preset: creditOnly
+      - label: No flow-back, immediate
+        preset: sharingOnly
+      - label: No flow-back, choice
+        preset: traditionalChoice
+columns:
+  - frontier
+  - targetsSolved
+  - value
+  - roi
+  - cost
+  - waste
+  - sharing
+  - reachTarget
+question: On the drug discovery preset, with every kind of agent and money following earnings, which
+  of the six rule settings gets furthest?
+compare: Traditional, OSO (immediate), OSO (choice), Flow-back, finished-only, No flow-back,
+  immediate, No flow-back, choice
+fixed: the field "Early-stage drug discovery"
+tags:
+  - simulation
+  - full model
+  - drug-discovery
+  - Early-stage drug discovery
+  - Traditional
+  - OSO (immediate)
+  - OSO (choice)
+  - Flow-back, finished-only
+  - No flow-back, immediate
+  - No flow-back, choice
+  - suite 2026-10-24
+  - full model

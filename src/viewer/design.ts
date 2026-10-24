@@ -696,11 +696,11 @@ function unique(base: string, taken: (id: string) => boolean): string {
 }
 const experimentTaken = (id: string) => existsSync(join(EXPERIMENTS_DIR, `${id}.yaml`));
 
-export function simpleName(d: Pick<SimpleDesign, 'space' | 'alphas' | 'betas' | 'graph'>): string {
+export function simpleName(d: Pick<SimpleDesign, 'space' | 'alphas' | 'betas' | 'graph'>, what?: string): string {
   const a = d.alphas.length > 1, b = d.betas.length > 1;
-  const varies = a && b ? 'alpha-beta' : a ? `alpha-at-beta-${num(d.betas[0] ?? 0)}` : b ? `beta-at-alpha-${num(d.alphas[0] ?? 1)}` : `alpha-${num(d.alphas[0] ?? 1)}-beta-${num(d.betas[0] ?? 0)}`;
+  const varies = what ?? (a && b ? 'alpha-beta' : a ? `alpha-at-beta-${num(d.betas[0] ?? 0)}` : b ? `beta-at-alpha-${num(d.alphas[0] ?? 1)}` : `alpha-${num(d.alphas[0] ?? 1)}-beta-${num(d.betas[0] ?? 0)}`);
   // A generated graph is named by its controls: levels × width, parents, length + growth, composition.
-  const where = d.graph ? `ideas-${d.graph.levels}x${d.graph.width}-p${num(d.graph.parents)}-len${num(d.graph.length)}g${num(d.graph.lengthGrowth)}-comp${num(d.graph.composition)}` : slug(d.space);
+  const where = d.graph ? `ideas-${d.graph.levels}x${d.graph.width}-p${num(d.graph.parents)}-len${num(d.graph.length)}g${num(d.graph.lengthGrowth)}-comp${num(d.graph.composition)}${d.graph.targetsFrom ? `-bounties-from-${d.graph.targetsFrom}` : ''}` : slug(d.space);
   return unique(`simple-${where}-${varies}`, experimentTaken);
 }
 
