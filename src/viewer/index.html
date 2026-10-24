@@ -150,6 +150,12 @@
   .kind .khead { display: flex; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 6px; }
   .kind .khead b { font-size: 14px; }
   .examples .btn { font-size: 12px; padding: 3px 9px; }
+  table.history { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+  table.history th { text-align: left; font-weight: 600; color: var(--ink-2); padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  table.history td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.history tr.earlier td, table.history tr.not\ valid td { color: var(--ink-3); }
+  table.history .nowrap { white-space: nowrap; }
+  #runs-tabs { margin-bottom: 12px; }
   .watch { color: var(--s1); font-weight: 600; cursor: pointer; } .watch:hover { text-decoration: underline; }
   .gen-groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   @media (max-width: 800px) { .gen-groups { grid-template-columns: 1fr; } }
@@ -210,13 +216,22 @@
 </header>
 <div class="app">
 <nav class="side" aria-label="Pages">
-  <a href="#/">Results</a>
+  <a href="#/runs">Runs</a>
   <a href="#/new">New</a>
-  <a href="#/live">Live</a>
   <a href="#/how">How it works</a>
   <a href="#/equations" class="sub">Equations</a>
 </nav>
 <main>
+  <!-- Runs: the history of every run, with Results and Live -->
+  <div class="tabs hidden" role="tablist" id="runs-tabs" aria-label="Runs">
+    <a class="btn" role="tab" href="#/runs" data-runs="history">History</a>
+    <a class="btn" role="tab" href="#/runs/results" data-runs="results">Results</a>
+    <a class="btn" role="tab" href="#/live" data-runs="live">Live</a>
+  </div>
+  <section id="view-history" class="hidden">
+    <div class="row search"><input id="h-search" type="search" placeholder="Search runs: name, preset, model, α, β, a question…" style="width:420px"><span class="muted" id="h-count"></span></div>
+    <div id="h-table"></div>
+  </section>
   <!-- Results: every experiment as a short card -->
   <section id="view-overview" class="hidden"></section>
   <section id="view-doc" class="hidden"><div class="crumbs" id="doc-crumbs"></div><article class="doc" id="doc-body"></article></section>
@@ -416,8 +431,15 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 const api = (path) => fetch(path).then(async (r) => { const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText); return j; });
 const money = (x) => '$' + (x < 0.1 ? x.toFixed(3) : x.toFixed(2));
 
-const VIEWS = ['view-overview', 'view-doc', 'view-new', 'view-live', 'view-fields'];
-const show = (view) => { for (const v of VIEWS) $(v).classList.toggle('hidden', v !== view); window.scrollTo(0, 0); };
+const VIEWS = ['view-history', 'view-overview', 'view-doc', 'view-new', 'view-live', 'view-fields'];
+const RUNS_VIEWS = { 'view-history': 'history', 'view-overview': 'results', 'view-live': 'live' };
+const show = (view) => {
+  for (const v of VIEWS) $(v).classList.toggle('hidden', v !== view);
+  // History, Results and Live share the Runs tab bar.
+  $('runs-tabs').classList.toggle('hidden', !RUNS_VIEWS[view]);
+  for (const a of $('runs-tabs').querySelectorAll('a')) a.setAttribute('aria-selected', a.dataset.runs === RUNS_VIEWS[view]);
+  window.scrollTo(0, 0);
+};
 const params = () => new URLSearchParams(location.hash.split('?')[1] ?? '');
 let OV = null;
 const overviewData = async () => (OV ??= await api('/api/overview'));
@@ -431,10 +453,12 @@ async function route() {
   for (const a of document.querySelectorAll('nav.side a')) {
     const isEq = top === '/equations' || /^\/doc\/docs\/equations(-simple)?\.md$/.test(path);
     const isHow = !isEq && (top === '/how' || (top === '/doc' && /^\/doc\/(docs\/|README\.md|lean\/)/.test(path)));
-    const here = isEq ? a.getAttribute('href') === '#/equations' : isHow ? a.getAttribute('href') === '#/how' : a.getAttribute('href') === '#' + top || (top === '/doc' && a.getAttribute('href') === '#/');
+    const isRuns = ['/', '/runs', '/live'].includes(top) || (top === '/doc' && !isEq && !isHow);
+    const here = isEq ? a.getAttribute('href') === '#/equations' : isHow ? a.getAttribute('href') === '#/how' : isRuns ? a.getAttribute('href') === '#/runs' : a.getAttribute('href') === '#' + top;
     if (here) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
   }
-  if (path === '/') { show('view-overview'); return drawResults(); }
+  if (path === '/' || path === '/runs') { show('view-history'); return drawHistory(); }
+  if (path === '/runs/results') { show('view-overview'); return drawResults(); }
   if (path.startsWith('/doc/')) { show('view-doc'); return openDoc(path.slice(5)); }
   if (path === '/new') { show('view-new'); return enterNew(); }
   if (path === '/live') { show('view-live'); return showTab(params().get('tab') ?? 'sim'); }
@@ -454,7 +478,7 @@ async function openDoc(path) {
     const fieldId = /^reports\/([^/]+)\//.exec(d.path)?.[1];
     const howDoc = /^(docs\/|README\.md|lean\/)/.test(d.path);
     const eqDoc = d.path === 'docs/equations.md' || d.path === 'docs/equations-simple.md';
-    $('doc-crumbs').innerHTML = eqDoc ? `<div class="tabs" role="tablist"><a class="btn" role="tab" href="#/equations?m=simple" aria-selected="${d.path.endsWith('simple.md')}">Simple model (α, β)</a><a class="btn" role="tab" href="#/equations?m=full" aria-selected="${!d.path.endsWith('simple.md')}">Full model</a></div>` : howDoc ? (d.path === 'docs/README.md' ? '' : '<a href="#/how">← How it works</a>') : `<a href="#/">← Results</a>${fieldId ? ` · <a href="#/doc/reports/${fieldId}/report.md">Full report</a> · <a href="#/live?tab=sim&space=${fieldId}">Watch a simulation</a>` : ''}`;
+    $('doc-crumbs').innerHTML = eqDoc ? `<div class="tabs" role="tablist"><a class="btn" role="tab" href="#/equations?m=simple" aria-selected="${d.path.endsWith('simple.md')}">Simple model (α, β)</a><a class="btn" role="tab" href="#/equations?m=full" aria-selected="${!d.path.endsWith('simple.md')}">Full model</a></div>` : howDoc ? (d.path === 'docs/README.md' ? '' : '<a href="#/how">← How it works</a>') : `<a href="#/runs/results">← Results</a>${fieldId ? ` · <a href="#/doc/reports/${fieldId}/report.md">Full report</a> · <a href="#/live?tab=sim&space=${fieldId}">Watch a simulation</a>` : ''}`;
     $('doc-body').innerHTML = d.html;
     // Headings get ids like GitHub's, so in-page links (#what-this-shows-…) scroll instead of navigating.
     const slug = (t) => t.toLowerCase().trim().replace(/[^\p{L}\p{N}\s-]/gu, '').replace(/\s/g, '-');
@@ -470,6 +494,30 @@ async function openDoc(path) {
 }
 
 let resultsQuery = '';
+/* Runs: the history of every run */
+let historyQuery = '', historyTimer = null;
+async function drawHistory() {
+  clearTimeout(historyTimer);
+  const rows = await api('/api/history');
+  const GREEK = { α: 'alpha', β: 'beta', ρ: 'rho', θ: 'theta' };
+  const hay = (r) => { const t = [r.id, r.kind, r.title, r.question, r.answer, ...(r.tags ?? [])].join(' ').toLowerCase(); return t + t.replace(/[αβρθ]/g, (g) => ` ${GREEK[g]} `); };
+  const words = historyQuery.toLowerCase().split(/\s+/).filter(Boolean);
+  const shown = rows.filter((r) => words.every((w) => hay(r).includes(w)));
+  const when = (t) => { const d = new Date(t), z = (n) => String(n).padStart(2, '0'); return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())} <span class="muted">${z(d.getHours())}:${z(d.getMinutes())}</span>`; };
+  const status = (r) => (r.status === 'running' ? '<span class="live">● running</span>' : r.status === 'not valid' ? '<span class="no">not valid</span>' : r.status === 'earlier' ? '<span class="muted">earlier version</span>' : '');
+  $('h-count').textContent = words.length ? `${shown.length} of ${rows.length} runs` : `${rows.length} runs`;
+  $('h-table').innerHTML = `<table class="history"><thead><tr><th>When</th><th>Kind</th><th>Run</th><th>Answer</th><th></th></tr></thead><tbody>${shown.map((r) => `<tr class="${r.status}">
+    <td class="nowrap">${when(r.at)}</td><td class="nowrap">${esc(r.kind)} ${status(r)}</td>
+    <td><b>${esc(r.question)}</b><div class="muted"><code>${esc(r.id)}</code></div></td>
+    <td>${esc(r.answer.length > 220 ? r.answer.slice(0, 220) + '…' : r.answer)}</td>
+    <td class="nowrap">${r.result ? `<a href="${r.result}">Result</a>` : ''}${r.result && r.watch ? ' · ' : ''}${r.watch ? `<a href="${r.watch}">Watch ▶</a>` : ''}</td></tr>`).join('') || '<tr><td colspan="5" class="muted">Nothing matches.</td></tr>'}</tbody></table>`;
+  const box = $('h-search');
+  box.value = historyQuery;
+  box.oninput = () => { historyQuery = box.value; drawHistory(); };
+  // While something is running, keep the list fresh.
+  if (rows.some((r) => r.status === 'running') && !$('view-history').classList.contains('hidden')) historyTimer = setTimeout(drawHistory, 5000);
+}
+
 const watchable = (c) => (c.kind === 'simulation' && c.id !== 'simple' ? `#/live?tab=sim&experiment=${encodeURIComponent(c.id)}` : c.kind === 'field report' ? `#/live?tab=sim&space=${encodeURIComponent(c.id)}` : c.kind === 'race' && !c.invalid ? `#/live?tab=ai` : '');
 const KINDWORD = { race: 'ai models', 'model pilot': 'ai models', 'field report': 'topic report simulation', simulation: 'simulation' };
 async function drawResults() {

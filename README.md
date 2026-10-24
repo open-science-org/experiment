@@ -96,12 +96,11 @@ npm run viewer        # then open http://127.0.0.1:8791
 
 Needs Node 22.18 or later. Simulations need nothing else. Tests with AI models also need [Lean](https://lean-lang.org/install/) (`elan`) and an OpenRouter key in `.env` (`OPENROUTER_API_KEY=…`); they also need the private reference files in `lean/` (not in this repository; ask the maintainers). `PORT=9000 npm run viewer` picks another port.
 
-Four pages:
+Three pages:
 
-- **Results:** every experiment as a short card (question, answer), including one full report per preset of the idea graph. Click one for its details, or Watch it in Live.
-- **New:** one form. Pick who does the work: **simulated agents** (chance decides each attempt; free, thousands of runs) or **AI models** (Lean checks each proof; costs money, a few runs). Then the question, what to compare, and the runs. Everything else is under *More options*.
-- **Live:** tests with AI models as they run, simulation replays, and every attempt by the AI models.
-- **How it works:** the design in plain words, with links to the full design and the simulation in detail.
+- **Runs:** every run, newest first, in **History** (with a search box); **Results**, every experiment as a short card, including one full report per preset of the idea graph; and **Live**, to watch a run round by round (simulations, and the tests with AI models).
+- **New:** the simple model (only α and β vary, on a generated idea graph or a preset) and the full model (every setting; simulated agents or AI models).
+- **How it works:** the design in plain words, and every equation on one page.
 
 The app runs on this machine only, and never shows `lean/` (the private answers) or `.env`.
 

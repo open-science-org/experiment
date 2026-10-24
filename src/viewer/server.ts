@@ -164,6 +164,31 @@ function communityRuns() {
   return [...ids.values()].map((r) => ({ ...r, live: Date.now() - r.modified < 3 * 60_000 })).sort((a, b) => b.modified - a.modified);
 }
 
+/**
+ * Every run, newest first: saved results (with the time their card was written), tests running now
+ * in the app, and AI tests still in progress. One row each, with where to read and where to watch it.
+ */
+function history() {
+  const KIND: Record<string, string> = { race: 'AI test', 'model pilot': 'AI pilot', 'field report': 'Preset report', simulation: 'Simulation' };
+  const rows = allCards().map((c) => {
+    const page = join(ROOT, c.page);
+    const model = c.kind !== 'simulation' ? KIND[c.kind] : c.tags?.includes('simple model') ? 'Simple model' : c.tags?.includes('full model') ? 'Full model' : 'Simulation';
+    const watch = c.kind === 'simulation' && existsSync(join(ROOT, 'config', 'experiments', `${c.id}.yaml`)) ? `#/live?tab=sim&experiment=${encodeURIComponent(c.id)}`
+      : c.kind === 'field report' && !c.superseded ? `#/live?tab=sim&space=${encodeURIComponent(c.id)}` : c.kind === 'race' && !c.invalid ? '#/live?tab=ai' : null;
+    return { at: existsSync(page) ? statSync(page).mtimeMs : Date.parse(c.date), id: c.id, kind: model, title: c.title, question: c.design.question, answer: c.invalid ? `Not valid: ${c.invalid}` : c.superseded ? `Earlier version. ${c.answer}` : c.answer, status: c.invalid ? 'not valid' : c.superseded ? 'earlier' : 'done', result: `#/doc/${c.page}`, watch, tags: c.tags ?? [] };
+  });
+  const seen = new Set(rows.map((r) => r.id));
+  for (const j of design.listJobs()) {
+    if (j.status !== 'running') continue;
+    rows.push({ at: j.startedAt, id: j.id, kind: 'Running now', title: j.title, question: j.title, answer: j.log.at(-1) ?? 'starting…', status: 'running', result: '', watch: null, tags: [] });
+  }
+  for (const c of communityRuns()) {
+    if (seen.has(c.id) || !c.live) continue;
+    rows.push({ at: c.modified, id: c.id, kind: 'AI test', title: c.id, question: 'An AI test, in progress', answer: `${c.actions} actions so far`, status: 'running', result: '', watch: `#/live?tab=ai&run=${encodeURIComponent(c.id)}`, tags: [] });
+  }
+  return rows.sort((a, b) => b.at - a.at);
+}
+
 function communityRun(id: string) {
   if (!/^[\w.-]+$/.test(id)) throw new Error('bad run id');
   const out: Record<string, unknown> = { id };
@@ -274,6 +299,7 @@ const server = createServer(async (req, res) => {
       if (!full || statSync(full).isDirectory()) return send(404, { error: 'not found' });
       return send(200, (extname(full) === '.png' ? readFileSync(full) : readFileSync(full, 'utf8')), TYPES[extname(full)] ?? 'text/plain; charset=utf-8');
     }
+    if (url.pathname === '/api/history') return send(200, history());
     if (url.pathname === '/api/presets') return send(200, design.graphPresets());
     if (url.pathname === '/api/spaces') return send(200, spaceIds().map((id) => ({ id, title: loadSpace(id).spec.title })));
     if (url.pathname === '/api/settings') return send(200, SETTINGS);
