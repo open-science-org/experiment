@@ -377,7 +377,7 @@ $$\text{value} = \sum_{x \text{ found}} B_x \qquad \text{ROI} = \frac{\text{valu
 
 *Example:* finding $x$ for 40 units of money gives value 16 and ROI 0.4.
 
-**Sharing:** the share of proved ideas without a bounty published in the round they were proved. **Waste:** the share of money spent on duplicates, dead ends and trivial ideas.
+**Sharing:** the share of proved ideas without a bounty published in the round they were proved. **Waste:** the share of money spent on **repeated work** (attempts at an idea someone else had already proved, whether or not they published it), on dead ends, and on trivial ideas.
 
 **Credit accuracy:** how well bounty pay matches true contribution. Contribution splits each bounty won over the ideas in its proof by $1/p$:
 

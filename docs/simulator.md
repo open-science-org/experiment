@@ -384,7 +384,7 @@ Computed at the end of each run (`model.ts`, function `measure`):
 | **spend** | Total spend; less than the budget when every target was solved early |
 | **ideas per 100** | Published, non-trivial ideas per 100 units of spend |
 | **breadth** | Share of targets solved |
-| **waste** | Share of spend on redundant work (attempts by others on an idea someone published first, including failed attempts), dead ends and trivial ideas |
+| **waste** | Share of spend on repeated work (attempts at an idea someone else had already proved, published or kept private), dead ends and trivial ideas |
 | **credit** | Credit accuracy: 1 − ½ Σ_i \| bounty pay share − contribution share \|. Each solved target's bounty is split over every idea in its proof, in proportion to cost 1/p, to define contribution. **High trivially when one agent proves a whole chain alone, as under traditional rules**, so compare it only between settings that share work |
 | **sharing** | Share of proved lemmas published in the same round they were first proved |
 | **hoarded** | Share of proved lemmas never published |

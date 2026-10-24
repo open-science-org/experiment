@@ -129,7 +129,7 @@ const COLUMN_INFO: Record<string, string> = {
   value: 'value gained: the bounties of the targets solved', roi: 'return on the money: value gained per unit spent',
   frontier: 'hardest level published', deepestProved: 'deepest level proved by anyone', reachTarget: 'share of runs reaching the main level',
   speed: 'rounds to reach the main level', cost: 'money to reach the main level', spend: 'money spent', productivity: 'ideas per 100 money',
-  breadth: 'share of targets solved', waste: 'share of money on ideas no target needed', credit: 'how well bounty pay matches contribution',
+  breadth: 'share of targets solved', waste: 'share of money on repeated work (ideas someone else had already proved, published or not), dead ends and trivial ideas', credit: 'how well bounty pay matches contribution',
   sharing: 'share of intermediate ideas published at once', hoarded: 'ideas proved but never published', reuse: 'how often published ideas were built on',
   duplicates: 'proofs of already-published ideas', targetsSolved: 'targets solved', gamerShare: "the gamer's share of all pay",
   trivialSpend: 'money spent on trivial ideas', rejected: 'targets rejected for resting on wrong ideas', retracted: 'ideas retracted as wrong', absorbSpend: 'money spent taking up published ideas',

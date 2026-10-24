@@ -45,6 +45,9 @@ export interface State {
   author: Int32Array;
   pubRound: Int32Array;
   firstProof: Int32Array;
+  /** Who first proved each idea (published or not), and money spent attempting ideas someone else had already proved. */
+  firstProver: Int32Array;
+  spendRepeated: number;
   scheduled: Map<number, [number, number][]>;
   earnings: Float64Array;
   roundEarnings: Float64Array;
@@ -200,6 +203,8 @@ function attempt(s: State, i: number, decider: Decider) {
   const key = i * world.n + r;
   s.spend += k;
   s.spendOn.set(key, (s.spendOn.get(key) ?? 0) + k);
+  // Repeated work: someone else had already proved this idea, whether or not they published it.
+  if (!world.deadEnd[r] && s.firstProver[r] >= 0 && s.firstProver[r] !== i) s.spendRepeated += k;
   const p = Math.min(1, skillIn(agent, world.area[r], s.sc.agents.specialist) * chanceOf(s, i, r));
   const failures = s.failures.get(key) ?? 0;
   const othersFailures = s.publicFailures[r] - (s.sc.rules.publishFailures ? failures : 0);
@@ -226,7 +231,7 @@ function attempt(s: State, i: number, decider: Decider) {
   s.proved[i].add(r);
   s.known[i].add(r);
   s.knowVersion[i]++;
-  if (s.firstProof[r] < 0) s.firstProof[r] = s.round;
+  if (s.firstProof[r] < 0) { s.firstProof[r] = s.round; s.firstProver[r] = i; }
   if (s.author[r] >= 0) {
     s.duplicates++;
     return;
@@ -277,6 +282,8 @@ export function run(sc: Scenario, seed: number, record?: { events: TraceEvent[];
     author: new Int32Array(world.n).fill(-1),
     pubRound: new Int32Array(world.n).fill(-1),
     firstProof: new Int32Array(world.n).fill(-1),
+    firstProver: new Int32Array(world.n).fill(-1),
+    spendRepeated: 0,
     scheduled: new Map(),
     earnings: new Float64Array(N),
     roundEarnings: new Float64Array(N),

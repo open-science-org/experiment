@@ -44,14 +44,11 @@ export function measure(s: State, curve: RunResult['curve'], speed: number | nul
   const published = [...Array(world.n).keys()].filter((r) => s.author[r] >= 0);
   const spend = Math.max(s.spend, 1e-9);
 
-  let duplicate = 0;
+  // Waste: money on dead ends, on repeated work (attempts at an idea someone else had already proved,
+  // published or kept private), and on trivial ideas.
   let deadEnd = 0;
-  for (const [key, k] of s.spendOn) {
-    const i = Math.floor(key / world.n);
-    const r = key % world.n;
-    if (world.deadEnd[r]) deadEnd += k;
-    else if (s.author[r] >= 0 && s.author[r] !== i) duplicate += k;
-  }
+  for (const [key, k] of s.spendOn) if (world.deadEnd[key % world.n]) deadEnd += k;
+  const duplicate = s.spendRepeated;
 
   // Contribution in hindsight: each solved target's bounty split over its proof, by cost 1/p.
   const contribution = new Float64Array(agents.length);
