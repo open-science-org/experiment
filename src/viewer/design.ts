@@ -296,7 +296,7 @@ export function checkExperiment(d: Design) {
   try {
     const spec = experimentFor(d);
     const rows = expand(spec);
-    return { ok: true, rows: rows.length, runs: rows.length * spec.seeds, exists: existsSync(join(EXPERIMENTS_DIR, `${d.id}.yaml`)), yaml: stringify(spec, { lineWidth: 100 }), labels: rows.slice(0, 40).map((r) => r.labels), name: fullName(d) };
+    return { ok: true, rows: rows.length, runs: rows.length * spec.seeds, exists: existsSync(join(EXPERIMENTS_DIR, `${d.id}.yaml`)), yaml: stringify(spec, { lineWidth: 100 }), labels: rows.slice(0, 40).map((r) => r.labels), name: fullName(d), question: experimentFor({ ...d, question: '', title: '' }).question };
   } catch (e) {
     return { ok: false, error: (e as Error).message };
   }
@@ -553,7 +553,7 @@ export const GRAPH_DEFAULTS: GraphControls = { levels: 6, width: 8, parents: 2, 
 const GRAPH_RANGES: Record<keyof GraphControls, [number, number]> = { levels: [1, 15], width: [1, 30], parents: [1, 6], skip: [0, 1], length: [1, 12], lengthGrowth: [0, 6], composition: [0, 1], targets: [1, 10] };
 
 /** The simple model's design: a topic, or a generated idea graph (graph), and the α and β values. */
-export interface SimpleDesign { id: string; title?: string; question?: string; space: string; graph?: GraphControls; budget?: number; alphas: number[]; betas: number[]; seeds: number; measure?: string }
+export interface SimpleDesign { id: string; title?: string; question?: string; space: string; graph?: GraphControls; preset?: string; budget?: number; alphas: number[]; betas: number[]; seeds: number; measure?: string }
 
 function checkGraph(g: GraphControls) {
   for (const [k, [lo, hi]] of Object.entries(GRAPH_RANGES)) {
@@ -636,6 +636,8 @@ export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
 const societies = (d: SimpleDesign): Level[] => d.alphas.flatMap((a) => d.betas.map((b) => ({ label: societyLabel(a, b), set: { 'rules.alpha': a, 'rules.visibility': { kind: 'chance', beta: b } } })));
 const graphText = (g: GraphControls) => `${g.levels} levels × ${g.width} ideas, ${g.parents} parents each, sequences of ${g.length} bits growing by ${g.lengthGrowth} per level, composition ${g.composition}`;
 
+const presetTitle = (id?: string) => (id ? graphPresets().find((p) => p.id === id)?.title.replace(/^(An?|The) /, '').toLowerCase() : undefined);
+
 /** The simple model on a generated idea graph: each run draws its own graph from the controls. */
 function simpleOnGraph(d: SimpleDesign, g: GraphControls): ExperimentSpec {
   checkGraph(g);
@@ -651,7 +653,7 @@ function simpleOnGraph(d: SimpleDesign, g: GraphControls): ExperimentSpec {
     set: merge(expandPaths({ world: { kind: 'ideas', ...g }, 'budget.X': budget, 'measures.targetLevel': g.levels, ...SIMPLE_FIXED }), { agents: { mix } }) as Record<string, unknown>,
     factors: [{ name: 'society', levels: societies(d) }],
     columns: [...new Set([measure, 'frontier', 'value', 'roi', 'sharing', 'targetsSolved', 'cost'])],
-    question: d.question || `On a generated idea graph, how far does a society get for the same money, by α and β?`,
+    question: d.question || `On a generated idea graph${presetTitle(d.preset) ? ` (from the ${presetTitle(d.preset)} preset)` : ''}, how far does a society get for the same money, by α and β?`,
     compare: `α in {${d.alphas.join(', ')}} × β in {${d.betas.join(', ')}}`,
     fixed: `a generated idea graph (${graphText(g)}), ${SIMPLE_AGENTS} identical agents, budget ${budget} split equally, no mint, no validation`,
     measure,
@@ -663,7 +665,7 @@ export function checkSimple(d: SimpleDesign) {
   try {
     const spec = simpleExperimentFor(d);
     const rows = expand(spec);
-    return { ok: true, rows: rows.length, runs: rows.length * spec.seeds, exists: existsSync(join(EXPERIMENTS_DIR, `${d.id}.yaml`)), name: simpleName(d) };
+    return { ok: true, rows: rows.length, runs: rows.length * spec.seeds, exists: existsSync(join(EXPERIMENTS_DIR, `${d.id}.yaml`)), name: simpleName(d), question: simpleExperimentFor({ ...d, question: '', title: '' }).question };
   } catch (e) {
     return { ok: false, error: (e as Error).message };
   }

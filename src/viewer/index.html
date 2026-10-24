@@ -244,7 +244,7 @@
     </div>
     <div class="step" id="n-simple">
       <p class="muted" style="margin-top:0">Only two settings change between societies. <b>α</b>, the absorption rate: the share of incoming value an idea keeps for its author (1 = nothing flows back). <b>β</b>: the chance an intermediate idea is published as soon as it is proved (0 = closed, 1 = open). Everything else is held fixed: 12 identical agents, equal money every round, no mint (bounties are the only value), no validation. The idea graph is generated from the controls below, or taken from a topic. <a href="#/equations?m=simple">The equations →</a></p>
-      <div class="row"><label>Question <input id="s-question" placeholder="What do you want to find out?" style="width:560px"></label></div>
+      <div class="row"><label>Question <span class="info" title="Optional. It labels the run: it becomes the title and question on the result card and in History, and you can search by it. It does not change the result: the answer is worked out from the measure you pick. Left empty, the question shown in grey is used.">ⓘ</span> <input id="s-question" placeholder="What do you want to find out?" style="width:620px"></label><span class="muted">optional</span></div>
       <div class="row choice" role="radiogroup" aria-label="Idea graph"><b>Idea graph</b>
         <label><input type="radio" name="s-graph" value="generated" checked> Generated <span class="info" title="Drawn from the controls below; every run draws its own graph.">ⓘ</span></label>
         <label><input type="radio" name="s-graph" value="topic"> The Lean problem set <span class="info" title="The real structure of the theorems the AI models prove; parents are required.">ⓘ</span></label>
@@ -280,7 +280,7 @@
       <article id="s-result" class="doc hidden"></article>
     </div>
     <div class="step" id="n-full">
-      <div class="row"><label>Question <input id="e-question" placeholder="What do you want to find out?" style="width:560px"></label></div>
+      <div class="row"><label>Question <span class="info" title="Optional. It labels the run: it becomes the title and question on the result card and in History, and you can search by it. It does not change the result: the answer is worked out from the measure you pick. Left empty, the question shown in grey is used.">ⓘ</span> <input id="e-question" placeholder="What do you want to find out?" style="width:620px"></label><span class="muted">optional</span></div>
       <div class="row examples" id="n-examples"><span class="muted">Start from an example:</span></div>
       <div class="row choice" role="radiogroup" aria-label="Who does the work">
         <b>Who does the work</b>
@@ -893,7 +893,7 @@ const generated = () => document.querySelector('input[name=s-graph]:checked')?.v
 const graphControls = () => Object.fromEntries(GRAPH_KEYS.map((k) => [k, Number($('g-' + k).value)]));
 function simpleDesign() {
   return { id: '', question: $('s-question').value.trim(), space: $('s-space').value, measure: $('s-measure').value,
-    ...(generated() ? { graph: graphControls(), budget: Number($('s-budget').value) } : {}),
+    ...(generated() ? { graph: graphControls(), budget: Number($('s-budget').value), ...($('g-preset').value ? { preset: $('g-preset').value } : {}) } : {}),
     alphas: numbers($('s-alphas').value), betas: numbers($('s-betas').value), seeds: Number($('s-seeds').value) };
 }
 let previewTimer = null;
@@ -915,6 +915,7 @@ function applyGraphMode() {
 }
 async function simpleCheck() {
   const c = await post('/api/simple/check', { design: simpleDesign() });
+  if (c.ok && c.question) $('s-question').placeholder = c.question;
   $('s-summary').innerHTML = c.ok ? `${c.rows} societies × ${$('s-seeds').value} runs = ${c.runs.toLocaleString()} runs · <code>${esc(c.name)}</code>` : `<span class="no">${esc(c.error)}</span>`;
   return c;
 }
@@ -1328,6 +1329,7 @@ function designCheck() {
       const c = await post('/api/experiments/check', { design: currentDesign() });
       if (who() !== 'sim') return done(c);
       if (c.ok && !$('e-id').dataset.typed) $('e-id').value = c.name;
+      if (c.ok && c.question) $('e-question').placeholder = c.question;
       $('e-summary').innerHTML = c.ok ? `${c.runs.toLocaleString()} runs in all · <code>${esc($('e-id').value || c.name)}</code>${c.exists ? ' · <span class="no">this name is taken (More options)</span>' : ''}` : `<span class="no">${esc(c.error)}</span>`;
       $('e-yaml').textContent = c.ok ? c.yaml : '';
       done(c);

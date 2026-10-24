@@ -1,0 +1,98 @@
+{
+ "chart": "results/simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261023-3/figures/compare.svg",
+ "id": "simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261023-3",
+ "kind": "simulation",
+ "date": "2026-10-24",
+ "title": "Simple model on a generated idea graph: α × β",
+ "design": {
+  "question": "On a generated idea graph, how far does a society get for the same money, by α and β?",
+  "compare": "α in {1, 0.5, 0.05} × β in {0, 0.5, 1}",
+  "fixed": "a generated idea graph (6 levels × 8 ideas, 2 parents each, sequences of 3 bits growing by 2 per level, composition 0.7), 12 identical agents, budget 1200 split equally, no mint, no validation",
+  "measure": "hardest level published",
+  "better": "higher",
+  "runs": "50 runs per row"
+ },
+ "answer": "Best: α = 1, β = 0.5, 6.0 (5 more tie). Best traditional: Traditional (α = 1, β = 0), 0.2. Clear difference.",
+ "table": [
+  {
+   "society": "Traditional (α = 1, β = 0)",
+   "frontier": "0.2 ± 1.2",
+   "value gained": "5 ± 25",
+   "sharing": "0.00 ± 0.00",
+   "ROI (value per spend)": "0.00 ± 0.02"
+  },
+  {
+   "society": "α = 1, β = 0.5",
+   "frontier": "6.0 ± 0.0",
+   "value gained": "256 ± 0",
+   "sharing": "0.54 ± 0.09",
+   "ROI (value per spend)": "0.46 ± 0.14"
+  },
+  {
+   "society": "α = 1, β = 1",
+   "frontier": "6.0 ± 0.0",
+   "value gained": "256 ± 0",
+   "sharing": "1.00 ± 0.00",
+   "ROI (value per spend)": "0.72 ± 0.26"
+  },
+  {
+   "society": "α = 0.5, β = 0",
+   "frontier": "0.4 ± 1.4",
+   "value gained": "8 ± 31",
+   "sharing": "0.00 ± 0.00",
+   "ROI (value per spend)": "0.01 ± 0.03"
+  },
+  {
+   "society": "α = 0.5, β = 0.5",
+   "frontier": "6.0 ± 0.0",
+   "value gained": "256 ± 0",
+   "sharing": "0.53 ± 0.10",
+   "ROI (value per spend)": "0.49 ± 0.22"
+  },
+  {
+   "society": "OSO (α = 0.5, β = 1)",
+   "frontier": "6.0 ± 0.0",
+   "value gained": "256 ± 0",
+   "sharing": "1.00 ± 0.00",
+   "ROI (value per spend)": "0.71 ± 0.27"
+  },
+  {
+   "society": "α = 0.05, β = 0",
+   "frontier": "0.1 ± 0.8",
+   "value gained": "3 ± 18",
+   "sharing": "0.00 ± 0.00",
+   "ROI (value per spend)": "0.00 ± 0.02"
+  },
+  {
+   "society": "α = 0.05, β = 0.5",
+   "frontier": "6.0 ± 0.0",
+   "value gained": "253 ± 18",
+   "sharing": "0.53 ± 0.09",
+   "ROI (value per spend)": "0.49 ± 0.16"
+  },
+  {
+   "society": "OSO (α = 0.05, β = 1)",
+   "frontier": "6.0 ± 0.0",
+   "value gained": "256 ± 0",
+   "sharing": "1.00 ± 0.00",
+   "ROI (value per spend)": "0.83 ± 0.27"
+  }
+ ],
+ "caveats": [
+  "A simulation with guessed parameters: it shows how the rules play out, not that they work."
+ ],
+ "page": "results/simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261023-3/summary.md",
+ "tags": [
+  "simulation",
+  "simple model",
+  "generated idea graph",
+  "ideas",
+  "levels 6",
+  "parents 2",
+  "length 3",
+  "composition 0.7",
+  "alpha",
+  "beta"
+ ],
+ "ranAt": "2026-10-24T05:59:02.266Z"
+}
