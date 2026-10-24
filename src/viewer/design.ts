@@ -640,7 +640,7 @@ const presetTitle = (id?: string) => (id ? graphPresets().find((p) => p.id === i
 function simpleOnGraph(d: SimpleDesign, g: GraphControls): ExperimentSpec {
   checkGraph(g);
   const budget = d.budget ?? 1200;
-  if (!(budget >= 10 && budget <= 100000)) throw new Error('the budget must be between 10 and 100,000');
+  if (!(budget >= 10 && budget <= 1000000)) throw new Error('the budget must be between 10 and 1,000,000');
   const mix = Object.fromEntries([...Object.keys(loadScenario(null).agents.mix), 'plain'].map((k) => [k, k === 'plain' ? SIMPLE_AGENTS : 0]));
   return {
     id: d.id,

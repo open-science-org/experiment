@@ -1,0 +1,105 @@
+# Scaling ladder 2026-10-24: very hard
+id: simple-ideas-14x12-p3-len4g3-comp0-8-bounties-from-7-scaling-ladder-20261024
+title: "Scaling: Very hard graph (14 × 12)"
+description: "The simple model on a generated idea graph (14 levels × 12 ideas, 3 parents each,
+  sequences of 4 bits growing by 3 per level, composition 0.8); each run draws its own graph. Only α
+  and β vary. Held fixed: 12 identical agents, a budget of 1250 split equally every round (ρ = 0),
+  no mint, no validation."
+seeds: 30
+set:
+  world:
+    kind: ideas
+    levels: 14
+    width: 12
+    parents: 3
+    skip: 0.2
+    length: 4
+    lengthGrowth: 3
+    composition: 0.8
+    targets: 2
+    targetsFrom: 7
+  budget:
+    X: 1250
+    allocation:
+      rho: 0
+  measures:
+    targetLevel: 14
+  rules:
+    c: 0
+    mint: 0
+    screen: 0
+  agents:
+    mix:
+      foundation: 0
+      racer: 0
+      explorer: 0
+      specialist: 0
+      freeRider: 0
+      gamer: 0
+      plain: 12
+factors:
+  - name: society
+    levels:
+      - label: Traditional (α = 1, β = 0)
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: chance
+            beta: 0
+      - label: OSO (α = 0.8, β = 1)
+        set:
+          rules.alpha: 0.8
+          rules.visibility:
+            kind: chance
+            beta: 1
+      - label: α = 0.8, β = 0.5
+        set:
+          rules.alpha: 0.8
+          rules.visibility:
+            kind: chance
+            beta: 0.5
+      - label: α = 1, β = 1
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: chance
+            beta: 1
+  - name: budget
+    path: budget.X
+    values:
+      - 1250
+      - 2500
+      - 5000
+      - 10000
+      - 20000
+      - 40000
+      - 80000
+      - 160000
+columns:
+  - frontier
+  - targetsSolved
+  - value
+  - roi
+  - cost
+  - waste
+  - sharing
+  - reachTarget
+question: On a very hard idea graph, how does what each society achieves grow with its budget (1250
+  to 160000)?
+compare: four societies × budgets 1250, 2500, 5000, 10000, 20000, 40000, 80000, 160000
+fixed: a generated idea graph (14 levels × 12 ideas, 3 parents each, sequences of 4 bits growing by
+  3 per level, composition 0.8), 12 identical agents, budget 1250 split equally, no mint, no
+  validation
+tags:
+  - simulation
+  - simple model
+  - generated idea graph
+  - ideas
+  - levels 14
+  - parents 3
+  - length 4
+  - composition 0.8
+  - alpha
+  - beta
+  - scaling ladder 2026-10-24
+  - difficulty very hard

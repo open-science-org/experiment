@@ -382,3 +382,13 @@ test('the generator can put bounties on deeper levels too, larger the deeper', a
   assert.ok(deep.bounty[deep.targets.find((t) => deep.level[t] === 3)!] < deep.bounty[deep.targets.find((t) => deep.level[t] === 6)!]);
   assert.deepEqual(top.bits, deep.bits, 'the graph itself is the same');
 });
+
+test('scaling across difficulty: budget to reach a share, and the log-log slope', async () => {
+  const { budgetFor, slopeOf } = await import('../src/report/ladder.ts');
+  const pts = [{ budget: 100, share: 0.1 }, { budget: 200, share: 0.3 }, { budget: 400, share: 0.7 }, { budget: 800, share: 1 }];
+  const b = budgetFor(pts, 0.5)!;
+  assert.ok(b > 200 && b < 400, `between the budgets that bracket it (${b})`);
+  assert.equal(budgetFor(pts.slice(0, 2), 0.5), null, 'never reached');
+  // value = budget²: a slope of 2 on log-log axes.
+  assert.ok(Math.abs(slopeOf([100, 200, 400, 800, 1600].map((x) => ({ budget: x, value: x * x / 1000 })).concat([{ budget: 3200, value: 1e9 }]))! - 2) < 1e-9);
+});

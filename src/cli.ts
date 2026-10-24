@@ -64,6 +64,14 @@ if (target === 'check') {
   process.exit(0);
 }
 
+if (target === 'ladder') {
+  // Scaling across difficulty, from budget sweeps sharing a tag: npm run sim -- ladder "<tag>".
+  if (!second) throw new Error('usage: npm run sim -- ladder "<tag of the sweeps>"');
+  const { writeLadder } = await import('./report/ladder.ts');
+  console.log(`${writeLadder(second, ['easy', 'default', 'medium', 'hard', 'very hard'])}/summary.md`);
+  process.exit(0);
+}
+
 if (target === 'report') {
   if (!second) throw new Error('usage: npm run sim -- report <space | all> [--seeds N]');
   const ids = second === 'all' ? spaceIds() : [second];

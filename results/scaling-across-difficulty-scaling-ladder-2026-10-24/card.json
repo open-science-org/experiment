@@ -1,0 +1,71 @@
+{
+ "id": "scaling-across-difficulty-scaling-ladder-2026-10-24",
+ "kind": "simulation",
+ "date": "2026-10-24",
+ "ranAt": "2026-10-24T19:29:27.982Z",
+ "title": "Scaling across difficulty",
+ "design": {
+  "question": "As problems get harder, how much more money does each society need, and does the gap between traditional and OSO grow?",
+  "compare": "4 societies on 5 difficulties (easy, default, medium, hard, very hard)",
+  "fixed": "the simple model: 12 identical agents, equal money each round, no mint, no validation",
+  "measure": "money needed to solve half the targets",
+  "better": "lower",
+  "runs": "from the sweeps tagged \"scaling ladder 2026-10-24\""
+ },
+ "answer": "To solve half the targets, traditional needs 3.1× to 6.2× the money OSO needs. By difficulty: easy 3.1×, default 6.2×, medium 4.9×, hard 4.3×, very hard 4.4×.",
+ "table": [
+  {
+   "difficulty": "easy",
+   "Traditional (α = 1, β = 0)": "92",
+   "OSO (α = 0.8, β = 1)": "30",
+   "α = 0.8, β = 0.5": "37",
+   "α = 1, β = 1": "29",
+   "traditional ÷ OSO": "3.1×"
+  },
+  {
+   "difficulty": "default",
+   "Traditional (α = 1, β = 0)": "1,937",
+   "OSO (α = 0.8, β = 1)": "314",
+   "α = 0.8, β = 0.5": "495",
+   "α = 1, β = 1": "340",
+   "traditional ÷ OSO": "6.2×"
+  },
+  {
+   "difficulty": "medium",
+   "Traditional (α = 1, β = 0)": "2,988",
+   "OSO (α = 0.8, β = 1)": "613",
+   "α = 0.8, β = 0.5": "962",
+   "α = 1, β = 1": "566",
+   "traditional ÷ OSO": "4.9×"
+  },
+  {
+   "difficulty": "hard",
+   "Traditional (α = 1, β = 0)": "31,095",
+   "OSO (α = 0.8, β = 1)": "7,161",
+   "α = 0.8, β = 0.5": "9,603",
+   "α = 1, β = 1": "7,300",
+   "traditional ÷ OSO": "4.3×"
+  },
+  {
+   "difficulty": "very hard",
+   "Traditional (α = 1, β = 0)": "70,321",
+   "OSO (α = 0.8, β = 1)": "16,133",
+   "α = 0.8, β = 0.5": "23,443",
+   "α = 1, β = 1": "15,642",
+   "traditional ÷ OSO": "4.4×"
+  }
+ ],
+ "caveats": [
+  "Read off between the two budgets that bracket half the targets, in log budget.",
+  "Each difficulty has its own budget range; \"> x\" means not reached within it."
+ ],
+ "page": "results/scaling-across-difficulty-scaling-ladder-2026-10-24/summary.md",
+ "chart": "results/scaling-across-difficulty-scaling-ladder-2026-10-24/figures/compare.svg",
+ "tags": [
+  "scaling",
+  "scaling law",
+  "difficulty",
+  "scaling ladder 2026-10-24",
+  "analysis"
+ ]
+}
