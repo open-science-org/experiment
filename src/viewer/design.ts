@@ -687,7 +687,8 @@ export function runSimpleJob(d: SimpleDesign, overwrite = false): Job {
 
 const slug = (s: string) => s.toLowerCase().replace(/([a-z])([A-Z])/g, '$1-$2').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const num = (x: number) => String(x).replace('.', '-');
-const today = () => new Date().toISOString().slice(0, 10).replace(/-/g, '');
+// The local date, so a name matches the day the run was made where it was made.
+const today = () => { const d = new Date(), z = (n: number) => String(n).padStart(2, '0'); return `${d.getFullYear()}${z(d.getMonth() + 1)}${z(d.getDate())}`; };
 
 function unique(base: string, taken: (id: string) => boolean): string {
   const b = base.length > 90 ? base.slice(0, 90).replace(/-[^-]*$/, '') : base;
