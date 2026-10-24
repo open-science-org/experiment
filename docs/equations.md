@@ -187,7 +187,7 @@ $$\phi_{y \to x} = \sum_{b \,\in\, \text{bits}(x) \cap \text{bits}(y)} \frac{1}{
 
 *Example:* $y$ = HHT and $x$ = HHTHHH ($x$ took all 3 of $y$'s bits and added 3). From scratch, $W_x = 2^6 = 64$ attempts; knowing $y$, $W_x = 2^3 = 8$. If $x$ instead has two parents HHTH and THHH that overlap in TH, each resolves 4 of $x$'s 6 bits; the 2 shared bits are split, so each contributes $2 + 1 = 3$: weights 50% each.
 
-**Presets.** Three topics are named settings of the generator, each with its story (description and glossary) on the Topics page:
+**Presets.** Three topics are named settings of the generator, each with its story (description and glossary) and a full report on the Results page:
 
 | Preset | Levels × width | Parents | Length, growth | Composition | Why |
 | --- | --- | --- | --- | --- | --- |

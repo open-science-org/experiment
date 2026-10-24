@@ -213,7 +213,6 @@
   <a href="#/">Results</a>
   <a href="#/new">New</a>
   <a href="#/live">Live</a>
-  <a href="#/topics">Topics</a>
   <a href="#/how">How it works</a>
   <a href="#/equations" class="sub">Equations</a>
 </nav>
@@ -274,7 +273,7 @@
         <label><input type="radio" name="who" value="ai"> AI models <span class="info" title="Real AI models try to prove real theorems. Lean checks each proof. Costs money: a few runs.">ⓘ</span></label>
       </div>
       <div class="row">
-        <label id="n-field-sim">Topic <select id="e-space"></select></label>
+        <label id="n-field-sim">Idea graph <select id="e-space"></select> <span class="info" title="A preset of the generator, or the Lean problem set. Each has a full report on Results.">ⓘ</span></label>
         <span id="n-field-ai" class="hidden">Topic: <b>Lean problems</b> <span class="info" title="8 theorems to prove, each with a reward. Lean checks every proof.">ⓘ</span></span>
         <label id="n-measure-sim">Measure <select id="e-measure"></select></label>
         <span id="n-measure-ai" class="hidden">Measure: <b>targets solved</b></span>
@@ -341,9 +340,9 @@
     </div>
     <div id="tab-sim" class="hidden">
       <div class="bar">
-        <label>Show <select id="sim-source"><option value="result">a saved result</option><option value="topic">a topic</option></select></label>
+        <label>Show <select id="sim-source"><option value="result">a saved result</option><option value="topic">a preset, full model</option></select></label>
         <label id="sim-exp-ctl">Result <select id="sim-exp" style="max-width:420px"></select></label>
-        <label id="sim-space-ctl">Topic <select id="sim-space"></select></label>
+        <label id="sim-space-ctl">Preset <select id="sim-space"></select></label>
         <label>Run <input id="sim-seed" type="number" min="1" value="1" style="width:70px"> <span class="info" title="Which run (seed): the same graph and the same dice on both sides.">ⓘ</span></label>
       </div>
       <div class="bar">
@@ -439,7 +438,8 @@ async function route() {
   if (path.startsWith('/doc/')) { show('view-doc'); return openDoc(path.slice(5)); }
   if (path === '/new') { show('view-new'); return enterNew(); }
   if (path === '/live') { show('view-live'); return showTab(params().get('tab') ?? 'sim'); }
-  if (path === '/topics' || path === '/fields') { show('view-fields'); return enterFields(); }
+  // Topics are now presets of the generator: their reports are on Results.
+  if (path === '/topics' || path === '/fields') { location.hash = '#/'; return; }
   if (path === '/how') { show('view-doc'); return openDoc('docs/README.md'); }
   if (path === '/equations') { show('view-doc'); return openDoc(params().get('m') === 'full' ? 'docs/equations.md' : 'docs/equations-simple.md'); }
   show('view-overview'); drawResults();
@@ -480,7 +480,7 @@ async function drawResults() {
   // At a glance: three comparisons. Every topic (OSO orange, traditional blue), the latest AI test, the AI models alone and with help.
   const topics = ov.fields.sort((a, b) => a.title.localeCompare(b.title));
   const tW = 560, rowH = 40, tl = 170, tpw = tW - tl - 60;
-  let tsvg = `<svg viewBox="0 0 ${tW} ${44 + topics.length * rowH}" role="img" aria-label="Hardest level reached, by topic" style="width:100%;height:auto"><text x="12" y="20" font-size="14" font-weight="700" fill="var(--ink)">Hardest level reached, by topic</text>
+  let tsvg = `<svg viewBox="0 0 ${tW} ${44 + topics.length * rowH}" role="img" aria-label="Hardest level reached, by preset" style="width:100%;height:auto"><text x="12" y="20" font-size="14" font-weight="700" fill="var(--ink)">Hardest level reached, by preset</text>
     <rect x="12" y="28" width="12" height="10" rx="2" fill="var(--s2)"/><text x="29" y="37" font-size="12" font-weight="700" fill="var(--s2)">OSO</text><rect x="70" y="28" width="12" height="10" rx="2" fill="var(--s1)"/><text x="87" y="37" font-size="12" font-weight="700" fill="var(--s1)">Traditional</text>`;
   topics.forEach((h, i) => {
     const y = 48 + i * rowH, bw = (v) => Math.max(2, (v / h.maxLevel) * tpw);
@@ -491,7 +491,7 @@ async function drawResults() {
   tsvg += '</svg>';
   const race = cards.find((c) => c.kind === 'race' && c.chart && !c.invalid), models = cards.find((c) => c.kind === 'model pilot' && c.chart);
   const glance = [
-    `<div class="res">${tsvg}<div class="meta">Simulations. <a href="#/topics">All topics →</a></div></div>`,
+    `<div class="res">${tsvg}<div class="meta">Simulations: one full report per preset, below.</div></div>`,
     race ? `<a class="res" href="#/doc/${esc(race.page)}"><img src="/files/${esc(race.chart)}" alt="${esc(race.title)}" style="width:100%"><div class="meta">${esc(race.title)}</div></a>` : '',
     models ? `<a class="res" href="#/doc/${esc(models.page)}"><img src="/files/${esc(models.chart)}" alt="${esc(models.title)}" style="width:100%"><div class="meta">${esc(models.title)}</div></a>` : '',
   ].join('');
@@ -499,7 +499,7 @@ async function drawResults() {
   const mine = (c) => c.kind === 'simulation' && /^(exp-|my-experiment$)/.test(c.id);
   const groups = [
     { title: 'AI models', note: 'Real models proving theorems; Lean checks every proof.', cards: cards.filter((c) => (c.kind === 'race' || c.kind === 'model pilot') && !c.invalid) },
-    { title: 'Topics', note: 'One full report per research topic (simulation).', cards: cards.filter((c) => c.kind === 'field report' && !c.superseded) },
+    { title: 'Presets', note: 'One full report per preset of the idea graph (full model).', cards: cards.filter((c) => c.kind === 'field report' && !c.superseded) },
     { title: 'Questions answered by simulation', note: 'Each one changes one thing and compares.', cards: cards.filter((c) => c.kind === 'simulation' && !mine(c)) },
     { title: 'Your quick tests', note: 'Made on the New page.', cards: cards.filter(mine), fold: true },
     { title: 'Not valid', note: 'Kept for the record; do not use.', cards: cards.filter((c) => c.invalid), fold: true },
