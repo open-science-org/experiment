@@ -108,12 +108,21 @@ export function expand(spec: ExperimentSpec): Row[] {
   return rows;
 }
 
-/** A run record without the full curve: the frontier is kept at 11 evenly spaced points of spend. */
-function record(r: RunResult, extra: Record<string, unknown>) {
+/** How progress is kept per run: 21 evenly spaced points of the budget (0, 5%, …, 100%). */
+export const PROGRESS_POINTS = 21;
+export const PROGRESS = ['level', 'value', 'published', 'targets'] as const;
+
+/**
+ * A run record without the full curve. Progress (hardest level, bounty value, ideas published, targets
+ * solved) is kept at 21 points of the budget, the same for every run, so runs can be averaged point by
+ * point; a run that stopped early keeps its final values.
+ */
+function record(r: RunResult, extra: Record<string, unknown>, budget: number) {
   const { curve, ...rest } = r;
-  const X = curve.length ? curve[curve.length - 1].spend : 0;
-  const at = (x: number) => curve.filter((c) => c.spend <= x).at(-1)?.level ?? 0;
-  return { ...extra, ...rest, frontierAtSpend: Array.from({ length: 11 }, (_, k) => at((X * k) / 10)) };
+  const at = (x: number) => curve.filter((c) => c.spend <= x + 1e-9).at(-1);
+  const points = Array.from({ length: PROGRESS_POINTS }, (_, k) => at((budget * k) / (PROGRESS_POINTS - 1)));
+  const progress = Object.fromEntries(PROGRESS.map((v) => [v, points.map((c) => c?.[v] ?? 0)]));
+  return { ...extra, ...rest, progress, frontierAtSpend: Array.from({ length: 11 }, (_, k) => at((budget * k) / 10)?.level ?? 0) };
 }
 
 type Analysis = (spec: ExperimentSpec, rows: Row[], results: RunResult[][]) => Output['table'];
@@ -147,16 +156,26 @@ export const analyses: Record<string, Analysis> = {
   },
 };
 
+/** The outcome measures every result is judged on when no single main measure is declared. */
+export const OUTCOMES: { id: string; name: string; better: 'higher' | 'lower' }[] = [
+  { id: 'frontier', name: 'hardest level', better: 'higher' },
+  { id: 'targetsSolved', name: 'targets solved', better: 'higher' },
+  { id: 'value', name: 'bounty value', better: 'higher' },
+  { id: 'roi', name: 'ROI', better: 'higher' },
+  { id: 'cost', name: 'money to the main level', better: 'lower' },
+  { id: 'waste', name: 'waste', better: 'lower' },
+];
+
 /** The columns, with ROI added when missing. */
 export const withRoi = (cols: string[]) => (cols.includes('roi') ? cols : [...cols, 'roi']);
 
 export const DEFAULT_COLUMNS = ['frontier', 'reachTarget', 'speed', 'cost', 'roi', 'spend', 'productivity', 'breadth', 'waste', 'credit', 'sharing', 'hoarded'];
 
-export function runExperiment(spec: ExperimentSpec, seeds = spec.seeds): Output {
+export function runExperiment(spec: ExperimentSpec, seeds = spec.seeds, onRow?: (done: number, of: number) => void): Output {
   const rows = expand(spec);
   const first = spec.firstSeed ?? 1;
-  const results = rows.map((row) => Array.from({ length: seeds }, (_, k) => run(row.scenario, first + k)));
-  const runs = rows.flatMap((row, i) => results[i].map((r, k) => record(r, { ...row.labels, seed: first + k })));
+  const results = rows.map((row, i) => { const rs = Array.from({ length: seeds }, (_, k) => run(row.scenario, first + k)); onRow?.(i + 1, rows.length); return rs; });
+  const runs = rows.flatMap((row, i) => results[i].map((r, k) => record(r, { ...row.labels, seed: first + k }, row.scenario.budget.X)));
   let table: Output['table'];
   if (spec.analysis) {
     const a = analyses[spec.analysis];

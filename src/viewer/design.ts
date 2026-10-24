@@ -283,11 +283,10 @@ export function experimentFor(d: Design): ExperimentSpec {
       { name: 'setting', levels },
       ...variedOther.map((v) => ({ name: param(v.path).label, path: v.path, values: v.values })),
     ],
-    columns: d.columns.length ? d.columns : options().defaultColumns,
+    columns: ['frontier', 'targetsSolved', 'value', 'roi', 'cost', 'waste', 'sharing', 'reachTarget'],
     question: d.question || d.title || `${d.settings.map((s) => SETTINGS[s]).join(' vs ')} on ${space.spec.title}: which gets furthest?`,
     compare: `${d.settings.map((s) => SETTINGS[s]).join(', ')}${varied.length ? `, by ${varied.map((v) => param(v.path).label).join(' and ')}` : ''}`,
     fixed: `the field "${space.spec.title}"${changed.length ? `, with ${changed.join(', ')}` : ''}`,
-    measure: d.measure && COLUMNS[d.measure] ? d.measure : (d.columns[0] ?? 'frontier'),
     tags: ['simulation', 'full model', d.space, space.spec.title, ...d.settings.map((s) => SETTINGS[s]), ...varied.map((v) => param(v.path).label), ...(d.agents ? ['own agents'] : [])],
   };
 }
@@ -615,7 +614,6 @@ export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
   // Every agent kind the topic has is set to 0, then 12 plain agents: the mix is replaced whole.
   const mix = Object.fromEntries([...Object.keys(space.scenario.agents.mix), 'plain'].map((k) => [k, k === 'plain' ? SIMPLE_AGENTS : 0]));
   const levels = societies(d);
-  const measure = d.measure && COLUMNS[d.measure] ? d.measure : 'frontier';
   return {
     id: d.id,
     title: d.title || d.question || `Simple model on ${space.spec.title}: α × β`,
@@ -624,11 +622,10 @@ export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
     ...(space.spec.scenarioFile ? { scenario: space.spec.scenarioFile } : {}),
     set: merge(merge(expandPaths(space.spec.scenario ?? {}), expandPaths(SIMPLE_FIXED)), { agents: { mix } }) as Record<string, unknown>,
     factors: [{ name: 'society', levels }],
-    columns: [...new Set([measure, 'frontier', 'value', 'roi', 'sharing', 'targetsSolved', 'cost'])],
+    columns: ['frontier', 'targetsSolved', 'value', 'roi', 'cost', 'waste', 'sharing', 'reachTarget'],
     question: d.question || `On ${space.spec.title}, how far does a society get for the same money, by α and β?`,
     compare: `α in {${d.alphas.join(', ')}} × β in {${d.betas.join(', ')}}`,
     fixed: `the field "${space.spec.title}", ${SIMPLE_AGENTS} identical agents, equal money each round, no mint, no validation`,
-    measure,
     tags: simpleTags(d, space.spec.title),
   };
 }
@@ -644,7 +641,6 @@ function simpleOnGraph(d: SimpleDesign, g: GraphControls): ExperimentSpec {
   const budget = d.budget ?? 1200;
   if (!(budget >= 10 && budget <= 100000)) throw new Error('the budget must be between 10 and 100,000');
   const mix = Object.fromEntries([...Object.keys(loadScenario(null).agents.mix), 'plain'].map((k) => [k, k === 'plain' ? SIMPLE_AGENTS : 0]));
-  const measure = d.measure && COLUMNS[d.measure] ? d.measure : 'frontier';
   return {
     id: d.id,
     title: d.title || d.question || `Simple model on a generated idea graph: α × β`,
@@ -652,11 +648,10 @@ function simpleOnGraph(d: SimpleDesign, g: GraphControls): ExperimentSpec {
     seeds: d.seeds,
     set: merge(expandPaths({ world: { kind: 'ideas', ...g }, 'budget.X': budget, 'measures.targetLevel': g.levels, ...SIMPLE_FIXED }), { agents: { mix } }) as Record<string, unknown>,
     factors: [{ name: 'society', levels: societies(d) }],
-    columns: [...new Set([measure, 'frontier', 'value', 'roi', 'sharing', 'targetsSolved', 'cost'])],
+    columns: ['frontier', 'targetsSolved', 'value', 'roi', 'cost', 'waste', 'sharing', 'reachTarget'],
     question: d.question || `On a generated idea graph${presetTitle(d.preset) ? ` (from the ${presetTitle(d.preset)} preset)` : ''}, how far does a society get for the same money, by α and β?`,
     compare: `α in {${d.alphas.join(', ')}} × β in {${d.betas.join(', ')}}`,
     fixed: `a generated idea graph (${graphText(g)}), ${SIMPLE_AGENTS} identical agents, budget ${budget} split equally, no mint, no validation`,
-    measure,
     tags: ['simulation', 'simple model', 'generated idea graph', 'ideas', `levels ${g.levels}`, `parents ${g.parents}`, `length ${g.length}`, `composition ${g.composition}`, 'alpha', 'beta'],
   };
 }

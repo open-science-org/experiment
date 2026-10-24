@@ -12,13 +12,13 @@
 //   npm run sim -- new "<description>" [--report]   write a space with Claude, check it, calibrate its budget
 //   npm run sim -- check <space>                    validate a space file and test-run it
 //   npm run sim -- report <space | all> [--seeds N] run the canonical experiments and write the report
-import { compareRows, writeCard, type Card } from './card.ts';
+import { compareAll, compareRows, writeCard, type Card } from './card.ts';
 import { barChart } from './report/figures.ts';
 import { CODE_PATHS, EXPERIMENTS_DIR, RESULTS_DIR, ROOT, SPACES_DIR } from './paths.ts';
 import { execSync } from 'node:child_process';
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { DEFAULT_COLUMNS, withRoi, loadExperiment, runExperiment, analyses, type ExperimentSpec, type Output } from './experiments/experiment.ts';
+import { DEFAULT_COLUMNS, OUTCOMES, withRoi, loadExperiment, runExperiment, analyses, type ExperimentSpec, type Output } from './experiments/experiment.ts';
 import { deciders } from './engine/deciders.ts';
 import { COLUMNS, MEASURE_NAMES, VALUES } from './engine/measures.ts';
 import { oracles } from './engine/oracles.ts';
@@ -136,7 +136,8 @@ function runOne(spec: ExperimentSpec) {
   const n = seeds ?? spec.seeds;
   const withSets = Object.keys(sets).length ? { ...spec, set: { ...(spec.set ?? {}), ...sets } } : spec;
   const started = Date.now();
-  const out = runExperiment(withSets, n);
+  // Progress lines, one per finished row, for the app to follow while the run goes on.
+  const out = runExperiment(withSets, n, save ? (done, of) => console.log(`progress ${done}/${of}`) : undefined);
   console.log(`\n${spec.title} (${n} seeds, ${((Date.now() - started) / 1000).toFixed(1)}s)\n${spec.description}\n`);
   if (Object.keys(sets).length) console.log(`Overrides: ${JSON.stringify(sets)}\n`);
   console.table(out.table);
@@ -174,11 +175,14 @@ function simulationCard(spec: ExperimentSpec, out: Output, n: number, date: stri
   const label = (row: Output['rows'][number]) => Object.entries(row.labels).map(([k, v]) => (typeof v === 'number' ? `${k.split(',')[0]} ${v}` : String(v).replace(/^OSO \(immediate\)$/, 'OSO'))).join(', ') || 'all';
   const header = (id: string) => COLUMNS[id]?.header(out.rows[0].scenario) ?? id;
   const better = spec.better ?? (measure && ['cost', 'speed', 'waste', 'duplicates', 'spend', 'gamerShare', 'trivialSpend', 'rejected', 'retracted', 'absorbSpend', 'hoarded'].includes(measure) ? 'lower' : 'higher');
-  const answer = measure && VALUES[measure]
+  // No main measure declared: the answer covers every outcome measure (OUTCOMES), with the bar raised.
+  const all = !spec.measure && !spec.analysis;
+  const multi = all ? compareAll(out.rows.map((row, i) => ({ label: label(row), values: Object.fromEntries(OUTCOMES.map((m) => [m.id, out.results[i].map(VALUES[m.id]!).filter((v): v is number => v !== null)])) })), OUTCOMES) : null;
+  const answer = multi ? multi.answer : measure && VALUES[measure]
     ? compareRows(out.rows.map((row, i) => ({ label: label(row), values: out.results[i].map(VALUES[measure]!).filter((v): v is number => v !== null) })), better, MEASURE_NAMES[measure] ?? header(measure))
     : 'See the table: this experiment checks the model against exact values.';
   // The card's table: the measure, two more columns, and always the return on the money.
-  const support = [...withRoi(spec.columns ?? DEFAULT_COLUMNS).filter((c) => c !== measure && c !== 'roi').slice(0, 2), ...(measure === 'roi' ? [] : ['roi'])];
+  const support = all ? OUTCOMES.map((m) => m.id).filter((c) => c !== measure) : [...withRoi(spec.columns ?? DEFAULT_COLUMNS).filter((c) => c !== measure && c !== 'roi').slice(0, 2), ...(measure === 'roi' ? [] : ['roi'])];
   const keyCols = spec.analysis ? Object.keys(out.table[0] ?? {}) : [...Object.keys(out.rows[0]?.labels ?? {}), ...(measure ? [header(measure)] : []), ...support.map(header)];
   const short = out.table.map((r) => Object.fromEntries(keyCols.map((c) => [c, r[c] ?? ''])));
   // One comparison chart: the main measure for each row, OSO orange, traditional blue, others grey.
@@ -207,11 +211,11 @@ function simulationCard(spec: ExperimentSpec, out: Output, n: number, date: stri
       question: spec.question ?? spec.title,
       compare: spec.compare ?? ((spec.factors ?? []).map((f) => f.name).join(' × ') || 'one setting'),
       fixed: spec.fixed ?? 'the field, agents and budget',
-      measure: measure ? MEASURE_NAMES[measure] ?? header(measure) : 'agreement with the exact values',
+      measure: all ? `all of ${OUTCOMES.map((m) => m.name).join(', ')}` : measure ? MEASURE_NAMES[measure] ?? header(measure) : 'agreement with the exact values',
       better,
       runs: `${n} runs per row`,
     },
-    answer, table: short, caveats: spec.caveats ?? ['A simulation with guessed parameters: it shows how the rules play out, not that they work.'],
+    answer, ...(multi ? { answers: multi.lines } : {}), table: short, caveats: spec.caveats ?? ['A simulation with guessed parameters: it shows how the rules play out, not that they work.'],
     page: `results/${spec.id}/summary.md`,
     ...(spec.tags?.length ? { tags: spec.tags } : {}),
   };

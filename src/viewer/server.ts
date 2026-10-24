@@ -9,7 +9,8 @@ import katex from 'katex';
 import { ROOT, REPORTS_DIR, RESULTS_DIR } from '../paths.ts';
 import { loadScenario, expandPaths } from '../engine/config.ts';
 import { traceRun } from '../engine/model.ts';
-import { expand, loadExperiment, preset } from '../experiments/experiment.ts';
+import { expand, loadExperiment, OUTCOMES, PROGRESS, PROGRESS_POINTS, preset } from '../experiments/experiment.ts';
+import { MEASURE_NAMES, VALUES } from '../engine/measures.ts';
 import { loadSpace, spaceIds, withCalibratedBudget, type Space } from '../spaces/spaces.ts';
 import { LEAN_DIR, leanAvailable, loadTasks } from '../lean/tasks.ts';
 import * as design from './design.ts';
@@ -95,6 +96,40 @@ function replayOf(sc: ReturnType<typeof loadScenario>, seed: number, label: stri
     agents: t.agents.map((a) => ({ id: a.id, archetype: a.archetype })),
     events: t.events,
     result: { frontier: t.result.frontier, targetsSolved: t.result.targetsSolved, spend: t.result.spend, sharing: t.result.sharingRate },
+  };
+}
+
+/**
+ * A saved result's numbers for the interactive charts: each row's mean and spread on every measure, and,
+ * for runs that record it, how hardest level, bounty value, ideas published and targets solved grew with
+ * money spent (mean over runs at 21 points of the budget).
+ */
+function resultData(id: string) {
+  if (!/^[\w.-]+$/.test(id) || !existsSync(join(ROOT, 'config', 'experiments', `${id}.yaml`)) || !existsSync(join(RESULTS_DIR, id, 'runs.jsonl'))) return { ok: false };
+  const spec = loadExperiment(id);
+  const rows = expand(spec);
+  const keys = Object.keys(rows[0]?.labels ?? {});
+  const label = (labels: Record<string, unknown>) => keys.map((k) => (typeof labels[k] === 'number' ? `${k.split(',')[0]} ${labels[k]}` : String(labels[k]).replace(/^OSO \(immediate\)$/, 'OSO'))).join(', ') || 'all';
+  const runs = jsonl(join(RESULTS_DIR, id, 'runs.jsonl'));
+  const groups = rows.map((r) => runs.filter((x) => keys.every((k) => x[k] === r.labels[k])));
+  const measures = [...OUTCOMES.map((m) => m.id), 'sharing', 'reachTarget', 'speed', 'duplicates', 'credit'].filter((m) => VALUES[m]);
+  const better = Object.fromEntries(OUTCOMES.map((m) => [m.id, m.better]));
+  const stat = (xs: number[]) => { const n = xs.length, m = xs.reduce((a, b) => a + b, 0) / Math.max(1, n); return { mean: m, sd: Math.sqrt(xs.reduce((a, b) => a + (b - m) ** 2, 0) / Math.max(1, n - 1)), n }; };
+  return {
+    ok: true, title: spec.title,
+    measures: measures.map((m) => ({ id: m, name: MEASURE_NAMES[m] ?? m, better: better[m] ?? (['speed', 'duplicates', 'cost', 'waste'].includes(m) ? 'lower' : 'higher') })),
+    progress: PROGRESS.map((v) => ({ id: v, name: { level: 'hardest level published', value: 'bounty value found', published: 'ideas published', targets: 'targets solved' }[v] })),
+    rows: rows.map((r, i) => {
+      const g = groups[i];
+      // RunResult fields are named differently from column ids; VALUES maps a stored run to each measure.
+      const vals = (m: string) => g.map((x) => VALUES[m]!(x as never)).filter((v): v is number => v !== null && Number.isFinite(v));
+      const hasProgress = g.length && g.every((x) => x.progress);
+      return {
+        label: label(r.labels), budget: r.scenario.budget.X,
+        stats: Object.fromEntries(measures.map((m) => [m, stat(vals(m))])),
+        progress: hasProgress ? Object.fromEntries(PROGRESS.map((v) => [v, Array.from({ length: PROGRESS_POINTS }, (_, k) => g.reduce((a, x) => a + x.progress[v][k], 0) / g.length)])) : null,
+      };
+    }),
   };
 }
 
@@ -300,6 +335,7 @@ const server = createServer(async (req, res) => {
       if (!full || statSync(full).isDirectory()) return send(404, { error: 'not found' });
       return send(200, (extname(full) === '.png' ? readFileSync(full) : readFileSync(full, 'utf8')), TYPES[extname(full)] ?? 'text/plain; charset=utf-8');
     }
+    if (url.pathname === '/api/result-data') return send(200, resultData(url.searchParams.get('id') ?? ''));
     if (url.pathname === '/api/history') return send(200, history());
     if (url.pathname === '/api/presets') return send(200, design.graphPresets());
     if (url.pathname === '/api/spaces') return send(200, spaceIds().map((id) => ({ id, title: loadSpace(id).spec.title })));

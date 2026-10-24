@@ -4,7 +4,7 @@ import type { State } from './model.ts';
 
 export interface RunResult {
   /** Hardest level published after each round, with cumulative spend. */
-  curve: { round: number; spend: number; level: number }[];
+  curve: { round: number; spend: number; level: number; value: number; published: number; targets: number }[];
   spend: number;
   frontier: number;
   /** Deepest level proved by anyone, published or not. */
@@ -133,7 +133,7 @@ const reached = (rs: RunResult[]) => rs.filter((r) => r.speed !== null);
 /** Plain names of measures, for answers. */
 export const MEASURE_NAMES: Record<string, string> = {
   frontier: 'hardest level published', targetsSolved: 'targets solved', cost: 'money to reach the main level', speed: 'rounds to reach the main level',
-  value: 'value gained (bounties of targets solved)', roi: 'value gained per unit spent',
+  value: 'bounty value', roi: 'ROI', duplicates: 'duplicated proofs',
   sharing: 'share of ideas published at once', reachTarget: 'share of runs reaching the main level', waste: 'wasted money', credit: 'credit accuracy',
 };
 

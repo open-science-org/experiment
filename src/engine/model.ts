@@ -349,9 +349,15 @@ export function run(sc: Scenario, seed: number, record?: { events: TraceEvent[];
       s.earnings[i] += s.roundEarnings[i];
       s.roundEarnings[i] = 0;
     }
-    let level = 0;
-    for (let r = 0; r < world.n; r++) if (s.author[r] >= 0 && world.level[r] > level) level = world.level[r];
-    curve.push({ round: t, spend: s.spend, level });
+    // Progress after this round: hardest level, bounty value found, ideas published, targets solved.
+    let level = 0, value = 0, published = 0, targets = 0;
+    for (let r = 0; r < world.n; r++) {
+      if (s.author[r] < 0) continue;
+      published++;
+      if (world.level[r] > level) level = world.level[r];
+      if (world.isTarget[r]) { targets++; value += world.bounty[r]; }
+    }
+    curve.push({ round: t, spend: s.spend, level, value, published, targets });
     s.trace?.push({ r: t, k: 'round', spend: s.spend, level, earnings: Array.from(s.earnings), compute });
     if (speed === null && level >= sc.measures.targetLevel) {
       speed = t;

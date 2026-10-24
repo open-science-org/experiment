@@ -150,6 +150,9 @@
   .kind .khead { display: flex; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 6px; }
   .kind .khead b { font-size: 14px; }
   .examples .btn { font-size: 12px; padding: 3px 9px; }
+  .explore { display: grid; gap: 12px; margin: 12px 0; }
+  .explore .pane { padding: 12px; }
+  .explore .choice { margin: 6px 0; font-size: 12px; }
   table.history { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
   table.history th { text-align: left; font-weight: 600; color: var(--ink-2); padding: 8px 10px; border-bottom: 1px solid var(--line); }
   table.history td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
@@ -272,10 +275,11 @@
         </div>
         <div class="gen-preview"><div id="g-stats" class="muted"></div><div id="g-svg"></div></div>
       </div>
-      <div class="row"><label>Measure <select id="s-measure"></select></label><label>Runs per society <input id="s-seeds" type="number" min="1" max="1000" value="50" style="width:70px"></label></div>
+      <div class="row"><span class="muted" title="The bar for a clear difference is raised for the number of measures, so judging on all of them does not make a false difference more likely.">Judged on every measure: hardest level, targets solved, bounty value, ROI, money to the main level and waste.</span><label>Runs per society <input id="s-seeds" type="number" min="1" max="1000" value="50" style="width:70px"></label></div>
       <div class="row"><label>α values <input id="s-alphas" value="1, 0.8, 0.5, 0.2" style="width:200px"></label><span class="muted">1 = nothing flows back; lower = more flows back to the ideas it built on</span></div>
       <div class="row"><label>β values <input id="s-betas" value="0, 0.25, 0.5, 0.75, 1" style="width:200px"></label><span class="muted">0 = publish only with the target; 1 = publish every idea at once</span></div>
       <div class="row"><button class="btn primary" id="s-run">Run</button><span id="s-summary" class="muted"></span></div>
+      <div id="s-live" class="pane hidden"></div>
       <div id="s-job" class="joblog hidden" aria-live="polite"></div>
       <article id="s-result" class="doc hidden"></article>
     </div>
@@ -290,13 +294,14 @@
       <div class="row">
         <label id="n-field-sim">Idea graph <select id="e-space"></select> <span class="info" title="A preset of the generator, or the Lean problem set. Each has a full report on Results.">ⓘ</span></label>
         <span id="n-field-ai" class="hidden">Topic: <b>Lean problems</b> <span class="info" title="8 theorems to prove, each with a reward. Lean checks every proof.">ⓘ</span></span>
-        <label id="n-measure-sim">Measure <select id="e-measure"></select></label>
+        <span id="n-measure-sim" class="muted" title="The bar for a clear difference is raised for the number of measures.">Judged on every measure: hardest level, targets solved, bounty value, ROI, money to the main level and waste.</span>
         <span id="n-measure-ai" class="hidden">Measure: <b>targets solved</b></span>
         <label id="n-runs-sim">Runs <input id="e-seeds" type="number" min="1" max="1000" value="50" style="width:70px"></label>
         <label id="n-runs-ai" class="hidden">Runs <input id="r-repeats" type="number" min="1" max="10" value="3" style="width:60px"></label>
       </div>
       <div><b>Compare</b><div class="choice" id="e-settings"></div></div>
       <div class="row"><button class="btn primary" id="n-run">Run</button><span id="e-summary" class="muted"></span><span id="r-cost" class="muted hidden"></span></div>
+      <div id="e-live" class="pane hidden"></div>
       <div id="e-job" class="joblog hidden" aria-live="polite"></div>
       <div id="r-job" class="joblog hidden" aria-live="polite"></div>
       <article id="e-result" class="doc hidden"></article>
@@ -319,8 +324,6 @@
           </div>
           <div class="row"><button class="btn" id="a-reset">Reset</button><button class="btn" id="a-add">Add a kind</button><span class="muted" id="a-summary"></span></div>
           <div class="kinds" id="a-kinds"></div>
-          <h3 class="section">Also report</h3>
-          <div class="choice" id="e-columns"></div>
           <details><summary class="muted">The experiment file</summary><pre id="e-yaml"></pre></details>
         </div>
         <div id="more-ai" class="hidden">
@@ -480,6 +483,9 @@ async function openDoc(path) {
     const eqDoc = d.path === 'docs/equations.md' || d.path === 'docs/equations-simple.md';
     $('doc-crumbs').innerHTML = eqDoc ? `<div class="tabs" role="tablist"><a class="btn" role="tab" href="#/equations?m=simple" aria-selected="${d.path.endsWith('simple.md')}">Simple model (α, β)</a><a class="btn" role="tab" href="#/equations?m=full" aria-selected="${!d.path.endsWith('simple.md')}">Full model</a></div>` : howDoc ? (d.path === 'docs/README.md' ? '' : '<a href="#/how">← How it works</a>') : `<a href="#/runs/results">← Results</a>${fieldId ? ` · <a href="#/doc/reports/${fieldId}/report.md">Full report</a> · <a href="#/live?tab=sim&space=${fieldId}">Watch a simulation</a>` : ''}`;
     $('doc-body').innerHTML = d.html;
+    // A saved simulation: interactive charts in place of its fixed comparison chart.
+    const rid = /^results\/([^/]+)\/summary\.md$/.exec(d.path)?.[1];
+    if (rid) explore(rid);
     // Headings get ids like GitHub's, so in-page links (#what-this-shows-…) scroll instead of navigating.
     const slug = (t) => t.toLowerCase().trim().replace(/[^\p{L}\p{N}\s-]/gu, '').replace(/\s/g, '-');
     for (const h of $('doc-body').querySelectorAll('h1,h2,h3,h4')) h.id = slug(h.textContent);
@@ -494,6 +500,56 @@ async function openDoc(path) {
 }
 
 let resultsQuery = '';
+/* Results: interactive charts on a saved simulation's page */
+const seriesColour = (label, k) => (/(^|, )Traditional\b/.test(label) ? 'var(--s1)' : /\bOSO\b/.test(label) ? 'var(--s2)' : ['var(--ink-2)', 'var(--ink-3)', 'var(--flow)', '#2f9e8f'][k % 4]);
+const explore = (id) => exploreIn(id, $('doc-body'));
+async function exploreIn(id, root) {
+  const data = await api('/api/result-data?id=' + encodeURIComponent(id));
+  if (!data.ok) return;
+  const $ = (x) => root.querySelector('#' + x);
+  const img = root.querySelector('img[src*="compare.svg"]');
+  const box = document.createElement('div');
+  box.className = 'explore';
+  const hasProgress = data.rows.some((r) => r.progress);
+  box.innerHTML = `<div class="pane"><div class="row"><b>Compare on</b> <select id="x-measure">${data.measures.map((m) => `<option value="${m.id}">${esc(m.name)}</option>`).join('')}</select><span class="muted">bars: mean over runs; whiskers: ± one standard deviation</span></div><div id="x-bars"></div></div>
+    ${hasProgress ? `<div class="pane"><div class="row"><b>Over the run</b> <select id="x-var">${data.progress.map((v) => `<option value="${v.id}">${esc(v.name)}</option>`).join('')}</select><span class="muted">mean over runs, by money spent</span></div><div class="choice" id="x-rows"></div><div id="x-lines"></div></div>` : '<p class="muted">Progress over the run is recorded for runs made from 24 October on; rerun this experiment to see it.</p>'}`;
+  if (img) img.replaceWith(box); else root.querySelector('h1')?.after(box);
+  const bars = () => {
+    const m = data.measures.find((x) => x.id === $('x-measure').value);
+    const rows = data.rows.map((r, k) => ({ ...r, k, s: r.stats[m.id] })).filter((r) => r.s.n).sort((a, b) => (m.better === 'lower' ? a.s.mean - b.s.mean : b.s.mean - a.s.mean));
+    const max = Math.max(1e-9, ...rows.map((r) => r.s.mean + r.s.sd));
+    const W = 760, lw = 260, bh = 20, gap = 6, H = 20 + rows.length * (bh + gap), sx = (v) => lw + (v / max) * (W - lw - 70);
+    const f = (v) => (Math.abs(v) < 10 ? v.toFixed(2) : v.toFixed(0));
+    $('x-bars').innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="${esc(m.name)} by row">${rows.map((r, i) => {
+      const y = 10 + i * (bh + gap), c = seriesColour(r.label, r.k);
+      return `<text x="${lw - 8}" y="${y + 14}" text-anchor="end" font-size="12" fill="var(--ink)">${esc(r.label.slice(0, 40))}</text><rect x="${lw}" y="${y}" width="${Math.max(1, sx(r.s.mean) - lw)}" height="${bh}" rx="3" fill="${c}"><title>${esc(r.label)}: ${f(r.s.mean)} ± ${f(r.s.sd)} (${r.s.n} runs)</title></rect><line x1="${sx(Math.max(0, r.s.mean - r.s.sd))}" x2="${sx(r.s.mean + r.s.sd)}" y1="${y + bh / 2}" y2="${y + bh / 2}" stroke="var(--ink)" stroke-width="1"/><text x="${sx(r.s.mean + r.s.sd) + 6}" y="${y + 14}" font-size="11" font-weight="700" fill="${c}">${f(r.s.mean)}</text>`;
+    }).join('')}</svg>`;
+  };
+  $('x-measure').onchange = bars; bars();
+  if (!hasProgress) return;
+  // Rows to draw: traditional and the OSO rows first, up to four; the reader can change them.
+  const pick = new Set(data.rows.map((r, k) => k).filter((k) => /(^|, )Traditional\b|\bOSO\b/.test(data.rows[k].label)).slice(0, 4));
+  if (!pick.size) [0, data.rows.length - 1].forEach((k) => pick.add(k));
+  $('x-rows').innerHTML = data.rows.map((r, k) => `<label><input type="checkbox" value="${k}" ${pick.has(k) ? 'checked' : ''}> <span style="color:${seriesColour(r.label, k)};font-weight:600">${esc(r.label)}</span></label>`).join('');
+  const lines = () => {
+    const v = $('x-var').value, name = data.progress.find((x) => x.id === v).name;
+    const chosen = [...$('x-rows').querySelectorAll('input:checked')].map((i) => Number(i.value)).filter((k) => data.rows[k].progress);
+    const W = 760, H = 260, l = 50, rgt = 210, tp = 20, b = 34, pw = W - l - rgt, ph = H - tp - b;
+    const X = Math.max(...chosen.map((k) => data.rows[k].budget), 1), Y = Math.max(1e-9, ...chosen.flatMap((k) => data.rows[k].progress[v]));
+    const sx = (x) => l + (x / X) * pw, sy = (y) => tp + ph - (y / Y) * ph, n = data.rows[0].progress?.[v]?.length ?? 21;
+    let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="${esc(name)} by money spent">`;
+    for (const t of [0, 0.25, 0.5, 0.75, 1]) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(Y * t)}" y2="${sy(Y * t)}" stroke="var(--line)"/><text x="${l - 6}" y="${sy(Y * t) + 4}" text-anchor="end" font-size="11" fill="var(--ink-3)">${Y * t < 10 ? (Y * t).toFixed(1) : Math.round(Y * t)}</text><text x="${sx(X * t)}" y="${tp + ph + 16}" text-anchor="middle" font-size="11" fill="var(--ink-3)">${Math.round(X * t)}</text>`;
+    svg += `<text x="${l + pw / 2}" y="${H - 2}" text-anchor="middle" font-size="11" fill="var(--ink-3)">money spent</text>`;
+    chosen.forEach((k, j) => {
+      const r = data.rows[k], c = seriesColour(r.label, k), ys = r.progress[v];
+      const d = ys.map((y, i) => `${i ? 'L' : 'M'}${sx((r.budget * i) / (n - 1)).toFixed(1)} ${sy(y).toFixed(1)}`).join(' ');
+      svg += `<path d="${d}" fill="none" stroke="${c}" stroke-width="2.4"/><text x="${l + pw + 10}" y="${tp + 12 + j * 18}" font-size="12" font-weight="700" fill="${c}">${esc(r.label.slice(0, 28))}: ${ys.at(-1) < 10 ? ys.at(-1).toFixed(1) : Math.round(ys.at(-1))}</text>`;
+    });
+    $('x-lines').innerHTML = svg + '</svg>';
+  };
+  $('x-var').onchange = lines; $('x-rows').onchange = lines; lines();
+}
+
 /* Runs: the history of every run */
 let historyQuery = '', historyTimer = null;
 async function drawHistory() {
@@ -842,6 +898,16 @@ const post = (path, data) => fetch(path, { method: 'POST', headers: { 'Content-T
 const D = { opts: null, spaces: [] };
 
 /** Follows a background job, showing its log, until it ends. */
+/** Follows a job without showing its raw log: onTick on each poll, onDone at the end. */
+function followQuiet(jobId, onTick, onDone) {
+  const tick = async () => {
+    const j = await api('/api/jobs/' + jobId);
+    onTick(j);
+    if (j.status === 'running') setTimeout(tick, 800); else onDone?.(j);
+  };
+  tick();
+}
+
 function follow(jobId, logEl, onDone) {
   logEl.classList.remove('hidden');
   const tick = async () => {
@@ -876,7 +942,6 @@ const EXAMPLES = [
 function useExample(x) {
   $('e-question').value = x.question;
   for (const i of $('e-settings').querySelectorAll('input')) i.checked = x.settings.includes(i.value);
-  if ([...$('e-measure').options].some((o) => o.value === x.measure)) $('e-measure').value = x.measure;
   for (const p of D.opts.parameters) { P[p.path].vary = !!x.vary?.[p.path]; if (x.vary?.[p.path]) P[p.path].values = x.vary[p.path]; }
   drawParams(); designCheck();
 }
@@ -892,7 +957,7 @@ const GRAPH_KEYS = ['levels', 'width', 'parents', 'skip', 'length', 'lengthGrowt
 const generated = () => document.querySelector('input[name=s-graph]:checked')?.value !== 'topic';
 const graphControls = () => Object.fromEntries(GRAPH_KEYS.map((k) => [k, Number($('g-' + k).value)]));
 function simpleDesign() {
-  return { id: '', question: $('s-question').value.trim(), space: $('s-space').value, measure: $('s-measure').value,
+  return { id: '', question: $('s-question').value.trim(), space: $('s-space').value,
     ...(generated() ? { graph: graphControls(), budget: Number($('s-budget').value), ...($('g-preset').value ? { preset: $('g-preset').value } : {}) } : {}),
     alphas: numbers($('s-alphas').value), betas: numbers($('s-betas').value), seeds: Number($('s-seeds').value) };
 }
@@ -923,7 +988,6 @@ function initSimple() {
   if (simpleReady) return;
   simpleReady = true;
   $('s-space').innerHTML = $('e-space').innerHTML; $('s-space').value = $('e-space').value;
-  $('s-measure').innerHTML = $('e-measure').innerHTML; $('s-measure').value = 'frontier';
   for (const [k, v] of Object.entries(D.opts.graphDefaults)) $('g-' + k).value = v;
   // Presets: the topics that are settings of the generator (drug discovery, battery, …).
   api('/api/presets').then((ps) => {
@@ -938,22 +1002,25 @@ function initSimple() {
   $('s-budget').addEventListener('input', simpleCheck);
   for (const r of document.querySelectorAll('input[name=s-graph]')) r.onchange = applyGraphMode;
   const fresh = () => simpleCheck();
-  for (const id of ['s-space', 's-measure', 's-seeds', 's-alphas', 's-betas']) $(id).addEventListener('input', simpleCheck);
+  for (const id of ['s-space', 's-seeds', 's-alphas', 's-betas']) $(id).addEventListener('input', simpleCheck);
   $('s-run').onclick = async () => {
     const c = await simpleCheck(); if (!c.ok) return;
     const btn = $('s-run');
     try {
       btn.disabled = true; btn.textContent = 'Running…';
+      const name = (await simpleCheck()).name;
       const j = await post('/api/simple/run', { design: simpleDesign() });
       $('s-result').classList.add('hidden');
-      $('s-job').classList.remove('hidden');
-      $('s-job').scrollIntoView({ block: 'start', behavior: 'smooth' });
-      follow(j.job, $('s-job'), async (job) => {
+      $('s-job').classList.add('hidden');
+      livePreview(name, $('s-live'));
+      $('s-live').scrollIntoView({ block: 'start', behavior: 'smooth' });
+      followQuiet(j.job, (job) => { const el = $('s-live-rows'); if (el) el.textContent = rowsDone(job); }, async (job) => {
         btn.disabled = false; btn.textContent = 'Run'; fresh();
-        if (job.status !== 'done') return;
-        $('s-job').classList.add('hidden');
+        if (job.status !== 'done') { $('s-job').classList.remove('hidden'); $('s-job').textContent = job.log.slice(-8).join('\n'); return; }
         const d = await api('/api/doc?path=' + encodeURIComponent(job.result.doc));
         $('s-result').innerHTML = d.html; $('s-result').classList.remove('hidden'); OV = null;
+        const rid = /^results\/([^/]+)\//.exec(job.result.doc)?.[1];
+        if (rid) exploreIn(rid, $('s-result'));
       });
     } catch (e) { btn.disabled = false; btn.textContent = 'Run'; $('s-job').classList.remove('hidden'); $('s-job').textContent = e.message; }
   };
@@ -1051,9 +1118,7 @@ async function enterDesign() {
     drawAgents(); designCheck();
   };
   $('e-reset').onclick = () => { for (const p of D.opts.parameters) { P[p.path] = { value: D.field[p.path], vary: false, values: p.values.join(', ') }; } drawParams(); designCheck(); };
-  $('e-measure').innerHTML = D.opts.columns.map((c) => `<option value="${c.id}" ${c.id === 'frontier' ? 'selected' : ''}>${esc(c.meaning)}</option>`).join('');
-  for (const id of ['e-measure', 'e-question']) $(id).addEventListener('change', designCheck);
-  $('e-columns').innerHTML = D.opts.columns.map((c) => `<label title="${esc(c.meaning)}"><input type="checkbox" value="${c.id}" ${D.opts.defaultColumns.includes(c.id) ? 'checked' : ''}> ${esc(c.meaning)}</label>`).join('');
+  $('e-question').addEventListener('change', designCheck);
   for (const el of document.querySelectorAll('#view-new #more-sim input, #view-new #more-sim select, #e-settings input, #e-space, #e-seeds')) el.addEventListener('change', designCheck);
   $('e-id').addEventListener('input', designCheck);
   runSim = async () => {
@@ -1063,19 +1128,22 @@ async function enterDesign() {
     if (c.runs > 20000 && !confirm(`That is ${c.runs.toLocaleString()} simulated runs. Run it?`)) return;
     try {
       btn.disabled = true; btn.textContent = 'Running…';
+      const name = currentDesign().id || c.name;
       const j = await post('/api/experiments/run', { design: currentDesign(), overwrite: $('e-overwrite').checked });
       $('e-result').classList.add('hidden');
-      $('e-job').classList.remove('hidden');
-      $('e-job').scrollIntoView({ block: 'start', behavior: 'smooth' });
-      follow(j.job, $('e-job'), async (job) => {
+      livePreview(name, $('e-live'));
+      $('e-live').scrollIntoView({ block: 'start', behavior: 'smooth' });
+      followQuiet(j.job, (job) => { const el = $('e-live-rows'); if (el) el.textContent = rowsDone(job); }, async (job) => {
         btn.disabled = false; btn.textContent = 'Run';
         if (job.status !== 'done') return;
-        $('e-job').classList.add('hidden');
+        if (job.status !== 'done') { $('e-job').classList.remove('hidden'); $('e-job').textContent = job.log.slice(-8).join('\n'); return; }
         // A fresh name for the next run, so it does not collide with this one.
         $('e-id').value = ''; $('e-id').dataset.typed = ''; designCheck();
         const d = await api('/api/doc?path=' + encodeURIComponent(job.result.doc));
         $('e-result').innerHTML = d.html + `<p><a href="#/live?tab=sim&space=${esc(currentDesign().space)}">Watch a simulation of this field →</a></p>`;
         $('e-result').classList.remove('hidden');
+        const rid = /^results\/([^/]+)\//.exec(job.result.doc)?.[1];
+        if (rid) exploreIn(rid, $('e-result'));
         OV = null;
       });
     } catch (e) { btn.disabled = false; btn.textContent = 'Run'; $('e-job').classList.remove('hidden'); $('e-job').textContent = e.message; }
@@ -1310,11 +1378,11 @@ function explain() {
 
 function currentDesign() {
   return {
-    id: $('e-id').value.trim(), title: $('e-title').value.trim() || $('e-question').value.trim(), question: $('e-question').value.trim(), measure: $('e-measure').value, space: $('e-space').value,
+    id: $('e-id').value.trim(), title: $('e-title').value.trim() || $('e-question').value.trim(), question: $('e-question').value.trim(), space: $('e-space').value,
     settings: [...$('e-settings').querySelectorAll('input:checked')].map((i) => i.value),
     set: Object.fromEntries(D.opts.parameters.filter((p) => !P[p.path].vary && P[p.path].value !== D.field[p.path]).map((p) => [p.path, P[p.path].value])),
     vary: D.opts.parameters.filter((p) => P[p.path].vary).map((p) => ({ path: p.path, values: P[p.path].values.split(',').map((x) => x.trim()).filter(Boolean).map(Number).filter(Number.isFinite) })),
-    columns: [...$('e-columns').querySelectorAll('input:checked')].map((i) => i.value),
+    columns: [],
     seeds: Number($('e-seeds').value),
     ...(D.agents && agentsChanged() ? { agents: D.agents } : {}),
   };
@@ -1501,6 +1569,11 @@ function drawPane(pane, t) {
 // Hardest level published against money spent, both sides, up to the current round.
 function drawSimChart() {
   if (!sim.panes.length) return;
+  $('sim-chart').innerHTML = paneChart(sim.panes, sim.round);
+}
+/** Hardest level published by money spent, for two replayed runs, up to a round. */
+function paneChart(panes, round) {
+  const sim = { panes, round };
   const W = 760, H = 230, l = 50, rgt = 200, tp = 34, b = 34, pw = W - l - rgt, ph = H - tp - b;
   const X = Math.max(...sim.panes.map((p) => p.run.budget.X)), Y = Math.max(...sim.panes.map((p) => p.run.world.levels));
   const sx = (v) => l + (v / X) * pw, sy = (v) => tp + ph - (v / Y) * ph;
@@ -1516,8 +1589,32 @@ function drawSimChart() {
     svg += `<path d="${d}" fill="none" stroke="${c}" stroke-width="2.4"${k && !/^OSO|^Traditional/.test(p.run.setting.label) ? ' stroke-dasharray="5 3"' : ''}/>`;
     svg += `<circle cx="${sx(last[0])}" cy="${sy(last[1])}" r="4" fill="${c}"/><text x="${l + pw + 10}" y="${tp + 14 + k * 20}" font-size="12" font-weight="700" fill="${c}">${esc(p.run.setting.label.slice(0, 26))}: ${last[1]}</text>`;
   });
-  $('sim-chart').innerHTML = svg + '</svg>';
+  return svg + '</svg>';
 }
+
+/* While a simulation runs: replay its first run, traditional against the best-placed society, at once. */
+let liveTimer = null;
+async function livePreview(expId, box) {
+  clearInterval(liveTimer);
+  box.classList.remove('hidden');
+  box.innerHTML = '<p class="muted">Starting the live view…</p>';
+  try {
+    const r = await api('/api/sim/rows?experiment=' + encodeURIComponent(expId));
+    const find = (re, dflt) => { const k = r.rows.findLastIndex((x) => re.test(x)); return k >= 0 ? k : dflt; };
+    const left = Math.max(0, r.rows.findIndex((x) => /^Traditional/.test(x))), right = find(/^OSO/, r.rows.length - 1);
+    const runs = await Promise.all([left, right === left ? (left + 1) % r.rows.length : right].map((row) => api(`/api/sim?experiment=${encodeURIComponent(expId)}&row=${row}&seed=${r.firstSeed}`)));
+    const panes = runs.map((run) => ({ run, snaps: snapshots(run) }));
+    const max = Math.max(...panes.map((p) => p.snaps.length - 1));
+    let t = 0;
+    // Built once; each frame redraws only the round and the chart, so the progress line below stays.
+    box.innerHTML = `<div class="row"><b>Live: run 1</b><span class="muted" id="${box.id}-round"></span><span class="muted">· the rest of the runs go on in the background ·</span><b id="${box.id}-rows"></b><a href="#/live?tab=sim&experiment=${encodeURIComponent(expId)}">Open in Live →</a></div><div id="${box.id}-chart"></div>`;
+    const draw = () => { $(`${box.id}-round`).textContent = `round ${t} of ${max}`; $(`${box.id}-chart`).innerHTML = paneChart(panes, t); };
+    draw();
+    liveTimer = setInterval(() => { if (t >= max) return clearInterval(liveTimer); t = Math.min(max, t + 2); draw(); }, 60);
+  } catch (e) { box.innerHTML = `<p class="muted">No live view: ${esc(e.message)}</p>`; }
+}
+/** Rows finished so far, from the job's progress lines. */
+const rowsDone = (job) => { const m = [...job.log].reverse().map((l) => /progress (\d+)\/(\d+)/.exec(l)).find(Boolean); return m ? `${m[1]} of ${m[2]} societies done` : ''; };
 
 function drawSim() {
   for (const p of sim.panes) drawPane(p, sim.round);
