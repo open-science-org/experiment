@@ -271,7 +271,8 @@
           </fieldset>
           <fieldset><legend>Attribution</legend>
             <label>composition <span class="info" title="Share of an idea's bits made of pieces of its parents' sequences. Higher: parents help more, and earn more flow-back.">ⓘ</span> <input type="number" id="g-composition" min="0" max="1" step="0.05"></label>
-            <label>ideas with a bounty (top level) <input type="number" id="g-targets" min="1" max="10" step="1"></label>
+            <label>bounties per level <input type="number" id="g-targets" min="1" max="10" step="1"></label>
+            <label>bounties from level <span class="info" title="0: the top level only. Otherwise every level from this one up carries bounties, larger the deeper the level.">ⓘ</span> <input type="number" id="g-targetsFrom" min="0" max="15" step="1"></label>
             <label>budget <input type="number" id="s-budget" min="10" max="100000" step="10" value="1200"></label>
           </fieldset>
         </div>
@@ -1043,7 +1044,7 @@ function showModel(m) {
   $('n-full').classList.toggle('hidden', m !== 'full');
 }
 const numbers = (txt) => txt.split(',').map((x) => x.trim()).filter(Boolean).map(Number);
-const GRAPH_KEYS = ['levels', 'width', 'parents', 'skip', 'length', 'lengthGrowth', 'composition', 'targets'];
+const GRAPH_KEYS = ['levels', 'width', 'parents', 'skip', 'length', 'lengthGrowth', 'composition', 'targets', 'targetsFrom'];
 const generated = () => document.querySelector('input[name=s-graph]:checked')?.value !== 'topic';
 const graphControls = () => Object.fromEntries(GRAPH_KEYS.map((k) => [k, Number($('g-' + k).value)]));
 function simpleDesign() {

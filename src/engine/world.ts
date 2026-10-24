@@ -285,8 +285,10 @@ export interface IdeasParams extends Record<string, unknown> {
   /** Attribution: the share of an idea's length made of pieces of its parents' sequences (0: none, 1: all
    *  it can). The rest are its own new bits. */
   composition: number;
-  /** Bounties: how many ideas at the top level carry one, and its size: bountyBase · bountyGrowth^(level − 1). */
+  /** Bounties: how many ideas on each bountied level carry one, the first level that has bounties (0 or the
+   *  top level: the top only), and their size: bountyBase · bountyGrowth^(level − 1). */
   targets: number;
+  targetsFrom: number;
   bountyBase: number;
   bountyGrowth: number;
   /** Ideas needing more unresolved bits than this are not attempted. */
@@ -342,9 +344,13 @@ export function ideasWorld(params: IdeasParams, rng: Rng): World {
     const fromParents = new Set(prereqs[x].flatMap((y) => bits[y]));
     return 2 ** -b.filter((bit) => !fromParents.has(bit)).length;
   });
+  // Bounties on every level from targetsFrom to the top (the top only by default), spread across each level.
   const bounty = new Array<number>(level.length).fill(0);
-  const top = byLevel[levels], nT = Math.min(params.targets, top.length);
-  for (let k = 0; k < nT; k++) bounty[top[Math.floor((k + 0.5) * top.length / nT)]] = params.bountyBase * params.bountyGrowth ** (levels - 1);
+  const from = params.targetsFrom >= 1 && params.targetsFrom <= levels ? params.targetsFrom : levels;
+  for (let l = from; l <= levels; l++) {
+    const row = byLevel[l], nT = Math.min(params.targets, row.length);
+    for (let k = 0; k < nT; k++) bounty[row[Math.floor((k + 0.5) * row.length / nT)]] = params.bountyBase * params.bountyGrowth ** (l - 1);
+  }
   // Each bit's toss, from its own stream so the graph and the run are unchanged.
   const tossRng = rng.fork(97);
   const tosses = Array.from({ length: nextBit }, () => (tossRng.chance(0.5) ? 'H' : 'T')).join('');
@@ -353,6 +359,6 @@ export function ideasWorld(params: IdeasParams, rng: Rng): World {
 
 worlds.register<IdeasParams>('ideas', {
   description: 'A general idea graph: ideas are bit sequences, part pieces of their parents\' sequences (composition), part new; set structure (levels, width, parents, skip), difficulty (length, lengthGrowth) and attribution (composition) separately',
-  defaults: { levels: 6, width: 8, parents: 2, skip: 0.2, length: 3, lengthGrowth: 2, composition: 0.7, targets: 2, bountyBase: 4, bountyGrowth: 2, attemptLimit: 24 },
+  defaults: { levels: 6, width: 8, parents: 2, skip: 0.2, length: 3, lengthGrowth: 2, composition: 0.7, targets: 2, targetsFrom: 0, bountyBase: 4, bountyGrowth: 2, attemptLimit: 24 },
   create: (params) => (_success, rng) => ideasWorld(params, rng),
 });

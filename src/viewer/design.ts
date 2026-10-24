@@ -547,9 +547,9 @@ export { parse as parseYaml };
  * and the topic's own idea graph and bounties.
  */
 /** The generator's controls (world kind 'ideas'): structure, difficulty and attribution. */
-export interface GraphControls { levels: number; width: number; parents: number; skip: number; length: number; lengthGrowth: number; composition: number; targets: number }
-export const GRAPH_DEFAULTS: GraphControls = { levels: 6, width: 8, parents: 2, skip: 0.2, length: 3, lengthGrowth: 2, composition: 0.7, targets: 2 };
-const GRAPH_RANGES: Record<keyof GraphControls, [number, number]> = { levels: [1, 15], width: [1, 30], parents: [1, 6], skip: [0, 1], length: [1, 12], lengthGrowth: [0, 6], composition: [0, 1], targets: [1, 10] };
+export interface GraphControls { levels: number; width: number; parents: number; skip: number; length: number; lengthGrowth: number; composition: number; targets: number; targetsFrom: number }
+export const GRAPH_DEFAULTS: GraphControls = { levels: 6, width: 8, parents: 2, skip: 0.2, length: 3, lengthGrowth: 2, composition: 0.7, targets: 2, targetsFrom: 0 };
+const GRAPH_RANGES: Record<keyof GraphControls, [number, number]> = { levels: [1, 15], width: [1, 30], parents: [1, 6], skip: [0, 1], length: [1, 12], lengthGrowth: [0, 6], composition: [0, 1], targets: [1, 10], targetsFrom: [0, 15] };
 
 /** The simple model's design: a topic, or a generated idea graph (graph), and the α and β values. */
 export interface SimpleDesign { id: string; title?: string; question?: string; space: string; graph?: GraphControls; preset?: string; budget?: number; alphas: number[]; betas: number[]; seeds: number; measure?: string }
@@ -576,7 +576,7 @@ export function graphPresets() {
 export function graphPreview(g: GraphControls, seed = 1) {
   try {
     checkGraph(g);
-    const w = ideasWorld({ ...g, bountyBase: 4, bountyGrowth: 2, attemptLimit: 24 }, new Rng(seed));
+    const w = ideasWorld({ ...g, targetsFrom: g.targetsFrom ?? 0, bountyBase: 4, bountyGrowth: 2, attemptLimit: 24 }, new Rng(seed));
     const withParents = w.prereqs.filter((ps) => ps.length);
     const inherited = w.bits!.map((b, x) => { const from = new Set(w.prereqs[x].flatMap((y) => w.bits![y])); return b.filter((bit) => from.has(bit)).length / b.length; });
     return {

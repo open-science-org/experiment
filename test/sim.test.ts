@@ -370,3 +370,15 @@ test('with bits, knowing an idea resolves its bits inside every later idea (the 
   assert.ok(frontier(v, 0).includes(1), 'x can be attempted without knowing y');
   assert.deepEqual(w.weights[1], [1]);
 });
+
+test('the generator can put bounties on deeper levels too, larger the deeper', async () => {
+  const { ideasWorld } = await import('../src/engine/world.ts');
+  const { Rng } = await import('../src/engine/rng.ts');
+  const base = { levels: 6, width: 8, parents: 2, skip: 0.2, length: 3, lengthGrowth: 2, composition: 0.7, targets: 2, targetsFrom: 0, bountyBase: 4, bountyGrowth: 2, attemptLimit: 24 };
+  const top = ideasWorld(base, new Rng(3));
+  assert.deepEqual([...new Set(top.targets.map((t) => top.level[t]))], [6], 'by default, the top level only');
+  const deep = ideasWorld({ ...base, targetsFrom: 3 }, new Rng(3));
+  assert.deepEqual([...new Set(deep.targets.map((t) => deep.level[t]))].sort(), [3, 4, 5, 6]);
+  assert.ok(deep.bounty[deep.targets.find((t) => deep.level[t] === 3)!] < deep.bounty[deep.targets.find((t) => deep.level[t] === 6)!]);
+  assert.deepEqual(top.bits, deep.bits, 'the graph itself is the same');
+});
