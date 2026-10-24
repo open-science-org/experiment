@@ -12,14 +12,14 @@
   "better": "higher",
   "runs": "50 runs per row"
  },
- "answer": "Best overall: α = 1, β = 1. Against traditional, clearly better on hardest level, targets solved, bounty value, ROI and money to the main level; clearly worse on waste. (6 measures; a clear difference is more than 2.6 standard errors.)",
+ "answer": "Best overall: α = 1, β = 1. Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, money to the main level and waste. (6 measures; a clear difference is more than 2.6 standard errors.)",
  "answers": [
   "hardest level: 6.00 against traditional 0.36, clearly better.",
   "targets solved: 2.00 against traditional 0.06, clearly better.",
   "bounty value: 256 against traditional 7.68, clearly better.",
   "ROI: 0.68 against traditional 0.01, clearly better.",
   "money to the main level: 288 against traditional 880, clearly better.",
-  "waste: 0.80 against traditional 0.11, clearly worse."
+  "waste: 0.15 against traditional 0.64, clearly better."
  ],
  "table": [
   {
@@ -29,7 +29,7 @@
    "value gained": "8 ± 31",
    "ROI (value per spend)": "0.01 ± 0.03",
    "cost": "880 ± 328",
-   "waste": "0.11 ± 0.10"
+   "waste": "0.64 ± 0.05"
   },
   {
    "society": "α = 1, β = 0.25",
@@ -38,7 +38,7 @@
    "value gained": "218 ± 74",
    "ROI (value per spend)": "0.24 ± 0.10",
    "cost": "788 ± 204",
-   "waste": "0.80 ± 0.09"
+   "waste": "0.54 ± 0.06"
   },
   {
    "society": "α = 1, β = 0.5",
@@ -47,7 +47,7 @@
    "value gained": "256 ± 0",
    "ROI (value per spend)": "0.39 ± 0.10",
    "cost": "515 ± 151",
-   "waste": "0.84 ± 0.06"
+   "waste": "0.38 ± 0.06"
   },
   {
    "society": "α = 1, β = 0.75",
@@ -56,7 +56,7 @@
    "value gained": "256 ± 0",
    "ROI (value per spend)": "0.55 ± 0.13",
    "cost": "375 ± 113",
-   "waste": "0.82 ± 0.07"
+   "waste": "0.25 ± 0.06"
   },
   {
    "society": "α = 1, β = 1",
@@ -65,7 +65,7 @@
    "value gained": "256 ± 0",
    "ROI (value per spend)": "0.68 ± 0.19",
    "cost": "288 ± 87",
-   "waste": "0.80 ± 0.07"
+   "waste": "0.15 ± 0.03"
   },
   {
    "society": "α = 0.8, β = 0",
@@ -74,7 +74,7 @@
    "value gained": "10 ± 35",
    "ROI (value per spend)": "0.01 ± 0.03",
    "cost": "894 ± 252",
-   "waste": "0.12 ± 0.12"
+   "waste": "0.64 ± 0.05"
   },
   {
    "society": "α = 0.8, β = 0.25",
@@ -83,7 +83,7 @@
    "value gained": "220 ± 73",
    "ROI (value per spend)": "0.25 ± 0.10",
    "cost": "745 ± 205",
-   "waste": "0.80 ± 0.09"
+   "waste": "0.53 ± 0.05"
   },
   {
    "society": "α = 0.8, β = 0.5",
@@ -92,7 +92,7 @@
    "value gained": "256 ± 0",
    "ROI (value per spend)": "0.40 ± 0.09",
    "cost": "542 ± 149",
-   "waste": "0.82 ± 0.08"
+   "waste": "0.38 ± 0.07"
   },
   {
    "society": "α = 0.8, β = 0.75",
@@ -101,7 +101,7 @@
    "value gained": "256 ± 0",
    "ROI (value per spend)": "0.54 ± 0.11",
    "cost": "371 ± 100",
-   "waste": "0.83 ± 0.05"
+   "waste": "0.27 ± 0.05"
   },
   {
    "society": "OSO (α = 0.8, β = 1)",
@@ -110,7 +110,7 @@
    "value gained": "256 ± 0",
    "ROI (value per spend)": "0.70 ± 0.19",
    "cost": "297 ± 89",
-   "waste": "0.82 ± 0.07"
+   "waste": "0.16 ± 0.04"
   },
   {
    "society": "α = 0.5, β = 0",
@@ -119,7 +119,7 @@
    "value gained": "5 ± 25",
    "ROI (value per spend)": "0.00 ± 0.02",
    "cost": "942 ± 229",
-   "waste": "0.11 ± 0.09"
+   "waste": "0.64 ± 0.05"
   },
   {
    "society": "α = 0.5, β = 0.25",
@@ -128,7 +128,7 @@
    "value gained": "223 ± 72",
    "ROI (value per spend)": "0.24 ± 0.10",
    "cost": "761 ± 192",
-   "waste": "0.81 ± 0.09"
+   "waste": "0.53 ± 0.06"
   },
   {
    "society": "α = 0.5, β = 0.5",
@@ -137,7 +137,7 @@
    "value gained": "256 ± 0",
    "ROI (value per spend)": "0.41 ± 0.10",
    "cost": "519 ± 153",
-   "waste": "0.85 ± 0.06"
+   "waste": "0.38 ± 0.07"
   },
   {
    "society": "α = 0.5, β = 0.75",
@@ -146,7 +146,7 @@
    "value gained": "256 ± 0",
    "ROI (value per spend)": "0.56 ± 0.17",
    "cost": "371 ± 117",
-   "waste": "0.84 ± 0.07"
+   "waste": "0.25 ± 0.05"
   },
   {
    "society": "OSO (α = 0.5, β = 1)",
@@ -155,7 +155,7 @@
    "value gained": "256 ± 0",
    "ROI (value per spend)": "0.69 ± 0.16",
    "cost": "284 ± 93",
-   "waste": "0.80 ± 0.09"
+   "waste": "0.15 ± 0.04"
   },
   {
    "society": "α = 0.2, β = 0",
@@ -164,7 +164,7 @@
    "value gained": "10 ± 35",
    "ROI (value per spend)": "0.01 ± 0.03",
    "cost": "690 ± 355",
-   "waste": "0.12 ± 0.09"
+   "waste": "0.67 ± 0.04"
   },
   {
    "society": "α = 0.2, β = 0.25",
@@ -173,7 +173,7 @@
    "value gained": "236 ± 54",
    "ROI (value per spend)": "0.27 ± 0.12",
    "cost": "739 ± 252",
-   "waste": "0.82 ± 0.09"
+   "waste": "0.56 ± 0.06"
   },
   {
    "society": "α = 0.2, β = 0.5",
@@ -182,7 +182,7 @@
    "value gained": "256 ± 0",
    "ROI (value per spend)": "0.43 ± 0.08",
    "cost": "465 ± 133",
-   "waste": "0.83 ± 0.08"
+   "waste": "0.41 ± 0.08"
   },
   {
    "society": "α = 0.2, β = 0.75",
@@ -191,7 +191,7 @@
    "value gained": "256 ± 0",
    "ROI (value per spend)": "0.56 ± 0.14",
    "cost": "359 ± 106",
-   "waste": "0.84 ± 0.06"
+   "waste": "0.30 ± 0.06"
   },
   {
    "society": "OSO (α = 0.2, β = 1)",
@@ -200,7 +200,7 @@
    "value gained": "256 ± 0",
    "ROI (value per spend)": "0.69 ± 0.19",
    "cost": "277 ± 107",
-   "waste": "0.84 ± 0.05"
+   "waste": "0.17 ± 0.04"
   },
   {
    "society": "α = 0, β = 0",
@@ -209,7 +209,7 @@
    "value gained": "10 ± 35",
    "ROI (value per spend)": "0.01 ± 0.03",
    "cost": "795 ± 218",
-   "waste": "0.18 ± 0.11"
+   "waste": "0.68 ± 0.03"
   },
   {
    "society": "α = 0, β = 0.25",
@@ -218,7 +218,7 @@
    "value gained": "120 ± 105",
    "ROI (value per spend)": "0.12 ± 0.12",
    "cost": "778 ± 247",
-   "waste": "0.72 ± 0.09"
+   "waste": "0.61 ± 0.05"
   },
   {
    "society": "α = 0, β = 0.5",
@@ -227,7 +227,7 @@
    "value gained": "230 ± 63",
    "ROI (value per spend)": "0.30 ± 0.13",
    "cost": "544 ± 201",
-   "waste": "0.83 ± 0.07"
+   "waste": "0.54 ± 0.06"
   },
   {
    "society": "α = 0, β = 0.75",
@@ -236,7 +236,7 @@
    "value gained": "253 ± 18",
    "ROI (value per spend)": "0.37 ± 0.11",
    "cost": "412 ± 160",
-   "waste": "0.87 ± 0.07"
+   "waste": "0.48 ± 0.08"
   },
   {
    "society": "OSO (α = 0, β = 1)",
@@ -245,7 +245,7 @@
    "value gained": "256 ± 0",
    "ROI (value per spend)": "0.42 ± 0.09",
    "cost": "337 ± 132",
-   "waste": "0.88 ± 0.04"
+   "waste": "0.41 ± 0.06"
   }
  ],
  "caveats": [
@@ -266,5 +266,5 @@
   "suite 2026-10-24",
   "structure"
  ],
- "ranAt": "2026-10-24T06:56:40.135Z"
+ "ranAt": "2026-10-24T17:37:00.181Z"
 }

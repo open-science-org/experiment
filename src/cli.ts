@@ -12,7 +12,7 @@
 //   npm run sim -- new "<description>" [--report]   write a space with Claude, check it, calibrate its budget
 //   npm run sim -- check <space>                    validate a space file and test-run it
 //   npm run sim -- report <space | all> [--seeds N] run the canonical experiments and write the report
-import { compareAll, compareRows, writeCard, type Card } from './card.ts';
+import { barFor, compareAll, compareRows, writeCard, type Card } from './card.ts';
 import { barChart } from './report/figures.ts';
 import { CODE_PATHS, EXPERIMENTS_DIR, RESULTS_DIR, ROOT, SPACES_DIR } from './paths.ts';
 import { execSync } from 'node:child_process';
@@ -177,7 +177,23 @@ function simulationCard(spec: ExperimentSpec, out: Output, n: number, date: stri
   const better = spec.better ?? (measure && ['cost', 'speed', 'waste', 'duplicates', 'spend', 'gamerShare', 'trivialSpend', 'rejected', 'retracted', 'absorbSpend', 'hoarded'].includes(measure) ? 'lower' : 'higher');
   // No main measure declared: the answer covers every outcome measure (OUTCOMES), with the bar raised.
   const all = !spec.measure && !spec.analysis;
-  const multi = all ? compareAll(out.rows.map((row, i) => ({ label: label(row), values: Object.fromEntries(OUTCOMES.map((m) => [m.id, out.results[i].map(VALUES[m.id]!).filter((v): v is number => v !== null)])) })), OUTCOMES) : null;
+  const valuesOf = (i: number) => Object.fromEntries(OUTCOMES.map((m) => [m.id, out.results[i].map(VALUES[m.id]!).filter((v): v is number => v !== null)]));
+  // A budget sweep: societies are compared at each budget, never across budgets.
+  const budgetKey = (spec.factors ?? []).find((f) => 'path' in f && f.path === 'budget.X')?.name;
+  let multi = all && !budgetKey ? compareAll(out.rows.map((row, i) => ({ label: label(row), values: valuesOf(i) })), OUTCOMES) : null;
+  if (all && budgetKey) {
+    const budgets = [...new Set(out.rows.map((r) => Number(r.labels[budgetKey])))].sort((x, y) => x - y);
+    const without = (row: Output['rows'][number]) => Object.entries(row.labels).filter(([k]) => k !== budgetKey).map(([, v]) => String(v)).join(', ');
+    const per = budgets.map((b) => ({ b, ...compareAll(out.rows.map((row, i) => ({ row, i })).filter(({ row }) => Number(row.labels[budgetKey]) === b).map(({ row, i }) => ({ label: without(row), values: valuesOf(i) })), OUTCOMES) }));
+    // Budgets with the same verdict are reported together.
+    const verdict = (a: string) => a.replace(/ \(\d+ measures;.*$/, '');
+    const groups: { from: number; to: number; text: string }[] = [];
+    for (const p of per) { const t = verdict(p.answer); const g = groups.at(-1); if (g && g.text === t) g.to = p.b; else groups.push({ from: p.b, to: p.b, text: t }); }
+    multi = {
+      answer: groups.map((g) => `${g.from === g.to ? `At budget ${g.from}` : `At budgets ${g.from}–${g.to}`}: ${g.text.replace(/^Best overall: /, 'best ')}`).join(' ') + ` (Compared at each budget; ${OUTCOMES.length} measures, a clear difference is more than ${barFor(OUTCOMES.length).toFixed(1)} standard errors.)`,
+      lines: per.map((p) => `Budget ${p.b}: ${p.lines.slice(0, 2).join(' ')}`),
+    };
+  }
   const answer = multi ? multi.answer : measure && VALUES[measure]
     ? compareRows(out.rows.map((row, i) => ({ label: label(row), values: out.results[i].map(VALUES[measure]!).filter((v): v is number => v !== null) })), better, MEASURE_NAMES[measure] ?? header(measure))
     : 'See the table: this experiment checks the model against exact values.';

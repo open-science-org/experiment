@@ -558,6 +558,45 @@ async function exploreIn(id, root) {
       <select id="x-kind"><option value="dots">dot plot</option>${grid ? '<option value="heat" selected>heat map, α × β</option>' : ''}</select><span class="muted" id="x-note"></span></div><div id="x-bars"></div></div>
     ${hasProgress ? `<div class="pane"><div class="row"><b>Over the run</b> <select id="x-var">${data.progress.map((v) => `<option value="${v.id}">${esc(v.name)}</option>`).join('')}</select><label style="margin-right:8px"><input type="checkbox" id="x-log"> log–log</label><span class="muted" id="x-lognote">mean over runs, by money spent</span></div><div class="choice" id="x-rows"></div><div id="x-lines"></div></div>` : '<p class="muted">Progress over the run is recorded for runs made from 24 October on; rerun this experiment to see it.</p>'}`;
   if (img) img.replaceWith(box); else root.querySelector('h1')?.after(box);
+  // A budget sweep: one line per society, budget on the x-axis.
+  const byBudget = data.rows.map((r) => /^(.*), budget ([\d.]+)$/.exec(r.label)).map((m) => m && { society: m[1], budget: Number(m[2]) });
+  const scaling = byBudget.every(Boolean) && new Set(byBudget.map((x) => x.budget)).size > 1;
+  if (scaling) {
+    const pane = document.createElement('div');
+    pane.className = 'pane';
+    pane.innerHTML = `<div class="row"><b>Scaling</b> <select id="x-smeasure">${data.measures.map((m) => `<option value="${m.id}">${esc(m.name)}</option>`).join('')}</select><label style="margin-right:8px"><input type="checkbox" id="x-slogy"> log y</label><span class="muted">budget on a log scale; dots: mean over runs; bars: 95% interval</span></div><div id="x-scaling"></div>`;
+    box.prepend(pane);
+    const societies = [...new Set(byBudget.map((x) => x.society))];
+    const budgets = [...new Set(byBudget.map((x) => x.budget))].sort((a, b) => a - b);
+    const draw = () => {
+      const m = data.measures.find((x) => x.id === $('x-smeasure').value), logy = $('x-slogy').checked;
+      const pts = societies.map((so) => budgets.map((b) => { const k = byBudget.findIndex((x) => x.society === so && x.budget === b); const st = data.rows[k]?.stats[m.id]; return st?.n ? { b, m: st.mean, e: st.n > 1 ? 2 * st.sd / Math.sqrt(st.n) : 0 } : null; }).filter(Boolean));
+      const all = pts.flat();
+      const W = 800, H = 300, l = 56, rgt = 250, tp = 20, bt = 36, pw = W - l - rgt, ph = H - tp - bt, L = Math.log10;
+      const yPos = all.map((p) => p.m + p.e).filter((v) => !logy || v > 0), yMax = Math.max(1e-9, ...yPos);
+      // Measures that cannot go below zero keep 0 as the floor, even when an interval reaches below it.
+      const yMin = logy ? Math.max(1e-3, Math.min(...all.map((p) => p.m).filter((v) => v > 0))) : all.every((p) => p.m >= 0) ? 0 : Math.min(...all.map((p) => p.m - p.e));
+      const sx = (b) => l + ((L(b) - L(budgets[0])) / (L(budgets.at(-1)) - L(budgets[0]) || 1)) * pw;
+      const sy = logy ? (v) => tp + ph - ((L(Math.max(v, yMin)) - L(yMin)) / (L(yMax) - L(yMin) || 1)) * ph : (v) => tp + ph - ((v - yMin) / (yMax - yMin || 1)) * ph;
+      const lab = (v) => (Math.abs(v) < 10 ? v.toFixed(v < 1 ? 2 : 1) : Math.round(v));
+      let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="${esc(m.name)} by budget">`;
+      for (const t of [0, 0.25, 0.5, 0.75, 1]) { const v = logy ? 10 ** (L(yMin) + (L(yMax) - L(yMin)) * t) : yMin + (yMax - yMin) * t; svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(v)}" y2="${sy(v)}" stroke="var(--line)"/><text x="${l - 6}" y="${sy(v) + 4}" text-anchor="end" font-size="11" fill="var(--ink-3)">${lab(v)}</text>`; }
+      for (const b of budgets) svg += `<text x="${sx(b)}" y="${tp + ph + 16}" text-anchor="middle" font-size="11" fill="var(--ink-3)">${b}</text>`;
+      svg += `<text x="${l + pw / 2}" y="${H - 2}" text-anchor="middle" font-size="11" fill="var(--ink-3)">budget (log scale)</text>`;
+      const DASH = ['', '8 4', '2 4', '10 4 2 4'], seen = new Map();
+      societies.forEach((so, j) => {
+        const c = /^Traditional/.test(so) ? 'var(--s1)' : /^OSO/.test(so) ? 'var(--s2)' : 'var(--ink-3)';
+        const nth = seen.get(c) ?? 0; seen.set(c, nth + 1); const dash = DASH[nth % DASH.length];
+        const ps = pts[j].filter((p) => !logy || p.m > 0);
+        svg += `<path d="${ps.map((p, i) => `${i ? 'L' : 'M'}${sx(p.b).toFixed(1)} ${sy(p.m).toFixed(1)}`).join(' ')}" fill="none" stroke="${c}" stroke-width="2.4"${dash ? ` stroke-dasharray="${dash}"` : ''}/>`;
+        for (const p of ps) svg += `<line x1="${sx(p.b)}" x2="${sx(p.b)}" y1="${sy(p.m - p.e)}" y2="${sy(p.m + p.e)}" stroke="${c}" stroke-width="2" opacity="0.5"/><circle cx="${sx(p.b)}" cy="${sy(p.m)}" r="4.5" fill="${c}" stroke="var(--surface)" stroke-width="1.2"><title>${esc(so)}, budget ${p.b}: ${lab(p.m)}</title></circle>`;
+        const ly = tp + 12 + j * 18;
+        svg += `<line x1="${l + pw + 8}" x2="${l + pw + 30}" y1="${ly - 4}" y2="${ly - 4}" stroke="${c}" stroke-width="2.4"${dash ? ` stroke-dasharray="${dash}"` : ''}/><text x="${l + pw + 36}" y="${ly}" font-size="12" font-weight="700" fill="${c}">${esc(so.slice(0, 28))}</text>`;
+      });
+      $('x-scaling').innerHTML = svg + '</svg>';
+    };
+    $('x-smeasure').onchange = draw; $('x-slogy').onchange = draw; draw();
+  }
   const f = (v) => (Math.abs(v) < 10 ? v.toFixed(2) : v.toFixed(0));
   // Dot plot: each society's mean, with its 95% interval (± 2 standard errors), best first.
   const dots = (m) => {

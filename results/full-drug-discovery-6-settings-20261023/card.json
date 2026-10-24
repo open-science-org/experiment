@@ -12,14 +12,14 @@
   "better": "higher",
   "runs": "100 runs per row"
  },
- "answer": "Best overall: OSO. Against traditional, clearly better on hardest level, targets solved, bounty value, ROI and money to the main level; clearly worse on waste. (6 measures; a clear difference is more than 2.6 standard errors.)",
+ "answer": "Best overall: OSO. Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, money to the main level and waste. (6 measures; a clear difference is more than 2.6 standard errors.)",
  "answers": [
   "hardest level: 5.99 against traditional 3.48, clearly better.",
   "targets solved: 2.68 against traditional 0.83, clearly better.",
   "bounty value: 1302 against traditional 403, clearly better.",
   "ROI: 1.40 against traditional 0.30, clearly better.",
   "money to the main level: 627 against traditional 1040, clearly better.",
-  "waste: 0.87 against traditional 0.61, clearly worse."
+  "waste: 0.54 against traditional 0.76, clearly better."
  ],
  "table": [
   {
@@ -29,7 +29,7 @@
    "value gained": "403 ± 409",
    "ROI (value per spend)": "0.30 ± 0.32",
    "cost": "1040 ± 266",
-   "waste": "0.61 ± 0.12"
+   "waste": "0.76 ± 0.03"
   },
   {
    "setting": "OSO (immediate)",
@@ -38,7 +38,7 @@
    "value gained": "1302 ± 323",
    "ROI (value per spend)": "1.40 ± 0.65",
    "cost": "627 ± 267",
-   "waste": "0.87 ± 0.06"
+   "waste": "0.54 ± 0.04"
   },
   {
    "setting": "OSO (choice)",
@@ -47,7 +47,7 @@
    "value gained": "467 ± 473",
    "ROI (value per spend)": "0.34 ± 0.36",
    "cost": "961 ± 279",
-   "waste": "0.69 ± 0.11"
+   "waste": "0.73 ± 0.03"
   },
   {
    "setting": "Flow-back, finished-only",
@@ -56,7 +56,7 @@
    "value gained": "413 ± 460",
    "ROI (value per spend)": "0.31 ± 0.36",
    "cost": "984 ± 246",
-   "waste": "0.62 ± 0.13"
+   "waste": "0.76 ± 0.03"
   },
   {
    "setting": "No flow-back, immediate",
@@ -65,7 +65,7 @@
    "value gained": "1230 ± 400",
    "ROI (value per spend)": "1.23 ± 0.59",
    "cost": "625 ± 259",
-   "waste": "0.85 ± 0.07"
+   "waste": "0.54 ± 0.05"
   },
   {
    "setting": "No flow-back, choice",
@@ -74,7 +74,7 @@
    "value gained": "447 ± 472",
    "ROI (value per spend)": "0.34 ± 0.38",
    "cost": "923 ± 268",
-   "waste": "0.66 ± 0.10"
+   "waste": "0.74 ± 0.03"
   }
  ],
  "caveats": [
@@ -95,5 +95,5 @@
   "suite 2026-10-24",
   "full model"
  ],
- "ranAt": "2026-10-24T06:58:04.845Z"
+ "ranAt": "2026-10-24T17:38:29.124Z"
 }

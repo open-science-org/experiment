@@ -1,8 +1,8 @@
 {
   "experiment": "simple-ideas-4x6-p1-5-len2g1-comp0-7-alpha-beta-20261023",
   "date": "2026-10-24",
-  "commit": "a58200a",
-  "dirty": true,
+  "commit": "5530bf2",
+  "dirty": false,
   "command": "npm run sim -- simple-ideas-4x6-p1-5-len2g1-comp0-7-alpha-beta-20261023 --seeds 50 --save",
   "seeds": 50,
   "overrides": {},
