@@ -511,20 +511,56 @@ async function exploreIn(id, root) {
   const box = document.createElement('div');
   box.className = 'explore';
   const hasProgress = data.rows.some((r) => r.progress);
-  box.innerHTML = `<div class="pane"><div class="row"><b>Compare on</b> <select id="x-measure">${data.measures.map((m) => `<option value="${m.id}">${esc(m.name)}</option>`).join('')}</select><span class="muted">bars: mean over runs; whiskers: ± one standard deviation</span></div><div id="x-bars"></div></div>
-    ${hasProgress ? `<div class="pane"><div class="row"><b>Over the run</b> <select id="x-var">${data.progress.map((v) => `<option value="${v.id}">${esc(v.name)}</option>`).join('')}</select><span class="muted">mean over runs, by money spent</span></div><div class="choice" id="x-rows"></div><div id="x-lines"></div></div>` : '<p class="muted">Progress over the run is recorded for runs made from 24 October on; rerun this experiment to see it.</p>'}`;
+  // An α × β grid (the simple model) can be drawn as a heat map.
+  const ab = data.rows.map((r) => /α = ([\d.]+), β = ([\d.]+)/.exec(r.label)).map((m) => m && [Number(m[1]), Number(m[2])]);
+  const grid = ab.every(Boolean) && new Set(ab.map((x) => x[0])).size > 1 && new Set(ab.map((x) => x[1])).size > 1;
+  box.innerHTML = `<div class="pane"><div class="row"><b>Compare on</b> <select id="x-measure">${data.measures.map((m) => `<option value="${m.id}">${esc(m.name)}</option>`).join('')}</select>
+      <select id="x-kind"><option value="dots">dot plot</option>${grid ? '<option value="heat" selected>heat map, α × β</option>' : ''}</select><span class="muted" id="x-note"></span></div><div id="x-bars"></div></div>
+    ${hasProgress ? `<div class="pane"><div class="row"><b>Over the run</b> <select id="x-var">${data.progress.map((v) => `<option value="${v.id}">${esc(v.name)}</option>`).join('')}</select><label style="margin-right:8px"><input type="checkbox" id="x-log"> log–log</label><span class="muted" id="x-lognote">mean over runs, by money spent</span></div><div class="choice" id="x-rows"></div><div id="x-lines"></div></div>` : '<p class="muted">Progress over the run is recorded for runs made from 24 October on; rerun this experiment to see it.</p>'}`;
   if (img) img.replaceWith(box); else root.querySelector('h1')?.after(box);
+  const f = (v) => (Math.abs(v) < 10 ? v.toFixed(2) : v.toFixed(0));
+  // Dot plot: each society's mean, with its 95% interval (± 2 standard errors), best first.
+  const dots = (m) => {
+    const rows = data.rows.map((r, k) => ({ ...r, k, s: r.stats[m.id] })).filter((r) => r.s.n).sort((a, b) => (m.better === 'lower' ? a.s.mean - b.s.mean : b.s.mean - a.s.mean));
+    const se = (r) => (r.s.n > 1 ? r.s.sd / Math.sqrt(r.s.n) : 0);
+    const lo = Math.min(0, ...rows.map((r) => r.s.mean - 2 * se(r))), hi = Math.max(1e-9, ...rows.map((r) => r.s.mean + 2 * se(r)));
+    const W = 760, lw = 260, rh = 24, H = 34 + rows.length * rh, sx = (v) => lw + ((v - lo) / (hi - lo)) * (W - lw - 70);
+    let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="${esc(m.name)} by society">`;
+    for (const t of [0, 0.25, 0.5, 0.75, 1]) { const v = lo + (hi - lo) * t; svg += `<line x1="${sx(v)}" x2="${sx(v)}" y1="8" y2="${H - 22}" stroke="var(--line)"/><text x="${sx(v)}" y="${H - 6}" text-anchor="middle" font-size="11" fill="var(--ink-3)">${f(v)}</text>`; }
+    rows.forEach((r, i) => {
+      // Only OSO (orange) and traditional (blue) carry colour here; the rest are grey.
+      const y = 18 + i * rh, c = /(^|, )Traditional\b|\bOSO\b/.test(r.label) ? seriesColour(r.label, r.k) : 'var(--ink-3)', e = 2 * se(r);
+      svg += `<text x="${lw - 10}" y="${y + 4}" text-anchor="end" font-size="12" fill="var(--ink)">${esc(r.label.slice(0, 40))}</text><line x1="${sx(r.s.mean - e)}" x2="${sx(r.s.mean + e)}" y1="${y}" y2="${y}" stroke="${c}" stroke-width="3" stroke-linecap="round" opacity="0.55"/><circle cx="${sx(r.s.mean)}" cy="${y}" r="6" fill="${c}" stroke="var(--surface)" stroke-width="1.5"><title>${esc(r.label)}: ${f(r.s.mean)} (95% interval ${f(r.s.mean - e)} to ${f(r.s.mean + e)}; ${r.s.n} runs)</title></circle><text x="${sx(r.s.mean + e) + 8}" y="${y + 4}" font-size="11" font-weight="700" fill="${c}">${f(r.s.mean)}</text>`;
+    });
+    $('x-note').textContent = 'dot: mean over runs; line: 95% interval (± 2 standard errors). Lines that do not overlap: a clear difference.';
+    return svg + '</svg>';
+  };
+  // Heat map: α down the side, β across the top, each cell shaded by the measure (darker = better).
+  const heat = (m) => {
+    const as = [...new Set(ab.map((x) => x[0]))].sort((a, b) => b - a), bs = [...new Set(ab.map((x) => x[1]))].sort((a, b) => a - b);
+    const cell = (a, b) => data.rows[ab.findIndex((x) => x[0] === a && x[1] === b)]?.stats[m.id];
+    const vals = data.rows.map((r) => r.stats[m.id]).filter((x) => x?.n).map((x) => x.mean);
+    const lo = Math.min(...vals), hi = Math.max(...vals), span = hi - lo || 1;
+    const good = (v) => (m.better === 'lower' ? (hi - v) / span : (v - lo) / span);
+    const cw = Math.min(110, 560 / bs.length), ch = 40, l = 90, t = 40, W = l + bs.length * cw + 20, H = t + as.length * ch + 30;
+    let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W * 1.4}px;height:auto" role="img" aria-label="${esc(m.name)} by α and β"><text x="${l + (bs.length * cw) / 2}" y="16" text-anchor="middle" font-size="12" fill="var(--ink-2)">β: chance an idea is published at once →</text><text x="14" y="${t + (as.length * ch) / 2}" font-size="12" fill="var(--ink-2)" transform="rotate(-90 14 ${t + (as.length * ch) / 2})" text-anchor="middle">α: share an idea keeps</text>`;
+    bs.forEach((b, j) => { svg += `<text x="${l + j * cw + cw / 2}" y="${t - 8}" text-anchor="middle" font-size="12" fill="var(--ink)">${b}</text>`; });
+    as.forEach((a, i) => {
+      svg += `<text x="${l - 10}" y="${t + i * ch + ch / 2 + 4}" text-anchor="end" font-size="12" fill="var(--ink)">${a}</text>`;
+      bs.forEach((b, j) => {
+        const st = cell(a, b); if (!st?.n) return;
+        const g = good(st.mean), fill = `color-mix(in srgb, var(--flow) ${Math.round(8 + 80 * g)}%, var(--surface))`;
+        svg += `<rect x="${l + j * cw + 1}" y="${t + i * ch + 1}" width="${cw - 2}" height="${ch - 2}" rx="4" fill="${fill}"><title>α = ${a}, β = ${b}: ${f(st.mean)} ± ${f(st.sd)} (${st.n} runs)</title></rect><text x="${l + j * cw + cw / 2}" y="${t + i * ch + ch / 2 + 4}" text-anchor="middle" font-size="12" font-weight="700" fill="${g > 0.55 ? 'var(--surface)' : 'var(--ink)'}">${f(st.mean)}</text>`;
+      });
+    });
+    $('x-note').textContent = `darker = better (${m.better} is better). Traditional is α = 1, β = 0 (bottom left); OSO is β = 1.`;
+    return svg + '</svg>';
+  };
   const bars = () => {
     const m = data.measures.find((x) => x.id === $('x-measure').value);
-    const rows = data.rows.map((r, k) => ({ ...r, k, s: r.stats[m.id] })).filter((r) => r.s.n).sort((a, b) => (m.better === 'lower' ? a.s.mean - b.s.mean : b.s.mean - a.s.mean));
-    const max = Math.max(1e-9, ...rows.map((r) => r.s.mean + r.s.sd));
-    const W = 760, lw = 260, bh = 20, gap = 6, H = 20 + rows.length * (bh + gap), sx = (v) => lw + (v / max) * (W - lw - 70);
-    const f = (v) => (Math.abs(v) < 10 ? v.toFixed(2) : v.toFixed(0));
-    $('x-bars').innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="${esc(m.name)} by row">${rows.map((r, i) => {
-      const y = 10 + i * (bh + gap), c = seriesColour(r.label, r.k);
-      return `<text x="${lw - 8}" y="${y + 14}" text-anchor="end" font-size="12" fill="var(--ink)">${esc(r.label.slice(0, 40))}</text><rect x="${lw}" y="${y}" width="${Math.max(1, sx(r.s.mean) - lw)}" height="${bh}" rx="3" fill="${c}"><title>${esc(r.label)}: ${f(r.s.mean)} ± ${f(r.s.sd)} (${r.s.n} runs)</title></rect><line x1="${sx(Math.max(0, r.s.mean - r.s.sd))}" x2="${sx(r.s.mean + r.s.sd)}" y1="${y + bh / 2}" y2="${y + bh / 2}" stroke="var(--ink)" stroke-width="1"/><text x="${sx(r.s.mean + r.s.sd) + 6}" y="${y + 14}" font-size="11" font-weight="700" fill="${c}">${f(r.s.mean)}</text>`;
-    }).join('')}</svg>`;
+    $('x-bars').innerHTML = $('x-kind').value === 'heat' && grid ? heat(m) : dots(m);
   };
+  $('x-kind').onchange = bars;
   $('x-measure').onchange = bars; bars();
   if (!hasProgress) return;
   // Rows to draw: traditional and the OSO rows first, up to four; the reader can change them.
@@ -536,18 +572,27 @@ async function exploreIn(id, root) {
     const chosen = [...$('x-rows').querySelectorAll('input:checked')].map((i) => Number(i.value)).filter((k) => data.rows[k].progress);
     const W = 760, H = 260, l = 50, rgt = 210, tp = 20, b = 34, pw = W - l - rgt, ph = H - tp - b;
     const X = Math.max(...chosen.map((k) => data.rows[k].budget), 1), Y = Math.max(1e-9, ...chosen.flatMap((k) => data.rows[k].progress[v]));
-    const sx = (x) => l + (x / X) * pw, sy = (y) => tp + ph - (y / Y) * ph, n = data.rows[0].progress?.[v]?.length ?? 21;
+    const n = data.rows[0].progress?.[v]?.length ?? 21, log = $('x-log').checked;
+    // Log–log: both axes in powers of ten; points at zero cannot be drawn and are left out.
+    const xMin = X / (n - 1), yMin = Math.max(1e-3, Math.min(...chosen.flatMap((k) => data.rows[k].progress[v].filter((y) => y > 0))) || 1);
+    const L = Math.log10, sx = log ? (x) => l + ((L(x) - L(xMin)) / (L(X) - L(xMin) || 1)) * pw : (x) => l + (x / X) * pw;
+    const sy = log ? (y) => tp + ph - ((L(y) - L(yMin)) / (L(Y) - L(yMin) || 1)) * ph : (y) => tp + ph - (y / Y) * ph;
     let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="${esc(name)} by money spent">`;
-    for (const t of [0, 0.25, 0.5, 0.75, 1]) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(Y * t)}" y2="${sy(Y * t)}" stroke="var(--line)"/><text x="${l - 6}" y="${sy(Y * t) + 4}" text-anchor="end" font-size="11" fill="var(--ink-3)">${Y * t < 10 ? (Y * t).toFixed(1) : Math.round(Y * t)}</text><text x="${sx(X * t)}" y="${tp + ph + 16}" text-anchor="middle" font-size="11" fill="var(--ink-3)">${Math.round(X * t)}</text>`;
+    const ticks = (a, b) => (log ? [0, 0.25, 0.5, 0.75, 1].map((t) => 10 ** (L(a) + (L(b) - L(a)) * t)) : [0, 0.25, 0.5, 0.75, 1].map((t) => b * t));
+    const lab = (x) => (x < 10 ? x.toFixed(x < 1 ? 2 : 1) : Math.round(x));
+    for (const y of ticks(yMin, Y)) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"/><text x="${l - 6}" y="${sy(y) + 4}" text-anchor="end" font-size="11" fill="var(--ink-3)">${lab(y)}</text>`;
+    for (const x of ticks(xMin, X)) svg += `<text x="${sx(x)}" y="${tp + ph + 16}" text-anchor="middle" font-size="11" fill="var(--ink-3)">${lab(x)}</text>`;
+    $('x-lognote').textContent = log ? 'log–log: both axes in powers of ten; points at zero are left out' : 'mean over runs, by money spent';
     svg += `<text x="${l + pw / 2}" y="${H - 2}" text-anchor="middle" font-size="11" fill="var(--ink-3)">money spent</text>`;
     chosen.forEach((k, j) => {
       const r = data.rows[k], c = seriesColour(r.label, k), ys = r.progress[v];
-      const d = ys.map((y, i) => `${i ? 'L' : 'M'}${sx((r.budget * i) / (n - 1)).toFixed(1)} ${sy(y).toFixed(1)}`).join(' ');
+      const pts = ys.map((y, i) => [(r.budget * i) / (n - 1), y]).filter(([x, y]) => !log || (x > 0 && y > 0));
+      const d = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${sx(x).toFixed(1)} ${sy(y).toFixed(1)}`).join(' ');
       svg += `<path d="${d}" fill="none" stroke="${c}" stroke-width="2.4"/><text x="${l + pw + 10}" y="${tp + 12 + j * 18}" font-size="12" font-weight="700" fill="${c}">${esc(r.label.slice(0, 28))}: ${ys.at(-1) < 10 ? ys.at(-1).toFixed(1) : Math.round(ys.at(-1))}</text>`;
     });
     $('x-lines').innerHTML = svg + '</svg>';
   };
-  $('x-var').onchange = lines; $('x-rows').onchange = lines; lines();
+  $('x-var').onchange = lines; $('x-rows').onchange = lines; $('x-log').onchange = lines; lines();
 }
 
 /* Runs: the history of every run */
