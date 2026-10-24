@@ -40,7 +40,7 @@ export interface Parameter {
 
 /** Every parameter the designer offers, with its range and a plain explanation. */
 export const PARAMETERS: Parameter[] = [
-  { path: 'rules.alpha', label: 'α, absorption rate', group: 'market', min: 0.05, max: 1, step: 0.05, flowBack: true, values: [0.2, 0.4, 0.6, 0.8],
+  { path: 'rules.alpha', label: 'α, absorption rate', group: 'market', min: 0, max: 1, step: 0.05, flowBack: true, values: [0.2, 0.4, 0.6, 0.8],
     short: 'how much of the value reaching an idea it absorbs for its authors',
     explain: 'When value reaches an idea, from a bounty or from later work, the idea absorbs α of it for its authors. The rest flows back to the ideas it built on, split by how much it used each, and on down the tree. Lower α pays foundational work more, which is what is meant to make agents share it. Only the OSO settings have flow-back; traditional rules are α = 1.' },
   { path: 'rules.c', label: 'c, cited share of the mint', group: 'market', min: 0, max: 0.6, step: 0.05, flowBack: true, values: [0, 0.15, 0.3, 0.5],
@@ -606,7 +606,7 @@ export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
     if (!xs.length) throw new Error(`give at least one value of ${name}`);
     for (const x of xs) if (!Number.isFinite(x) || x < lo || x > hi) throw new Error(`${name}: ${x} is outside ${lo} to ${hi}`);
   };
-  check(d.alphas, 'α', 0.05, 1); check(d.betas, 'β', 0, 1);
+  check(d.alphas, 'α', 0, 1); check(d.betas, 'β', 0, 1);
   if (d.alphas.length * d.betas.length > 60) throw new Error('at most 60 societies (α values × β values)');
   if (!(d.seeds >= 1 && d.seeds <= 1000)) throw new Error('runs per society must be between 1 and 1000');
   if (d.graph) return simpleOnGraph(d, d.graph);
