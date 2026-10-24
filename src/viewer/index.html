@@ -570,7 +570,7 @@ async function exploreIn(id, root) {
   const lines = () => {
     const v = $('x-var').value, name = data.progress.find((x) => x.id === v).name;
     const chosen = [...$('x-rows').querySelectorAll('input:checked')].map((i) => Number(i.value)).filter((k) => data.rows[k].progress);
-    const W = 760, H = 260, l = 50, rgt = 210, tp = 20, b = 34, pw = W - l - rgt, ph = H - tp - b;
+    const W = 800, H = 260, l = 50, rgt = 250, tp = 20, b = 34, pw = W - l - rgt, ph = H - tp - b;
     const X = Math.max(...chosen.map((k) => data.rows[k].budget), 1), Y = Math.max(1e-9, ...chosen.flatMap((k) => data.rows[k].progress[v]));
     const n = data.rows[0].progress?.[v]?.length ?? 21, log = $('x-log').checked;
     // Log–log: both axes in powers of ten; points at zero cannot be drawn and are left out.
@@ -584,11 +584,17 @@ async function exploreIn(id, root) {
     for (const x of ticks(xMin, X)) svg += `<text x="${sx(x)}" y="${tp + ph + 16}" text-anchor="middle" font-size="11" fill="var(--ink-3)">${lab(x)}</text>`;
     $('x-lognote').textContent = log ? 'log–log: both axes in powers of ten; points at zero are left out' : 'mean over runs, by money spent';
     svg += `<text x="${l + pw / 2}" y="${H - 2}" text-anchor="middle" font-size="11" fill="var(--ink-3)">money spent</text>`;
+    // Lines of the same colour (several OSO rows, say) differ by style: solid, dashed, dotted, dash-dot.
+    const DASH = ['', '8 4', '2 4', '10 4 2 4', '14 6'];
+    const seen = new Map();
     chosen.forEach((k, j) => {
       const r = data.rows[k], c = seriesColour(r.label, k), ys = r.progress[v];
+      const nth = seen.get(c) ?? 0; seen.set(c, nth + 1);
+      const dash = DASH[nth % DASH.length];
       const pts = ys.map((y, i) => [(r.budget * i) / (n - 1), y]).filter(([x, y]) => !log || (x > 0 && y > 0));
       const d = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${sx(x).toFixed(1)} ${sy(y).toFixed(1)}`).join(' ');
-      svg += `<path d="${d}" fill="none" stroke="${c}" stroke-width="2.4"/><text x="${l + pw + 10}" y="${tp + 12 + j * 18}" font-size="12" font-weight="700" fill="${c}">${esc(r.label.slice(0, 28))}: ${ys.at(-1) < 10 ? ys.at(-1).toFixed(1) : Math.round(ys.at(-1))}</text>`;
+      const ly = tp + 12 + j * 18;
+      svg += `<path d="${d}" fill="none" stroke="${c}" stroke-width="2.4"${dash ? ` stroke-dasharray="${dash}"` : ''}/><line x1="${l + pw + 8}" x2="${l + pw + 30}" y1="${ly - 4}" y2="${ly - 4}" stroke="${c}" stroke-width="2.4"${dash ? ` stroke-dasharray="${dash}"` : ''}/><text x="${l + pw + 36}" y="${ly}" font-size="12" font-weight="700" fill="${c}">${esc(r.label.slice(0, 26))}: ${ys.at(-1) < 10 ? ys.at(-1).toFixed(1) : Math.round(ys.at(-1))}</text>`;
     });
     $('x-lines').innerHTML = svg + '</svg>';
   };
