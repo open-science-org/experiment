@@ -92,7 +92,7 @@ function replayOf(sc: ReturnType<typeof loadScenario>, seed: number, label: stri
     space: { id: '', title, glossary: null, areas: [] },
     setting: { id: label, label }, seed,
     budget: { X: sc.budget.X, rounds: sc.budget.rounds },
-    world: { n: w.n, levels: w.levels, level: w.level, area: w.area, prereqs: w.prereqs, isTarget: w.isTarget, bounty: w.bounty, deadEnd: w.deadEnd, names: w.names ?? null, p: w.p, bits: w.bits ?? null },
+    world: { n: w.n, levels: w.levels, level: w.level, area: w.area, prereqs: w.prereqs, isTarget: w.isTarget, bounty: w.bounty, deadEnd: w.deadEnd, names: w.names ?? null, p: w.p, bits: w.bits ?? null, tosses: w.tosses ?? null },
     agents: t.agents.map((a) => ({ id: a.id, archetype: a.archetype })),
     events: t.events,
     result: { frontier: t.result.frontier, targetsSolved: t.result.targetsSolved, spend: t.result.spend, sharing: t.result.sharingRate },

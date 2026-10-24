@@ -150,6 +150,8 @@
   .kind .khead { display: flex; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 6px; }
   .kind .khead b { font-size: 14px; }
   .examples .btn { font-size: 12px; padding: 3px 9px; }
+  .toss { display: inline-block; min-width: 14px; padding: 1px 3px; margin: 1px; border-radius: 3px; background: var(--bg); border: 1px solid var(--line); font: 600 12px ui-monospace, Menlo, monospace; text-align: center; }
+  .seq { margin-top: 8px; font-size: 13px; } .seq .tosses { display: inline; }
   .explore { display: grid; gap: 12px; margin: 12px 0; }
   .explore .pane { padding: 12px; }
   .explore .choice { margin: 6px 0; font-size: 12px; }
@@ -500,6 +502,43 @@ async function openDoc(path) {
 }
 
 let resultsQuery = '';
+/* Sequences: an idea's coin tosses, coloured by where each came from */
+const ORIGIN = ['#7b4fc4', '#2f9e8f', '#c98a0b', '#d0517d', '#4a6fa5', '#6b8e23'];
+/** Each bit of idea x: its toss and which parent it came from (index into x's parents), or -1 for new. */
+function sequenceOf(w, x) {
+  return w.bits[x].map((b) => ({ b, toss: w.tosses?.[b] ?? '·', from: w.prereqs[x].findIndex((y) => w.bits[y].includes(b)) }));
+}
+function seqChips(w, x) {
+  return sequenceOf(w, x).map((c) => `<span class="toss" style="${c.from >= 0 ? `background:${ORIGIN[c.from % ORIGIN.length]};color:#fff` : ''}" title="${c.from >= 0 ? `from parent #${w.prereqs[x][c.from]}` : 'new to this idea'}">${c.toss}</span>`).join('');
+}
+/** A clickable drawing of a generated graph: click an idea to see its sequence and where each toss came from. */
+function seqGraph(w, el, pick = null) {
+  const lay = layout(w);
+  const sel = pick ?? w.isTarget.findIndex(Boolean);
+  const parents = sel >= 0 ? w.prereqs[sel] : [];
+  let svg = `<svg class="tree" viewBox="0 0 ${lay.W} ${lay.H}" role="img" aria-label="The idea graph: click an idea to see its sequence" style="cursor:pointer">`;
+  for (let r = 0; r < w.n; r++) for (const j of w.prereqs[r]) {
+    const k = r === sel ? parents.indexOf(j) : -1;
+    svg += `<line x1="${lay.pos[j][0]}" y1="${lay.pos[j][1]}" x2="${lay.pos[r][0]}" y2="${lay.pos[r][1]}" stroke="${k >= 0 ? ORIGIN[k % ORIGIN.length] : 'var(--line)'}" stroke-width="${k >= 0 ? 3 : 1}"/>`;
+  }
+  for (let r = 0; r < w.n; r++) {
+    const [x, y] = lay.pos[r], k = parents.indexOf(r);
+    const fill = r === sel ? 'var(--ink)' : k >= 0 ? ORIGIN[k % ORIGIN.length] : w.deadEnd[r] ? 'var(--surface)' : 'var(--s1-soft)';
+    const tip = `#${r} · level ${w.level[r]} · ${w.bits[r].length} bits: ${w.bits[r].map((b) => w.tosses?.[b] ?? '·').join('')}${w.isTarget[r] ? ` · bounty ${w.bounty[r]}` : ''}`;
+    svg += w.isTarget[r]
+      ? `<rect data-x="${r}" x="${x - 8}" y="${y - 8}" width="16" height="16" rx="3" fill="${fill}" stroke="var(--ink)" stroke-width="1.5"><title>${esc(tip)}</title></rect>`
+      : `<circle data-x="${r}" cx="${x}" cy="${y}" r="${r === sel ? 8 : 6}" fill="${fill}" stroke="${w.deadEnd[r] ? 'var(--ink-3)' : 'var(--s1)'}" stroke-width="1.4"><title>${esc(tip)}</title></circle>`;
+  }
+  svg += '</svg>';
+  const legend = parents.map((y, k) => `<span><span class="toss" style="background:${ORIGIN[k % ORIGIN.length]};color:#fff">&nbsp;</span> from parent #${y} (${sequenceOf(w, sel).filter((c) => c.from === k).length} tosses)</span>`).join(' ') + ` <span><span class="toss">&nbsp;</span> new to this idea (${sel >= 0 ? sequenceOf(w, sel).filter((c) => c.from < 0).length : 0})</span>`;
+  el.innerHTML = `<p class="muted" style="margin:4px 0">Click any idea. Squares carry a bounty; hollow circles are dead ends.</p>${svg}
+    ${sel >= 0 ? `<div class="seq"><b>Idea #${sel}</b>, level ${w.level[sel]}${w.isTarget[sel] ? `, bounty ${w.bounty[sel]}` : ''}: <span class="tosses">${seqChips(w, sel)}</span>
+      <div class="muted" style="margin-top:4px">${legend}</div>
+      ${parents.map((y, k) => { const used = new Set(w.bits[sel]); return `<div style="margin-top:3px"><span class="muted">parent #${y}:</span> ${w.bits[y].map((b) => `<span class="toss" style="${used.has(b) ? `background:${ORIGIN[k % ORIGIN.length]};color:#fff` : ''}">${w.tosses?.[b] ?? '·'}</span>`).join('')} <span class="muted">(coloured: the piece reused)</span></div>`; }).join('')}
+      <div class="muted">An attempt from scratch needs all ${w.bits[sel].length} tosses right (chance 2<sup>−${w.bits[sel].length}</sup>); knowing every parent leaves ${sequenceOf(w, sel).filter((c) => c.from < 0).length} (chance 2<sup>−${sequenceOf(w, sel).filter((c) => c.from < 0).length}</sup>).</div></div>` : ''}`;
+  for (const n of el.querySelectorAll('[data-x]')) n.onclick = () => seqGraph(w, el, Number(n.dataset.x));
+}
+
 /* Results: interactive charts on a saved simulation's page */
 const seriesColour = (label, k) => (/(^|, )Traditional\b/.test(label) ? 'var(--s1)' : /\bOSO\b/.test(label) ? 'var(--s2)' : ['var(--ink-2)', 'var(--ink-3)', 'var(--flow)', '#2f9e8f'][k % 4]);
 const explore = (id) => exploreIn(id, $('doc-body'));
@@ -1018,7 +1057,7 @@ function graphPreview() {
   previewTimer = setTimeout(async () => {
     const g = await post('/api/simple/graph', { graph: graphControls() });
     $('g-stats').innerHTML = g.ok ? `One draw: <b>${g.ideas}</b> ideas, <b>${g.parents.toFixed(1)}</b> parents each on average, top sequences of <b>${g.topLength}</b> bits, <b>${Math.round(g.composition * 100)}%</b> of each idea from its parents, ${g.targets} with a bounty, ${g.deadEnds} dead ends. Each run draws its own graph.` : `<span class="no">${esc(g.error)}</span>`;
-    $('g-svg').innerHTML = g.ok ? g.svg : '';
+    if (g.ok) seqGraph(g.world, $('g-svg')); else $('g-svg').innerHTML = '';
   }, 250);
 }
 function applyGraphMode() {
@@ -1574,7 +1613,7 @@ function drawPane(pane, t) {
     const pub = s.published[r] >= 0, hid = s.hidden[r] > 0;
     const fill = pub ? 'var(--s1)' : hid ? 'var(--s1-soft)' : 'var(--surface)';
     const stroke = pub || hid ? 'var(--s1)' : 'var(--ink-3)';
-    const tip = `${name(run, r)} · level ${w.level[r]} · chance per attempt ${(w.p[r] * 100).toFixed(1)}%${w.isTarget[r] ? ` · target, bounty ${w.bounty[r]}` : ''}${pub ? ` · published by agent ${s.published[r] + 1}` : hid ? ` · held privately by ${s.hidden[r]} agent(s)` : ''}`;
+    const tip = `${name(run, r)} · level ${w.level[r]}${w.bits ? ` · sequence ${w.bits[r].map((b) => w.tosses?.[b] ?? '·').join('')}` : ''} · chance per attempt ${(w.p[r] * 100).toFixed(1)}%${w.isTarget[r] ? ` · target, bounty ${w.bounty[r]}` : ''}${pub ? ` · published by agent ${s.published[r] + 1}` : hid ? ` · held privately by ${s.hidden[r]} agent(s)` : ''}`;
     const tr = s.tried.get(r);
     if (tr) svg += `<circle cx="${x}" cy="${y}" r="${w.isTarget[r] ? 13 : 10}" fill="none" stroke="var(--s2)" stroke-width="2" ${tr.ok ? '' : 'stroke-dasharray="3 2"'}/>`;
     if (w.isTarget[r]) {

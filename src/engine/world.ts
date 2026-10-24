@@ -33,6 +33,8 @@ export interface World {
   bits?: number[][];
   /** With bits: ideas needing more unresolved bits than this are not attempted. */
   attemptLimit?: number;
+  /** With bits: each bit's toss, H or T, by bit id (for showing sequences; the simulation only needs ids). */
+  tosses?: string;
 }
 
 export type WorldMaker = (success: Scenario['success'], rng: Rng) => World;
@@ -40,7 +42,7 @@ export type WorldMaker = (success: Scenario['success'], rng: Rng) => World;
 export const worlds = new Registry<Record<string, unknown>, WorldMaker>('world');
 
 /** Fills in everything derived from levels, prerequisites, p and bounties. */
-export function finishWorld(base: { level: number[]; area: number[]; p: number[]; prereqs: number[][]; bounty: number[]; names?: string[]; bits?: number[][]; attemptLimit?: number }): World {
+export function finishWorld(base: { level: number[]; area: number[]; p: number[]; prereqs: number[][]; bounty: number[]; names?: string[]; bits?: number[][]; attemptLimit?: number; tosses?: string }): World {
   const { level, area, p, prereqs, bounty } = base;
   const n = level.length;
   const children: number[][] = Array.from({ length: n }, () => []);
@@ -69,7 +71,7 @@ export function finishWorld(base: { level: number[]; area: number[]; p: number[]
   return {
     n, levels: Math.max(0, ...level), level, area, p, prereqs, children, weights, isTarget, bounty, targets,
     ancestors, targetsBelow, deadEnd, names: base.names,
-    ...(base.bits ? { bits: base.bits, attemptLimit: base.attemptLimit ?? 24 } : {}),
+    ...(base.bits ? { bits: base.bits, attemptLimit: base.attemptLimit ?? 24, ...(base.tosses ? { tosses: base.tosses } : {}) } : {}),
   };
 }
 
@@ -343,7 +345,10 @@ export function ideasWorld(params: IdeasParams, rng: Rng): World {
   const bounty = new Array<number>(level.length).fill(0);
   const top = byLevel[levels], nT = Math.min(params.targets, top.length);
   for (let k = 0; k < nT; k++) bounty[top[Math.floor((k + 0.5) * top.length / nT)]] = params.bountyBase * params.bountyGrowth ** (levels - 1);
-  return finishWorld({ level, area: level.map(() => 0), p, prereqs, bounty, bits, attemptLimit: params.attemptLimit });
+  // Each bit's toss, from its own stream so the graph and the run are unchanged.
+  const tossRng = rng.fork(97);
+  const tosses = Array.from({ length: nextBit }, () => (tossRng.chance(0.5) ? 'H' : 'T')).join('');
+  return finishWorld({ level, area: level.map(() => 0), p, prereqs, bounty, bits, attemptLimit: params.attemptLimit, tosses });
 }
 
 worlds.register<IdeasParams>('ideas', {

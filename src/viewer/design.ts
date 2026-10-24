@@ -581,6 +581,7 @@ export function graphPreview(g: GraphControls, seed = 1) {
     const inherited = w.bits!.map((b, x) => { const from = new Set(w.prereqs[x].flatMap((y) => w.bits![y])); return b.filter((bit) => from.has(bit)).length / b.length; });
     return {
       ok: true, svg: worldFigure(w, 'The idea graph (one draw)'),
+      world: { n: w.n, levels: w.levels, level: w.level, prereqs: w.prereqs, bits: w.bits, tosses: w.tosses, isTarget: w.isTarget, bounty: w.bounty, deadEnd: w.deadEnd },
       ideas: w.n, targets: w.targets.length, deadEnds: w.deadEnd.filter(Boolean).length,
       parents: withParents.reduce((a, ps) => a + ps.length, 0) / Math.max(1, withParents.length),
       topLength: Math.max(...w.bits!.map((b) => b.length)),
