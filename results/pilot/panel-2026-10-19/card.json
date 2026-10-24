@@ -1,7 +1,8 @@
 {
+ "ranAt": "2026-10-20T23:30:43.189Z",
  "id": "panel-2026-10-19",
  "kind": "model pilot",
- "date": "2026-10-23",
+ "date": "2026-10-24",
  "title": "Five AI models: alone or with help",
  "design": {
   "question": "Can a model solve more when it is given the helper ideas (lemmas) a target needs?",

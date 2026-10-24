@@ -175,7 +175,8 @@ function history() {
     const model = c.kind !== 'simulation' ? KIND[c.kind] : c.tags?.includes('simple model') ? 'Simple model' : c.tags?.includes('full model') ? 'Full model' : 'Simulation';
     const watch = c.kind === 'simulation' && existsSync(join(ROOT, 'config', 'experiments', `${c.id}.yaml`)) ? `#/live?tab=sim&experiment=${encodeURIComponent(c.id)}`
       : c.kind === 'field report' && !c.superseded ? `#/live?tab=sim&space=${encodeURIComponent(c.id)}` : c.kind === 'race' && !c.invalid ? '#/live?tab=ai' : null;
-    return { at: existsSync(page) ? statSync(page).mtimeMs : Date.parse(c.date), id: c.id, kind: model, title: c.title, question: c.design.question, answer: c.invalid ? `Not valid: ${c.invalid}` : c.superseded ? `Earlier version. ${c.answer}` : c.answer, status: c.invalid ? 'not valid' : c.superseded ? 'earlier' : 'done', result: `#/doc/${c.page}`, watch, tags: c.tags ?? [] };
+    // When the run started; older cards without it: when their result was last written.
+    return { at: c.ranAt ? Date.parse(c.ranAt) : existsSync(page) ? statSync(page).mtimeMs : Date.parse(c.date), id: c.id, kind: model, title: c.title, question: c.design.question, answer: c.invalid ? `Not valid: ${c.invalid}` : c.superseded ? `Earlier version. ${c.answer}` : c.answer, status: c.invalid ? 'not valid' : c.superseded ? 'earlier' : 'done', result: `#/doc/${c.page}`, watch, tags: c.tags ?? [] };
   });
   const seen = new Set(rows.map((r) => r.id));
   for (const j of design.listJobs()) {

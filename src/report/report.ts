@@ -97,6 +97,7 @@ function summarize(runs: RunResult[]) {
 
 /** Runs the battery on a space and writes reports/<id>/. Returns the headline numbers. */
 export function buildReport(input: Space, seeds = 100, log: (s: string) => void = () => {}, root = REPORTS_DIR): Headline {
+  const ranAt = new Date().toISOString();
   const { space, calibrated } = withCalibratedBudget(input);
   if (calibrated) log(`  calibrated the budget: X = ${space.scenario.budget.X}`);
   const { spec, scenario } = space;
@@ -383,6 +384,7 @@ The space is [spaces/${spec.id}.yaml](../../spaces/${spec.id}.yaml)${spec.source
     world: { results: world.n, levels: world.levels, targets: T, deadEnds },
   }, null, 1) + '\n');
   if (root === REPORTS_DIR) writeCard(outDir, {
+    ranAt,
     id: spec.id, kind: 'field report', date, title: spec.title,
     design: {
       question: `For the same money, does OSO get further than traditional research in ${spec.title.replace(/^(An?|The) /, (m) => m.toLowerCase())}?`,

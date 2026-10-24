@@ -367,7 +367,9 @@ A target a model proves alone does not need its lemmas, for that model: shared l
   const notesFile = join(dir, 'notes.md');
   const notes = exists(notesFile) ? readFileSync(notesFile, 'utf8').trim() : '';
   const plain = (t: string) => t.replace(/\*\*/g, '');
+  const starts = runs.flatMap((r) => r.records.map((x) => x.startedAt ?? 0)).filter((t) => t > 0);
   writeCard(dir, {
+    ...(starts.length ? { ranAt: new Date(Math.min(...starts)).toISOString() } : {}),
     id, kind: 'model pilot', date: new Date().toISOString().slice(0, 10), title,
     design: {
       question: 'Can a model solve more when it is given the helper ideas (lemmas) a target needs?',

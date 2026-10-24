@@ -484,6 +484,9 @@ export function stats(r: CommunityResult) {
   };
 }
 
+/** When a test started: its first action. */
+const firstAt = (rs: CommunityResult[]) => { const ts = rs.flatMap((r) => r.actions.map((a) => a.t)).filter(Boolean); return ts.length ? new Date(Math.min(...ts)).toISOString() : undefined; };
+
 export function writeCommunityComparison(id: string, runs: { runId: string; result: CommunityResult }[], note = '', standIn = false): string {
   const who = standIn ? 'stand-in agents' : 'real agents';
   const dir = join(RESULTS_DIR, 'community', id);
@@ -531,6 +534,7 @@ ${table}
 Runs: ${runs.map((x) => x.runId).join(', ')}. Transcripts (with proofs) are private.
 `;
   if (!standIn) writeCard(dir, {
+    ranAt: firstAt(runs.map((x) => x.result)),
     id, kind: 'race', date: new Date(Math.min(...runs.map((x) => x.result.actions[0]?.t ?? Date.now()))).toISOString().slice(0, 10), title: 'First AI test, OSO vs traditional',
     design: { question: 'For the same money, does an OSO community of AI agents solve more targets than a traditional one?', compare: 'traditional rules and OSO rules', fixed: `the same ${o.agents.length} agents, $${o.budget} each, no personas`, measure: 'targets solved', better: 'higher', runs: '1 run per side' },
     answer: verdict.replace(/\*\*/g, ''), table: rows.map((r) => ({ rules: r.rules, 'targets solved': r['targets solved'], spent: r.spent, 'ROI (value per $)': r['ROI (value per $)'], 'lemmas accepted': r['lemmas accepted'], 'duplicated work': r['duplicated work'] })),
@@ -666,6 +670,7 @@ Transcripts, with every proof, are private.
   const answer = primaryK === null ? md.split('\n').find((l) => l.startsWith('**'))!.replace(/\*\*/g, '')
     : `${verdict === 'OSO ahead' ? 'OSO ahead' : verdict === 'traditional ahead' ? 'Traditional ahead' : verdict === 'no clear difference' ? 'No clear difference' : 'One run per side'}: OSO solved ${primaryK} targets that count for ${money(mean(oS))} on average, traditional for ${money(mean(tS))} (${reachedK('oso')} and ${reachedK('traditional')} of ${pairs.length} runs got there).`;
   writeCard(dir, {
+    ranAt: firstAt(pairs.flatMap((p) => [p.traditional, p.oso])),
     id, kind: 'race', date: new Date().toISOString().slice(0, 10), title: dsg.title ?? `AI models, OSO vs traditional (${id})`,
     design: {
       question: dsg.question ?? 'For the same money, does an OSO community of AI agents solve more of the counted targets than a traditional one?',

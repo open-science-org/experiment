@@ -40,6 +40,8 @@ export interface Card {
   tags?: string[];
   /** Set on an earlier version of a result that a newer one replaces, with why. */
   superseded?: string;
+  /** When the run started (ISO time). */
+  ranAt?: string;
 }
 
 const table = (rows: Record<string, string | number>[]) => {

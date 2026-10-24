@@ -150,7 +150,7 @@ function runOne(spec: ExperimentSpec) {
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, 'config.json'), JSON.stringify({ experiment: spec.id, date, commit, dirty, command, seeds: n, overrides: sets, config: out.config }, null, 2) + '\n');
   writeFileSync(join(dir, 'runs.jsonl'), out.runs.map((r) => JSON.stringify(r)).join('\n') + '\n');
-  writeCard(dir, simulationCard(spec, out, n, date), [
+  writeCard(dir, { ...simulationCard(spec, out, n, date), ranAt: new Date(started).toISOString() }, [
     spec.description,
     '',
     spec.analysis === 'simple-chain-exact' ? 'Values are mean ± standard error, so they can be compared with the exact values.' : 'Values are mean ± standard deviation over runs.',

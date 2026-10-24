@@ -1,7 +1,8 @@
 {
+ "ranAt": "2026-10-20T23:45:19.830Z",
  "id": "race-cheap",
  "kind": "race",
- "date": "2026-10-23",
+ "date": "2026-10-24",
  "title": "Cheap AI models, OSO vs traditional",
  "design": {
   "question": "With the cheapest model, does an OSO community of AI labs solve more of the hard targets than a traditional one, for the same money?",
