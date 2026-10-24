@@ -16,7 +16,7 @@ export function makeAgents(config: Scenario['agents'], areas: number, rng: Rng):
   for (const [archetype, count] of Object.entries(config.mix)) {
     const traits = config.archetypes[archetype];
     for (let k = 0; k < count; k++) {
-      agents.push({ id: agents.length, archetype, traits, specialty: traits.specialist ? rng.int(areas) : null });
+      agents.push({ id: agents.length, archetype, traits, specialty: traits.specialist && areas > 1 ? rng.int(areas) : null });
     }
   }
   return agents;

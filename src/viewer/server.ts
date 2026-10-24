@@ -274,6 +274,7 @@ const server = createServer(async (req, res) => {
       if (!full || statSync(full).isDirectory()) return send(404, { error: 'not found' });
       return send(200, (extname(full) === '.png' ? readFileSync(full) : readFileSync(full, 'utf8')), TYPES[extname(full)] ?? 'text/plain; charset=utf-8');
     }
+    if (url.pathname === '/api/presets') return send(200, design.graphPresets());
     if (url.pathname === '/api/spaces') return send(200, spaceIds().map((id) => ({ id, title: loadSpace(id).spec.title })));
     if (url.pathname === '/api/settings') return send(200, SETTINGS);
     if (url.pathname === '/api/sim/rows') return send(200, experimentRows(url.searchParams.get('experiment') ?? ''));

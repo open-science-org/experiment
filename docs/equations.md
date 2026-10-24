@@ -7,7 +7,7 @@ Every rule of the experiment as a formula, in the order a run uses them. Each fo
 
 ![A tree of ideas, levels left to right: z1, z2 and y2 at level 1; y1 at level 2, built on z1 and z2; x at level 3, built on y1 and y2, with a bounty of 16](img/equations-tree.svg)
 
-- **This tree follows the written topics' rule** ([section 3.2](#32-the-written-topics-parents-required)); the definitions in sections 1 and 2 hold for any idea graph, and [section 3.1](#31-the-generator) generates graphs of any shape.
+- **This tree follows the parents-required rule** ([section 3.2](#32-the-lean-problem-set-parents-required)); the definitions in sections 1 and 2 hold for any idea graph, and [section 3.1](#31-the-generator) generates graphs of any shape.
 - **Ideas** are the circles in the tree. Every idea is the same kind of thing; they differ only in their level, chance of success, bounty and links. An idea with a bounty is what other pages call a **target**.
 - **Arrows** go from a parent to the idea built on it. The number on an arrow is the **link weight**. Credit flows the other way, against the arrows.
 - **Levels** run left to right, easiest first. An idea **before** $x$ is one $x$ builds on, directly or through others ($y_1$, $y_2$, $z_1$, $z_2$). An idea **after** $x$ is built on $x$.
@@ -46,7 +46,7 @@ Grouped by what they belong to, in the order of the sections below. A hat marks 
 | $w_{y \to x}$ | link weight: contributions scaled to add up to 1 | $w_{y_1 \to x} = 62.5\%$ | |
 | $\text{share}(x, z)$ | part of value entering $x$ that reaches $z$'s author ($z$ is $x$ or an idea before it) | $\text{share}(x, y_1) = 0.1$ | |
 
-**The written topics** ([section 3.2](#32-the-written-topics-parents-required))
+**Parents required** ([section 3.2](#32-the-lean-problem-set-parents-required))
 
 | Symbol | Meaning | In the example | Default |
 | --- | --- | --- | --- |
@@ -187,11 +187,21 @@ $$\phi_{y \to x} = \sum_{b \,\in\, \text{bits}(x) \cap \text{bits}(y)} \frac{1}{
 
 *Example:* $y$ = HHT and $x$ = HHTHHH ($x$ took all 3 of $y$'s bits and added 3). From scratch, $W_x = 2^6 = 64$ attempts; knowing $y$, $W_x = 2^3 = 8$. If $x$ instead has two parents HHTH and THHH that overlap in TH, each resolves 4 of $x$'s 6 bits; the 2 shared bits are split, so each contributes $2 + 1 = 3$: weights 50% each.
 
+**Presets.** Three topics are named settings of the generator, each with its story (description and glossary) on the Topics page:
+
+| Preset | Levels × width | Parents | Length, growth | Composition | Why |
+| --- | --- | --- | --- | --- | --- |
+| Abstract research field | 8 × 10 | 2 | 2, +1.5 | 0.7 | a generic, deep and wide field |
+| Early-stage drug discovery | 6 × 9 | 1.5 | 2, +2 | 0.5 | each stage reuses only part of the evidence before it; many dead ends |
+| Solid-state battery | 5 × 4 | 2.5 | 3, +2 | 0.8 | a small field where ideas lean heavily on what came before |
+
+Their numbers are illustrative, not measured from the fields. Reports made before October 24 used hand-written graphs; they are kept as earlier versions.
+
 **What the controls do** (12 identical agents, 10 runs; level reached of 6): with the defaults, traditional reaches 1.2 and OSO 6.0. Lower composition (0.2) makes parents help little, and even OSO stalls at 3.9; higher composition (0.95) makes parents do most of the work, and traditional reaches 5.4, because an agent's own private ideas help it too. Longer sequences, more parents or more levels make it harder for traditional much faster than for OSO.
 
-### 3.2 The written topics: parents required
+### 3.2 The Lean problem set: parents required
 
-The topics written so far (abstract field, drug discovery, battery, Lean tree) and every result saved before October 23 use this rule: an idea can be attempted only once all its parents are known. The example tree follows it.
+The Lean problem set's tree (the real structure of the theorems the AI models prove), and every result saved before October 23, use this rule: an idea can be attempted only once all its parents are known. The example tree follows it too.
 
 - **Chance per attempt** falls with the level, once every parent is known; all parents are required:
 

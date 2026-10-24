@@ -10,7 +10,7 @@ Societies range from closed ($\alpha = 1$, $\beta = 0$: traditional) to fully op
 
 ## The idea graph
 
-The same as in the full model ([sections 1 to 3](equations.md#1-an-idea)): ideas with a level $\ell_x$, a chance per attempt and a bounty $B_x$, linked to their parents with link weights $w_{y \to x}$. Either **generated** ([section 3.1](equations.md#31-the-generator)): ideas are bit sequences, an attempt works with chance $2^{-\text{bits left}}$, and you set the structure, the difficulty (sequence length) and the attribution (composition). Or **a topic** ([section 3.2](equations.md#32-the-written-topics-parents-required)): parents are required, $p_x = p_0\,\eta^{\ell_x - 1}$, and $w_{y \to x} \propto 1/p_y$.
+The same as in the full model ([sections 1 to 3](equations.md#1-an-idea)): ideas with a level $\ell_x$, a chance per attempt and a bounty $B_x$, linked to their parents with link weights $w_{y \to x}$. Either **generated** ([section 3.1](equations.md#31-the-generator)): ideas are bit sequences, an attempt works with chance $2^{-\text{bits left}}$, and you set the structure, the difficulty (sequence length) and the attribution (composition). Or **the Lean problem set** ([section 3.2](equations.md#32-the-lean-problem-set-parents-required)): parents are required, $p_x = p_0\,\eta^{\ell_x - 1}$, and $w_{y \to x} \propto 1/p_y$.
 
 ## What is held fixed
 
@@ -20,7 +20,7 @@ The same as in the full model ([sections 1 to 3](equations.md#1-an-idea)): ideas
 | Money | the budget split equally: every agent gets $\text{Budget}/(R\,N)$ each round, whatever it earned ($\rho = 0$) |
 | Mint | off: $m = 0$, so bounties are the only value |
 | Validation | off: $\theta = 0$. No agent games, so nothing trivial is ever submitted |
-| Ideas and bounties | a generated idea graph (every run draws its own) or a topic's |
+| Ideas and bounties | a generated idea graph (every run draws its own; presets: abstract field, drug discovery, battery) or the Lean problem set's |
 
 ## One round
 

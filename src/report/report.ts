@@ -243,7 +243,7 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
   };
 
   const costLine = (s: typeof trad, name: string) =>
-    s.reach > 0 ? `${name} ${Math.round(s.cost)} money${s.reach < 1 ? ` (in the ${pct(s.reach)} of runs that got there)` : ''}` : `${name} never got there`;
+    s.reach > 0 ? `${name} ${Math.round(s.cost)}${s.reach < 1 ? ` (in the ${pct(s.reach)} of runs that got there)` : ''}` : `${name} never got there`;
   const verdictText = {
     'OSO ahead': 'For the same money, the OSO community got further, or got there more cheaply, than the traditional one.',
     'no clear difference': 'For the same money, there is no clear difference between the two communities.',
@@ -252,7 +252,7 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
   const deadEnds = world.deadEnd.filter(Boolean).length;
   const levelsTable = Array.from({ length: world.levels }, (_, i) => i + 1).map((l) => {
     const rs = [...Array(world.n).keys()].filter((r) => world.level[r] === l);
-    return { level: l, results: rs.length, targets: rs.filter((r) => world.isTarget[r]).length, 'success chance per attempt': pct(mean(rs.map((r) => world.p[r]))) };
+    return { level: l, ideas: rs.length, targets: rs.filter((r) => world.isTarget[r]).length, [world.bits ? 'chance per attempt, parents known' : 'success chance per attempt']: pct(mean(rs.map((r) => world.p[r]))), ...(world.bits ? { 'sequence length (bits)': f1(mean(rs.map((r) => world.bits![r].length))) } : {}) };
   });
   const targetsTable = world.targets.map((t, k) => ({ target: world.names?.[t] ?? `T${k + 1}`, level: world.level[t], bounty: world.bounty[t], 'ideas it rests on': world.ancestors[t].size }));
 
@@ -272,7 +272,7 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
 
 **${verdictText}**
 
-- **How far:** with a budget of ${X} money, OSO reached level **${f1(oso.frontier)}** of ${world.levels} on average; traditional research reached **${f1(trad.frontier)}**.
+- **How far:** with a budget of ${X}, OSO reached level **${f1(oso.frontier)}** of ${world.levels} on average; traditional research reached **${f1(trad.frontier)}**.
 - **Targets solved:** OSO solved **${f1(oso.targetsSolved)}** of ${T}; traditional solved **${f1(trad.targetsSolved)}**.
 - **Cost to reach level ${L}:** ${costLine(oso, 'OSO')}; ${costLine(trad, 'traditional')}.
 - **Return on the money (ROI):** OSO gained **${f2(oso.roi)}** in bounty value per unit spent (${Math.round(oso.value)} for ${Math.round(oso.spend)}); traditional **${f2(trad.roi)}** (${Math.round(trad.value)} for ${Math.round(trad.spend)}). Value gained is the bounties of the targets solved.
@@ -302,7 +302,7 @@ How hard each level is, before an agent's skill:
 
 ${markdownTable(levelsTable)}
 
-The community has ${Object.values(scenario.agents.mix).reduce((a, b) => a + b, 0)} agents (${Object.entries(scenario.agents.mix).filter(([, n]) => n > 0).map(([a, n]) => `${n} ${a}`).join(', ')}) and a budget of ${X} money over ${scenario.budget.rounds ?? '–'} rounds${calibrated ? ' (calibrated: the smallest budget at which OSO solves about 90% of the targets)' : ''}.
+The community has ${Object.values(scenario.agents.mix).reduce((a, b) => a + b, 0)} agents (${Object.entries(scenario.agents.mix).filter(([, n]) => n > 0).map(([a, n]) => `${n} ${a}`).join(', ')}) and a budget of ${X} over ${scenario.budget.rounds ?? '–'} rounds${calibrated ? ' (calibrated: the smallest budget at which OSO solves about 90% of the targets)' : ''}.
 
 ## 2. Progress for the money
 

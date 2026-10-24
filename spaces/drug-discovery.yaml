@@ -1,6 +1,6 @@
 id: drug-discovery
 title: Early-stage drug discovery
-summary: Five stages from biology to a development candidate, in three disease areas, with three candidates as bounties.
+summary: Six stages from biology to a development candidate; each stage reuses only part of the evidence before it, and three candidates carry bounties.
 description: >-
   Early-stage drug discovery. Validated biology (a disease mechanism) supports target identification;
   targets support screening assays; assays find hits; hits are optimized into leads; and a lead with
@@ -11,23 +11,21 @@ glossary:
   idea: a validated piece of evidence (mechanism, target, assay, hit or lead)
   target: a development candidate, worth a large bounty
   attempt: one experimental campaign
-  area: a disease area
   agent: a lab
-areas: [oncology, immunology, neuroscience]
 scenario:
   world:
-    kind: layered
+    kind: ideas                # a preset of the idea graph generator (docs/equations.md, section 3.1)
     levels: 6
     width: 9
-    maxPrereqs: 2
-    skipProb: 0.1
-    areas: 3
-    areaStickiness: 0.85
-    targets:
-      - { level: 6, count: 3 }
+    parents: 1.5
+    skip: 0.1
+    length: 2
+    lengthGrowth: 2
+    composition: 0.5
+    targets: 3
     bountyBase: 2
     bountyGrowth: 3
-  success: { p0: 0.6, eta: 0.45 }
-  measures: { targetLevel: 5 }
-notes: Stage difficulties and bounties are illustrative, not industry figures.
+  measures: { targetLevel: 6 }
+
+notes: A preset of the idea graph generator. Each stage reuses only part of the evidence before it (composition 0.5), many hits and leads go nowhere, and the stages get much harder. The numbers are illustrative, not measured from the field.
 source: written by hand as an example of a new problem space

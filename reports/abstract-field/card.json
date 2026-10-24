@@ -1,36 +1,36 @@
 {
  "id": "abstract-field",
  "kind": "field report",
- "date": "2026-10-23",
+ "date": "2026-10-24",
  "title": "An abstract research field",
  "design": {
   "question": "For the same money, does OSO get further than traditional research in an abstract research field?",
   "compare": "the six rule settings, an α sweep, the parameters one by one, costly and fallible sharing",
-  "fixed": "the field, 12 agents and a budget of 1200",
+  "fixed": "the field, 12 agents and a budget of 950",
   "measure": "hardest level reached",
   "better": "higher",
   "runs": "100 runs per setting"
  },
- "answer": "OSO ahead: level 7.9 against 5.7 of 8; targets 6.9 against 4.2 of 7; ROI 1.44 against 0.22.",
+ "answer": "OSO ahead: level 8.0 against 3.7 of 8; targets 3.6 against 0.7 of 4; ROI 2.70 against 0.36.",
  "table": [
   {
    "rules": "Traditional",
-   "hardest level": "5.7 of 8",
-   "targets solved": "4.2 of 7",
-   "cost to level 7": 957,
-   "ROI": "0.22 (268 for 1194)"
+   "hardest level": "3.7 of 8",
+   "targets solved": "0.7 of 4",
+   "cost to level 8": 686,
+   "ROI": "0.36 (343 for 947)"
   },
   {
    "rules": "OSO",
-   "hardest level": "7.9 of 8",
-   "targets solved": "6.9 of 7",
-   "cost to level 7": 485,
-   "ROI": "1.44 (1130 for 849)"
+   "hardest level": "8.0 of 8",
+   "targets solved": "3.6 of 4",
+   "cost to level 8": 401,
+   "ROI": "2.70 (1859 for 747)"
   }
  ],
  "caveats": [
   "A simulation with guessed parameters: it shows how the rules play out if the field works as described.",
-  "OSO's lead as the market-set parameters vary: 0.3 to 1.9 levels."
+  "OSO's lead as the market-set parameters vary: 0.0 to 5.8 levels."
  ],
  "page": "reports/abstract-field/card.md",
  "chart": "reports/abstract-field/figures/frontier.svg"

@@ -1,7 +1,6 @@
 id: abstract-field
 title: An abstract research field
-summary: A generic field of 80 ideas in 8 levels and 3 areas, with 7 bounties; the simulator's
-  default world.
+summary: "A generic field: 80 ideas in 8 levels, about two parents each, four bounties at the top."
 description: "A research field with no particular subject. Ideas build on ideas in eight levels of
   rising difficulty, across three loosely connected areas. Seven targets carry bounties that double
   with each level, and about a third of all ideas are dead ends that lead to no target. Twelve
@@ -11,12 +10,22 @@ glossary:
   idea: a finding that later findings can build on
   target: a bounty-carrying finding announced in advance
   attempt: one attempt at proving a finding, which succeeds or fails
-  area: a subfield
-areas:
-  - area 1
-  - area 2
-  - area 3
 scenario:
+  world:
+    kind: ideas
+    levels: 8
+    width: 10
+    parents: 2
+    skip: 0.25
+    length: 2
+    lengthGrowth: 1.5
+    composition: 0.7
+    targets: 4
+    bountyBase: 4
+    bountyGrowth: 2
+  measures:
+    targetLevel: 8
   budget:
-    X: 1200
-source: written by hand; the default scenario
+    X: 950
+    rounds: 79
+    perAgentPerRound: null

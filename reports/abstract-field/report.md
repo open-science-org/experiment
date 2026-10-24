@@ -1,18 +1,18 @@
 # An abstract research field: OSO vs. traditional research
 
-> A generic field of 80 ideas in 8 levels and 3 areas, with 7 bounties; the simulator's default world.
+> A generic field: 80 ideas in 8 levels, about two parents each, four bounties at the top.
 
 **For the same money, the OSO community got further, or got there more cheaply, than the traditional one.**
 
-- **How far:** with a budget of 1200 money, OSO reached level **7.9** of 8 on average; traditional research reached **5.7**.
-- **Targets solved:** OSO solved **6.9** of 7; traditional solved **4.2**.
-- **Cost to reach level 7:** OSO 485 money; traditional 957 money (in the 35% of runs that got there).
-- **Return on the money (ROI):** OSO gained **1.44** in bounty value per unit spent (1130 for 849); traditional **0.22** (268 for 1194). Value gained is the bounties of the targets solved.
-- **Does flow-back make agents share?** When agents choose, sharing rises clearly (by 0.2 or more) once α is 0.3 or lower. At OSO's default α = 0.8, agents shared 22% of their intermediate ideas.
-- **Robustness:** OSO's lead in level is smallest when shared knowledge is **costly to take up** (+2.0 levels).
-- **Sensitivity:** Across the tested values of the parameters a market or community sets, OSO's lead (agents choosing what to share) runs from **+0.3** to **+1.9** levels. The smallest lead, at ρ, money follows earnings = 100%, is still clearly positive. The lead is most sensitive to **α, absorption rate**.
+- **How far:** with a budget of 950, OSO reached level **8.0** of 8 on average; traditional research reached **3.7**.
+- **Targets solved:** OSO solved **3.6** of 4; traditional solved **0.7**.
+- **Cost to reach level 8:** OSO 401; traditional 686 (in the 46% of runs that got there).
+- **Return on the money (ROI):** OSO gained **2.70** in bounty value per unit spent (1859 for 747); traditional **0.36** (343 for 947). Value gained is the bounties of the targets solved.
+- **Does flow-back make agents share?** When agents choose, sharing rises clearly (by 0.2 or more) once α is 0.2 or lower. At OSO's default α = 0.8, agents shared 22% of their intermediate ideas.
+- **Robustness:** OSO's lead in level is smallest when shared knowledge is **costly to take up** (+4.1 levels).
+- **Sensitivity:** Across the tested values of the parameters a market or community sets, OSO's lead (agents choosing what to share) runs from **+0.0** to **+5.8** levels. The smallest lead, at ρ, money follows earnings = 100%, is **within noise: no clear difference there**. The lead is most sensitive to **ρ, money follows earnings**. Why ρ matters so much here: under traditional rules, when money follows earnings, the first agent to earn takes the money. In this community that is the gaming agent, which earns early from trivial ideas and then, holding all the money, does the research too. Without a gaming agent the effect disappears (see the funding-rule-gamer experiment).
 
-*The verdict compares the hardest level reached, the targets solved and (when both communities reach level 7 in at least 90% of runs) the cost to get there, each against two standard errors. 100 simulated runs per setting · simulator commit `4bd670b+` · 2026-10-23. This is a simulation with guessed parameters, not evidence about real research; see [What this shows](#what-this-shows-and-what-it-does-not).*
+*The verdict compares the hardest level reached, the targets solved and (when both communities reach level 8 in at least 90% of runs) the cost to get there, each against two standard errors. 100 simulated runs per setting · simulator commit `3d56faf` · 2026-10-24. This is a simulation with guessed parameters, not evidence about real research; see [What this shows](#what-this-shows-and-what-it-does-not).*
 
 ## 1. The problem space
 
@@ -23,36 +23,32 @@ A research field with no particular subject. Ideas build on ideas in eight level
 | an idea | a finding that later findings can build on |
 | a target | a bounty-carrying finding announced in advance |
 | an attempt | one attempt at proving a finding, which succeeds or fails |
-| an area | a subfield |
 
 ![The research tree](figures/world.svg)
 
-The tree has 80 ideas in 8 levels and 3 areas (area 1, area 2, area 3). 29 are dead ends: no target depends on them. 7 are targets:
+The tree has 80 ideas in 8 levels. 34 are dead ends: no target depends on them. 4 are targets:
 
 | target | level | bounty | ideas it rests on |
 | --- | --- | --- | --- |
-| T1 | 3 | 16 | 8 |
-| T2 | 3 | 16 | 7 |
-| T3 | 5 | 64 | 21 |
-| T4 | 5 | 64 | 18 |
-| T5 | 7 | 256 | 38 |
-| T6 | 7 | 256 | 23 |
-| T7 | 8 | 512 | 46 |
+| T1 | 8 | 512 | 27 |
+| T2 | 8 | 512 | 27 |
+| T3 | 8 | 512 | 24 |
+| T4 | 8 | 512 | 22 |
 
 How hard each level is, before an agent's skill:
 
-| level | results | targets | success chance per attempt |
-| --- | --- | --- | --- |
-| 1 | 10 | 0 | 50% |
-| 2 | 10 | 0 | 30% |
-| 3 | 10 | 2 | 18% |
-| 4 | 10 | 0 | 11% |
-| 5 | 10 | 2 | 6% |
-| 6 | 10 | 0 | 4% |
-| 7 | 10 | 2 | 2% |
-| 8 | 10 | 1 | 1% |
+| level | ideas | targets | chance per attempt, parents known | sequence length (bits) |
+| --- | --- | --- | --- | --- |
+| 1 | 10 | 0 | 25% | 2.0 |
+| 2 | 10 | 0 | 50% | 4.0 |
+| 3 | 10 | 0 | 50% | 5.0 |
+| 4 | 10 | 0 | 14% | 7.0 |
+| 5 | 10 | 0 | 19% | 8.0 |
+| 6 | 10 | 0 | 10% | 10.0 |
+| 7 | 10 | 0 | 13% | 11.0 |
+| 8 | 10 | 4 | 5% | 13.0 |
 
-The community has 12 agents (3 foundation, 3 racer, 2 explorer, 2 specialist, 1 freeRider, 1 gamer) and a budget of 1200 money over 120 rounds.
+The community has 12 agents (3 foundation, 3 racer, 2 explorer, 2 specialist, 1 freeRider, 1 gamer) and a budget of 950 over 79 rounds (calibrated: the smallest budget at which OSO solves about 90% of the targets).
 
 ## 2. Progress for the money
 
@@ -64,33 +60,33 @@ Each line is the mean, over 100 runs, of the hardest level the community had pub
 
 The rules are the only difference between rows ([specification, section 3](../../docs/design.md#3-the-rules)). Traditional: nothing flows back to what an idea built on, and work is published only when finished. OSO: value flows back (α = 0.8, c = 0.15), and ideas are published at once or when the agent chooses.
 
-| setting | frontier | reach L7 | speed | cost | spend | targets solved | waste | credit | sharing | ROI (value per spend) |
+| setting | frontier | reach L8 | speed | cost | spend | targets solved | waste | credit | sharing | ROI (value per spend) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Traditional | 5.7 ± 1.2 | 0.35 | 96 ± 16 | 957 ± 161 | 1194 ± 11 | 4.2 ± 0.9 | 0.64 ± 0.09 | 0.95 ± 0.09 | 0.01 ± 0.01 | 0.22 ± 0.18 |
-| OSO (immediate) | 7.9 ± 0.2 | 1.00 | 49 ± 14 | 485 ± 141 | 849 ± 207 | 6.9 ± 0.5 | 0.86 ± 0.03 | 0.57 ± 0.07 | 1.00 ± 0.00 | 1.44 ± 0.48 |
-| Flow-back, finished-only | 5.5 ± 1.1 | 0.28 | 96 ± 18 | 959 ± 182 | 1195 ± 2 | 4.1 ± 0.9 | 0.64 ± 0.09 | 0.96 ± 0.07 | 0.00 ± 0.01 | 0.20 ± 0.15 |
-| No flow-back, immediate | 7.9 ± 0.3 | 1.00 | 50 ± 14 | 494 ± 143 | 871 ± 210 | 6.9 ± 0.4 | 0.84 ± 0.04 | 0.47 ± 0.09 | 1.00 ± 0.00 | 1.41 ± 0.48 |
-| No flow-back, choice | 6.0 ± 0.9 | 0.35 | 100 ± 16 | 990 ± 159 | 1195 ± 2 | 4.1 ± 0.9 | 0.66 ± 0.07 | 0.88 ± 0.12 | 0.23 ± 0.08 | 0.20 ± 0.17 |
-| OSO (choice) | 6.3 ± 1.0 | 0.43 | 96 ± 19 | 959 ± 186 | 1193 ± 11 | 4.4 ± 1.0 | 0.68 ± 0.09 | 0.87 ± 0.11 | 0.22 ± 0.09 | 0.27 ± 0.25 |
+| Traditional | 3.7 ± 4.0 | 0.46 | 57 ± 14 | 686 ± 163 | 947 ± 2 | 0.7 ± 0.8 | 0.54 ± 0.11 | 0.46 ± 0.50 | 0.00 ± 0.00 | 0.36 ± 0.45 |
+| OSO (immediate) | 8.0 ± 0.0 | 1.00 | 34 ± 12 | 401 ± 144 | 747 ± 165 | 3.6 ± 0.7 | 0.84 ± 0.05 | 0.51 ± 0.11 | 1.00 ± 0.00 | 2.70 ± 1.00 |
+| Flow-back, finished-only | 4.2 ± 4.0 | 0.53 | 59 ± 17 | 700 ± 199 | 946 ± 17 | 0.8 ± 0.9 | 0.55 ± 0.11 | 0.51 ± 0.49 | 0.00 ± 0.00 | 0.45 ± 0.53 |
+| No flow-back, immediate | 8.0 ± 0.0 | 1.00 | 30 ± 13 | 360 ± 153 | 741 ± 166 | 3.7 ± 0.6 | 0.82 ± 0.06 | 0.40 ± 0.13 | 1.00 ± 0.00 | 2.75 ± 0.95 |
+| No flow-back, choice | 7.3 ± 1.1 | 0.65 | 54 ± 16 | 650 ± 188 | 942 ± 40 | 0.9 ± 0.9 | 0.62 ± 0.08 | 0.52 ± 0.43 | 0.22 ± 0.08 | 0.53 ± 0.58 |
+| OSO (choice) | 7.0 ± 1.6 | 0.65 | 58 ± 15 | 690 ± 182 | 941 ± 25 | 1.1 ± 1.2 | 0.64 ± 0.10 | 0.52 ± 0.44 | 0.22 ± 0.08 | 0.59 ± 0.67 |
 
-Values are mean ± standard deviation over runs. *frontier*: hardest level published; *reach L7*: share of runs reaching level 7; *speed*, *cost*: rounds and money to reach it; *credit*: how closely bounty pay matches true contribution; *sharing*: share of intermediate ideas published as soon as they were proved.
+Values are mean ± standard deviation over runs. *frontier*: hardest level published; *reach L8*: share of runs reaching level 8; *speed*, *cost*: rounds and money to reach it; *credit*: how closely bounty pay matches true contribution; *sharing*: share of intermediate ideas published as soon as they were proved.
 
 ## 4. Does flow-back make agents share?
 
 ![Sharing and reach by α](figures/alpha.svg)
 
-| α | intermediate ideas shared | frontier | reach level 7 | targets solved |
+| α | intermediate ideas shared | frontier | reach level 8 | targets solved |
 | --- | --- | --- | --- | --- |
-| 1 | 23% | 6.0 | 35% | 4.1 |
-| 0.8 | 22% | 6.3 | 43% | 4.4 |
-| 0.6 | 25% | 6.4 | 48% | 4.4 |
-| 0.5 | 28% | 6.7 | 63% | 4.5 |
-| 0.4 | 34% | 6.9 | 73% | 4.7 |
-| 0.3 | 47% | 7.2 | 86% | 5.2 |
-| 0.2 | 63% | 7.6 | 98% | 5.9 |
-| 0.1 | 77% | 7.8 | 100% | 6.5 |
+| 1 | 22% | 7.3 | 65% | 0.9 |
+| 0.8 | 22% | 7.0 | 65% | 1.1 |
+| 0.6 | 24% | 7.4 | 70% | 1.0 |
+| 0.5 | 26% | 7.3 | 65% | 1.0 |
+| 0.4 | 30% | 7.7 | 76% | 1.1 |
+| 0.3 | 38% | 7.7 | 80% | 1.5 |
+| 0.2 | 45% | 7.8 | 85% | 1.7 |
+| 0.1 | 56% | 7.8 | 85% | 2.0 |
 
-Sharing rises clearly once α is 0.3 or lower: this is the threshold α* in this space. The threshold depends on the scoop risk ψ = 0.5, which is a guess.
+Sharing rises clearly once α is 0.2 or lower: this is the threshold α* in this space. The threshold depends on the scoop risk ψ = 0.5, which is a guess.
 
 ## 5. When sharing is costly or sometimes wrong
 
@@ -98,10 +94,10 @@ Taking up a published idea costs 0.5; proofs are wrong 10% of the time, ideas bu
 
 | shared knowledge | traditional frontier | OSO frontier | OSO lead | traditional targets | OSO targets |
 | --- | --- | --- | --- | --- | --- |
-| free and correct | 5.7 | 7.9 | +2.3 | 4.2 | 6.9 |
-| costly to take up | 5.7 | 7.7 | +2.0 | 4.2 | 6.2 |
-| sometimes wrong | 4.9 | 7.4 | +2.5 | 3.3 | 5.5 |
-| costly and sometimes wrong | 4.7 | 6.9 | +2.2 | 3.2 | 4.7 |
+| free and correct | 3.7 | 8.0 | +4.3 | 0.7 | 3.6 |
+| costly to take up | 3.7 | 7.8 | +4.1 | 0.6 | 1.6 |
+| sometimes wrong | 2.8 | 8.0 | +5.2 | 0.4 | 3.0 |
+| costly and sometimes wrong | 2.8 | 7.8 | +5.0 | 0.5 | 1.2 |
 
 ## 6. Sensitivity to the parameters
 
@@ -111,20 +107,20 @@ Each parameter is varied alone, from this space's settings, with agents choosing
 
 ![OSO's lead by parameter](figures/sensitivity.svg)
 
-Across the tested values of the parameters a market or community sets, OSO's lead (agents choosing what to share) runs from **+0.3** to **+1.9** levels. The smallest lead, at ρ, money follows earnings = 100%, is still clearly positive. The lead is most sensitive to **α, absorption rate**.
+Across the tested values of the parameters a market or community sets, OSO's lead (agents choosing what to share) runs from **+0.0** to **+5.8** levels. The smallest lead, at ρ, money follows earnings = 100%, is **within noise: no clear difference there**. The lead is most sensitive to **ρ, money follows earnings**. Why ρ matters so much here: under traditional rules, when money follows earnings, the first agent to earn takes the money. In this community that is the gaming agent, which earns early from trivial ideas and then, holding all the money, does the research too. Without a gaming agent the effect disappears (see the funding-rule-gamer experiment).
 
 | parameter | means | tested | OSO lead (lowest to highest) |
 | --- | --- | --- | --- |
-| α, absorption rate | how much of the value reaching an idea it absorbs; the rest flows back to what it built on | 0.2, 0.4, 0.6, 0.8, 0.95 | +0.4 to +1.9 |
-| c, cited share of the mint | share of each new mint paid to the ideas it built on | 0%, 5%, 15%, 30%, 50% | +0.5 to +0.7 |
-| mint per idea | tokens minted for each validated idea, relative to bounties (the smallest bounty is a few units) | 0, 0.5, 1, 2, 4 | +0.5 to +1.1 |
-| θ, validation screen | chance validators reject a trivial idea | 0%, 25%, 50%, 75%, 95% | +0.6 to +1.1 |
-| ρ, money follows earnings | share of each round's money funders give by recent earnings rather than equally | 0%, 25%, 50%, 75%, 100% | +0.3 to +0.8 |
-| ψ, scoop risk | how likely agents think a shared lemma lets a rival take the target | 0, 0.25, 0.5, 0.75, 0.9 | +0.6 to +2.3 |
-| κ, value of being used | how much agents think publishing raises a lemma's use | 0, 0.5, 1, 2, 4 | +0.5 to +0.8 |
-| σ₀, perception noise | how noisily agents see the value of what they might attempt | 0, 0.5, 1, 2 | +0.3 to +1.2 |
-| τ, choice randomness | how loosely agents follow their best option | 0.05, 0.15, 0.3, 0.6, 1 | +0.4 to +1.6 |
-| attribution error | noise in the ledger's weights of what each idea built on | 0, 0.1, 0.3, 0.6 | +0.6 to +0.7 |
+| α, absorption rate | how much of the value reaching an idea it absorbs; the rest flows back to what it built on | 0.2, 0.4, 0.6, 0.8, 0.95 | +3.4 to +4.2 |
+| c, cited share of the mint | share of each new mint paid to the ideas it built on | 0%, 5%, 15%, 30%, 50% | +3.3 to +3.7 |
+| mint per idea | tokens minted for each validated idea, relative to bounties (the smallest bounty is a few units) | 0, 0.5, 1, 2, 4 | +3.1 to +5.8 |
+| θ, validation screen | chance validators reject a trivial idea | 0%, 25%, 50%, 75%, 95% | +3.4 to +4.6 |
+| ρ, money follows earnings | share of each round's money funders give by recent earnings rather than equally | 0%, 25%, 50%, 75%, 100% | +0.0 to +5.7 |
+| ψ, scoop risk | how likely agents think a shared lemma lets a rival take the target | 0, 0.25, 0.5, 0.75, 0.9 | +3.4 to +4.3 |
+| κ, value of being used | how much agents think publishing raises a lemma's use | 0, 0.5, 1, 2, 4 | +3.3 to +3.5 |
+| σ₀, perception noise | how noisily agents see the value of what they might attempt | 0, 0.5, 1, 2 | +3.0 to +3.9 |
+| τ, choice randomness | how loosely agents follow their best option | 0.05, 0.15, 0.3, 0.6, 1 | -0.1 to +5.8 |
+| attribution error | noise in the ledger's weights of what each idea built on | 0, 0.1, 0.3, 0.6 | +3.3 to +3.5 |
 
 The two flow-back levers together:
 
@@ -132,11 +128,11 @@ The two flow-back levers together:
 
 | α \ c | 0% | 5% | 15% | 30% | 50% |
 | --- | --- | --- | --- | --- | --- |
-| 0.95 | 23% · 6.2 | 22% · 6.1 | 22% · 6.1 | 22% · 6.2 | 22% · 6.2 |
-| 0.8 | 24% · 6.4 | 23% · 6.3 | 22% · 6.3 | 23% · 6.3 | 22% · 6.1 |
-| 0.6 | 25% · 6.3 | 25% · 6.6 | 25% · 6.4 | 24% · 6.5 | 25% · 6.5 |
-| 0.4 | 34% · 6.7 | 34% · 6.8 | 34% · 6.9 | 33% · 6.8 | 34% · 6.8 |
-| 0.2 | 65% · 7.5 | 64% · 7.5 | 63% · 7.6 | 62% · 7.5 | 61% · 7.5 |
+| 0.95 | 22% · 7.3 | 22% · 7.1 | 22% · 7.2 | 22% · 7.2 | 22% · 7.3 |
+| 0.8 | 23% · 7.4 | 22% · 7.2 | 22% · 7.0 | 23% · 7.1 | 22% · 7.0 |
+| 0.6 | 25% · 7.3 | 24% · 7.3 | 24% · 7.4 | 25% · 7.1 | 24% · 7.4 |
+| 0.4 | 31% · 7.6 | 31% · 7.7 | 30% · 7.7 | 31% · 7.5 | 30% · 7.5 |
+| 0.2 | 46% · 7.9 | 46% · 7.8 | 45% · 7.8 | 44% · 7.8 | 44% · 7.8 |
 
 Each cell: share of intermediate ideas published · hardest level reached.
 
@@ -144,54 +140,54 @@ Each cell: share of intermediate ideas published · hardest level reached.
 
 | parameter | value | OSO frontier | traditional frontier | OSO lead | OSO targets | traditional targets | ideas shared |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| α, absorption rate | 0.2 | 7.6 | 5.7 | +1.9 | 5.9 | 4.2 | 63% |
-| α, absorption rate | 0.4 | 6.9 | 5.7 | +1.2 | 4.7 | 4.2 | 34% |
-| α, absorption rate | 0.6 | 6.4 | 5.7 | +0.8 | 4.4 | 4.2 | 25% |
-| α, absorption rate | 0.8 (this space) | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 22% |
-| α, absorption rate | 0.95 | 6.1 | 5.7 | +0.4 | 4.2 | 4.2 | 22% |
-| c, cited share of the mint | 0% | 6.4 | 5.7 | +0.7 | 4.4 | 4.2 | 24% |
-| c, cited share of the mint | 5% | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 23% |
-| c, cited share of the mint | 15% (this space) | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 22% |
-| c, cited share of the mint | 30% | 6.3 | 5.7 | +0.7 | 4.4 | 4.2 | 23% |
-| c, cited share of the mint | 50% | 6.1 | 5.7 | +0.5 | 4.2 | 4.2 | 22% |
-| mint per idea | 0 | 7.0 | 6.5 | +0.5 | 5.4 | 5.3 | 24% |
-| mint per idea | 0.5 | 6.3 | 5.6 | +0.6 | 4.4 | 4.1 | 23% |
-| mint per idea | 1 (this space) | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 22% |
-| mint per idea | 2 | 6.5 | 5.4 | +1.1 | 4.5 | 3.9 | 23% |
-| mint per idea | 4 | 6.4 | 5.6 | +0.8 | 4.5 | 4.1 | 26% |
-| θ, validation screen | 0% | 6.4 | 5.7 | +0.7 | 4.4 | 4.2 | 23% |
-| θ, validation screen | 25% | 6.3 | 5.6 | +0.7 | 4.3 | 4.3 | 22% |
-| θ, validation screen | 50% (this space) | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 22% |
-| θ, validation screen | 75% | 6.2 | 5.5 | +0.7 | 4.3 | 4.1 | 23% |
-| θ, validation screen | 95% | 6.7 | 5.7 | +1.1 | 5.1 | 4.2 | 25% |
-| ρ, money follows earnings | 0% | 5.4 | 4.6 | +0.8 | 3.5 | 3.2 | 20% |
-| ρ, money follows earnings | 25% | 5.4 | 4.6 | +0.8 | 3.6 | 3.3 | 20% |
-| ρ, money follows earnings | 50% (this space) | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 22% |
-| ρ, money follows earnings | 75% | 7.1 | 6.7 | +0.4 | 5.5 | 5.2 | 26% |
-| ρ, money follows earnings | 100% | 7.6 | 7.3 | +0.3 | 6.3 | 6.0 | 28% |
-| ψ, scoop risk | 0 | 8.0 | 5.7 | +2.3 | 6.9 | 4.2 | 98% |
-| ψ, scoop risk | 0.25 | 6.3 | 5.7 | +0.6 | 4.3 | 4.2 | 24% |
-| ψ, scoop risk | 0.5 (this space) | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 22% |
-| ψ, scoop risk | 0.75 | 6.3 | 5.7 | +0.6 | 4.3 | 4.2 | 22% |
-| ψ, scoop risk | 0.9 | 6.3 | 5.7 | +0.6 | 4.3 | 4.2 | 22% |
-| κ, value of being used | 0 | 6.2 | 5.7 | +0.5 | 4.3 | 4.2 | 22% |
-| κ, value of being used | 0.5 | 6.3 | 5.7 | +0.7 | 4.4 | 4.2 | 22% |
-| κ, value of being used | 1 (this space) | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 22% |
-| κ, value of being used | 2 | 6.2 | 5.7 | +0.6 | 4.3 | 4.2 | 23% |
-| κ, value of being used | 4 | 6.4 | 5.7 | +0.8 | 4.4 | 4.2 | 26% |
-| σ₀, perception noise | 0 | 6.1 | 5.7 | +0.3 | 4.2 | 4.2 | 19% |
-| σ₀, perception noise | 0.5 | 6.1 | 5.5 | +0.6 | 4.3 | 4.0 | 19% |
-| σ₀, perception noise | 1 (this space) | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 22% |
-| σ₀, perception noise | 2 | 6.5 | 5.3 | +1.2 | 4.5 | 4.0 | 29% |
-| τ, choice randomness | 0.05 | 6.4 | 5.9 | +0.4 | 4.5 | 4.4 | 15% |
-| τ, choice randomness | 0.15 | 6.2 | 5.8 | +0.5 | 4.5 | 4.3 | 16% |
-| τ, choice randomness | 0.3 (this space) | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 22% |
-| τ, choice randomness | 0.6 | 6.3 | 5.1 | +1.2 | 4.0 | 3.8 | 29% |
-| τ, choice randomness | 1 | 6.5 | 4.9 | +1.6 | 4.0 | 3.6 | 32% |
-| attribution error | 0 (this space) | 6.3 | 5.7 | +0.6 | 4.4 | 4.2 | 22% |
-| attribution error | 0.1 | 6.3 | 5.7 | +0.6 | 4.2 | 4.2 | 23% |
-| attribution error | 0.3 | 6.3 | 5.7 | +0.6 | 4.3 | 4.2 | 23% |
-| attribution error | 0.6 | 6.3 | 5.7 | +0.7 | 4.3 | 4.2 | 23% |
+| α, absorption rate | 0.2 | 7.8 | 3.7 | +4.2 | 1.7 | 0.7 | 45% |
+| α, absorption rate | 0.4 | 7.7 | 3.7 | +4.0 | 1.1 | 0.7 | 30% |
+| α, absorption rate | 0.6 | 7.4 | 3.7 | +3.7 | 1.0 | 0.7 | 24% |
+| α, absorption rate | 0.8 (this space) | 7.0 | 3.7 | +3.4 | 1.1 | 0.7 | 22% |
+| α, absorption rate | 0.95 | 7.2 | 3.7 | +3.5 | 0.9 | 0.7 | 22% |
+| c, cited share of the mint | 0% | 7.4 | 3.7 | +3.7 | 1.0 | 0.7 | 23% |
+| c, cited share of the mint | 5% | 7.2 | 3.7 | +3.5 | 0.8 | 0.7 | 22% |
+| c, cited share of the mint | 15% (this space) | 7.0 | 3.7 | +3.4 | 1.1 | 0.7 | 22% |
+| c, cited share of the mint | 30% | 7.1 | 3.7 | +3.4 | 0.9 | 0.7 | 23% |
+| c, cited share of the mint | 50% | 7.0 | 3.7 | +3.3 | 0.9 | 0.7 | 22% |
+| mint per idea | 0 | 6.2 | 0.5 | +5.8 | 0.4 | 0.1 | 21% |
+| mint per idea | 0.5 | 7.1 | 3.8 | +3.3 | 0.8 | 0.6 | 22% |
+| mint per idea | 1 (this space) | 7.0 | 3.7 | +3.4 | 1.1 | 0.7 | 22% |
+| mint per idea | 2 | 7.1 | 4.0 | +3.1 | 0.9 | 0.7 | 23% |
+| mint per idea | 4 | 7.3 | 3.8 | +3.5 | 1.1 | 0.6 | 25% |
+| θ, validation screen | 0% | 7.4 | 4.0 | +3.4 | 1.0 | 0.7 | 23% |
+| θ, validation screen | 25% | 7.2 | 3.8 | +3.4 | 0.9 | 0.7 | 22% |
+| θ, validation screen | 50% (this space) | 7.0 | 3.7 | +3.4 | 1.1 | 0.7 | 22% |
+| θ, validation screen | 75% | 6.9 | 3.3 | +3.6 | 0.9 | 0.6 | 21% |
+| θ, validation screen | 95% | 7.2 | 2.6 | +4.6 | 1.3 | 0.5 | 25% |
+| ρ, money follows earnings | 0% | 6.1 | 0.4 | +5.7 | 0.2 | 0.1 | 19% |
+| ρ, money follows earnings | 25% | 6.1 | 0.7 | +5.4 | 0.3 | 0.1 | 20% |
+| ρ, money follows earnings | 50% (this space) | 7.0 | 3.7 | +3.4 | 1.1 | 0.7 | 22% |
+| ρ, money follows earnings | 75% | 7.8 | 7.1 | +0.7 | 2.0 | 1.8 | 26% |
+| ρ, money follows earnings | 100% | 8.0 | 8.0 | +0.0 | 2.8 | 3.0 | 32% |
+| ψ, scoop risk | 0 | 8.0 | 3.7 | +4.3 | 3.6 | 0.7 | 98% |
+| ψ, scoop risk | 0.25 | 7.1 | 3.7 | +3.5 | 1.1 | 0.7 | 23% |
+| ψ, scoop risk | 0.5 (this space) | 7.0 | 3.7 | +3.4 | 1.1 | 0.7 | 22% |
+| ψ, scoop risk | 0.75 | 7.1 | 3.7 | +3.4 | 1.1 | 0.7 | 21% |
+| ψ, scoop risk | 0.9 | 7.1 | 3.7 | +3.4 | 1.1 | 0.7 | 21% |
+| κ, value of being used | 0 | 7.0 | 3.7 | +3.3 | 1.0 | 0.7 | 21% |
+| κ, value of being used | 0.5 | 7.0 | 3.7 | +3.3 | 1.0 | 0.7 | 21% |
+| κ, value of being used | 1 (this space) | 7.0 | 3.7 | +3.4 | 1.1 | 0.7 | 22% |
+| κ, value of being used | 2 | 7.1 | 3.7 | +3.4 | 1.0 | 0.7 | 23% |
+| κ, value of being used | 4 | 7.1 | 3.7 | +3.5 | 1.1 | 0.7 | 24% |
+| σ₀, perception noise | 0 | 7.4 | 4.4 | +3.0 | 1.2 | 0.8 | 20% |
+| σ₀, perception noise | 0.5 | 7.2 | 3.8 | +3.4 | 1.0 | 0.8 | 20% |
+| σ₀, perception noise | 1 (this space) | 7.0 | 3.7 | +3.4 | 1.1 | 0.7 | 22% |
+| σ₀, perception noise | 2 | 7.5 | 3.6 | +3.9 | 1.1 | 0.6 | 29% |
+| τ, choice randomness | 0.05 | 6.7 | 6.9 | -0.1 | 1.6 | 1.8 | 5% |
+| τ, choice randomness | 0.15 | 7.1 | 6.7 | +0.4 | 1.5 | 1.5 | 7% |
+| τ, choice randomness | 0.3 (this space) | 7.0 | 3.7 | +3.4 | 1.1 | 0.7 | 22% |
+| τ, choice randomness | 0.6 | 7.1 | 1.3 | +5.8 | 0.5 | 0.2 | 27% |
+| τ, choice randomness | 1 | 6.5 | 1.0 | +5.5 | 0.2 | 0.1 | 28% |
+| attribution error | 0 (this space) | 7.0 | 3.7 | +3.4 | 1.1 | 0.7 | 22% |
+| attribution error | 0.1 | 7.2 | 3.7 | +3.5 | 1.0 | 0.7 | 23% |
+| attribution error | 0.3 | 7.0 | 3.7 | +3.3 | 0.9 | 0.7 | 22% |
+| attribution error | 0.6 | 7.1 | 3.7 | +3.4 | 1.0 | 0.7 | 22% |
 
 </details>
 
@@ -207,4 +203,4 @@ Each cell: share of intermediate ideas published · hardest level reached.
 npm run sim -- report abstract-field --seeds 100
 ```
 
-The space is [spaces/abstract-field.yaml](../../spaces/abstract-field.yaml) (written by hand; the default scenario). Every number above is in [data.json](data.json). Generated by the OSO simulator at commit `4bd670b+` (with uncommitted changes).
+The space is [spaces/abstract-field.yaml](../../spaces/abstract-field.yaml). Every number above is in [data.json](data.json). Generated by the OSO simulator at commit `3d56faf`.

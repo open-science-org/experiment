@@ -233,7 +233,8 @@
       <div class="row"><label>Question <input id="s-question" placeholder="What do you want to find out?" style="width:560px"></label></div>
       <div class="row choice" role="radiogroup" aria-label="Idea graph"><b>Idea graph</b>
         <label><input type="radio" name="s-graph" value="generated" checked> Generated <span class="info" title="Drawn from the controls below; every run draws its own graph.">ⓘ</span></label>
-        <label><input type="radio" name="s-graph" value="topic"> A topic <span class="info" title="A field written out on the Topics page.">ⓘ</span></label>
+        <label><input type="radio" name="s-graph" value="topic"> The Lean problem set <span class="info" title="The real structure of the theorems the AI models prove; parents are required.">ⓘ</span></label>
+        <label id="g-preset-ctl">Start from <select id="g-preset"><option value="">the defaults</option></select> <span class="info" title="A preset fills the controls; you can change them after.">ⓘ</span></label>
       </div>
       <div class="row" id="s-topic-row"><label>Topic <select id="s-space"></select></label></div>
       <div id="s-gen">
@@ -498,16 +499,17 @@ async function drawResults() {
   const mine = (c) => c.kind === 'simulation' && /^(exp-|my-experiment$)/.test(c.id);
   const groups = [
     { title: 'AI models', note: 'Real models proving theorems; Lean checks every proof.', cards: cards.filter((c) => (c.kind === 'race' || c.kind === 'model pilot') && !c.invalid) },
-    { title: 'Topics', note: 'One full report per research topic (simulation).', cards: cards.filter((c) => c.kind === 'field report') },
+    { title: 'Topics', note: 'One full report per research topic (simulation).', cards: cards.filter((c) => c.kind === 'field report' && !c.superseded) },
     { title: 'Questions answered by simulation', note: 'Each one changes one thing and compares.', cards: cards.filter((c) => c.kind === 'simulation' && !mine(c)) },
     { title: 'Your quick tests', note: 'Made on the New page.', cards: cards.filter(mine), fold: true },
     { title: 'Not valid', note: 'Kept for the record; do not use.', cards: cards.filter((c) => c.invalid), fold: true },
+    { title: 'Earlier versions', note: 'Replaced by newer results; kept for the record.', cards: cards.filter((c) => c.superseded), fold: true },
   ].filter((g) => g.cards.length);
   const card = (c) => `<a class="res field" href="#/doc/${esc(c.page)}">
       ${c.invalid ? '<span class="chip">Not valid</span>' : ''}
       <h3>${esc(c.title.replace(/^(Real agents, OSO vs traditional|Lean pilot): /, ''))}</h3>
       <p class="q">${esc(c.design.question)}</p>
-      <p class="a">${esc(c.invalid ? 'Not valid: ' + c.invalid : c.answer)}</p>
+      <p class="a">${esc(c.invalid ? 'Not valid: ' + c.invalid : c.answer)}</p>${c.superseded ? `<p class="q">${esc(c.superseded)}</p>` : ''}
       <div class="meta">${esc(c.date)} · ${esc(c.design.runs)}${c.cost ? ' · ' + esc(c.cost) : ''}</div><div class="meta"><code>${esc(c.id)}</code>${watchable(c) ? ` · <span class="watch" role="link" tabindex="0" data-watch="${esc(watchable(c))}">Watch ▶</span>` : ''}</div></a>`;
   // A card's replay in Live: a saved simulation by its rows, a topic report by its rule settings.
   const section = (g) => {
@@ -857,7 +859,9 @@ function graphPreview() {
 }
 function applyGraphMode() {
   $('s-gen').classList.toggle('hidden', !generated());
-  $('s-topic-row').classList.toggle('hidden', generated());
+  $('s-topic-row').classList.toggle('hidden', true);
+  $('g-preset-ctl').classList.toggle('hidden', !generated());
+  if (!generated()) $('s-space').value = 'lean-problem-set';
   if (generated()) graphPreview();
   simpleCheck();
 }
@@ -872,6 +876,15 @@ function initSimple() {
   $('s-space').innerHTML = $('e-space').innerHTML; $('s-space').value = $('e-space').value;
   $('s-measure').innerHTML = $('e-measure').innerHTML; $('s-measure').value = 'frontier';
   for (const [k, v] of Object.entries(D.opts.graphDefaults)) $('g-' + k).value = v;
+  // Presets: the topics that are settings of the generator (drug discovery, battery, …).
+  api('/api/presets').then((ps) => {
+    $('g-preset').insertAdjacentHTML('beforeend', ps.map((p) => `<option value="${esc(p.id)}" title="${esc(p.summary)}">${esc(p.title)}</option>`).join(''));
+    $('g-preset').onchange = () => {
+      const p = ps.find((x) => x.id === $('g-preset').value);
+      for (const [k, v] of Object.entries(p ? p.controls : D.opts.graphDefaults)) $('g-' + k).value = v;
+      graphPreview(); simpleCheck();
+    };
+  });
   for (const k of GRAPH_KEYS) $('g-' + k).addEventListener('input', () => { graphPreview(); simpleCheck(); });
   $('s-budget').addEventListener('input', simpleCheck);
   for (const r of document.querySelectorAll('input[name=s-graph]')) r.onchange = applyGraphMode;

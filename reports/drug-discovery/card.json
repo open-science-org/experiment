@@ -1,37 +1,37 @@
 {
  "id": "drug-discovery",
  "kind": "field report",
- "date": "2026-10-23",
+ "date": "2026-10-24",
  "title": "Early-stage drug discovery",
  "design": {
   "question": "For the same money, does OSO get further than traditional research in Early-stage drug discovery?",
   "compare": "the six rule settings, an α sweep, the parameters one by one, costly and fallible sharing",
-  "fixed": "the field, 12 agents and a budget of 1240",
+  "fixed": "the field, 12 agents and a budget of 1400",
   "measure": "hardest level reached",
   "better": "higher",
   "runs": "100 runs per setting"
  },
- "answer": "OSO ahead: level 6.0 against 2.7 of 6; targets 2.8 against 0.7 of 3; ROI 1.77 against 0.28.",
+ "answer": "OSO ahead: level 6.0 against 3.5 of 6; targets 2.7 against 0.8 of 3; ROI 1.40 against 0.30.",
  "table": [
   {
    "rules": "Traditional",
-   "hardest level": "2.7 of 6",
-   "targets solved": "0.7 of 3",
-   "cost to level 5": 847,
-   "ROI": "0.28 (335 for 1228)"
+   "hardest level": "3.5 of 6",
+   "targets solved": "0.8 of 3",
+   "cost to level 6": 1040,
+   "ROI": "0.30 (403 for 1386)"
   },
   {
    "rules": "OSO",
    "hardest level": "6.0 of 6",
-   "targets solved": "2.8 of 3",
-   "cost to level 5": 223,
-   "ROI": "1.77 (1351 for 850)"
+   "targets solved": "2.7 of 3",
+   "cost to level 6": 627,
+   "ROI": "1.40 (1302 for 1055)"
   }
  ],
  "caveats": [
   "A simulation with guessed parameters: it shows how the rules play out if the field works as described.",
-  "OSO's lead as the market-set parameters vary: 0.3 to 4.4 levels.",
-  "Stage difficulties and bounties are illustrative, not industry figures."
+  "OSO's lead as the market-set parameters vary: 0.2 to 4.6 levels.",
+  "A preset of the idea graph generator. Each stage reuses only part of the evidence before it (composition 0.5), many hits and leads go nowhere, and the stages get much harder. The numbers are illustrative, not measured from the field."
  ],
  "page": "reports/drug-discovery/card.md",
  "chart": "reports/drug-discovery/figures/frontier.svg"

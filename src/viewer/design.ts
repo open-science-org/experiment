@@ -562,6 +562,17 @@ function checkGraph(g: GraphControls) {
   }
 }
 
+/** Topics that are presets of the generator: their controls, title and summary. */
+export function graphPresets() {
+  const keys = Object.keys(GRAPH_DEFAULTS) as (keyof GraphControls)[];
+  return readdirSync(SPACES_DIR).filter((f) => f.endsWith('.yaml')).map((f) => parse(readFileSync(join(SPACES_DIR, f), 'utf8')) as SpaceSpec)
+    .filter((sp) => (sp.scenario?.world as { kind?: string } | undefined)?.kind === 'ideas')
+    .map((sp) => {
+      const w = sp.scenario!.world as Record<string, number>;
+      return { id: sp.id, title: sp.title, summary: sp.summary, controls: Object.fromEntries(keys.map((k) => [k, w[k] ?? GRAPH_DEFAULTS[k]])) as GraphControls };
+    });
+}
+
 /** A generated idea graph, drawn, with its numbers: for the preview on the New page. */
 export function graphPreview(g: GraphControls, seed = 1) {
   try {

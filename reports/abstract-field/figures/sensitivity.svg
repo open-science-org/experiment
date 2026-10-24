@@ -24,111 +24,113 @@
 <text class="sub" x="20" y="50">OSO with agents choosing what to share, minus traditional: hardest level reached (100 runs per value). Right of 0: OSO ahead.</text>
 <line class="line c1" x1="20" y1="70" x2="38" y2="70"/><circle class="dot f1" cx="29" cy="70" r="4.5"/><text class="tick" x="46" y="74">one tested value (end labels give the value)</text>
 <line class="base" x1="330" y1="63" x2="330" y2="77" style="stroke-width:2.5"/><text class="tick" x="338" y="74">this space's value</text>
-<line class="grid" x1="243.10344827586206" x2="243.10344827586206" y1="88" y2="464" style="stroke:var(--ink-2)"/>
-<text class="tick" x="243.10344827586206" y="482" text-anchor="middle">0.0</text>
-<line class="grid" x1="423.0134932533733" x2="423.0134932533733" y1="88" y2="464" />
-<text class="tick" x="423.0134932533733" y="482" text-anchor="middle">+1.0</text>
-<line class="grid" x1="602.9235382308846" x2="602.9235382308846" y1="88" y2="464" />
-<text class="tick" x="602.9235382308846" y="482" text-anchor="middle">+2.0</text>
+<line class="grid" x1="253.53520718632276" x2="253.53520718632276" y1="88" y2="464" style="stroke:var(--ink-2)"/>
+<text class="tick" x="253.53520718632276" y="482" text-anchor="middle">0.0</text>
+<line class="grid" x1="392.62532599246595" x2="392.62532599246595" y1="88" y2="464" />
+<text class="tick" x="392.62532599246595" y="482" text-anchor="middle">+2.0</text>
+<line class="grid" x1="531.715444798609" x2="531.715444798609" y1="88" y2="464" />
+<text class="tick" x="531.715444798609" y="482" text-anchor="middle">+4.0</text>
+<line class="grid" x1="670.8055636047523" x2="670.8055636047523" y1="88" y2="464" />
+<text class="tick" x="670.8055636047523" y="482" text-anchor="middle">+6.0</text>
 <text class="axis" x="450" y="504" text-anchor="middle">OSO lead in hardest level reached</text>
 <text class="label" x="20" y="108">Set by communities, funders or the protocol</text>
 <text class="tick" x="28" y="134">α, absorption rate</text>
-<line class="line c1" x1="316.86656671664167" x2="584.9325337331334" y1="130" y2="130" style="stroke-opacity:0.45;stroke-width:6"/>
-<line class="base" x1="352.8485757121438" x2="352.8485757121438" y1="121" y2="139" style="stroke-width:2.5"/>
-<circle class="dot f1" cx="584.9" cy="130" r="4.5"><title>α, absorption rate = 0.2: +1.9</title></circle>
-<circle class="dot f1" cx="464.4" cy="130" r="4.5"><title>α, absorption rate = 0.4: +1.2</title></circle>
-<circle class="dot f1" cx="381.6" cy="130" r="4.5"><title>α, absorption rate = 0.6: +0.8</title></circle>
-<circle class="dot f1" cx="352.8" cy="130" r="4.5"><title>α, absorption rate = 0.8: +0.6</title></circle>
-<circle class="dot f1" cx="316.9" cy="130" r="4.5"><title>α, absorption rate = 0.95: +0.4</title></circle>
-<text class="tick" x="308.86656671664167" y="134" text-anchor="end" style="font-size:10px">0.95</text>
-<text class="tick" x="592.9325337331334" y="134" style="font-size:10px">0.2</text>
+<line class="line c1" x1="487.20660678064326" x2="542.1472037090698" y1="130" y2="130" style="stroke-opacity:0.45;stroke-width:6"/>
+<line class="base" x1="487.20660678064326" x2="487.20660678064326" y1="121" y2="139" style="stroke-width:2.5"/>
+<circle class="dot f1" cx="542.1" cy="130" r="4.5"><title>α, absorption rate = 0.2: +4.2</title></circle>
+<circle class="dot f1" cx="529.6" cy="130" r="4.5"><title>α, absorption rate = 0.4: +4.0</title></circle>
+<circle class="dot f1" cx="512.2" cy="130" r="4.5"><title>α, absorption rate = 0.6: +3.7</title></circle>
+<circle class="dot f1" cx="487.2" cy="130" r="4.5"><title>α, absorption rate = 0.8: +3.4</title></circle>
+<circle class="dot f1" cx="496.2" cy="130" r="4.5"><title>α, absorption rate = 0.95: +3.5</title></circle>
+<text class="tick" x="479.20660678064326" y="134" text-anchor="end" style="font-size:10px">0.8</text>
+<text class="tick" x="550.1472037090698" y="134" style="font-size:10px">0.2</text>
 <text class="tick" x="28" y="164">c, cited share of the mint</text>
-<line class="line c1" x1="325.8620689655172" x2="370.8395802098951" y1="160" y2="160" style="stroke-opacity:0.45;stroke-width:6"/>
-<line class="base" x1="352.8485757121438" x2="352.8485757121438" y1="151" y2="169" style="stroke-width:2.5"/>
-<circle class="dot f1" cx="370.8" cy="160" r="4.5"><title>c, cited share of the mint = 0%: +0.7</title></circle>
-<circle class="dot f1" cx="356.4" cy="160" r="4.5"><title>c, cited share of the mint = 5%: +0.6</title></circle>
-<circle class="dot f1" cx="352.8" cy="160" r="4.5"><title>c, cited share of the mint = 15%: +0.6</title></circle>
-<circle class="dot f1" cx="361.8" cy="160" r="4.5"><title>c, cited share of the mint = 30%: +0.7</title></circle>
-<circle class="dot f1" cx="325.9" cy="160" r="4.5"><title>c, cited share of the mint = 50%: +0.5</title></circle>
-<text class="tick" x="317.8620689655172" y="164" text-anchor="end" style="font-size:10px">50%</text>
-<text class="tick" x="378.8395802098951" y="164" style="font-size:10px">0%</text>
+<line class="line c1" x1="483.7293538104897" x2="510.15647638365687" y1="160" y2="160" style="stroke-opacity:0.45;stroke-width:6"/>
+<line class="base" x1="487.20660678064326" x2="487.20660678064326" y1="151" y2="169" style="stroke-width:2.5"/>
+<circle class="dot f1" cx="510.2" cy="160" r="4.5"><title>c, cited share of the mint = 0%: +3.7</title></circle>
+<circle class="dot f1" cx="498.3" cy="160" r="4.5"><title>c, cited share of the mint = 5%: +3.5</title></circle>
+<circle class="dot f1" cx="487.2" cy="160" r="4.5"><title>c, cited share of the mint = 15%: +3.4</title></circle>
+<circle class="dot f1" cx="489.3" cy="160" r="4.5"><title>c, cited share of the mint = 30%: +3.4</title></circle>
+<circle class="dot f1" cx="483.7" cy="160" r="4.5"><title>c, cited share of the mint = 50%: +3.3</title></circle>
+<text class="tick" x="475.7293538104897" y="164" text-anchor="end" style="font-size:10px">50%</text>
+<text class="tick" x="518.1564763836568" y="164" style="font-size:10px">0%</text>
 <text class="tick" x="28" y="194">mint per idea</text>
-<line class="line c1" x1="334.8575712143929" x2="441.0044977511245" y1="190" y2="190" style="stroke-opacity:0.45;stroke-width:6"/>
-<line class="base" x1="352.8485757121438" x2="352.8485757121438" y1="181" y2="199" style="stroke-width:2.5"/>
-<circle class="dot f1" cx="334.9" cy="190" r="4.5"><title>mint per idea = 0: +0.5</title></circle>
-<circle class="dot f1" cx="358.2" cy="190" r="4.5"><title>mint per idea = 0.5: +0.6</title></circle>
-<circle class="dot f1" cx="352.8" cy="190" r="4.5"><title>mint per idea = 1: +0.6</title></circle>
-<circle class="dot f1" cx="441.0" cy="190" r="4.5"><title>mint per idea = 2: +1.1</title></circle>
-<circle class="dot f1" cx="387.0" cy="190" r="4.5"><title>mint per idea = 4: +0.8</title></circle>
-<text class="tick" x="326.8575712143929" y="194" text-anchor="end" style="font-size:10px">0</text>
-<text class="tick" x="449.0044977511245" y="194" style="font-size:10px">2</text>
+<line class="line c1" x1="470.5157925239061" x2="653.4192987539843" y1="190" y2="190" style="stroke-opacity:0.45;stroke-width:6"/>
+<line class="base" x1="487.20660678064326" x2="487.20660678064326" y1="181" y2="199" style="stroke-width:2.5"/>
+<circle class="dot f1" cx="653.4" cy="190" r="4.5"><title>mint per idea = 0: +5.8</title></circle>
+<circle class="dot f1" cx="485.8" cy="190" r="4.5"><title>mint per idea = 0.5: +3.3</title></circle>
+<circle class="dot f1" cx="487.2" cy="190" r="4.5"><title>mint per idea = 1: +3.4</title></circle>
+<circle class="dot f1" cx="470.5" cy="190" r="4.5"><title>mint per idea = 2: +3.1</title></circle>
+<circle class="dot f1" cx="496.9" cy="190" r="4.5"><title>mint per idea = 4: +3.5</title></circle>
+<text class="tick" x="462.5157925239061" y="194" text-anchor="end" style="font-size:10px">2</text>
+<text class="tick" x="661.4192987539843" y="194" style="font-size:10px">0</text>
 <text class="tick" x="28" y="224">θ, validation screen</text>
-<line class="line c1" x1="352.8485757121438" x2="433.8080959520239" y1="220" y2="220" style="stroke-opacity:0.45;stroke-width:6"/>
-<line class="base" x1="352.8485757121438" x2="352.8485757121438" y1="211" y2="229" style="stroke-width:2.5"/>
-<circle class="dot f1" cx="365.4" cy="220" r="4.5"><title>θ, validation screen = 0%: +0.7</title></circle>
-<circle class="dot f1" cx="367.2" cy="220" r="4.5"><title>θ, validation screen = 25%: +0.7</title></circle>
-<circle class="dot f1" cx="352.8" cy="220" r="4.5"><title>θ, validation screen = 50%: +0.6</title></circle>
-<circle class="dot f1" cx="365.4" cy="220" r="4.5"><title>θ, validation screen = 75%: +0.7</title></circle>
-<circle class="dot f1" cx="433.8" cy="220" r="4.5"><title>θ, validation screen = 95%: +1.1</title></circle>
-<text class="tick" x="344.8485757121438" y="224" text-anchor="end" style="font-size:10px">50%</text>
-<text class="tick" x="441.8080959520239" y="224" style="font-size:10px">95%</text>
+<line class="line c1" x1="487.20660678064326" x2="574.8333816285134" y1="220" y2="220" style="stroke-opacity:0.45;stroke-width:6"/>
+<line class="base" x1="487.20660678064326" x2="487.20660678064326" y1="211" y2="229" style="stroke-width:2.5"/>
+<circle class="dot f1" cx="487.9" cy="220" r="4.5"><title>θ, validation screen = 0%: +3.4</title></circle>
+<circle class="dot f1" cx="489.3" cy="220" r="4.5"><title>θ, validation screen = 25%: +3.4</title></circle>
+<circle class="dot f1" cx="487.2" cy="220" r="4.5"><title>θ, validation screen = 50%: +3.4</title></circle>
+<circle class="dot f1" cx="503.2" cy="220" r="4.5"><title>θ, validation screen = 75%: +3.6</title></circle>
+<circle class="dot f1" cx="574.8" cy="220" r="4.5"><title>θ, validation screen = 95%: +4.6</title></circle>
+<text class="tick" x="479.20660678064326" y="224" text-anchor="end" style="font-size:10px">50%</text>
+<text class="tick" x="582.8333816285134" y="224" style="font-size:10px">95%</text>
 <text class="tick" x="28" y="254">ρ, money follows earnings</text>
-<line class="line c1" x1="300.6746626686657" x2="394.2278860569716" y1="250" y2="250" style="stroke-opacity:0.45;stroke-width:6"/>
-<line class="base" x1="352.8485757121438" x2="352.8485757121438" y1="241" y2="259" style="stroke-width:2.5"/>
-<circle class="dot f1" cx="394.2" cy="250" r="4.5"><title>ρ, money follows earnings = 0%: +0.8</title></circle>
-<circle class="dot f1" cx="387.0" cy="250" r="4.5"><title>ρ, money follows earnings = 25%: +0.8</title></circle>
-<circle class="dot f1" cx="352.8" cy="250" r="4.5"><title>ρ, money follows earnings = 50%: +0.6</title></circle>
-<circle class="dot f1" cx="313.3" cy="250" r="4.5"><title>ρ, money follows earnings = 75%: +0.4</title></circle>
-<circle class="dot f1" cx="300.7" cy="250" r="4.5"><title>ρ, money follows earnings = 100%: +0.3</title></circle>
-<text class="tick" x="292.6746626686657" y="254" text-anchor="end" style="font-size:10px">100%</text>
-<text class="tick" x="402.2278860569716" y="254" style="font-size:10px">0%</text>
+<line class="line c1" x1="253.53520718632276" x2="648.5511445957693" y1="250" y2="250" style="stroke-opacity:0.45;stroke-width:6"/>
+<line class="base" x1="487.20660678064326" x2="487.20660678064326" y1="241" y2="259" style="stroke-width:2.5"/>
+<circle class="dot f1" cx="648.6" cy="250" r="4.5"><title>ρ, money follows earnings = 0%: +5.7</title></circle>
+<circle class="dot f1" cx="630.5" cy="250" r="4.5"><title>ρ, money follows earnings = 25%: +5.4</title></circle>
+<circle class="dot f1" cx="487.2" cy="250" r="4.5"><title>ρ, money follows earnings = 50%: +3.4</title></circle>
+<circle class="dot f1" cx="303.6" cy="250" r="4.5"><title>ρ, money follows earnings = 75%: +0.7</title></circle>
+<circle class="dot f1" cx="253.5" cy="250" r="4.5"><title>ρ, money follows earnings = 100%: 0.0</title></circle>
+<text class="tick" x="245.53520718632276" y="254" text-anchor="end" style="font-size:10px">100%</text>
+<text class="tick" x="656.5511445957693" y="254" style="font-size:10px">0%</text>
 <text class="label" x="20" y="292">Guessed: how agents think and see</text>
 <text class="tick" x="28" y="318">ψ, scoop risk</text>
-<line class="line c1" x1="352.8485757121438" x2="656.8965517241379" y1="314" y2="314" style="stroke-opacity:0.45;stroke-width:6"/>
-<line class="base" x1="352.8485757121438" x2="352.8485757121438" y1="305" y2="323" style="stroke-width:2.5"/>
-<circle class="dot f1" cx="656.9" cy="314" r="4.5"><title>ψ, scoop risk = 0: +2.3</title></circle>
-<circle class="dot f1" cx="360.0" cy="314" r="4.5"><title>ψ, scoop risk = 0.25: +0.6</title></circle>
-<circle class="dot f1" cx="352.8" cy="314" r="4.5"><title>ψ, scoop risk = 0.5: +0.6</title></circle>
-<circle class="dot f1" cx="352.8" cy="314" r="4.5"><title>ψ, scoop risk = 0.75: +0.6</title></circle>
-<circle class="dot f1" cx="358.2" cy="314" r="4.5"><title>ψ, scoop risk = 0.9: +0.6</title></circle>
-<text class="tick" x="344.8485757121438" y="318" text-anchor="end" style="font-size:10px">0.5</text>
-<text class="tick" x="664.8965517241379" y="318" style="font-size:10px">0</text>
+<line class="line c1" x1="487.20660678064326" x2="553.969863807592" y1="314" y2="314" style="stroke-opacity:0.45;stroke-width:6"/>
+<line class="base" x1="487.20660678064326" x2="487.20660678064326" y1="305" y2="323" style="stroke-width:2.5"/>
+<circle class="dot f1" cx="554.0" cy="314" r="4.5"><title>ψ, scoop risk = 0: +4.3</title></circle>
+<circle class="dot f1" cx="494.2" cy="314" r="4.5"><title>ψ, scoop risk = 0.25: +3.5</title></circle>
+<circle class="dot f1" cx="487.2" cy="314" r="4.5"><title>ψ, scoop risk = 0.5: +3.4</title></circle>
+<circle class="dot f1" cx="492.1" cy="314" r="4.5"><title>ψ, scoop risk = 0.75: +3.4</title></circle>
+<circle class="dot f1" cx="490.0" cy="314" r="4.5"><title>ψ, scoop risk = 0.9: +3.4</title></circle>
+<text class="tick" x="479.20660678064326" y="318" text-anchor="end" style="font-size:10px">0.5</text>
+<text class="tick" x="561.969863807592" y="318" style="font-size:10px">0</text>
 <text class="tick" x="28" y="348">κ, value of being used</text>
-<line class="line c1" x1="338.45577211394306" x2="383.43328335832086" y1="344" y2="344" style="stroke-opacity:0.45;stroke-width:6"/>
-<line class="base" x1="352.8485757121438" x2="352.8485757121438" y1="335" y2="353" style="stroke-width:2.5"/>
-<circle class="dot f1" cx="338.5" cy="344" r="4.5"><title>κ, value of being used = 0: +0.5</title></circle>
-<circle class="dot f1" cx="361.8" cy="344" r="4.5"><title>κ, value of being used = 0.5: +0.7</title></circle>
-<circle class="dot f1" cx="352.8" cy="344" r="4.5"><title>κ, value of being used = 1: +0.6</title></circle>
-<circle class="dot f1" cx="343.9" cy="344" r="4.5"><title>κ, value of being used = 2: +0.6</title></circle>
-<circle class="dot f1" cx="383.4" cy="344" r="4.5"><title>κ, value of being used = 4: +0.8</title></circle>
-<text class="tick" x="330.45577211394306" y="348" text-anchor="end" style="font-size:10px">0</text>
-<text class="tick" x="391.43328335832086" y="348" style="font-size:10px">4</text>
+<line class="line c1" x1="482.33845262242824" x2="494.16111272095037" y1="344" y2="344" style="stroke-opacity:0.45;stroke-width:6"/>
+<line class="base" x1="487.20660678064326" x2="487.20660678064326" y1="335" y2="353" style="stroke-width:2.5"/>
+<circle class="dot f1" cx="482.3" cy="344" r="4.5"><title>κ, value of being used = 0: +3.3</title></circle>
+<circle class="dot f1" cx="482.3" cy="344" r="4.5"><title>κ, value of being used = 0.5: +3.3</title></circle>
+<circle class="dot f1" cx="487.2" cy="344" r="4.5"><title>κ, value of being used = 1: +3.4</title></circle>
+<circle class="dot f1" cx="492.1" cy="344" r="4.5"><title>κ, value of being used = 2: +3.4</title></circle>
+<circle class="dot f1" cx="494.2" cy="344" r="4.5"><title>κ, value of being used = 4: +3.5</title></circle>
+<text class="tick" x="474.33845262242824" y="348" text-anchor="end" style="font-size:10px">0</text>
+<text class="tick" x="502.16111272095037" y="348" style="font-size:10px">4</text>
 <text class="tick" x="28" y="378">σ₀, perception noise</text>
-<line class="line c1" x1="302.4737631184406" x2="460.7946026986507" y1="374" y2="374" style="stroke-opacity:0.45;stroke-width:6"/>
-<line class="base" x1="352.8485757121438" x2="352.8485757121438" y1="365" y2="383" style="stroke-width:2.5"/>
-<circle class="dot f1" cx="302.5" cy="374" r="4.5"><title>σ₀, perception noise = 0: +0.3</title></circle>
-<circle class="dot f1" cx="349.3" cy="374" r="4.5"><title>σ₀, perception noise = 0.5: +0.6</title></circle>
-<circle class="dot f1" cx="352.8" cy="374" r="4.5"><title>σ₀, perception noise = 1: +0.6</title></circle>
-<circle class="dot f1" cx="460.8" cy="374" r="4.5"><title>σ₀, perception noise = 2: +1.2</title></circle>
-<text class="tick" x="294.4737631184406" y="378" text-anchor="end" style="font-size:10px">0</text>
-<text class="tick" x="468.7946026986507" y="378" style="font-size:10px">2</text>
+<line class="line c1" x1="464.25673717762965" x2="524.0654882642713" y1="374" y2="374" style="stroke-opacity:0.45;stroke-width:6"/>
+<line class="base" x1="487.20660678064326" x2="487.20660678064326" y1="365" y2="383" style="stroke-width:2.5"/>
+<circle class="dot f1" cx="464.3" cy="374" r="4.5"><title>σ₀, perception noise = 0: +3.0</title></circle>
+<circle class="dot f1" cx="492.1" cy="374" r="4.5"><title>σ₀, perception noise = 0.5: +3.4</title></circle>
+<circle class="dot f1" cx="487.2" cy="374" r="4.5"><title>σ₀, perception noise = 1: +3.4</title></circle>
+<circle class="dot f1" cx="524.1" cy="374" r="4.5"><title>σ₀, perception noise = 2: +3.9</title></circle>
+<text class="tick" x="456.25673717762965" y="378" text-anchor="end" style="font-size:10px">0</text>
+<text class="tick" x="532.0654882642713" y="378" style="font-size:10px">2</text>
 <text class="tick" x="28" y="408">τ, choice randomness</text>
-<line class="line c1" x1="324.062968515742" x2="529.1604197901049" y1="404" y2="404" style="stroke-opacity:0.45;stroke-width:6"/>
-<line class="base" x1="352.8485757121438" x2="352.8485757121438" y1="395" y2="413" style="stroke-width:2.5"/>
-<circle class="dot f1" cx="324.1" cy="404" r="4.5"><title>τ, choice randomness = 0.05: +0.4</title></circle>
-<circle class="dot f1" cx="327.7" cy="404" r="4.5"><title>τ, choice randomness = 0.15: +0.5</title></circle>
-<circle class="dot f1" cx="352.8" cy="404" r="4.5"><title>τ, choice randomness = 0.3: +0.6</title></circle>
-<circle class="dot f1" cx="464.4" cy="404" r="4.5"><title>τ, choice randomness = 0.6: +1.2</title></circle>
-<circle class="dot f1" cx="529.2" cy="404" r="4.5"><title>τ, choice randomness = 1: +1.6</title></circle>
-<text class="tick" x="316.062968515742" y="408" text-anchor="end" style="font-size:10px">0.05</text>
-<text class="tick" x="537.1604197901049" y="408" style="font-size:10px">1</text>
+<line class="line c1" x1="243.10344827586206" x2="656.8965517241379" y1="404" y2="404" style="stroke-opacity:0.45;stroke-width:6"/>
+<line class="base" x1="487.20660678064326" x2="487.20660678064326" y1="395" y2="413" style="stroke-width:2.5"/>
+<circle class="dot f1" cx="243.1" cy="404" r="4.5"><title>τ, choice randomness = 0.05: -0.1</title></circle>
+<circle class="dot f1" cx="279.3" cy="404" r="4.5"><title>τ, choice randomness = 0.15: +0.4</title></circle>
+<circle class="dot f1" cx="487.2" cy="404" r="4.5"><title>τ, choice randomness = 0.3: +3.4</title></circle>
+<circle class="dot f1" cx="656.9" cy="404" r="4.5"><title>τ, choice randomness = 0.6: +5.8</title></circle>
+<circle class="dot f1" cx="633.3" cy="404" r="4.5"><title>τ, choice randomness = 1: +5.5</title></circle>
+<text class="tick" x="235.10344827586206" y="408" text-anchor="end" style="font-size:10px">0.05</text>
+<text class="tick" x="664.8965517241379" y="408" style="font-size:10px">0.6</text>
 <text class="tick" x="28" y="438">attribution error</text>
-<line class="line c1" x1="352.8485757121438" x2="365.4422788605697" y1="434" y2="434" style="stroke-opacity:0.45;stroke-width:6"/>
-<line class="base" x1="352.8485757121438" x2="352.8485757121438" y1="425" y2="443" style="stroke-width:2.5"/>
-<circle class="dot f1" cx="352.8" cy="434" r="4.5"><title>attribution error = 0: +0.6</title></circle>
-<circle class="dot f1" cx="356.4" cy="434" r="4.5"><title>attribution error = 0.1: +0.6</title></circle>
-<circle class="dot f1" cx="352.8" cy="434" r="4.5"><title>attribution error = 0.3: +0.6</title></circle>
-<circle class="dot f1" cx="365.4" cy="434" r="4.5"><title>attribution error = 0.6: +0.7</title></circle>
-<text class="tick" x="344.8485757121438" y="438" text-anchor="end" style="font-size:10px">0</text>
-<text class="tick" x="373.4422788605697" y="438" style="font-size:10px">0.6</text>
+<line class="line c1" x1="485.8157055925818" x2="499.02926687916545" y1="434" y2="434" style="stroke-opacity:0.45;stroke-width:6"/>
+<line class="base" x1="487.20660678064326" x2="487.20660678064326" y1="425" y2="443" style="stroke-width:2.5"/>
+<circle class="dot f1" cx="487.2" cy="434" r="4.5"><title>attribution error = 0: +3.4</title></circle>
+<circle class="dot f1" cx="499.0" cy="434" r="4.5"><title>attribution error = 0.1: +3.5</title></circle>
+<circle class="dot f1" cx="485.8" cy="434" r="4.5"><title>attribution error = 0.3: +3.3</title></circle>
+<circle class="dot f1" cx="493.5" cy="434" r="4.5"><title>attribution error = 0.6: +3.4</title></circle>
+<text class="tick" x="477.8157055925818" y="438" text-anchor="end" style="font-size:10px">0.3</text>
+<text class="tick" x="507.02926687916545" y="438" style="font-size:10px">0.1</text>
 </svg>

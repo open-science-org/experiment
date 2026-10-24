@@ -1,0 +1,38 @@
+{
+ "id": "abstract-field",
+ "kind": "field report",
+ "date": "2026-10-23",
+ "title": "An abstract research field",
+ "design": {
+  "question": "For the same money, does OSO get further than traditional research in an abstract research field?",
+  "compare": "the six rule settings, an \u03b1 sweep, the parameters one by one, costly and fallible sharing",
+  "fixed": "the field, 12 agents and a budget of 1200",
+  "measure": "hardest level reached",
+  "better": "higher",
+  "runs": "100 runs per setting"
+ },
+ "answer": "OSO ahead: level 7.9 against 5.7 of 8; targets 6.9 against 4.2 of 7; ROI 1.44 against 0.22.",
+ "table": [
+  {
+   "rules": "Traditional",
+   "hardest level": "5.7 of 8",
+   "targets solved": "4.2 of 7",
+   "cost to level 7": 957,
+   "ROI": "0.22 (268 for 1194)"
+  },
+  {
+   "rules": "OSO",
+   "hardest level": "7.9 of 8",
+   "targets solved": "6.9 of 7",
+   "cost to level 7": 485,
+   "ROI": "1.44 (1130 for 849)"
+  }
+ ],
+ "caveats": [
+  "A simulation with guessed parameters: it shows how the rules play out if the field works as described.",
+  "OSO's lead as the market-set parameters vary: 0.3 to 1.9 levels."
+ ],
+ "page": "reports/earlier/abstract-field/card.md",
+ "chart": "reports/earlier/abstract-field/figures/frontier.svg",
+ "superseded": "Earlier version (before 2026-10-24): a hand-written graph where every parent is required. The topic is now a preset of the idea graph generator; see its current report."
+}

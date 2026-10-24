@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" class="viz" viewBox="0 0 700 376" width="700" height="376" role="img" aria-label="The research tree: A solid-state battery">
+<svg xmlns="http://www.w3.org/2000/svg" class="viz" viewBox="0 0 700 336" width="700" height="336" role="img" aria-label="The research tree: A solid-state battery">
 <style>
   .viz { --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --grid: #e6e5e1;
          --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --dead: #c9c7c0; }
@@ -19,66 +19,83 @@
   .dot { stroke: var(--surface); stroke-width: 2; }
   .label { font-size: 12px; font-weight: 700; }
   .t1 { fill: var(--s1); } .t2 { fill: var(--s2); } .t3 { fill: var(--s3); }
-</style><rect class="bg" width="700" height="376" rx="8"/>
+</style><rect class="bg" width="700" height="336" rx="8"/>
 <text class="title" x="20" y="30">The research tree: A solid-state battery</text>
 <text class="sub" x="20" y="50">20 ideas · 2 targets · 6 dead ends · columns are levels (deeper to the right); lines join an idea to what it builds on</text>
 <text class="tick" x="70" y="70" text-anchor="middle">level 1</text>
-<text class="tick" x="70" y="84" text-anchor="middle">p ≈ 50.0%</text>
+<text class="tick" x="70" y="84" text-anchor="middle">p ≈ 12.5%</text>
 <text class="tick" x="200" y="70" text-anchor="middle">level 2</text>
-<text class="tick" x="200" y="84" text-anchor="middle">p ≈ 25.0%</text>
+<text class="tick" x="200" y="84" text-anchor="middle">p ≈ 50.0%</text>
 <text class="tick" x="330" y="70" text-anchor="middle">level 3</text>
-<text class="tick" x="330" y="84" text-anchor="middle">p ≈ 12.5%</text>
+<text class="tick" x="330" y="84" text-anchor="middle">p ≈ 50.0%</text>
 <text class="tick" x="460" y="70" text-anchor="middle">level 4</text>
-<text class="tick" x="460" y="84" text-anchor="middle">p ≈ 6.3%</text>
+<text class="tick" x="460" y="84" text-anchor="middle">p ≈ 25.0%</text>
 <text class="tick" x="590" y="70" text-anchor="middle">level 5</text>
-<text class="tick" x="590" y="84" text-anchor="middle">p ≈ 3.1%</text>
-<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="70" y1="96" x2="200" y2="96"/>
-<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="70" y1="136" x2="200" y2="136"/>
-<line class="grid" style="stroke:var(--grid);stroke-opacity:1" x1="70" y1="176" x2="200" y2="176"/>
-<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="70" y1="216" x2="200" y2="216"/>
-<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="200" y1="96" x2="330" y2="96"/>
-<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="200" y1="216" x2="330" y2="96"/>
-<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="70" y1="216" x2="200" y2="256"/>
-<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="330" y1="96" x2="460" y2="96"/>
-<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="200" y1="256" x2="460" y2="96"/>
-<line class="grid" style="stroke:var(--grid);stroke-opacity:1" x1="200" y1="216" x2="330" y2="136"/>
-<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="200" y1="136" x2="330" y2="176"/>
-<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="70" y1="256" x2="330" y2="176"/>
-<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="330" y1="176" x2="460" y2="136"/>
-<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="330" y1="96" x2="460" y2="176"/>
-<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="330" y1="176" x2="460" y2="176"/>
-<line class="grid" style="stroke:var(--grid);stroke-opacity:1" x1="200" y1="176" x2="590" y2="96"/>
-<line class="grid" style="stroke:var(--grid);stroke-opacity:1" x1="460" y1="176" x2="590" y2="96"/>
-<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="460" y1="96" x2="590" y2="136"/>
+<text class="tick" x="590" y="84" text-anchor="middle">p ≈ 25.0%</text>
+<line class="grid" style="stroke:var(--grid);stroke-opacity:1" x1="70" y1="96" x2="200" y2="96"/>
+<line class="grid" style="stroke:var(--grid);stroke-opacity:1" x1="70" y1="176" x2="200" y2="96"/>
+<line class="grid" style="stroke:var(--grid);stroke-opacity:1" x1="70" y1="216" x2="200" y2="96"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="70" y1="96" x2="200" y2="136"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="70" y1="176" x2="200" y2="136"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="70" y1="96" x2="200" y2="176"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="70" y1="176" x2="200" y2="176"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="70" y1="216" x2="200" y2="176"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="70" y1="96" x2="200" y2="216"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="70" y1="176" x2="200" y2="216"/>
+<line class="grid" style="stroke:var(--grid);stroke-opacity:1" x1="70" y1="96" x2="330" y2="96"/>
+<line class="grid" style="stroke:var(--grid);stroke-opacity:1" x1="200" y1="96" x2="330" y2="96"/>
+<line class="grid" style="stroke:var(--grid);stroke-opacity:1" x1="200" y1="216" x2="330" y2="96"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="200" y1="136" x2="330" y2="136"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="200" y1="176" x2="330" y2="136"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="70" y1="96" x2="330" y2="176"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="70" y1="216" x2="330" y2="176"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="200" y1="176" x2="330" y2="176"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="200" y1="176" x2="330" y2="216"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="200" y1="216" x2="330" y2="216"/>
+<line class="grid" style="stroke:var(--grid);stroke-opacity:1" x1="330" y1="96" x2="460" y2="96"/>
+<line class="grid" style="stroke:var(--grid);stroke-opacity:1" x1="330" y1="136" x2="460" y2="96"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="70" y1="216" x2="460" y2="136"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="330" y1="136" x2="460" y2="136"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="330" y1="216" x2="460" y2="136"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="70" y1="96" x2="460" y2="176"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="330" y1="216" x2="460" y2="176"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="330" y1="136" x2="460" y2="216"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="330" y1="176" x2="460" y2="216"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="330" y1="216" x2="460" y2="216"/>
+<line class="grid" style="stroke:var(--grid);stroke-opacity:1" x1="460" y1="96" x2="590" y2="96"/>
+<line class="grid" style="stroke:var(--grid);stroke-opacity:1" x1="460" y1="136" x2="590" y2="96"/>
 <line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="460" y1="136" x2="590" y2="136"/>
 <line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="460" y1="176" x2="590" y2="136"/>
-<line class="grid" style="stroke:var(--grid);stroke-opacity:1" x1="200" y1="96" x2="330" y2="216"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="460" y1="216" x2="590" y2="136"/>
+<line class="grid" style="stroke:var(--grid);stroke-opacity:1" x1="330" y1="136" x2="590" y2="176"/>
+<line class="grid" style="stroke:var(--grid);stroke-opacity:1" x1="460" y1="96" x2="590" y2="176"/>
 <line class="grid" style="stroke:var(--grid);stroke-opacity:1" x1="460" y1="136" x2="590" y2="176"/>
-<circle cx="70" cy="96" r="6" style="fill:var(--s1)"><title>sulfide-conductor · level 1 · electrolyte</title></circle>
-<circle cx="70" cy="136" r="6" style="fill:var(--s1)"><title>oxide-conductor · level 1 · electrolyte</title></circle>
-<circle cx="70" cy="176" r="6" style="fill:var(--dead)"><title>polymer-electrolyte · level 1 · electrolyte · dead end</title></circle>
-<circle cx="200" cy="96" r="6" style="fill:var(--s1)"><title>air-stable-sulfide · level 2 · electrolyte</title></circle>
-<circle cx="200" cy="136" r="6" style="fill:var(--s1)"><title>thin-separator · level 2 · electrolyte</title></circle>
-<circle cx="200" cy="176" r="6" style="fill:var(--dead)"><title>polymer-at-room-temperature · level 2 · electrolyte · dead end</title></circle>
-<circle cx="70" cy="216" r="6" style="fill:var(--s2)"><title>lithium-wetting · level 1 · interfaces</title></circle>
-<circle cx="200" cy="216" r="6" style="fill:var(--s2)"><title>interlayer-coating · level 2 · interfaces</title></circle>
-<circle cx="330" cy="96" r="6" style="fill:var(--s2)"><title>dendrite-suppression · level 3 · interfaces</title></circle>
-<circle cx="200" cy="256" r="6" style="fill:var(--s2)"><title>stack-pressure-control · level 2 · interfaces</title></circle>
-<circle cx="460" cy="96" r="6" style="fill:var(--s2)"><title>contact-under-cycling · level 4 · interfaces</title></circle>
-<circle cx="70" cy="256" r="6" style="fill:var(--s3)"><title>dry-film-process · level 1 · manufacturing</title></circle>
-<circle cx="330" cy="136" r="6" style="fill:var(--dead)"><title>coating-at-scale · level 3 · manufacturing · dead end</title></circle>
-<circle cx="330" cy="176" r="6" style="fill:var(--s3)"><title>layer-lamination · level 3 · manufacturing</title></circle>
-<circle cx="460" cy="136" r="6" style="fill:var(--s3)"><title>pouch-assembly · level 4 · manufacturing</title></circle>
-<polygon points="460.0,165.0 462.9,172.0 470.5,172.6 464.7,177.5 466.5,184.9 460.0,180.9 453.5,184.9 455.3,177.5 449.5,172.6 457.1,172.0" style="fill:var(--s2);stroke:var(--ink);stroke-width:1.2"><title>lab-cell · level 4 · interfaces · target, bounty 100</title></polygon>
-<text class="tick" x="460" y="200" text-anchor="middle">100</text>
-<circle cx="590" cy="96" r="6" style="fill:var(--dead)"><title>high-rate-cell · level 5 · interfaces · dead end</title></circle>
-<polygon points="590.0,125.0 592.9,132.0 600.5,132.6 594.7,137.5 596.5,144.9 590.0,140.9 583.5,144.9 585.3,137.5 579.5,132.6 587.1,132.0" style="fill:var(--s2);stroke:var(--ink);stroke-width:1.2"><title>thousand-cycle-cell · level 5 · interfaces · target, bounty 400</title></polygon>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="460" y1="136" x2="590" y2="216"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="460" y1="176" x2="590" y2="216"/>
+<line class="grid" style="stroke:var(--ink-2);stroke-opacity:0.45" x1="460" y1="216" x2="590" y2="216"/>
+<circle cx="70" cy="96" r="6" style="fill:var(--s1)"><title>#0 · level 1 · area 1</title></circle>
+<circle cx="70" cy="136" r="6" style="fill:var(--dead)"><title>#1 · level 1 · area 1 · dead end</title></circle>
+<circle cx="70" cy="176" r="6" style="fill:var(--s1)"><title>#2 · level 1 · area 1</title></circle>
+<circle cx="70" cy="216" r="6" style="fill:var(--s1)"><title>#3 · level 1 · area 1</title></circle>
+<circle cx="200" cy="96" r="6" style="fill:var(--dead)"><title>#4 · level 2 · area 1 · dead end</title></circle>
+<circle cx="200" cy="136" r="6" style="fill:var(--s1)"><title>#5 · level 2 · area 1</title></circle>
+<circle cx="200" cy="176" r="6" style="fill:var(--s1)"><title>#6 · level 2 · area 1</title></circle>
+<circle cx="200" cy="216" r="6" style="fill:var(--s1)"><title>#7 · level 2 · area 1</title></circle>
+<circle cx="330" cy="96" r="6" style="fill:var(--dead)"><title>#8 · level 3 · area 1 · dead end</title></circle>
+<circle cx="330" cy="136" r="6" style="fill:var(--s1)"><title>#9 · level 3 · area 1</title></circle>
+<circle cx="330" cy="176" r="6" style="fill:var(--s1)"><title>#10 · level 3 · area 1</title></circle>
+<circle cx="330" cy="216" r="6" style="fill:var(--s1)"><title>#11 · level 3 · area 1</title></circle>
+<circle cx="460" cy="96" r="6" style="fill:var(--dead)"><title>#12 · level 4 · area 1 · dead end</title></circle>
+<circle cx="460" cy="136" r="6" style="fill:var(--s1)"><title>#13 · level 4 · area 1</title></circle>
+<circle cx="460" cy="176" r="6" style="fill:var(--s1)"><title>#14 · level 4 · area 1</title></circle>
+<circle cx="460" cy="216" r="6" style="fill:var(--s1)"><title>#15 · level 4 · area 1</title></circle>
+<circle cx="590" cy="96" r="6" style="fill:var(--dead)"><title>#16 · level 5 · area 1 · dead end</title></circle>
+<polygon points="590.0,125.0 592.9,132.0 600.5,132.6 594.7,137.5 596.5,144.9 590.0,140.9 583.5,144.9 585.3,137.5 579.5,132.6 587.1,132.0" style="fill:var(--s1);stroke:var(--ink);stroke-width:1.2"><title>#17 · level 5 · area 1 · target, bounty 400</title></polygon>
 <text class="tick" x="590" y="160" text-anchor="middle">400</text>
-<circle cx="330" cy="216" r="6" style="fill:var(--dead)"><title>cathode-compatibility · level 3 · electrolyte · dead end</title></circle>
-<circle cx="590" cy="176" r="6" style="fill:var(--dead)"><title>recycling-route · level 5 · manufacturing · dead end</title></circle>
-<circle cx="26" cy="346" r="6" style="fill:var(--s1)"/><text class="tick" x="36" y="350">electrolyte</text>
-<circle cx="132.6" cy="346" r="6" style="fill:var(--s2)"/><text class="tick" x="142.6" y="350">interfaces</text>
-<circle cx="232.6" cy="346" r="6" style="fill:var(--s3)"/><text class="tick" x="242.6" y="350">manufacturing</text>
-<circle cx="352.4" cy="346" r="6" style="fill:var(--dead)"/><text class="tick" x="362.4" y="350">dead end</text>
-<text class="tick" x="436.4" y="350">★ target (number = bounty)</text>
+<circle cx="590" cy="176" r="6" style="fill:var(--dead)"><title>#18 · level 5 · area 1 · dead end</title></circle>
+<polygon points="590.0,205.0 592.9,212.0 600.5,212.6 594.7,217.5 596.5,224.9 590.0,220.9 583.5,224.9 585.3,217.5 579.5,212.6 587.1,212.0" style="fill:var(--s1);stroke:var(--ink);stroke-width:1.2"><title>#19 · level 5 · area 1 · target, bounty 400</title></polygon>
+<text class="tick" x="590" y="240" text-anchor="middle">400</text>
+<circle cx="26" cy="306" r="6" style="fill:var(--s1)"/><text class="tick" x="36" y="310">area 1</text>
+<circle cx="99.6" cy="306" r="6" style="fill:var(--dead)"/><text class="tick" x="109.6" y="310">dead end</text>
+<text class="tick" x="183.6" y="310">★ target (number = bounty)</text>
 </svg>

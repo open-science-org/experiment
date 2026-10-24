@@ -1,6 +1,6 @@
 id: solid-state-battery
 title: A solid-state battery
-summary: Twenty ideas from electrolyte chemistry to a working cell, written out by hand; two bounties.
+summary: A small field of 20 ideas, from electrolyte chemistry to a working cell, where each idea leans heavily on earlier ones; two bounties.
 description: >-
   Building a solid-state lithium battery. Three lines of work run in parallel: the solid
   electrolyte (finding a conducting material, making it stable and making it thin), the
@@ -12,34 +12,21 @@ glossary:
   idea: a demonstrated material property or process step
   target: a cell that meets a performance milestone
   attempt: one round of synthesis and testing
-  area: a line of work
   agent: a lab or startup
-areas: [electrolyte, interfaces, manufacturing]
 scenario:
   world:
-    kind: graph
-    nodes:
-      - { id: sulfide-conductor, area: 0 }
-      - { id: oxide-conductor, area: 0 }
-      - { id: polymer-electrolyte, area: 0 }
-      - { id: air-stable-sulfide, prereqs: [sulfide-conductor], area: 0 }
-      - { id: thin-separator, prereqs: [oxide-conductor], area: 0 }
-      - { id: polymer-at-room-temperature, prereqs: [polymer-electrolyte], area: 0, p: 0.02 }
-      - { id: lithium-wetting, area: 1 }
-      - { id: interlayer-coating, prereqs: [lithium-wetting], area: 1 }
-      - { id: dendrite-suppression, prereqs: [interlayer-coating, air-stable-sulfide], area: 1 }
-      - { id: stack-pressure-control, prereqs: [lithium-wetting], area: 1 }
-      - { id: contact-under-cycling, prereqs: [stack-pressure-control, dendrite-suppression], area: 1 }
-      - { id: dry-film-process, area: 2 }
-      - { id: coating-at-scale, prereqs: [interlayer-coating], area: 2 }
-      - { id: layer-lamination, prereqs: [dry-film-process, thin-separator], area: 2 }
-      - { id: pouch-assembly, prereqs: [layer-lamination], area: 2 }
-      - { id: lab-cell, prereqs: [dendrite-suppression, layer-lamination], bounty: 100, area: 1 }
-      - { id: high-rate-cell, prereqs: [lab-cell, polymer-at-room-temperature], area: 1 }
-      - { id: thousand-cycle-cell, prereqs: [lab-cell, contact-under-cycling, pouch-assembly], bounty: 400, area: 1 }
-      - { id: cathode-compatibility, prereqs: [air-stable-sulfide], area: 0 }
-      - { id: recycling-route, prereqs: [pouch-assembly], area: 2 }
-  success: { p0: 0.5, eta: 0.5 }
+    kind: ideas                # a preset of the idea graph generator (docs/equations.md, section 3.1)
+    levels: 5
+    width: 4
+    parents: 2.5
+    skip: 0.3
+    length: 3
+    lengthGrowth: 2
+    composition: 0.8
+    targets: 2
+    bountyBase: 25
+    bountyGrowth: 2
   measures: { targetLevel: 5 }
-notes: The structure is a simplified sketch, and the success chances follow the default model by level; neither is from the battery literature.
+
+notes: A preset of the idea graph generator. A small field where ideas lean heavily on what came before (composition 0.8) and each one needs several earlier results (2.5 parents). The numbers are illustrative, not measured from the field.
 source: written by hand as an example of a space listed idea by idea (the graph world)

@@ -1,6 +1,6 @@
 id: abstract-field
 title: An abstract research field
-summary: A generic field of 80 ideas in 8 levels and 3 areas, with 7 bounties; the simulator's default world.
+summary: 'A generic field: 80 ideas in 8 levels, about two parents each, four bounties at the top.'
 description: >-
   A research field with no particular subject. Ideas build on ideas in eight levels of rising
   difficulty, across three loosely connected areas. Seven targets carry bounties that double with each
@@ -11,8 +11,17 @@ glossary:
   idea: a finding that later findings can build on
   target: a bounty-carrying finding announced in advance
   attempt: one attempt at proving a finding, which succeeds or fails
-  area: a subfield
-areas: [area 1, area 2, area 3]
 scenario:
-  budget: { X: 1200 }  # the default budget, kept so these numbers match the saved experiments
-source: written by hand; the default scenario
+  world:
+    kind: ideas                # a preset of the idea graph generator (docs/equations.md, section 3.1)
+    levels: 8
+    width: 10
+    parents: 2
+    skip: 0.25
+    length: 2
+    lengthGrowth: 1.5
+    composition: 0.7
+    targets: 4
+    bountyBase: 4
+    bountyGrowth: 2
+  measures: { targetLevel: 8 }

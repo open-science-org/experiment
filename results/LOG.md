@@ -118,3 +118,4 @@ Runs up to 2026-10-19 were made when the simulator lived in `sim/` of [open-scie
 | 2026-10-23 | [simple](simple/summary.md) | `ead6740` (uncommitted changes) | 1000 | `npm run sim -- simple --seeds 1000 --save` |
 | 2026-10-23 | [simple-20261023190525](simple-20261023190525/summary.md) | `1730b62` (uncommitted changes) | 50 | `npm run sim -- simple-20261023190525 --seeds 50 --save` |
 | 2026-10-23 | [simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261023](simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261023/summary.md) | `a9e1a0e` (uncommitted changes) | 50 | `npm run sim -- simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261023 --seeds 50 --save` |
+| 2026-10-24 | [simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261024](simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261024/summary.md) | `81f6c4a` (uncommitted changes) | 50 | `npm run sim -- simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261024 --seeds 50 --save` |
