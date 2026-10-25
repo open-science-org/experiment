@@ -18,42 +18,42 @@
    "society": "Traditional (α = 1, β = 0)",
    "frontier": "0.2 ± 1.2",
    "value gained": "8 ± 40",
-   "sharing": "0.00 ± 0.00",
+   "knowledge (bits)": "59 ± 8",
    "ROI (value per spend)": "0.01 ± 0.04"
   },
   {
    "society": "α = 1, β = 0.5",
    "frontier": "6.0 ± 0.2",
    "value gained": "246 ± 51",
-   "sharing": "0.54 ± 0.09",
+   "knowledge (bits)": "93 ± 12",
    "ROI (value per spend)": "0.43 ± 0.14"
   },
   {
    "society": "α = 1, β = 1",
    "frontier": "6.0 ± 0.0",
    "value gained": "256 ± 0",
-   "sharing": "1.00 ± 0.00",
+   "knowledge (bits)": "90 ± 13",
    "ROI (value per spend)": "0.74 ± 0.27"
   },
   {
    "society": "α = 0.5, β = 0",
    "frontier": "0.1 ± 0.8",
    "value gained": "3 ± 18",
-   "sharing": "0.00 ± 0.00",
+   "knowledge (bits)": "59 ± 8",
    "ROI (value per spend)": "0.00 ± 0.02"
   },
   {
    "society": "α = 0.5, β = 0.5",
    "frontier": "6.0 ± 0.0",
    "value gained": "256 ± 0",
-   "sharing": "0.53 ± 0.09",
+   "knowledge (bits)": "94 ± 12",
    "ROI (value per spend)": "0.45 ± 0.13"
   },
   {
    "society": "OSO (α = 0.5, β = 1)",
    "frontier": "6.0 ± 0.0",
    "value gained": "256 ± 0",
-   "sharing": "1.00 ± 0.00",
+   "knowledge (bits)": "91 ± 13",
    "ROI (value per spend)": "0.73 ± 0.25"
   }
  ],
@@ -73,5 +73,6 @@
   "alpha",
   "beta"
  ],
- "ranAt": "2026-10-25T02:50:45.225Z"
+ "ranAt": "2026-10-25T03:53:06.100Z",
+ "modelVersion": 3
 }

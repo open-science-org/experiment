@@ -402,3 +402,12 @@ test('knowledge counts distinct bits of solved ideas, a shared bit once', async 
   assert.ok(r.knowledge >= r.knowledgePublished && r.knowledgePublished > 0);
   assert.ok(Math.abs(r.knowledgePerMoney - r.knowledge / r.spend) < 1e-9);
 });
+
+test('the knowledge reward pays each new bit once, and alpha0 only moves who gets it', () => {
+  const sc = (alpha0: number | null) => loadScenario(null, { rules: { alpha: 0.8, alpha0, c: 0, mint: 0, mintPerBit: 1, visibility: { kind: 'immediate' } } });
+  for (const a0 of [null, 1, 0.3]) {
+    const r = run(sc(a0), 11);
+    // Everything paid is bounties plus one unit per bit published (flow-back moves money, never makes it).
+    assert.ok(Math.abs(r.totalEarnings - r.value - r.knowledgePublished) < 1e-6, `alpha0 ${a0}: ${r.totalEarnings} vs ${r.value} + ${r.knowledgePublished}`);
+  }
+});

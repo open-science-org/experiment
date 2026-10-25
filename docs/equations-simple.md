@@ -1,6 +1,8 @@
 <!-- math -->
 # Equations: the simple model
 
+*Model version 4 ([what changed in each version](model-versions.md)).*
+
 The simple model keeps only the two mechanisms at the core of OSO, and holds everything else fixed:
 
 - **Value flow, $\alpha$** (the absorption rate): the share of incoming value an idea keeps for its author. The rest flows back to the ideas it built on.
@@ -18,7 +20,7 @@ The same as in the full model ([sections 1 to 3](equations.md#1-an-idea)): ideas
 | --- | --- |
 | Agents | 12 identical agents (skill 1, exact judgement, cost 1 per attempt, full reuse, no gaming) |
 | Money | the budget split equally: every agent gets $\text{Budget}/(R\,N)$ each round, whatever it earned ($f = 0$) |
-| Mint | off: $m = 0$, so bounties are the only value |
+| Mint | the flat mint is off ($m = 0$); the **knowledge reward** is on: $m_{\text{bit}} = 1$ per new bit, flowing back with $\alpha_0 = \alpha$ |
 | Validation | off: $\theta = 0$. No agent games, so nothing trivial is ever submitted |
 | Ideas and bounties | a generated idea graph (every run draws its own; presets: abstract field, drug discovery, battery) or the Lean problem set's |
 
@@ -31,7 +33,7 @@ The same as in the full model ([sections 1 to 3](equations.md#1-an-idea)): ideas
 
 $$P(\text{published at once}) = \begin{cases} 1 & B_x > 0 \\ \beta & B_x = 0 \end{cases}$$
 
-5. **Rewards.** There is no mint. A bounty $B_x$ enters $x$ when $x$ is first published and spreads back through the graph: the author of each idea $z$ that $x$ rests on gets $B_x\,\text{share}(x, z)$, with
+5. **Rewards.** Two kinds, both flowing back with $\alpha$. **Knowledge:** when $x$ is published, its new bits (bits in no published idea yet) earn 1 each; $x$ keeps $\alpha$ of that and the rest passes back like a bounty ([full model, section 6](equations.md#6-the-mint)). **Bounties:** a bounty $B_x$ enters $x$ when $x$ is first published and spreads back through the graph: the author of each idea $z$ that $x$ rests on gets $B_x\,\text{share}(x, z)$, with
 
 $$\text{share}(x, x) = \alpha \qquad \text{share}(x, z) = \sum_{y \to x} (1-\alpha)\, w_{y \to x}\, \text{share}(y, z)$$
 

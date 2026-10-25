@@ -527,5 +527,6 @@
   "one at a time 2026-10-24: composition",
   "difficulty composition 0.7"
  ],
- "ranAt": "2026-10-25T02:51:40.838Z"
+ "ranAt": "2026-10-25T02:51:40.838Z",
+ "modelVersion": 3
 }

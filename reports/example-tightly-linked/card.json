@@ -35,5 +35,6 @@
   "A preset of the idea graph generator. A small field where ideas lean heavily on what came before (composition 0.8) and each one needs several earlier results (2.5 parents). The numbers are illustrative, not measured from the field."
  ],
  "page": "reports/example-tightly-linked/card.md",
- "chart": "reports/example-tightly-linked/figures/frontier.svg"
+ "chart": "reports/example-tightly-linked/figures/frontier.svg",
+ "modelVersion": 3
 }

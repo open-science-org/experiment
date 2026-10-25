@@ -49,6 +49,12 @@ export const PARAMETERS: Parameter[] = [
   { path: 'rules.mint', label: 'mint per idea', group: 'market', min: 0, max: 5, step: 0.25, values: [0, 0.5, 1, 2],
     short: 'tokens created for each validated idea',
     explain: 'Paid to an idea\'s authors (and, through c, to what it built on) when it is published. It pays for progress along the way, not only for bounties; it is also what gaming agents chase with trivial ideas. Bounties are a few units for the easiest target and double with each level.' },
+  { path: 'rules.mintPerBit', label: 'knowledge reward per new bit', group: 'market', min: 0, max: 5, step: 0.25, values: [0, 1, 2],
+    short: 'paid for each new bit an idea adds when it is published',
+    explain: 'When an idea is published, it earns this much for each of its bits that no published idea has yet. A trivial idea or a copy adds no new bits, so it earns nothing, and publishing first pays. The reward flows back with α0. Off (0) in the full model by default; 1 in the simple model.' },
+  { path: 'rules.alpha0', label: 'α0, absorption rate of the knowledge reward', group: 'market', min: 0, max: 1, step: 0.05, flowBack: true, values: [1, 0.8, 0.5, 0.2],
+    short: 'how much of a knowledge reward the idea keeps; the rest flows to its parents',
+    explain: 'The same rule as α, for the knowledge reward only: the idea keeps α0 of it and the rest flows back to the ideas it built on. Left unset, it equals α.' },
   { path: 'rules.screen', label: 'θ, validation screen', group: 'market', min: 0, max: 1, step: 0.05, values: [0, 0.5, 0.9],
     short: 'chance validators reject a trivial idea',
     explain: 'A trivial idea adds nothing; it is submitted only to collect the mint. Validators reject it with chance θ. At low θ gaming pays, and under rules where money follows earnings a gaming agent can capture much of the budget.' },
@@ -122,7 +128,7 @@ export function fieldValues(id: string): Record<string, number> {
   const { space } = withCalibratedBudget(loadSpace(id));
   const sc = space.scenario as unknown as Record<string, unknown>;
   const osoRules = (parse(readFileSync(join(ROOT, 'config', 'presets.yaml'), 'utf8')) as Record<string, { rules: Record<string, number> }>).osoChoice.rules;
-  return Object.fromEntries(PARAMETERS.map((p) => [p.path, p.flowBack ? osoRules[p.path.split('.')[1]] : Number(getPath(sc, p.path) ?? 0)]));
+  return Object.fromEntries(PARAMETERS.map((p) => [p.path, p.flowBack ? (osoRules[p.path.split('.')[1]] ?? (p.path === 'rules.alpha0' ? osoRules.alpha : 0)) : Number(getPath(sc, p.path) ?? 0)]));
 }
 
 const COLUMN_INFO: Record<string, string> = {
@@ -535,7 +541,9 @@ export function graphPreview(g: GraphControls, seed = 1) {
   } catch (e) { return { ok: false, error: (e as Error).message }; }
 }
 
-export const SIMPLE_FIXED = { 'rules.c': 0, 'budget.allocation.rho': 0, 'rules.mint': 0, 'rules.screen': 0 };
+// The simple model: no flat mint and no validation; the knowledge reward is on (1 per new bit) and flows back
+// with alpha0 = alpha (rules.alpha0 left null).
+export const SIMPLE_FIXED = { 'rules.c': 0, 'budget.allocation.rho': 0, 'rules.mint': 0, 'rules.screen': 0, 'rules.mintPerBit': 1 };
 export const SIMPLE_AGENTS = 12;
 
 /** A society's name: closed (traditional), fully open (OSO), or in between. */

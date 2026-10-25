@@ -47,5 +47,6 @@
   "difficulty",
   "f 0.5",
   "analysis"
- ]
+ ],
+ "modelVersion": 3
 }

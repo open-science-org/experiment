@@ -1,6 +1,7 @@
 // One way to present every experiment, of any kind: a short card (question, answer, key numbers,
 // design, caveats) and one index of all of them (results/README.md). The design is declared before the
 // run; the answer is computed from the declared measure, never written by hand.
+import { MODEL_VERSION } from './engine/version.ts';
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { REPORTS_DIR, RESULTS_DIR, ROOT } from './paths.ts';
@@ -44,6 +45,8 @@ export interface Card {
   ranAt?: string;
   /** With every measure judged: one line per measure. */
   answers?: string[];
+  /** The model version a simulation ran on (src/engine/version.ts). */
+  modelVersion?: number;
 }
 
 const table = (rows: Record<string, string | number>[]) => {
@@ -119,6 +122,7 @@ export function compareAll(rows: { label: string; values: Record<string, number[
 }
 
 export function writeCard(dir: string, c: Card, details = '', file = 'summary.md'): void {
+  if ((c.kind === 'simulation' || c.kind === 'field report') && c.modelVersion === undefined) c.modelVersion = MODEL_VERSION;
   writeFileSync(join(dir, file), cardMarkdown(c, details));
   writeFileSync(join(dir, 'card.json'), JSON.stringify(c, null, 1) + '\n');
   writeIndex();

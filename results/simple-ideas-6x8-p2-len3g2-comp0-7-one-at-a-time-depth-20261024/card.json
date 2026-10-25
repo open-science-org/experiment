@@ -527,5 +527,6 @@
   "one at a time 2026-10-24: depth",
   "difficulty depth 6"
  ],
- "ranAt": "2026-10-25T02:51:41.971Z"
+ "ranAt": "2026-10-25T02:51:41.971Z",
+ "modelVersion": 3
 }

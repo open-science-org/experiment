@@ -443,5 +443,6 @@
   "scaling ladder 2026-10-24",
   "difficulty very hard"
  ],
- "ranAt": "2026-10-25T02:47:39.241Z"
+ "ranAt": "2026-10-25T02:47:39.241Z",
+ "modelVersion": 3
 }

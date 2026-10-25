@@ -5,7 +5,7 @@
  "title": "An abstract research field",
  "design": {
   "question": "For the same money, does OSO get further than traditional research in an abstract research field?",
-  "compare": "the six rule settings, an \u03b1 sweep, the parameters one by one, costly and fallible sharing",
+  "compare": "the six rule settings, an α sweep, the parameters one by one, costly and fallible sharing",
   "fixed": "the field, 12 agents and a budget of 1200",
   "measure": "hardest level reached",
   "better": "higher",
@@ -34,5 +34,6 @@
  ],
  "page": "reports/earlier/abstract-field/card.md",
  "chart": "reports/earlier/abstract-field/figures/frontier.svg",
- "superseded": "Earlier version (before 2026-10-24): a hand-written graph where every parent is required. The topic is now a preset of the idea graph generator; see its current report."
+ "superseded": "Earlier version (before 2026-10-24): a hand-written graph where every parent is required. The topic is now a preset of the idea graph generator; see its current report.",
+ "modelVersion": 1
 }

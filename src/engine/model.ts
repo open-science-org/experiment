@@ -6,7 +6,7 @@ import type { Scenario } from './config.ts';
 import { deciders, type Choice, type Decider } from './deciders.ts';
 import { measure, type RunResult } from './measures.ts';
 import { oracles, type Oracle } from './oracles.ts';
-import { chanceOf, frontier, gatedFrontier, knowledgeOf } from './difficulty.ts';
+import { chanceOf, frontier, gatedFrontier, knowledgeOf, newBits } from './difficulty.ts';
 import { Rng } from './rng.ts';
 import { allocations, visibilities, type Visibility } from './rules.ts';
 import { ledgerWeights, shares, worlds, type World } from './world.ts';
@@ -37,6 +37,10 @@ export interface State {
   visibility: Visibility;
   oracle: Oracle;
   share: Float64Array[];
+  /** Flow-back shares of the knowledge reward (absorption rate alpha0). */
+  share0: Float64Array[];
+  /** Bits in published ideas, so the knowledge reward pays only for new ones. */
+  publicBits: Set<number>;
   w: number[][];
   known: Set<number>[];
   /** Bumped whenever an agent's knowledge changes (lets the bits it has resolved be cached). */
@@ -85,8 +89,8 @@ export interface State {
  * nobody has published (possible when ideas have bits: an agent can solve x without its parents) has no
  * author; its share goes to `fallback`, by default x's author, who did that work.
  */
-function payInto(s: State, x: number, v: number, bounty = false, fallback = s.author[x]) {
-  const row = s.share[x];
+function payInto(s: State, x: number, v: number, bounty = false, fallback = s.author[x], shares = s.share) {
+  const row = shares[x];
   const pay = (r: number) => {
     const amount = v * row[r];
     const who = s.author[r] >= 0 ? s.author[r] : fallback;
@@ -109,6 +113,13 @@ function publishOne(s: State, i: number, x: number) {
   s.roundEarnings[i] += ps.length ? (1 - c) * mint : mint;
   ps.forEach((j, k) => payInto(s, j, c * mint * s.w[x][k], false, i));
   if (world.isTarget[x]) payInto(s, x, world.bounty[x], true);
+  // Knowledge reward: per new bit, flowing back with absorption rate alpha0.
+  const mb = s.sc.rules.mintPerBit;
+  if (mb > 0) {
+    const fresh = newBits(s, x);
+    if (world.bits) for (const b of world.bits[x]) s.publicBits.add(b);
+    if (fresh > 0) payInto(s, x, mb * fresh, false, i, s.share0);
+  } else if (world.bits) for (const b of world.bits[x]) s.publicBits.add(b);
   if (s.flawed[i].has(x)) s.publishedFlawed[x] = 1;
   // Free knowledge is taken up at once; costly knowledge at the start of the next round (absorb).
   if (s.sc.knowledge.absorbCost > 0) return;
@@ -270,10 +281,12 @@ export function run(sc: Scenario, seed: number, record?: { events: TraceEvent[];
   if (!agents.length) throw new Error('scenario: agents.mix has no agents');
   const w = ledgerWeights(world, sc.attribution.noise, rng.fork(3));
   const share = shares(world, sc.rules.alpha, w);
+  const alpha0 = sc.rules.alpha0 ?? sc.rules.alpha;
+  const share0 = alpha0 === sc.rules.alpha ? share : shares(world, alpha0, w);
   const perception = rng.fork(4);
   const N = agents.length;
   const s: State = {
-    sc, world, agents, rng: rng.fork(5), share, w,
+    sc, world, agents, rng: rng.fork(5), share, share0, publicBits: new Set<number>(), w,
     visibility: visibilities.create(sc.rules.visibility, 'rules.visibility'),
     oracle: oracles.create(sc.success.oracle, 'success.oracle'),
     known: agents.map(() => new Set()),

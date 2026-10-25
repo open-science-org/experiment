@@ -34,5 +34,6 @@
   "Theorem names are hidden; the tree is the route of our own reference proofs, and agents may find others."
  ],
  "page": "reports/lean-problem-set/card.md",
- "chart": "reports/lean-problem-set/figures/frontier.svg"
+ "chart": "reports/lean-problem-set/figures/frontier.svg",
+ "modelVersion": 3
 }

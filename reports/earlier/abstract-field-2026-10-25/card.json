@@ -1,39 +1,40 @@
 {
-  "ranAt": "2026-10-25T03:30:52.281Z",
-  "id": "abstract-field",
-  "kind": "field report",
-  "date": "2026-10-25",
-  "title": "Example: a deep, wide field",
-  "design": {
-    "question": "For the same money, does OSO get further than traditional research in Example: a deep, wide field?",
-    "compare": "the six rule settings, an α sweep, the parameters one by one, costly and fallible sharing",
-    "fixed": "the field, 12 agents and a budget of 800",
-    "measure": "hardest level reached",
-    "better": "higher",
-    "runs": "100 runs per setting"
+ "ranAt": "2026-10-25T03:30:52.281Z",
+ "id": "abstract-field",
+ "kind": "field report",
+ "date": "2026-10-25",
+ "title": "Example: a deep, wide field",
+ "design": {
+  "question": "For the same money, does OSO get further than traditional research in Example: a deep, wide field?",
+  "compare": "the six rule settings, an α sweep, the parameters one by one, costly and fallible sharing",
+  "fixed": "the field, 12 agents and a budget of 800",
+  "measure": "hardest level reached",
+  "better": "higher",
+  "runs": "100 runs per setting"
+ },
+ "answer": "OSO ahead: level 8.0 against 1.5 of 8; targets 3.4 against 0.3 of 4; ROI 2.73 against 0.17.",
+ "table": [
+  {
+   "rules": "Traditional",
+   "hardest level": "1.5 of 8",
+   "targets solved": "0.3 of 4",
+   "cost to level 8": 622,
+   "ROI": "0.17 (133 for 794)"
   },
-  "answer": "OSO ahead: level 8.0 against 1.5 of 8; targets 3.4 against 0.3 of 4; ROI 2.73 against 0.17.",
-  "table": [
-    {
-      "rules": "Traditional",
-      "hardest level": "1.5 of 8",
-      "targets solved": "0.3 of 4",
-      "cost to level 8": 622,
-      "ROI": "0.17 (133 for 794)"
-    },
-    {
-      "rules": "OSO",
-      "hardest level": "8.0 of 8",
-      "targets solved": "3.4 of 4",
-      "cost to level 8": 398,
-      "ROI": "2.73 (1756 for 684)"
-    }
-  ],
-  "caveats": [
-    "A simulation with guessed parameters: it shows how the rules play out if the field works as described.",
-    "OSO's lead as the market-set parameters vary: 0.5 to 5.9 levels."
-  ],
-  "page": "reports/earlier/abstract-field-2026-10-25/card.md",
-  "chart": "reports/earlier/abstract-field-2026-10-25/figures/frontier.svg",
-  "superseded": "Renamed on 2026-10-25: this preset is now \"example-deep-field\", an example rather than a real field. Same settings and results; see its current report (reports/example-deep-field)."
+  {
+   "rules": "OSO",
+   "hardest level": "8.0 of 8",
+   "targets solved": "3.4 of 4",
+   "cost to level 8": 398,
+   "ROI": "2.73 (1756 for 684)"
+  }
+ ],
+ "caveats": [
+  "A simulation with guessed parameters: it shows how the rules play out if the field works as described.",
+  "OSO's lead as the market-set parameters vary: 0.5 to 5.9 levels."
+ ],
+ "page": "reports/earlier/abstract-field-2026-10-25/card.md",
+ "chart": "reports/earlier/abstract-field-2026-10-25/figures/frontier.svg",
+ "superseded": "Renamed on 2026-10-25: this preset is now \"example-deep-field\", an example rather than a real field. Same settings and results; see its current report (reports/example-deep-field).",
+ "modelVersion": 3
 }

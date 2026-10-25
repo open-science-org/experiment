@@ -1,7 +1,7 @@
 {
   "experiment": "full-example-deep-field-6-settings-20261023",
   "date": "2026-10-25",
-  "commit": "237baf7",
+  "commit": "10c7482",
   "dirty": true,
   "command": "npm run sim -- full-example-deep-field-6-settings-20261023 --seeds 100 --save",
   "seeds": 100,
@@ -71,6 +71,9 @@
         "targetsSolved",
         "value",
         "roi",
+        "knowledge",
+        "knowledgePublished",
+        "knowledgePerMoney",
         "cost",
         "waste",
         "sharing",

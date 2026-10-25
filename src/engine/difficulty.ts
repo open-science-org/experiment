@@ -80,6 +80,14 @@ export function knowledgeOf(world: World, ideas: Iterable<number>): number {
   return seen.size;
 }
 
+/** Knowledge idea x would add if published now, in bits: its bits in no published idea yet (log2(1/p) without bits). */
+export function newBits(v: { world: World; publicBits: Set<number> }, x: number): number {
+  if (!v.world.bits) return Math.log2(1 / v.world.p[x]);
+  let n = 0;
+  for (const b of v.world.bits[x]) if (!v.publicBits.has(b)) n++;
+  return n;
+}
+
 /** Chance an attempt by agent i at idea x works, before the agent's skill. */
 export function chanceOf(v: KnowledgeView, i: number, x: number): number {
   return v.world.bits ? 2 ** -unresolvedBits(v, i, x) : v.world.p[x];

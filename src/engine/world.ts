@@ -253,15 +253,28 @@ export function shares(world: World, alpha: number, w: number[][]): Float64Array
   return out;
 }
 
+/** Bits each idea adds beyond its ancestors (log2(1/p) without bits): its knowledge reward, in bits. */
+export function ownBits(world: World): number[] {
+  return Array.from({ length: world.n }, (_, x) => {
+    if (!world.bits) return Math.log2(1 / world.p[x]);
+    const before = new Set<number>();
+    for (const a of world.ancestors[x]) for (const b of world.bits[a]) before.add(b);
+    return world.bits[x].filter((b) => !before.has(b)).length;
+  });
+}
+
 /**
  * S_r: what authoring r can be expected to earn later from flow-back, assuming every target below it
  * is eventually solved and every descendant published.
  */
-export function attributionValue(world: World, share: Float64Array[], w: number[][], c: number, m: number): number[] {
+export function attributionValue(world: World, share: Float64Array[], w: number[][], c: number, m: number, mintPerBit = 0, share0 = share): number[] {
   const S = new Array<number>(world.n).fill(0);
+  const own = mintPerBit > 0 ? ownBits(world) : null;
   for (let d = 0; d < world.n; d++) {
     for (const r of world.ancestors[d]) {
       if (world.isTarget[d]) S[r] += world.bounty[d] * share[d][r];
+      // The knowledge reward of d (its own new bits) flows back with alpha0.
+      if (own) S[r] += mintPerBit * own[d] * share0[d][r];
       world.prereqs[d].forEach((j, k) => {
         if (j === r || world.ancestors[j].has(r)) S[r] += c * m * w[d][k] * share[j][r];
       });

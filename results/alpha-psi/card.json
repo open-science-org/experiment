@@ -1,266 +1,267 @@
 {
-  "chart": "results/alpha-psi/figures/compare.svg",
-  "id": "alpha-psi",
-  "kind": "simulation",
-  "date": "2026-10-23",
-  "title": "Where sharing becomes rational: α × scoop risk ψ × cited share c",
-  "design": {
-    "question": "At which α, scoop risk ψ and cited share c does sharing become worth it to agents?",
-    "compare": "α × ψ × c, agents choosing what to publish",
-    "fixed": "the field, agents and budget",
-    "measure": "share of ideas published at once",
-    "better": "higher",
-    "runs": "100 runs per row"
+ "chart": "results/alpha-psi/figures/compare.svg",
+ "id": "alpha-psi",
+ "kind": "simulation",
+ "date": "2026-10-23",
+ "title": "Where sharing becomes rational: α × scoop risk ψ × cited share c",
+ "design": {
+  "question": "At which α, scoop risk ψ and cited share c does sharing become worth it to agents?",
+  "compare": "α × ψ × c, agents choosing what to publish",
+  "fixed": "the field, agents and budget",
+  "measure": "share of ideas published at once",
+  "better": "higher",
+  "runs": "100 runs per row"
+ },
+ "answer": "Best: ψ 0.1, α 0.1, c 0, 0.9.",
+ "table": [
+  {
+   "ψ": 0.5,
+   "α": 1,
+   "c": 0,
+   "sharing": "0.23 ± 0.08",
+   "frontier": "6.0 ± 0.9",
+   "reach L7": "0.35",
+   "ROI (value per spend)": "0.20 ± 0.17"
   },
-  "answer": "Best: ψ 0.1, α 0.1, c 0, 0.9.",
-  "table": [
-    {
-      "ψ": 0.5,
-      "α": 1,
-      "c": 0,
-      "sharing": "0.23 ± 0.08",
-      "frontier": "6.0 ± 0.9",
-      "reach L7": "0.35",
-      "ROI (value per spend)": "0.20 ± 0.17"
-    },
-    {
-      "ψ": 0.5,
-      "α": 0.8,
-      "c": 0,
-      "sharing": "0.24 ± 0.09",
-      "frontier": "6.4 ± 0.9",
-      "reach L7": "0.49",
-      "ROI (value per spend)": "0.26 ± 0.24"
-    },
-    {
-      "ψ": 0.5,
-      "α": 0.8,
-      "c": 0.15,
-      "sharing": "0.22 ± 0.09",
-      "frontier": "6.3 ± 1.0",
-      "reach L7": "0.43",
-      "ROI (value per spend)": "0.27 ± 0.25"
-    },
-    {
-      "ψ": 0.5,
-      "α": 0.5,
-      "c": 0,
-      "sharing": "0.28 ± 0.09",
-      "frontier": "6.5 ± 0.9",
-      "reach L7": "0.57",
-      "ROI (value per spend)": "0.28 ± 0.28"
-    },
-    {
-      "ψ": 0.5,
-      "α": 0.5,
-      "c": 0.15,
-      "sharing": "0.28 ± 0.09",
-      "frontier": "6.7 ± 0.8",
-      "reach L7": "0.63",
-      "ROI (value per spend)": "0.30 ± 0.23"
-    },
-    {
-      "ψ": 0.5,
-      "α": 0.3,
-      "c": 0,
-      "sharing": "0.49 ± 0.12",
-      "frontier": "7.2 ± 0.7",
-      "reach L7": "0.87",
-      "ROI (value per spend)": "0.52 ± 0.38"
-    },
-    {
-      "ψ": 0.5,
-      "α": 0.3,
-      "c": 0.15,
-      "sharing": "0.47 ± 0.11",
-      "frontier": "7.2 ± 0.7",
-      "reach L7": "0.86",
-      "ROI (value per spend)": "0.49 ± 0.37"
-    },
-    {
-      "ψ": 0.5,
-      "α": 0.1,
-      "c": 0,
-      "sharing": "0.79 ± 0.07",
-      "frontier": "7.8 ± 0.4",
-      "reach L7": "1.00",
-      "ROI (value per spend)": "1.06 ± 0.47"
-    },
-    {
-      "ψ": 0.5,
-      "α": 0.1,
-      "c": 0.15,
-      "sharing": "0.77 ± 0.07",
-      "frontier": "7.8 ± 0.4",
-      "reach L7": "1.00",
-      "ROI (value per spend)": "1.04 ± 0.47"
-    },
-    {
-      "ψ": 0.25,
-      "α": 1,
-      "c": 0,
-      "sharing": "0.23 ± 0.08",
-      "frontier": "6.0 ± 1.0",
-      "reach L7": "0.34",
-      "ROI (value per spend)": "0.21 ± 0.19"
-    },
-    {
-      "ψ": 0.25,
-      "α": 0.8,
-      "c": 0,
-      "sharing": "0.25 ± 0.09",
-      "frontier": "6.4 ± 0.9",
-      "reach L7": "0.47",
-      "ROI (value per spend)": "0.28 ± 0.25"
-    },
-    {
-      "ψ": 0.25,
-      "α": 0.8,
-      "c": 0.15,
-      "sharing": "0.24 ± 0.09",
-      "frontier": "6.3 ± 0.9",
-      "reach L7": "0.46",
-      "ROI (value per spend)": "0.26 ± 0.27"
-    },
-    {
-      "ψ": 0.25,
-      "α": 0.5,
-      "c": 0,
-      "sharing": "0.36 ± 0.11",
-      "frontier": "6.9 ± 0.7",
-      "reach L7": "0.76",
-      "ROI (value per spend)": "0.39 ± 0.34"
-    },
-    {
-      "ψ": 0.25,
-      "α": 0.5,
-      "c": 0.15,
-      "sharing": "0.36 ± 0.10",
-      "frontier": "6.9 ± 0.7",
-      "reach L7": "0.73",
-      "ROI (value per spend)": "0.37 ± 0.29"
-    },
-    {
-      "ψ": 0.25,
-      "α": 0.3,
-      "c": 0,
-      "sharing": "0.65 ± 0.10",
-      "frontier": "7.6 ± 0.6",
-      "reach L7": "0.96",
-      "ROI (value per spend)": "0.85 ± 0.49"
-    },
-    {
-      "ψ": 0.25,
-      "α": 0.3,
-      "c": 0.15,
-      "sharing": "0.65 ± 0.09",
-      "frontier": "7.6 ± 0.6",
-      "reach L7": "0.97",
-      "ROI (value per spend)": "0.86 ± 0.48"
-    },
-    {
-      "ψ": 0.25,
-      "α": 0.1,
-      "c": 0,
-      "sharing": "0.89 ± 0.05",
-      "frontier": "7.9 ± 0.3",
-      "reach L7": "1.00",
-      "ROI (value per spend)": "1.24 ± 0.37"
-    },
-    {
-      "ψ": 0.25,
-      "α": 0.1,
-      "c": 0.15,
-      "sharing": "0.86 ± 0.06",
-      "frontier": "7.9 ± 0.3",
-      "reach L7": "1.00",
-      "ROI (value per spend)": "1.24 ± 0.44"
-    },
-    {
-      "ψ": 0.1,
-      "α": 1,
-      "c": 0,
-      "sharing": "0.24 ± 0.08",
-      "frontier": "6.1 ± 0.9",
-      "reach L7": "0.34",
-      "ROI (value per spend)": "0.24 ± 0.22"
-    },
-    {
-      "ψ": 0.1,
-      "α": 0.8,
-      "c": 0,
-      "sharing": "0.30 ± 0.09",
-      "frontier": "6.7 ± 0.8",
-      "reach L7": "0.63",
-      "ROI (value per spend)": "0.34 ± 0.34"
-    },
-    {
-      "ψ": 0.1,
-      "α": 0.8,
-      "c": 0.15,
-      "sharing": "0.29 ± 0.09",
-      "frontier": "6.6 ± 0.8",
-      "reach L7": "0.60",
-      "ROI (value per spend)": "0.31 ± 0.30"
-    },
-    {
-      "ψ": 0.1,
-      "α": 0.5,
-      "c": 0,
-      "sharing": "0.61 ± 0.10",
-      "frontier": "7.7 ± 0.5",
-      "reach L7": "1.00",
-      "ROI (value per spend)": "0.85 ± 0.47"
-    },
-    {
-      "ψ": 0.1,
-      "α": 0.5,
-      "c": 0.15,
-      "sharing": "0.60 ± 0.10",
-      "frontier": "7.6 ± 0.6",
-      "reach L7": "0.95",
-      "ROI (value per spend)": "0.83 ± 0.49"
-    },
-    {
-      "ψ": 0.1,
-      "α": 0.3,
-      "c": 0,
-      "sharing": "0.83 ± 0.06",
-      "frontier": "7.9 ± 0.3",
-      "reach L7": "1.00",
-      "ROI (value per spend)": "1.26 ± 0.45"
-    },
-    {
-      "ψ": 0.1,
-      "α": 0.3,
-      "c": 0.15,
-      "sharing": "0.81 ± 0.06",
-      "frontier": "7.9 ± 0.3",
-      "reach L7": "1.00",
-      "ROI (value per spend)": "1.21 ± 0.46"
-    },
-    {
-      "ψ": 0.1,
-      "α": 0.1,
-      "c": 0,
-      "sharing": "0.94 ± 0.03",
-      "frontier": "7.9 ± 0.3",
-      "reach L7": "1.00",
-      "ROI (value per spend)": "1.29 ± 0.42"
-    },
-    {
-      "ψ": 0.1,
-      "α": 0.1,
-      "c": 0.15,
-      "sharing": "0.92 ± 0.04",
-      "frontier": "7.9 ± 0.3",
-      "reach L7": "1.00",
-      "ROI (value per spend)": "1.34 ± 0.52"
-    }
-  ],
-  "caveats": [
-    "A simulation with guessed parameters: it shows how the rules play out, not that they work."
-  ],
-  "page": "results/alpha-psi/summary.md",
-  "superseded": "Earlier version (before 2026-10-24): run on the old random-layer graph, where every parent is required and each level has a fixed chance. Replaced by runs on the idea graph generator."
+  {
+   "ψ": 0.5,
+   "α": 0.8,
+   "c": 0,
+   "sharing": "0.24 ± 0.09",
+   "frontier": "6.4 ± 0.9",
+   "reach L7": "0.49",
+   "ROI (value per spend)": "0.26 ± 0.24"
+  },
+  {
+   "ψ": 0.5,
+   "α": 0.8,
+   "c": 0.15,
+   "sharing": "0.22 ± 0.09",
+   "frontier": "6.3 ± 1.0",
+   "reach L7": "0.43",
+   "ROI (value per spend)": "0.27 ± 0.25"
+  },
+  {
+   "ψ": 0.5,
+   "α": 0.5,
+   "c": 0,
+   "sharing": "0.28 ± 0.09",
+   "frontier": "6.5 ± 0.9",
+   "reach L7": "0.57",
+   "ROI (value per spend)": "0.28 ± 0.28"
+  },
+  {
+   "ψ": 0.5,
+   "α": 0.5,
+   "c": 0.15,
+   "sharing": "0.28 ± 0.09",
+   "frontier": "6.7 ± 0.8",
+   "reach L7": "0.63",
+   "ROI (value per spend)": "0.30 ± 0.23"
+  },
+  {
+   "ψ": 0.5,
+   "α": 0.3,
+   "c": 0,
+   "sharing": "0.49 ± 0.12",
+   "frontier": "7.2 ± 0.7",
+   "reach L7": "0.87",
+   "ROI (value per spend)": "0.52 ± 0.38"
+  },
+  {
+   "ψ": 0.5,
+   "α": 0.3,
+   "c": 0.15,
+   "sharing": "0.47 ± 0.11",
+   "frontier": "7.2 ± 0.7",
+   "reach L7": "0.86",
+   "ROI (value per spend)": "0.49 ± 0.37"
+  },
+  {
+   "ψ": 0.5,
+   "α": 0.1,
+   "c": 0,
+   "sharing": "0.79 ± 0.07",
+   "frontier": "7.8 ± 0.4",
+   "reach L7": "1.00",
+   "ROI (value per spend)": "1.06 ± 0.47"
+  },
+  {
+   "ψ": 0.5,
+   "α": 0.1,
+   "c": 0.15,
+   "sharing": "0.77 ± 0.07",
+   "frontier": "7.8 ± 0.4",
+   "reach L7": "1.00",
+   "ROI (value per spend)": "1.04 ± 0.47"
+  },
+  {
+   "ψ": 0.25,
+   "α": 1,
+   "c": 0,
+   "sharing": "0.23 ± 0.08",
+   "frontier": "6.0 ± 1.0",
+   "reach L7": "0.34",
+   "ROI (value per spend)": "0.21 ± 0.19"
+  },
+  {
+   "ψ": 0.25,
+   "α": 0.8,
+   "c": 0,
+   "sharing": "0.25 ± 0.09",
+   "frontier": "6.4 ± 0.9",
+   "reach L7": "0.47",
+   "ROI (value per spend)": "0.28 ± 0.25"
+  },
+  {
+   "ψ": 0.25,
+   "α": 0.8,
+   "c": 0.15,
+   "sharing": "0.24 ± 0.09",
+   "frontier": "6.3 ± 0.9",
+   "reach L7": "0.46",
+   "ROI (value per spend)": "0.26 ± 0.27"
+  },
+  {
+   "ψ": 0.25,
+   "α": 0.5,
+   "c": 0,
+   "sharing": "0.36 ± 0.11",
+   "frontier": "6.9 ± 0.7",
+   "reach L7": "0.76",
+   "ROI (value per spend)": "0.39 ± 0.34"
+  },
+  {
+   "ψ": 0.25,
+   "α": 0.5,
+   "c": 0.15,
+   "sharing": "0.36 ± 0.10",
+   "frontier": "6.9 ± 0.7",
+   "reach L7": "0.73",
+   "ROI (value per spend)": "0.37 ± 0.29"
+  },
+  {
+   "ψ": 0.25,
+   "α": 0.3,
+   "c": 0,
+   "sharing": "0.65 ± 0.10",
+   "frontier": "7.6 ± 0.6",
+   "reach L7": "0.96",
+   "ROI (value per spend)": "0.85 ± 0.49"
+  },
+  {
+   "ψ": 0.25,
+   "α": 0.3,
+   "c": 0.15,
+   "sharing": "0.65 ± 0.09",
+   "frontier": "7.6 ± 0.6",
+   "reach L7": "0.97",
+   "ROI (value per spend)": "0.86 ± 0.48"
+  },
+  {
+   "ψ": 0.25,
+   "α": 0.1,
+   "c": 0,
+   "sharing": "0.89 ± 0.05",
+   "frontier": "7.9 ± 0.3",
+   "reach L7": "1.00",
+   "ROI (value per spend)": "1.24 ± 0.37"
+  },
+  {
+   "ψ": 0.25,
+   "α": 0.1,
+   "c": 0.15,
+   "sharing": "0.86 ± 0.06",
+   "frontier": "7.9 ± 0.3",
+   "reach L7": "1.00",
+   "ROI (value per spend)": "1.24 ± 0.44"
+  },
+  {
+   "ψ": 0.1,
+   "α": 1,
+   "c": 0,
+   "sharing": "0.24 ± 0.08",
+   "frontier": "6.1 ± 0.9",
+   "reach L7": "0.34",
+   "ROI (value per spend)": "0.24 ± 0.22"
+  },
+  {
+   "ψ": 0.1,
+   "α": 0.8,
+   "c": 0,
+   "sharing": "0.30 ± 0.09",
+   "frontier": "6.7 ± 0.8",
+   "reach L7": "0.63",
+   "ROI (value per spend)": "0.34 ± 0.34"
+  },
+  {
+   "ψ": 0.1,
+   "α": 0.8,
+   "c": 0.15,
+   "sharing": "0.29 ± 0.09",
+   "frontier": "6.6 ± 0.8",
+   "reach L7": "0.60",
+   "ROI (value per spend)": "0.31 ± 0.30"
+  },
+  {
+   "ψ": 0.1,
+   "α": 0.5,
+   "c": 0,
+   "sharing": "0.61 ± 0.10",
+   "frontier": "7.7 ± 0.5",
+   "reach L7": "1.00",
+   "ROI (value per spend)": "0.85 ± 0.47"
+  },
+  {
+   "ψ": 0.1,
+   "α": 0.5,
+   "c": 0.15,
+   "sharing": "0.60 ± 0.10",
+   "frontier": "7.6 ± 0.6",
+   "reach L7": "0.95",
+   "ROI (value per spend)": "0.83 ± 0.49"
+  },
+  {
+   "ψ": 0.1,
+   "α": 0.3,
+   "c": 0,
+   "sharing": "0.83 ± 0.06",
+   "frontier": "7.9 ± 0.3",
+   "reach L7": "1.00",
+   "ROI (value per spend)": "1.26 ± 0.45"
+  },
+  {
+   "ψ": 0.1,
+   "α": 0.3,
+   "c": 0.15,
+   "sharing": "0.81 ± 0.06",
+   "frontier": "7.9 ± 0.3",
+   "reach L7": "1.00",
+   "ROI (value per spend)": "1.21 ± 0.46"
+  },
+  {
+   "ψ": 0.1,
+   "α": 0.1,
+   "c": 0,
+   "sharing": "0.94 ± 0.03",
+   "frontier": "7.9 ± 0.3",
+   "reach L7": "1.00",
+   "ROI (value per spend)": "1.29 ± 0.42"
+  },
+  {
+   "ψ": 0.1,
+   "α": 0.1,
+   "c": 0.15,
+   "sharing": "0.92 ± 0.04",
+   "frontier": "7.9 ± 0.3",
+   "reach L7": "1.00",
+   "ROI (value per spend)": "1.34 ± 0.52"
+  }
+ ],
+ "caveats": [
+  "A simulation with guessed parameters: it shows how the rules play out, not that they work."
+ ],
+ "page": "results/alpha-psi/summary.md",
+ "superseded": "Earlier version (before 2026-10-24): run on the old random-layer graph, where every parent is required and each level has a fixed chance. Replaced by runs on the idea graph generator.",
+ "modelVersion": 1
 }

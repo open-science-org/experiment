@@ -1,6 +1,8 @@
 <!-- math -->
 # Equations
 
+*Model version 4 ([what changed in each version](model-versions.md)).*
+
 Every rule of the experiment as a formula, in the order a run uses them. Each formula has one line saying what it does, and is worked out on the small tree below. The simulation uses all of them; the AI-model tests use the same rules, except where [section 12](#12-ai-model-tests-what-changes) says otherwise. The same ideas in words: [How it works](README.md). Full definitions: [the design](design.md).
 
 ## The example tree
@@ -78,6 +80,8 @@ Grouped by what they belong to, in the order of the sections below. A hat marks 
 | --- | --- | --- | --- |
 | $m$ | tokens minted for each new idea | | 1 |
 | $c$ | cited share: part of each mint passed to the parents | | traditional 0, OSO 0.15 |
+| $m_{\text{bit}}$ | knowledge reward: paid per new bit when an idea is published | reward 3 for HHTHHH | full model 0, simple model 1 |
+| $\alpha_0$ | absorption rate of the knowledge reward: the share an idea keeps, the rest flows to its parents | keeps 2.4 of 3 | $= \alpha$ |
 | $m_x$ | what $x$'s author gets from its mint | $m_{y_1} = 0.85$ | $(1-c)\,m$; $m$ for a root |
 | $\theta$ | chance a trivial idea is rejected | | 0.5 |
 | $g_i$ | gaming: share of attempts spent on trivial ideas, for their mint | | 0 (gamer 0.6) |
@@ -261,6 +265,14 @@ Every new idea mints $m$ tokens. Its author gets $m_x = (1-c)\,m$, and $c\,m$ go
 *Example* ($c = 0.15$): when $y_1$ is published, its author gets $m_{y_1} = 0.85$, and the authors of $z_1$ and $z_2$ get 0.075 each.
 
 **Gaming.** With chance $g_i$ an agent spends an attempt on a trivial idea instead, to collect its mint. A trivial idea is rejected with chance $\theta$; if accepted, it earns $m$.
+
+**The knowledge reward.** On top of the flat mint, a published idea can earn $m_{\text{bit}}$ for each **new bit**: each bit of it that no published idea has yet. It enters $x$ and flows back like a bounty, but with its own absorption rate $\alpha_0$: $x$ keeps $\alpha_0$ of it and the rest passes to its parents (section 7, with $\alpha_0$ in place of $\alpha$).
+
+$$\text{reward}_x = m_{\text{bit}} \cdot \big|\text{bits}(x) \setminus \text{published bits}\big| \qquad \text{share}_0(x, x) = \alpha_0$$
+
+A trivial idea or a copy adds no new bits, so it earns nothing; publishing first pays, because once those bits are public they are no longer new. By default $\alpha_0 = \alpha$. The full model has $m_{\text{bit}} = 0$ (off); the simple model has $m_{\text{bit}} = 1$. On the Lean problem set (no bits) an idea's new bits are $\log_2(1/p_x)$.
+
+*Example* ($m_{\text{bit}} = 1$, $\alpha_0 = 0.8$): HHT is public; publishing HHTHHH adds 3 new bits, a reward of 3. Its author keeps 2.4, and 0.6 flows to the author of HHT.
 
 ## 7. Value flow
 

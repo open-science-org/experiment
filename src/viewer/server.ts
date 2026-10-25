@@ -1,6 +1,7 @@
 // The experiment viewer: `npm run viewer`, then open http://127.0.0.1:8791.
 // Plays back simulated runs round by round (traced on demand), and Lean pilot runs, live or after the
 // fact. It listens on this machine only: pilot transcripts contain proofs, which are private.
+import { MODEL_HISTORY, MODEL_VERSION } from '../engine/version.ts';
 import { createServer } from 'node:http';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, extname, join, normalize, relative } from 'node:path';
@@ -211,16 +212,16 @@ function history() {
     const watch = c.kind === 'simulation' && existsSync(join(ROOT, 'config', 'experiments', `${c.id}.yaml`)) ? `#/live?tab=sim&experiment=${encodeURIComponent(c.id)}`
       : c.kind === 'field report' && !c.superseded ? `#/live?tab=sim&space=${encodeURIComponent(c.id)}` : c.kind === 'race' && !c.invalid ? '#/live?tab=ai' : null;
     // When the run started; older cards without it: when their result was last written.
-    return { at: c.ranAt ? Date.parse(c.ranAt) : existsSync(page) ? statSync(page).mtimeMs : Date.parse(c.date), id: c.id, kind: model, title: c.title, question: c.design.question, answer: c.invalid ? `Not valid: ${c.invalid}` : c.superseded ? `Earlier version. ${c.answer}` : c.answer, status: c.invalid ? 'not valid' : c.superseded ? 'earlier' : 'done', result: `#/doc/${c.page}`, watch, tags: c.tags ?? [] };
+    return { at: c.ranAt ? Date.parse(c.ranAt) : existsSync(page) ? statSync(page).mtimeMs : Date.parse(c.date), id: c.id, kind: model, title: c.title, question: c.design.question, answer: c.invalid ? `Not valid: ${c.invalid}` : c.superseded ? `Earlier version. ${c.answer}` : c.answer, status: c.invalid ? 'not valid' : c.superseded ? 'earlier' : c.modelVersion !== undefined && c.modelVersion < MODEL_VERSION ? 'older model' : 'done', modelVersion: c.modelVersion ?? null, result: `#/doc/${c.page}`, watch, tags: c.tags ?? [] };
   });
   const seen = new Set(rows.map((r) => r.id));
   for (const j of design.listJobs()) {
     if (j.status !== 'running') continue;
-    rows.push({ at: j.startedAt, id: j.id, kind: 'Running now', title: j.title, question: j.title, answer: j.log.at(-1) ?? 'starting…', status: 'running', result: '', watch: null, tags: [] });
+    rows.push({ at: j.startedAt, id: j.id, kind: 'Running now', title: j.title, question: j.title, answer: j.log.at(-1) ?? 'starting…', status: 'running', modelVersion: MODEL_VERSION, result: '', watch: null, tags: [] });
   }
   for (const c of communityRuns()) {
     if (seen.has(c.id) || !c.live) continue;
-    rows.push({ at: c.modified, id: c.id, kind: 'AI test', title: c.id, question: 'An AI test, in progress', answer: `${c.actions} actions so far`, status: 'running', result: '', watch: `#/live?tab=ai&run=${encodeURIComponent(c.id)}`, tags: [] });
+    rows.push({ at: c.modified, id: c.id, kind: 'AI test', title: c.id, question: 'An AI test, in progress', answer: `${c.actions} actions so far`, status: 'running', modelVersion: null, result: '', watch: `#/live?tab=ai&run=${encodeURIComponent(c.id)}`, tags: [] });
   }
   return rows.sort((a, b) => b.at - a.at);
 }
@@ -333,6 +334,7 @@ const server = createServer(async (req, res) => {
     }
     if (url.pathname === '/api/result-data') return send(200, resultData(url.searchParams.get('id') ?? ''));
     if (url.pathname === '/api/history') return send(200, history());
+    if (url.pathname === '/api/model') return send(200, { version: MODEL_VERSION, history: MODEL_HISTORY });
     if (url.pathname === '/api/presets') return send(200, design.graphPresets());
     if (url.pathname === '/api/spaces') return send(200, spaceIds().map((id) => ({ id, title: loadSpace(id).spec.title })));
     if (url.pathname === '/api/settings') return send(200, SETTINGS);

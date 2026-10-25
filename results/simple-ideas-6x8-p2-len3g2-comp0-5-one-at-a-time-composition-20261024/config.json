@@ -1,8 +1,8 @@
 {
   "experiment": "simple-ideas-6x8-p2-len3g2-comp0-5-one-at-a-time-composition-20261024",
   "date": "2026-10-25",
-  "commit": "04dc47f",
-  "dirty": false,
+  "commit": "10c7482",
+  "dirty": true,
   "command": "npm run sim -- simple-ideas-6x8-p2-len3g2-comp0-5-one-at-a-time-composition-20261024 --seeds 20 --save",
   "seeds": 20,
   "overrides": {},
@@ -121,6 +121,9 @@
         "targetsSolved",
         "value",
         "roi",
+        "knowledge",
+        "knowledgePublished",
+        "knowledgePerMoney",
         "cost",
         "waste",
         "sharing",
@@ -155,7 +158,10 @@
         "lengthGrowth": 2,
         "composition": 0.5,
         "targets": 2,
-        "targetsFrom": 0
+        "targetsFrom": 0,
+        "bountyBase": 4,
+        "bountyGrowth": 2,
+        "attemptLimit": 24
       },
       "success": {
         "p0": 0.5,

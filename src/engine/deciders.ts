@@ -2,7 +2,7 @@
 // The environment (frontier, success, publishing, payment) stays in model.ts; a decider only decides.
 // A decider must use only what its agent knows (specification, section 2.3), and draw randomness
 // only from `ctx.s.rng`, so runs stay reproducible.
-import { chanceOf } from './difficulty.ts';
+import { chanceOf, newBits } from './difficulty.ts';
 import { skillIn } from './agents.ts';
 import type { State } from './model.ts';
 import { Registry } from './registry.ts';
@@ -45,7 +45,9 @@ deciders.register('formula', {
   create: () => ({ s, perception }) => {
     const { world, sc } = s;
     // Each agent's noisy perception of attribution value S and of the best bounty below each result.
-    const S = attributionValue(world, s.share, s.w, sc.rules.c, sc.rules.mint);
+    const S = attributionValue(world, s.share, s.w, sc.rules.c, sc.rules.mint, sc.rules.mintPerBit, s.share0);
+    // The knowledge reward the author of r keeps: its new bits (those not yet public) at the moment of choosing.
+    const keep0 = (r: number) => (sc.rules.mintPerBit > 0 ? sc.rules.mintPerBit * newBits(s, r) * s.share0[r][r] : 0);
     const down = world.targetsBelow.map((ts) => Math.max(0, ...ts.map((t) => world.bounty[t])));
     const noisy = (base: number[], q: number) =>
       Float64Array.from(base, (x) => Math.max(0, x * (1 + sc.behaviour.perceptionNoise * (1 - q) * perception.normal())));
@@ -64,7 +66,7 @@ deciders.register('formula', {
       // A lemma is a stepping stone to a target the agent may win itself, under any rules.
       const step = later * alpha * seenDown[i][r] * win;
       const flow = later * seenS[i][r];
-      const value = mint + bounty + step + flow;
+      const value = mint + keep0(r) + bounty + step + flow;
       return { u: value * (pi - t.risk * Math.sqrt(pi * (1 - pi))), win, later };
     };
 
@@ -82,7 +84,8 @@ deciders.register('formula', {
         const { kappa, psi } = sc.behaviour;
         const t = s.agents[i].traits;
         // Kept private, the mint arrives only if the agent later wins a target that uses r.
-        const mint = (world.prereqs[r].length ? 1 - c : 1) * m;
+        // The knowledge reward is lost too if someone else publishes those bits first.
+        const mint = (world.prereqs[r].length ? 1 - c : 1) * m + keep0(r);
         const mintAtRisk = mint * (1 - (world.targetsBelow[r].length ? later * win : 0));
         const gain = t.sharing * m + mintAtRisk + later * seenS[i][r] * kappa;
         const scoop = alpha * seenDown[i][r] * win * psi;

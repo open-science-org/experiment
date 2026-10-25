@@ -34,5 +34,6 @@
   "OSO's lead as the market-set parameters vary: 0.5 to 5.9 levels."
  ],
  "page": "reports/example-deep-field/card.md",
- "chart": "reports/example-deep-field/figures/frontier.svg"
+ "chart": "reports/example-deep-field/figures/frontier.svg",
+ "modelVersion": 3
 }

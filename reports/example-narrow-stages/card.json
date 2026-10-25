@@ -35,5 +35,6 @@
   "A preset of the idea graph generator. Each stage reuses only part of the evidence before it (composition 0.5), many hits and leads go nowhere, and the stages get much harder. The numbers are illustrative, not measured from the field."
  ],
  "page": "reports/example-narrow-stages/card.md",
- "chart": "reports/example-narrow-stages/figures/frontier.svg"
+ "chart": "reports/example-narrow-stages/figures/frontier.svg",
+ "modelVersion": 3
 }

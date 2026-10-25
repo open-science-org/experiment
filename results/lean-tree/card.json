@@ -60,5 +60,6 @@
  "caveats": [
   "A simulation with guessed parameters: it shows how the rules play out, not that they work."
  ],
- "page": "results/lean-tree/summary.md"
+ "page": "results/lean-tree/summary.md",
+ "modelVersion": 3
 }

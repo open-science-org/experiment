@@ -527,5 +527,6 @@
   "one at a time 2026-10-24: length growth",
   "difficulty length growth 2"
  ],
- "ranAt": "2026-10-25T02:51:54.156Z"
+ "ranAt": "2026-10-25T02:51:54.156Z",
+ "modelVersion": 3
 }

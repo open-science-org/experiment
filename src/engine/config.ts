@@ -52,6 +52,11 @@ export interface Scenario {
     c: number;
     /** Mint per newly published result. */
     mint: number;
+    /** Knowledge reward: paid per new bit (bits in no published idea yet) when an idea is published. */
+    mintPerBit: number;
+    /** Absorption rate of the knowledge reward: the share an idea keeps, the rest flowing to what it built
+     *  on. null: the same as alpha. */
+    alpha0: number | null;
     /** Chance the validation screen rejects a trivial result. */
     screen: number;
     /** Make failed attempts public, so others can learn from them (with a learning oracle). */
@@ -135,7 +140,7 @@ export function getPath(obj: unknown, path: string): unknown {
 }
 
 /** Settings that may be a number or null. */
-const NULLABLE = new Set(['budget.rounds', 'budget.perAgentPerRound']);
+const NULLABLE = new Set(['budget.rounds', 'budget.perAgentPerRound', 'rules.alpha0']);
 
 /** Checks a scenario against the defaults' shape: unknown keys and wrong types are errors. */
 export function validate(scenario: unknown, shape: unknown, where = 'scenario'): void {

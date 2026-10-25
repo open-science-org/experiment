@@ -42,6 +42,7 @@ One word for each idea, used everywhere in this repository.
 ## Read more
 
 - [Equations](equations.md): every rule as a formula, on one page.
+- [Model versions](model-versions.md): what changed in each version of the model; every result records the version it ran on.
 - [The full design](design.md): every part defined once, for both kinds of test.
 - [Not yet measured](design.md#12-not-yet-measured): what the tests still use a stand-in or a guess for.
 - [The simulation in detail](simulator.md): the agents, one round step by step, how agents decide, and what the results say.
