@@ -1,8 +1,8 @@
 {
   "experiment": "full-drug-discovery-6-settings-20261023",
-  "date": "2026-10-24",
-  "commit": "5530bf2",
-  "dirty": true,
+  "date": "2026-10-25",
+  "commit": "04dc47f",
+  "dirty": false,
   "command": "npm run sim -- full-drug-discovery-6-settings-20261023 --seeds 100 --save",
   "seeds": 100,
   "overrides": {},

@@ -1,8 +1,8 @@
 {
   "experiment": "simple-ideas-14x12-p3-len4g3-comp0-8-bounties-from-7-scaling-ladder-20261024",
   "date": "2026-10-25",
-  "commit": "f922dc5",
-  "dirty": true,
+  "commit": "1d9f286",
+  "dirty": false,
   "command": "npm run sim -- simple-ideas-14x12-p3-len4g3-comp0-8-bounties-from-7-scaling-ladder-20261024 --seeds 30 --save",
   "seeds": 30,
   "overrides": {},

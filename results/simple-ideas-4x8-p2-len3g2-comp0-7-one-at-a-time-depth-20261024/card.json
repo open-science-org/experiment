@@ -12,13 +12,13 @@
   "better": "higher",
   "runs": "20 runs per row"
  },
- "answer": "At budget 50: best OSO (α = 0.2, β = 1). Against traditional, clearly better on hardest level; no clear difference on targets solved, bounty value, ROI and waste. At budget 100: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value and ROI; no clear difference on waste. At budget 200: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI and waste. At budget 400: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, money to the main level and waste. At budget 800: best OSO (α = 0.8, β = 1). Against traditional, clearly better on targets solved, bounty value, ROI, money to the main level and waste; no clear difference on hardest level. At budgets 1600–102400: best OSO (α = 0.8, β = 1). Against traditional, clearly better on ROI, money to the main level and waste; no clear difference on hardest level, targets solved and bounty value. (Compared at each budget; 6 measures, a clear difference is more than 2.6 standard errors.)",
+ "answer": "At budget 50: best OSO (α = 0.2, β = 1). Against traditional, clearly better on hardest level; no clear difference on targets solved, bounty value, ROI and waste. At budget 100: best OSO (α = 0.2, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value and ROI; no clear difference on waste. At budget 200: best OSO (α = 0.2, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI and waste; no clear difference on money to the main level. At budget 400: best OSO (α = 0.2, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, money to the main level and waste. At budget 800: best OSO (α = 0.2, β = 1). Against traditional, clearly better on targets solved, bounty value, ROI, money to the main level and waste; no clear difference on hardest level. At budgets 1600–102400: best OSO (α = 0.8, β = 1). Against traditional, clearly better on ROI, money to the main level and waste; no clear difference on hardest level, targets solved and bounty value. (Compared at each budget; 6 measures, a clear difference is more than 2.6 standard errors.)",
  "answers": [
-  "Budget 50: hardest level: 2.45 against traditional 0.00, clearly better. targets solved: 0.05 against traditional 0.00, no clear difference.",
-  "Budget 100: hardest level: 3.45 against traditional 0.00, clearly better. targets solved: 0.70 against traditional 0.00, clearly better.",
-  "Budget 200: hardest level: 4.00 against traditional 0.00, clearly better. targets solved: 1.75 against traditional 0.00, clearly better.",
-  "Budget 400: hardest level: 4.00 against traditional 0.60, clearly better. targets solved: 2.00 against traditional 0.15, clearly better.",
-  "Budget 800: hardest level: 4.00 against traditional 4.00, no clear difference. targets solved: 2.00 against traditional 1.65, clearly better.",
+  "Budget 50: hardest level: 2.25 against traditional 0.00, clearly better. targets solved: 0.00 against traditional 0.00, no clear difference.",
+  "Budget 100: hardest level: 3.55 against traditional 0.00, clearly better. targets solved: 0.85 against traditional 0.00, clearly better.",
+  "Budget 200: hardest level: 4.00 against traditional 0.20, clearly better. targets solved: 2.00 against traditional 0.05, clearly better.",
+  "Budget 400: hardest level: 4.00 against traditional 0.80, clearly better. targets solved: 2.00 against traditional 0.25, clearly better.",
+  "Budget 800: hardest level: 4.00 against traditional 3.60, no clear difference. targets solved: 2.00 against traditional 1.50, clearly better.",
   "Budget 1600: hardest level: 4.00 against traditional 4.00, no clear difference. targets solved: 2.00 against traditional 2.00, no clear difference.",
   "Budget 3200: hardest level: 4.00 against traditional 4.00, no clear difference. targets solved: 2.00 against traditional 2.00, no clear difference.",
   "Budget 6400: hardest level: 4.00 against traditional 4.00, no clear difference. targets solved: 2.00 against traditional 2.00, no clear difference.",
@@ -36,7 +36,7 @@
    "value gained": "0 ± 0",
    "ROI (value per spend)": "0.00 ± 0.00",
    "cost": "–",
-   "waste": "0.21 ± 0.10"
+   "waste": "0.17 ± 0.08"
   },
   {
    "society": "Traditional (α = 1, β = 0)",
@@ -46,37 +46,37 @@
    "value gained": "0 ± 0",
    "ROI (value per spend)": "0.00 ± 0.00",
    "cost": "–",
-   "waste": "0.29 ± 0.10"
+   "waste": "0.27 ± 0.11"
   },
   {
    "society": "Traditional (α = 1, β = 0)",
    "budget": 200,
-   "frontier": "0.0 ± 0.0",
-   "targets solved": "0.0 ± 0.0",
-   "value gained": "0 ± 0",
-   "ROI (value per spend)": "0.00 ± 0.00",
-   "cost": "–",
-   "waste": "0.44 ± 0.11"
+   "frontier": "0.2 ± 0.9",
+   "targets solved": "0.1 ± 0.2",
+   "value gained": "2 ± 7",
+   "ROI (value per spend)": "0.01 ± 0.04",
+   "cost": "192 ± 0",
+   "waste": "0.41 ± 0.11"
   },
   {
    "society": "Traditional (α = 1, β = 0)",
    "budget": 400,
-   "frontier": "0.6 ± 1.5",
-   "targets solved": "0.1 ± 0.4",
-   "value gained": "5 ± 12",
-   "ROI (value per spend)": "0.01 ± 0.03",
-   "cost": "264 ± 43",
-   "waste": "0.62 ± 0.09"
+   "frontier": "0.8 ± 1.6",
+   "targets solved": "0.3 ± 0.6",
+   "value gained": "8 ± 18",
+   "ROI (value per spend)": "0.02 ± 0.05",
+   "cost": "249 ± 66",
+   "waste": "0.60 ± 0.09"
   },
   {
    "society": "Traditional (α = 1, β = 0)",
    "budget": 800,
-   "frontier": "4.0 ± 0.0",
-   "targets solved": "1.6 ± 0.5",
-   "value gained": "53 ± 16",
-   "ROI (value per spend)": "0.08 ± 0.03",
-   "cost": "563 ± 167",
-   "waste": "0.73 ± 0.07"
+   "frontier": "3.6 ± 1.2",
+   "targets solved": "1.5 ± 0.7",
+   "value gained": "48 ± 22",
+   "ROI (value per spend)": "0.08 ± 0.05",
+   "cost": "520 ± 184",
+   "waste": "0.71 ± 0.08"
   },
   {
    "society": "Traditional (α = 1, β = 0)",
@@ -84,9 +84,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.09 ± 0.02",
-   "cost": "563 ± 234",
-   "waste": "0.75 ± 0.05"
+   "ROI (value per spend)": "0.10 ± 0.03",
+   "cost": "587 ± 242",
+   "waste": "0.73 ± 0.05"
   },
   {
    "society": "Traditional (α = 1, β = 0)",
@@ -94,9 +94,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.09 ± 0.02",
-   "cost": "613 ± 137",
-   "waste": "0.77 ± 0.03"
+   "ROI (value per spend)": "0.09 ± 0.03",
+   "cost": "617 ± 268",
+   "waste": "0.74 ± 0.04"
   },
   {
    "society": "Traditional (α = 1, β = 0)",
@@ -104,9 +104,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.08 ± 0.02",
-   "cost": "629 ± 212",
-   "waste": "0.77 ± 0.04"
+   "ROI (value per spend)": "0.08 ± 0.03",
+   "cost": "735 ± 237",
+   "waste": "0.75 ± 0.05"
   },
   {
    "society": "Traditional (α = 1, β = 0)",
@@ -115,8 +115,8 @@
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
    "ROI (value per spend)": "0.09 ± 0.03",
-   "cost": "598 ± 190",
-   "waste": "0.74 ± 0.05"
+   "cost": "565 ± 290",
+   "waste": "0.75 ± 0.05"
   },
   {
    "society": "Traditional (α = 1, β = 0)",
@@ -124,9 +124,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.08 ± 0.02",
-   "cost": "710 ± 222",
-   "waste": "0.80 ± 0.04"
+   "ROI (value per spend)": "0.08 ± 0.03",
+   "cost": "752 ± 272",
+   "waste": "0.79 ± 0.04"
   },
   {
    "society": "Traditional (α = 1, β = 0)",
@@ -134,9 +134,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.07 ± 0.01",
-   "cost": "786 ± 251",
-   "waste": "0.81 ± 0.05"
+   "ROI (value per spend)": "0.07 ± 0.03",
+   "cost": "766 ± 177",
+   "waste": "0.78 ± 0.05"
   },
   {
    "society": "Traditional (α = 1, β = 0)",
@@ -145,38 +145,38 @@
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
    "ROI (value per spend)": "0.07 ± 0.01",
-   "cost": "895 ± 191",
-   "waste": "0.80 ± 0.06"
+   "cost": "894 ± 188",
+   "waste": "0.79 ± 0.05"
   },
   {
    "society": "OSO (α = 0.8, β = 1)",
    "budget": 50,
-   "frontier": "1.9 ± 1.0",
+   "frontier": "1.7 ± 1.1",
    "targets solved": "0.0 ± 0.0",
    "value gained": "0 ± 0",
    "ROI (value per spend)": "0.00 ± 0.00",
    "cost": "–",
-   "waste": "0.21 ± 0.10"
+   "waste": "0.16 ± 0.06"
   },
   {
    "society": "OSO (α = 0.8, β = 1)",
    "budget": 100,
-   "frontier": "3.5 ± 0.8",
-   "targets solved": "0.7 ± 0.8",
-   "value gained": "22 ± 26",
-   "ROI (value per spend)": "0.26 ± 0.31",
-   "cost": "77 ± 14",
-   "waste": "0.25 ± 0.09"
+   "frontier": "3.1 ± 0.9",
+   "targets solved": "0.5 ± 0.7",
+   "value gained": "14 ± 22",
+   "ROI (value per spend)": "0.15 ± 0.24",
+   "cost": "80 ± 13",
+   "waste": "0.18 ± 0.07"
   },
   {
    "society": "OSO (α = 0.8, β = 1)",
    "budget": 200,
-   "frontier": "4.0 ± 0.0",
+   "frontier": "4.0 ± 0.2",
    "targets solved": "1.8 ± 0.6",
    "value gained": "56 ± 20",
-   "ROI (value per spend)": "0.45 ± 0.23",
-   "cost": "101 ± 31",
-   "waste": "0.28 ± 0.07"
+   "ROI (value per spend)": "0.40 ± 0.19",
+   "cost": "117 ± 39",
+   "waste": "0.24 ± 0.07"
   },
   {
    "society": "OSO (α = 0.8, β = 1)",
@@ -184,9 +184,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.48 ± 0.18",
-   "cost": "101 ± 31",
-   "waste": "0.28 ± 0.07"
+   "ROI (value per spend)": "0.43 ± 0.13",
+   "cost": "122 ± 43",
+   "waste": "0.24 ± 0.06"
   },
   {
    "society": "OSO (α = 0.8, β = 1)",
@@ -194,9 +194,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.48 ± 0.18",
-   "cost": "101 ± 31",
-   "waste": "0.28 ± 0.07"
+   "ROI (value per spend)": "0.43 ± 0.13",
+   "cost": "122 ± 43",
+   "waste": "0.24 ± 0.06"
   },
   {
    "society": "OSO (α = 0.8, β = 1)",
@@ -204,9 +204,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.50 ± 0.17",
-   "cost": "107 ± 37",
-   "waste": "0.29 ± 0.08"
+   "ROI (value per spend)": "0.43 ± 0.12",
+   "cost": "121 ± 42",
+   "waste": "0.25 ± 0.07"
   },
   {
    "society": "OSO (α = 0.8, β = 1)",
@@ -214,9 +214,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.47 ± 0.13",
-   "cost": "107 ± 41",
-   "waste": "0.32 ± 0.09"
+   "ROI (value per spend)": "0.43 ± 0.09",
+   "cost": "122 ± 37",
+   "waste": "0.27 ± 0.06"
   },
   {
    "society": "OSO (α = 0.8, β = 1)",
@@ -225,8 +225,8 @@
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
    "ROI (value per spend)": "0.41 ± 0.13",
-   "cost": "118 ± 38",
-   "waste": "0.40 ± 0.10"
+   "cost": "123 ± 39",
+   "waste": "0.33 ± 0.09"
   },
   {
    "society": "OSO (α = 0.8, β = 1)",
@@ -234,9 +234,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.36 ± 0.14",
+   "ROI (value per spend)": "0.38 ± 0.15",
    "cost": "144 ± 65",
-   "waste": "0.47 ± 0.11"
+   "waste": "0.41 ± 0.12"
   },
   {
    "society": "OSO (α = 0.8, β = 1)",
@@ -244,9 +244,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.31 ± 0.05",
-   "cost": "202 ± 26",
-   "waste": "0.51 ± 0.09"
+   "ROI (value per spend)": "0.32 ± 0.06",
+   "cost": "195 ± 17",
+   "waste": "0.48 ± 0.10"
   },
   {
    "society": "OSO (α = 0.8, β = 1)",
@@ -254,9 +254,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.28 ± 0.06",
-   "cost": "238 ± 42",
-   "waste": "0.57 ± 0.12"
+   "ROI (value per spend)": "0.26 ± 0.03",
+   "cost": "250 ± 33",
+   "waste": "0.53 ± 0.10"
   },
   {
    "society": "OSO (α = 0.8, β = 1)",
@@ -264,39 +264,39 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.27 ± 0.06",
-   "cost": "245 ± 50",
-   "waste": "0.56 ± 0.11"
+   "ROI (value per spend)": "0.29 ± 0.05",
+   "cost": "231 ± 41",
+   "waste": "0.53 ± 0.10"
   },
   {
    "society": "OSO (α = 0.2, β = 1)",
    "budget": 50,
-   "frontier": "2.5 ± 0.7",
-   "targets solved": "0.1 ± 0.2",
-   "value gained": "2 ± 7",
-   "ROI (value per spend)": "0.03 ± 0.15",
-   "cost": "48 ± 0",
-   "waste": "0.22 ± 0.09"
+   "frontier": "2.3 ± 0.7",
+   "targets solved": "0.0 ± 0.0",
+   "value gained": "0 ± 0",
+   "ROI (value per spend)": "0.00 ± 0.00",
+   "cost": "–",
+   "waste": "0.19 ± 0.07"
   },
   {
    "society": "OSO (α = 0.2, β = 1)",
    "budget": 100,
-   "frontier": "3.4 ± 0.7",
-   "targets solved": "0.7 ± 0.8",
-   "value gained": "21 ± 26",
-   "ROI (value per spend)": "0.24 ± 0.32",
-   "cost": "77 ± 16",
-   "waste": "0.27 ± 0.08"
+   "frontier": "3.5 ± 0.6",
+   "targets solved": "0.8 ± 0.9",
+   "value gained": "27 ± 28",
+   "ROI (value per spend)": "0.30 ± 0.32",
+   "cost": "80 ± 9",
+   "waste": "0.23 ± 0.07"
   },
   {
    "society": "OSO (α = 0.2, β = 1)",
    "budget": 200,
-   "frontier": "4.0 ± 0.2",
-   "targets solved": "1.9 ± 0.5",
-   "value gained": "59 ± 16",
-   "ROI (value per spend)": "0.49 ± 0.21",
-   "cost": "103 ± 34",
-   "waste": "0.29 ± 0.07"
+   "frontier": "4.0 ± 0.0",
+   "targets solved": "2.0 ± 0.0",
+   "value gained": "64 ± 0",
+   "ROI (value per spend)": "0.56 ± 0.15",
+   "cost": "104 ± 33",
+   "waste": "0.26 ± 0.07"
   },
   {
    "society": "OSO (α = 0.2, β = 1)",
@@ -304,9 +304,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.51 ± 0.18",
-   "cost": "108 ± 40",
-   "waste": "0.30 ± 0.07"
+   "ROI (value per spend)": "0.56 ± 0.15",
+   "cost": "104 ± 33",
+   "waste": "0.26 ± 0.07"
   },
   {
    "society": "OSO (α = 0.2, β = 1)",
@@ -314,9 +314,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.51 ± 0.18",
-   "cost": "108 ± 40",
-   "waste": "0.30 ± 0.07"
+   "ROI (value per spend)": "0.56 ± 0.15",
+   "cost": "104 ± 33",
+   "waste": "0.26 ± 0.07"
   },
   {
    "society": "OSO (α = 0.2, β = 1)",
@@ -324,9 +324,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.51 ± 0.17",
-   "cost": "103 ± 30",
-   "waste": "0.31 ± 0.07"
+   "ROI (value per spend)": "0.53 ± 0.16",
+   "cost": "106 ± 36",
+   "waste": "0.27 ± 0.07"
   },
   {
    "society": "OSO (α = 0.2, β = 1)",
@@ -334,9 +334,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.51 ± 0.21",
-   "cost": "108 ± 31",
-   "waste": "0.33 ± 0.09"
+   "ROI (value per spend)": "0.50 ± 0.13",
+   "cost": "106 ± 31",
+   "waste": "0.30 ± 0.07"
   },
   {
    "society": "OSO (α = 0.2, β = 1)",
@@ -344,9 +344,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.50 ± 0.13",
-   "cost": "98 ± 42",
-   "waste": "0.38 ± 0.11"
+   "ROI (value per spend)": "0.46 ± 0.16",
+   "cost": "118 ± 47",
+   "waste": "0.36 ± 0.09"
   },
   {
    "society": "OSO (α = 0.2, β = 1)",
@@ -354,9 +354,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.38 ± 0.13",
-   "cost": "128 ± 50",
-   "waste": "0.50 ± 0.08"
+   "ROI (value per spend)": "0.48 ± 0.17",
+   "cost": "117 ± 43",
+   "waste": "0.43 ± 0.13"
   },
   {
    "society": "OSO (α = 0.2, β = 1)",
@@ -365,8 +365,8 @@
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
    "ROI (value per spend)": "0.34 ± 0.06",
-   "cost": "190 ± 24",
-   "waste": "0.57 ± 0.10"
+   "cost": "191 ± 23",
+   "waste": "0.56 ± 0.10"
   },
   {
    "society": "OSO (α = 0.2, β = 1)",
@@ -374,9 +374,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.29 ± 0.05",
-   "cost": "229 ± 41",
-   "waste": "0.61 ± 0.11"
+   "ROI (value per spend)": "0.31 ± 0.08",
+   "cost": "219 ± 51",
+   "waste": "0.54 ± 0.10"
   },
   {
    "society": "OSO (α = 0.2, β = 1)",
@@ -384,39 +384,39 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.29 ± 0.05",
-   "cost": "225 ± 43",
-   "waste": "0.60 ± 0.11"
+   "ROI (value per spend)": "0.30 ± 0.06",
+   "cost": "229 ± 61",
+   "waste": "0.56 ± 0.10"
   },
   {
    "society": "α = 0.8, β = 0.5",
    "budget": 50,
-   "frontier": "1.4 ± 1.5",
-   "targets solved": "0.1 ± 0.3",
-   "value gained": "3 ± 10",
-   "ROI (value per spend)": "0.07 ± 0.21",
-   "cost": "42 ± 8",
-   "waste": "0.24 ± 0.14"
+   "frontier": "1.1 ± 1.2",
+   "targets solved": "0.0 ± 0.0",
+   "value gained": "0 ± 0",
+   "ROI (value per spend)": "0.00 ± 0.00",
+   "cost": "36 ± 0",
+   "waste": "0.20 ± 0.09"
   },
   {
    "society": "α = 0.8, β = 0.5",
    "budget": 100,
-   "frontier": "2.7 ± 1.2",
-   "targets solved": "0.1 ± 0.4",
-   "value gained": "5 ± 12",
-   "ROI (value per spend)": "0.05 ± 0.12",
-   "cost": "70 ± 23",
-   "waste": "0.32 ± 0.13"
+   "frontier": "2.5 ± 1.1",
+   "targets solved": "0.0 ± 0.0",
+   "value gained": "0 ± 0",
+   "ROI (value per spend)": "0.00 ± 0.00",
+   "cost": "64 ± 25",
+   "waste": "0.29 ± 0.12"
   },
   {
    "society": "α = 0.8, β = 0.5",
    "budget": 200,
-   "frontier": "3.7 ± 0.6",
-   "targets solved": "1.1 ± 0.8",
-   "value gained": "34 ± 26",
-   "ROI (value per spend)": "0.21 ± 0.19",
-   "cost": "118 ± 48",
-   "waste": "0.42 ± 0.09"
+   "frontier": "3.5 ± 0.8",
+   "targets solved": "1.0 ± 0.9",
+   "value gained": "32 ± 29",
+   "ROI (value per spend)": "0.19 ± 0.18",
+   "cost": "129 ± 44",
+   "waste": "0.38 ± 0.08"
   },
   {
    "society": "α = 0.8, β = 0.5",
@@ -424,9 +424,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.31 ± 0.11",
-   "cost": "164 ± 96",
-   "waste": "0.44 ± 0.08"
+   "ROI (value per spend)": "0.29 ± 0.09",
+   "cost": "174 ± 79",
+   "waste": "0.40 ± 0.07"
   },
   {
    "society": "α = 0.8, β = 0.5",
@@ -434,9 +434,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.31 ± 0.11",
-   "cost": "164 ± 96",
-   "waste": "0.44 ± 0.08"
+   "ROI (value per spend)": "0.29 ± 0.09",
+   "cost": "174 ± 79",
+   "waste": "0.40 ± 0.07"
   },
   {
    "society": "α = 0.8, β = 0.5",
@@ -444,9 +444,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.33 ± 0.11",
-   "cost": "155 ± 85",
-   "waste": "0.46 ± 0.08"
+   "ROI (value per spend)": "0.27 ± 0.07",
+   "cost": "184 ± 89",
+   "waste": "0.43 ± 0.07"
   },
   {
    "society": "α = 0.8, β = 0.5",
@@ -454,9 +454,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.31 ± 0.12",
-   "cost": "172 ± 71",
-   "waste": "0.48 ± 0.12"
+   "ROI (value per spend)": "0.30 ± 0.08",
+   "cost": "164 ± 72",
+   "waste": "0.47 ± 0.08"
   },
   {
    "society": "α = 0.8, β = 0.5",
@@ -464,9 +464,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.31 ± 0.12",
-   "cost": "188 ± 69",
-   "waste": "0.46 ± 0.09"
+   "ROI (value per spend)": "0.30 ± 0.08",
+   "cost": "172 ± 70",
+   "waste": "0.47 ± 0.09"
   },
   {
    "society": "α = 0.8, β = 0.5",
@@ -474,9 +474,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.29 ± 0.11",
-   "cost": "209 ± 82",
-   "waste": "0.53 ± 0.10"
+   "ROI (value per spend)": "0.25 ± 0.06",
+   "cost": "215 ± 92",
+   "waste": "0.52 ± 0.08"
   },
   {
    "society": "α = 0.8, β = 0.5",
@@ -484,9 +484,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.23 ± 0.08",
-   "cost": "234 ± 73",
-   "waste": "0.57 ± 0.11"
+   "ROI (value per spend)": "0.26 ± 0.08",
+   "cost": "251 ± 86",
+   "waste": "0.54 ± 0.12"
   },
   {
    "society": "α = 0.8, β = 0.5",
@@ -494,9 +494,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.17 ± 0.03",
-   "cost": "383 ± 49",
-   "waste": "0.70 ± 0.08"
+   "ROI (value per spend)": "0.16 ± 0.01",
+   "cost": "393 ± 33",
+   "waste": "0.66 ± 0.09"
   },
   {
    "society": "α = 0.8, β = 0.5",
@@ -504,9 +504,9 @@
    "frontier": "4.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "64 ± 0",
-   "ROI (value per spend)": "0.16 ± 0.03",
-   "cost": "422 ± 109",
-   "waste": "0.72 ± 0.10"
+   "ROI (value per spend)": "0.15 ± 0.04",
+   "cost": "437 ± 119",
+   "waste": "0.70 ± 0.09"
   }
  ],
  "caveats": [
@@ -527,5 +527,5 @@
   "one at a time 2026-10-24: depth",
   "difficulty depth 4"
  ],
- "ranAt": "2026-10-25T02:27:08.743Z"
+ "ranAt": "2026-10-25T02:49:53.143Z"
 }

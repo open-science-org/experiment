@@ -25,35 +25,35 @@
 <rect x="67" y="38" width="12" height="10" rx="2" style="fill:var(--s1)"/><text class="label t1" x="84" y="47">Traditional</text>
 <rect x="174" y="38" width="12" height="10" rx="2" style="fill:var(--dead)"/><text class="label " x="191" y="47">other</text>
 <text class="tick" x="222" y="73" text-anchor="end">OSO (α = 0.2, β = 1)</text>
-<rect x="230" y="62" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.2, β = 1): 5.04</title></rect>
-<text class="label t2" x="556" y="74">5.04</text>
-<text class="tick" x="222" y="99" text-anchor="end">OSO (α = 0.8, β = 1)</text>
-<rect x="230" y="88" width="316.2" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.8, β = 1): 4.98</title></rect>
-<text class="label t2" x="552.1904761904761" y="100">4.98</text>
-<text class="tick" x="222" y="125" text-anchor="end">α = 1, β = 1</text>
-<rect x="230" y="114" width="314.9" height="16" rx="3" style="fill:var(--dead)"><title>α = 1, β = 1: 4.96</title></rect>
-<text class="label " x="550.9206349206349" y="126">4.96</text>
+<rect x="230" y="62" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.2, β = 1): 5.06</title></rect>
+<text class="label t2" x="556" y="74">5.06</text>
+<text class="tick" x="222" y="99" text-anchor="end">α = 1, β = 1</text>
+<rect x="230" y="88" width="313.7" height="16" rx="3" style="fill:var(--dead)"><title>α = 1, β = 1: 4.96</title></rect>
+<text class="label " x="549.6758893280632" y="100">4.96</text>
+<text class="tick" x="222" y="125" text-anchor="end">OSO (α = 0.8, β = 1)</text>
+<rect x="230" y="114" width="312.4" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.8, β = 1): 4.94</title></rect>
+<text class="label t2" x="548.411067193676" y="126">4.94</text>
 <text class="tick" x="222" y="151" text-anchor="end">OSO (α = 0.5, β = 1)</text>
-<rect x="230" y="140" width="314.9" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.5, β = 1): 4.96</title></rect>
-<text class="label t2" x="550.9206349206349" y="152">4.96</text>
+<rect x="230" y="140" width="309.9" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.5, β = 1): 4.9</title></rect>
+<text class="label t2" x="545.8814229249012" y="152">4.9</text>
 <text class="tick" x="222" y="177" text-anchor="end">α = 0.2, β = 0.75</text>
-<rect x="230" y="166" width="295.9" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.2, β = 0.75: 4.66</title></rect>
-<text class="label " x="531.8730158730159" y="178">4.66</text>
-<text class="tick" x="222" y="203" text-anchor="end">α = 1, β = 0.75</text>
-<rect x="230" y="192" width="289.5" height="16" rx="3" style="fill:var(--dead)"><title>α = 1, β = 0.75: 4.56</title></rect>
-<text class="label " x="525.5238095238095" y="204">4.56</text>
-<text class="tick" x="222" y="229" text-anchor="end">α = 0.8, β = 0.75</text>
-<rect x="230" y="218" width="289.5" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.8, β = 0.75: 4.56</title></rect>
-<text class="label " x="525.5238095238095" y="230">4.56</text>
+<rect x="230" y="166" width="303.6" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.2, β = 0.75: 4.8</title></rect>
+<text class="label " x="539.5573122529645" y="178">4.8</text>
+<text class="tick" x="222" y="203" text-anchor="end">α = 0.8, β = 0.75</text>
+<rect x="230" y="192" width="290.9" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.8, β = 0.75: 4.6</title></rect>
+<text class="label " x="526.9090909090909" y="204">4.6</text>
+<text class="tick" x="222" y="229" text-anchor="end">α = 1, β = 0.75</text>
+<rect x="230" y="218" width="288.4" height="16" rx="3" style="fill:var(--dead)"><title>α = 1, β = 0.75: 4.56</title></rect>
+<text class="label " x="524.3794466403162" y="230">4.56</text>
 <text class="tick" x="222" y="255" text-anchor="end">α = 0.5, β = 0.75</text>
-<rect x="230" y="244" width="281.9" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.5, β = 0.75: 4.44</title></rect>
-<text class="label " x="517.9047619047619" y="256">4.44</text>
+<rect x="230" y="244" width="288.4" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.5, β = 0.75: 4.56</title></rect>
+<text class="label " x="524.3794466403162" y="256">4.56</text>
 <text class="tick" x="222" y="281" text-anchor="end">α = 0.2, β = 0.5</text>
-<rect x="230" y="270" width="267.9" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.2, β = 0.5: 4.22</title></rect>
-<text class="label " x="503.9365079365079" y="282">4.22</text>
-<text class="tick" x="222" y="307" text-anchor="end">α = 1, β = 0.5</text>
-<rect x="230" y="296" width="260.3" height="16" rx="3" style="fill:var(--dead)"><title>α = 1, β = 0.5: 4.1</title></rect>
-<text class="label " x="496.3174603174603" y="308">4.1</text>
+<rect x="230" y="270" width="273.2" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.2, β = 0.5: 4.32</title></rect>
+<text class="label " x="509.201581027668" y="282">4.32</text>
+<text class="tick" x="222" y="307" text-anchor="end">α = 0.8, β = 0.5</text>
+<rect x="230" y="296" width="264.3" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.8, β = 0.5: 4.18</title></rect>
+<text class="label " x="500.3478260869565" y="308">4.18</text>
 <text class="tick" x="222" y="333" text-anchor="end">Traditional (α = 1, β = 0)</text>
 <rect x="230" y="322" width="2.0" height="16" rx="3" style="fill:var(--s1)"><title>Traditional (α = 1, β = 0): 0.0</title></rect>
 <text class="label t1" x="238" y="334">0.0</text>

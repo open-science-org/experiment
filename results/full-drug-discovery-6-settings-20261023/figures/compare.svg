@@ -25,21 +25,21 @@
 <rect x="67" y="38" width="12" height="10" rx="2" style="fill:var(--s1)"/><text class="label t1" x="84" y="47">Traditional</text>
 <rect x="174" y="38" width="12" height="10" rx="2" style="fill:var(--dead)"/><text class="label " x="191" y="47">other</text>
 <text class="tick" x="222" y="73" text-anchor="end">OSO</text>
-<rect x="230" y="62" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO: 5.99</title></rect>
-<text class="label t2" x="556" y="74">5.99</text>
+<rect x="230" y="62" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO: 6.0</title></rect>
+<text class="label t2" x="556" y="74">6.0</text>
 <text class="tick" x="222" y="99" text-anchor="end">No flow-back, immediate</text>
-<rect x="230" y="88" width="320.0" height="16" rx="3" style="fill:var(--dead)"><title>No flow-back, immediate: 5.99</title></rect>
-<text class="label " x="556" y="100">5.99</text>
+<rect x="230" y="88" width="318.9" height="16" rx="3" style="fill:var(--dead)"><title>No flow-back, immediate: 5.98</title></rect>
+<text class="label " x="554.9333333333334" y="100">5.98</text>
 <text class="tick" x="222" y="125" text-anchor="end">OSO (choice)</text>
-<rect x="230" y="114" width="292.8" height="16" rx="3" style="fill:var(--s2)"><title>OSO (choice): 5.48</title></rect>
-<text class="label t2" x="528.754590984975" y="126">5.48</text>
+<rect x="230" y="114" width="288.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (choice): 5.4</title></rect>
+<text class="label t2" x="524" y="126">5.4</text>
 <text class="tick" x="222" y="151" text-anchor="end">No flow-back, choice</text>
-<rect x="230" y="140" width="292.2" height="16" rx="3" style="fill:var(--dead)"><title>No flow-back, choice: 5.47</title></rect>
-<text class="label " x="528.220367278798" y="152">5.47</text>
+<rect x="230" y="140" width="276.3" height="16" rx="3" style="fill:var(--dead)"><title>No flow-back, choice: 5.18</title></rect>
+<text class="label " x="512.2666666666667" y="152">5.18</text>
 <text class="tick" x="222" y="177" text-anchor="end">Traditional</text>
-<rect x="230" y="166" width="185.9" height="16" rx="3" style="fill:var(--s1)"><title>Traditional: 3.48</title></rect>
-<text class="label t1" x="421.90984974958263" y="178">3.48</text>
+<rect x="230" y="166" width="153.6" height="16" rx="3" style="fill:var(--s1)"><title>Traditional: 2.88</title></rect>
+<text class="label t1" x="389.6" y="178">2.88</text>
 <text class="tick" x="222" y="203" text-anchor="end">Flow-back, finished-only</text>
-<rect x="230" y="192" width="173.1" height="16" rx="3" style="fill:var(--dead)"><title>Flow-back, finished-only: 3.24</title></rect>
-<text class="label " x="409.08848080133555" y="204">3.24</text>
+<rect x="230" y="192" width="137.6" height="16" rx="3" style="fill:var(--dead)"><title>Flow-back, finished-only: 2.58</title></rect>
+<text class="label " x="373.6" y="204">2.58</text>
 </svg>

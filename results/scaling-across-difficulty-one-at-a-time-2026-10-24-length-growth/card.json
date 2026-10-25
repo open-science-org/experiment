@@ -2,7 +2,7 @@
  "id": "scaling-across-difficulty-one-at-a-time-2026-10-24-length-growth",
  "kind": "simulation",
  "date": "2026-10-25",
- "ranAt": "2026-10-25T02:42:54.555Z",
+ "ranAt": "2026-10-25T03:13:56.447Z",
  "title": "Scaling as length growth changes",
  "design": {
   "question": "As length growth changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?",
@@ -12,39 +12,39 @@
   "better": "lower",
   "runs": "from the sweeps tagged \"one at a time 2026-10-24: length growth\""
  },
- "answer": "To solve half the targets, traditional needs 5.0× to 6.3× the money OSO needs. By difficulty: length growth 1 5.9×, length growth 2 6.3×, length growth 3 6.2×, length growth 4 5.0×.",
+ "answer": "To solve half the targets, traditional needs 4.9× to 7.2× the money OSO needs. By difficulty: length growth 1 6.8×, length growth 2 7.2×, length growth 3 6.8×, length growth 4 4.9×.",
  "table": [
   {
    "difficulty": "length growth 1",
-   "Traditional (α = 1, β = 0)": "768",
-   "OSO (α = 0.8, β = 1)": "131",
-   "OSO (α = 0.2, β = 1)": "129",
-   "α = 0.8, β = 0.5": "227",
-   "traditional ÷ OSO": "5.9×"
+   "Traditional (α = 1, β = 0)": "939",
+   "OSO (α = 0.8, β = 1)": "138",
+   "OSO (α = 0.2, β = 1)": "148",
+   "α = 0.8, β = 0.5": "235",
+   "traditional ÷ OSO": "6.8×"
   },
   {
    "difficulty": "length growth 2",
-   "Traditional (α = 1, β = 0)": "2,046",
-   "OSO (α = 0.8, β = 1)": "323",
-   "OSO (α = 0.2, β = 1)": "292",
-   "α = 0.8, β = 0.5": "538",
-   "traditional ÷ OSO": "6.3×"
+   "Traditional (α = 1, β = 0)": "2,197",
+   "OSO (α = 0.8, β = 1)": "306",
+   "OSO (α = 0.2, β = 1)": "273",
+   "α = 0.8, β = 0.5": "517",
+   "traditional ÷ OSO": "7.2×"
   },
   {
    "difficulty": "length growth 3",
-   "Traditional (α = 1, β = 0)": "4,202",
-   "OSO (α = 0.8, β = 1)": "673",
-   "OSO (α = 0.2, β = 1)": "622",
+   "Traditional (α = 1, β = 0)": "4,483",
+   "OSO (α = 0.8, β = 1)": "662",
+   "OSO (α = 0.2, β = 1)": "582",
    "α = 0.8, β = 0.5": "1,131",
-   "traditional ÷ OSO": "6.2×"
+   "traditional ÷ OSO": "6.8×"
   },
   {
    "difficulty": "length growth 4",
-   "Traditional (α = 1, β = 0)": "9,830",
-   "OSO (α = 0.8, β = 1)": "1,950",
-   "OSO (α = 0.2, β = 1)": "1,838",
-   "α = 0.8, β = 0.5": "2,410",
-   "traditional ÷ OSO": "5.0×"
+   "Traditional (α = 1, β = 0)": "8,793",
+   "OSO (α = 0.8, β = 1)": "1,808",
+   "OSO (α = 0.2, β = 1)": "1,671",
+   "α = 0.8, β = 0.5": "2,335",
+   "traditional ÷ OSO": "4.9×"
   }
  ],
  "caveats": [

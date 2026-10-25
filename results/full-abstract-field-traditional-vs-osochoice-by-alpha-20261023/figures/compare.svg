@@ -28,21 +28,21 @@
 <rect x="230" y="62" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (choice), α = 0: 8.0</title></rect>
 <text class="label t2" x="556" y="74">8.0</text>
 <text class="tick" x="222" y="99" text-anchor="end">OSO (choice), α = 0.2</text>
-<rect x="230" y="88" width="313.2" height="16" rx="3" style="fill:var(--s2)"><title>OSO (choice), α = 0.2: 7.83</title></rect>
-<text class="label t2" x="549.2" y="100">7.83</text>
+<rect x="230" y="88" width="311.6" height="16" rx="3" style="fill:var(--s2)"><title>OSO (choice), α = 0.2: 7.79</title></rect>
+<text class="label t2" x="547.6" y="100">7.79</text>
 <text class="tick" x="222" y="125" text-anchor="end">OSO (choice), α = 0.4</text>
-<rect x="230" y="114" width="306.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (choice), α = 0.4: 7.65</title></rect>
-<text class="label t2" x="542" y="126">7.65</text>
+<rect x="230" y="114" width="294.8" height="16" rx="3" style="fill:var(--s2)"><title>OSO (choice), α = 0.4: 7.37</title></rect>
+<text class="label t2" x="530.8" y="126">7.37</text>
 <text class="tick" x="222" y="151" text-anchor="end">OSO (choice), α = 0.6</text>
-<rect x="230" y="140" width="296.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (choice), α = 0.6: 7.4</title></rect>
-<text class="label t2" x="532" y="152">7.4</text>
-<text class="tick" x="222" y="177" text-anchor="end">OSO (choice), α = 0.9</text>
-<rect x="230" y="166" width="284.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (choice), α = 0.9: 7.1</title></rect>
-<text class="label t2" x="520" y="178">7.1</text>
-<text class="tick" x="222" y="203" text-anchor="end">OSO (choice), α = 0.8</text>
-<rect x="230" y="192" width="281.6" height="16" rx="3" style="fill:var(--s2)"><title>OSO (choice), α = 0.8: 7.04</title></rect>
-<text class="label t2" x="517.6" y="204">7.04</text>
+<rect x="230" y="140" width="280.4" height="16" rx="3" style="fill:var(--s2)"><title>OSO (choice), α = 0.6: 7.01</title></rect>
+<text class="label t2" x="516.4" y="152">7.01</text>
+<text class="tick" x="222" y="177" text-anchor="end">OSO (choice), α = 0.8</text>
+<rect x="230" y="166" width="277.6" height="16" rx="3" style="fill:var(--s2)"><title>OSO (choice), α = 0.8: 6.94</title></rect>
+<text class="label t2" x="513.6" y="178">6.94</text>
+<text class="tick" x="222" y="203" text-anchor="end">OSO (choice), α = 0.9</text>
+<rect x="230" y="192" width="274.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (choice), α = 0.9: 6.85</title></rect>
+<text class="label t2" x="510" y="204">6.85</text>
 <text class="tick" x="222" y="229" text-anchor="end">Traditional</text>
-<rect x="230" y="218" width="147.2" height="16" rx="3" style="fill:var(--s1)"><title>Traditional: 3.68</title></rect>
-<text class="label t1" x="383.20000000000005" y="230">3.68</text>
+<rect x="230" y="218" width="131.2" height="16" rx="3" style="fill:var(--s1)"><title>Traditional: 3.28</title></rect>
+<text class="label t1" x="367.2" y="230">3.28</text>
 </svg>

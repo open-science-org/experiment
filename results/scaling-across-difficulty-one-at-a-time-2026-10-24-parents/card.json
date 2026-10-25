@@ -2,7 +2,7 @@
  "id": "scaling-across-difficulty-one-at-a-time-2026-10-24-parents",
  "kind": "simulation",
  "date": "2026-10-25",
- "ranAt": "2026-10-25T02:42:55.006Z",
+ "ranAt": "2026-10-25T03:13:56.901Z",
  "title": "Scaling as parents changes",
  "design": {
   "question": "As parents changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?",
@@ -12,39 +12,39 @@
   "better": "lower",
   "runs": "from the sweeps tagged \"one at a time 2026-10-24: parents\""
  },
- "answer": "To solve half the targets, traditional needs 4.4× to 6.9× the money OSO needs. By difficulty: parents 1 4.4×, parents 2 6.3×, parents 3 6.9×, parents 4 6.5×.",
+ "answer": "To solve half the targets, traditional needs 3.4× to 7.4× the money OSO needs. By difficulty: parents 1 3.4×, parents 2 7.2×, parents 3 7.0×, parents 4 7.4×.",
  "table": [
   {
    "difficulty": "parents 1",
-   "Traditional (α = 1, β = 0)": "1,029",
-   "OSO (α = 0.8, β = 1)": "235",
-   "OSO (α = 0.2, β = 1)": "260",
-   "α = 0.8, β = 0.5": "400",
-   "traditional ÷ OSO": "4.4×"
+   "Traditional (α = 1, β = 0)": "800",
+   "OSO (α = 0.8, β = 1)": "236",
+   "OSO (α = 0.2, β = 1)": "187",
+   "α = 0.8, β = 0.5": "362",
+   "traditional ÷ OSO": "3.4×"
   },
   {
    "difficulty": "parents 2",
-   "Traditional (α = 1, β = 0)": "2,046",
-   "OSO (α = 0.8, β = 1)": "323",
-   "OSO (α = 0.2, β = 1)": "292",
-   "α = 0.8, β = 0.5": "538",
-   "traditional ÷ OSO": "6.3×"
+   "Traditional (α = 1, β = 0)": "2,197",
+   "OSO (α = 0.8, β = 1)": "306",
+   "OSO (α = 0.2, β = 1)": "273",
+   "α = 0.8, β = 0.5": "517",
+   "traditional ÷ OSO": "7.2×"
   },
   {
    "difficulty": "parents 3",
-   "Traditional (α = 1, β = 0)": "2,288",
-   "OSO (α = 0.8, β = 1)": "332",
-   "OSO (α = 0.2, β = 1)": "308",
-   "α = 0.8, β = 0.5": "579",
-   "traditional ÷ OSO": "6.9×"
+   "Traditional (α = 1, β = 0)": "2,220",
+   "OSO (α = 0.8, β = 1)": "315",
+   "OSO (α = 0.2, β = 1)": "292",
+   "α = 0.8, β = 0.5": "571",
+   "traditional ÷ OSO": "7.0×"
   },
   {
    "difficulty": "parents 4",
-   "Traditional (α = 1, β = 0)": "2,363",
-   "OSO (α = 0.8, β = 1)": "362",
-   "OSO (α = 0.2, β = 1)": "303",
-   "α = 0.8, β = 0.5": "592",
-   "traditional ÷ OSO": "6.5×"
+   "Traditional (α = 1, β = 0)": "2,447",
+   "OSO (α = 0.8, β = 1)": "329",
+   "OSO (α = 0.2, β = 1)": "329",
+   "α = 0.8, β = 0.5": "578",
+   "traditional ÷ OSO": "7.4×"
   }
  ],
  "caveats": [

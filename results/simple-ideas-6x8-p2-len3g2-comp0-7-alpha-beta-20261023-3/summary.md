@@ -2,21 +2,21 @@
 
 **Question:** On a generated idea graph, how far does a society get for the same money, by α and β?
 
-**Answer:** Best: α = 1, β = 0.5, 6.0 (5 more tie). Best traditional: Traditional (α = 1, β = 0), 0.2. Clear difference.
+**Answer:** Best: α = 1, β = 1, 6.0 (5 more tie). Best traditional: Traditional (α = 1, β = 0), 0.2. Clear difference.
 
 ![Simple model on a generated idea graph: α × β](figures/compare.svg)
 
 | society | frontier | value gained | sharing | ROI (value per spend) |
 | --- | --- | --- | --- | --- |
-| Traditional (α = 1, β = 0) | 0.2 ± 1.2 | 5 ± 25 | 0.00 ± 0.00 | 0.00 ± 0.02 |
-| α = 1, β = 0.5 | 6.0 ± 0.0 | 256 ± 0 | 0.54 ± 0.09 | 0.46 ± 0.14 |
-| α = 1, β = 1 | 6.0 ± 0.0 | 256 ± 0 | 1.00 ± 0.00 | 0.72 ± 0.26 |
-| α = 0.5, β = 0 | 0.4 ± 1.4 | 8 ± 31 | 0.00 ± 0.00 | 0.01 ± 0.03 |
-| α = 0.5, β = 0.5 | 6.0 ± 0.0 | 256 ± 0 | 0.53 ± 0.10 | 0.49 ± 0.22 |
-| OSO (α = 0.5, β = 1) | 6.0 ± 0.0 | 256 ± 0 | 1.00 ± 0.00 | 0.71 ± 0.27 |
-| α = 0.05, β = 0 | 0.1 ± 0.8 | 3 ± 18 | 0.00 ± 0.00 | 0.00 ± 0.02 |
-| α = 0.05, β = 0.5 | 6.0 ± 0.0 | 253 ± 18 | 0.53 ± 0.09 | 0.49 ± 0.16 |
-| OSO (α = 0.05, β = 1) | 6.0 ± 0.0 | 256 ± 0 | 1.00 ± 0.00 | 0.83 ± 0.27 |
+| Traditional (α = 1, β = 0) | 0.2 ± 1.2 | 8 ± 40 | 0.00 ± 0.00 | 0.01 ± 0.04 |
+| α = 1, β = 0.5 | 6.0 ± 0.2 | 246 ± 51 | 0.54 ± 0.09 | 0.43 ± 0.14 |
+| α = 1, β = 1 | 6.0 ± 0.0 | 256 ± 0 | 1.00 ± 0.00 | 0.74 ± 0.27 |
+| α = 0.5, β = 0 | 0.1 ± 0.8 | 3 ± 18 | 0.00 ± 0.00 | 0.00 ± 0.02 |
+| α = 0.5, β = 0.5 | 6.0 ± 0.0 | 256 ± 0 | 0.53 ± 0.09 | 0.45 ± 0.13 |
+| OSO (α = 0.5, β = 1) | 6.0 ± 0.0 | 256 ± 0 | 1.00 ± 0.00 | 0.73 ± 0.25 |
+| α = 0.05, β = 0 | 0.4 ± 1.4 | 10 ± 44 | 0.00 ± 0.00 | 0.01 ± 0.04 |
+| α = 0.05, β = 0.5 | 6.0 ± 0.0 | 256 ± 0 | 0.54 ± 0.09 | 0.50 ± 0.14 |
+| OSO (α = 0.05, β = 1) | 6.0 ± 0.0 | 256 ± 0 | 1.00 ± 0.00 | 0.80 ± 0.22 |
 
 **Design** (fixed before the run): compared α in {1, 0.5, 0.05} × β in {0, 0.5, 1} · held the same: a generated idea graph (6 levels × 8 ideas, 2 parents each, sequences of 3 bits growing by 2 per level, composition 0.7), 12 identical agents, budget 1200 split equally, no mint, no validation · measure: hardest level published, higher is better · 50 runs per row.
 
@@ -31,16 +31,16 @@ Values are mean ± standard deviation over runs.
 
 | society | frontier | value gained | ROI (value per spend) | sharing | targets solved | cost |
 | --- | --- | --- | --- | --- | --- | --- |
-| Traditional (α = 1, β = 0) | 0.2 ± 1.2 | 5 ± 25 | 0.00 ± 0.02 | 0.00 ± 0.00 | 0.0 ± 0.2 | 678 ± 365 |
-| α = 1, β = 0.5 | 6.0 ± 0.0 | 256 ± 0 | 0.46 ± 0.14 | 0.54 ± 0.09 | 2.0 ± 0.0 | 412 ± 128 |
-| α = 1, β = 1 | 6.0 ± 0.0 | 256 ± 0 | 0.72 ± 0.26 | 1.00 ± 0.00 | 2.0 ± 0.0 | 292 ± 110 |
-| α = 0.5, β = 0 | 0.4 ± 1.4 | 8 ± 31 | 0.01 ± 0.03 | 0.00 ± 0.00 | 0.1 ± 0.2 | 952 ± 194 |
-| α = 0.5, β = 0.5 | 6.0 ± 0.0 | 256 ± 0 | 0.49 ± 0.22 | 0.53 ± 0.10 | 2.0 ± 0.0 | 453 ± 179 |
-| OSO (α = 0.5, β = 1) | 6.0 ± 0.0 | 256 ± 0 | 0.71 ± 0.27 | 1.00 ± 0.00 | 2.0 ± 0.0 | 285 ± 93 |
-| α = 0.05, β = 0 | 0.1 ± 0.8 | 3 ± 18 | 0.00 ± 0.02 | 0.00 ± 0.00 | 0.0 ± 0.1 | 1068 ± 0 |
-| α = 0.05, β = 0.5 | 6.0 ± 0.0 | 253 ± 18 | 0.49 ± 0.16 | 0.53 ± 0.09 | 2.0 ± 0.1 | 440 ± 143 |
-| OSO (α = 0.05, β = 1) | 6.0 ± 0.0 | 256 ± 0 | 0.83 ± 0.27 | 1.00 ± 0.00 | 2.0 ± 0.0 | 234 ± 83 |
+| Traditional (α = 1, β = 0) | 0.2 ± 1.2 | 8 ± 40 | 0.01 ± 0.04 | 0.00 ± 0.00 | 0.1 ± 0.3 | 924 ± 221 |
+| α = 1, β = 0.5 | 6.0 ± 0.2 | 246 ± 51 | 0.43 ± 0.14 | 0.54 ± 0.09 | 1.9 ± 0.4 | 422 ± 143 |
+| α = 1, β = 1 | 6.0 ± 0.0 | 256 ± 0 | 0.74 ± 0.27 | 1.00 ± 0.00 | 2.0 ± 0.0 | 263 ± 113 |
+| α = 0.5, β = 0 | 0.1 ± 0.8 | 3 ± 18 | 0.00 ± 0.02 | 0.00 ± 0.00 | 0.0 ± 0.1 | 1104 ± 0 |
+| α = 0.5, β = 0.5 | 6.0 ± 0.0 | 256 ± 0 | 0.45 ± 0.13 | 0.53 ± 0.09 | 2.0 ± 0.0 | 463 ± 149 |
+| OSO (α = 0.5, β = 1) | 6.0 ± 0.0 | 256 ± 0 | 0.73 ± 0.25 | 1.00 ± 0.00 | 2.0 ± 0.0 | 288 ± 105 |
+| α = 0.05, β = 0 | 0.4 ± 1.4 | 10 ± 44 | 0.01 ± 0.04 | 0.00 ± 0.00 | 0.1 ± 0.3 | 864 ± 241 |
+| α = 0.05, β = 0.5 | 6.0 ± 0.0 | 256 ± 0 | 0.50 ± 0.14 | 0.54 ± 0.09 | 2.0 ± 0.0 | 395 ± 148 |
+| OSO (α = 0.05, β = 1) | 6.0 ± 0.0 | 256 ± 0 | 0.80 ± 0.22 | 1.00 ± 0.00 | 2.0 ± 0.0 | 242 ± 96 |
 
-Code: commit `4d59f4a` (with uncommitted changes). Experiment: [config/experiments/simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261023-3.yaml](../../config/experiments/simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261023-3.yaml). Command: `npm run sim -- simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261023-3 --seeds 50 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `04dc47f`. Experiment: [config/experiments/simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261023-3.yaml](../../config/experiments/simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261023-3.yaml). Command: `npm run sim -- simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261023-3 --seeds 50 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

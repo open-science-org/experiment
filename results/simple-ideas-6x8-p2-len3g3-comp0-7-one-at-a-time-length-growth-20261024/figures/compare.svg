@@ -39,19 +39,19 @@
 <text class="tick" x="222" y="177" text-anchor="end">Traditional (α = 1, β = 0), budge…</text>
 <rect x="230" y="166" width="320.0" height="16" rx="3" style="fill:var(--s1)"><title>Traditional (α = 1, β = 0), budget 102400: 6.0</title></rect>
 <text class="label t1" x="556" y="178">6.0</text>
-<text class="tick" x="222" y="203" text-anchor="end">OSO (α = 0.8, β = 1), budget 3200</text>
-<rect x="230" y="192" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.8, β = 1), budget 3200: 6.0</title></rect>
+<text class="tick" x="222" y="203" text-anchor="end">OSO (α = 0.8, β = 1), budget 1600</text>
+<rect x="230" y="192" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.8, β = 1), budget 1600: 6.0</title></rect>
 <text class="label t2" x="556" y="204">6.0</text>
-<text class="tick" x="222" y="229" text-anchor="end">OSO (α = 0.8, β = 1), budget 6400</text>
-<rect x="230" y="218" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.8, β = 1), budget 6400: 6.0</title></rect>
+<text class="tick" x="222" y="229" text-anchor="end">OSO (α = 0.8, β = 1), budget 3200</text>
+<rect x="230" y="218" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.8, β = 1), budget 3200: 6.0</title></rect>
 <text class="label t2" x="556" y="230">6.0</text>
-<text class="tick" x="222" y="255" text-anchor="end">OSO (α = 0.8, β = 1), budget 12800</text>
-<rect x="230" y="244" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.8, β = 1), budget 12800: 6.0</title></rect>
+<text class="tick" x="222" y="255" text-anchor="end">OSO (α = 0.8, β = 1), budget 6400</text>
+<rect x="230" y="244" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.8, β = 1), budget 6400: 6.0</title></rect>
 <text class="label t2" x="556" y="256">6.0</text>
-<text class="tick" x="222" y="281" text-anchor="end">OSO (α = 0.8, β = 1), budget 25600</text>
-<rect x="230" y="270" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.8, β = 1), budget 25600: 6.0</title></rect>
+<text class="tick" x="222" y="281" text-anchor="end">OSO (α = 0.8, β = 1), budget 12800</text>
+<rect x="230" y="270" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.8, β = 1), budget 12800: 6.0</title></rect>
 <text class="label t2" x="556" y="282">6.0</text>
-<text class="tick" x="222" y="307" text-anchor="end">OSO (α = 0.8, β = 1), budget 51200</text>
-<rect x="230" y="296" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.8, β = 1), budget 51200: 6.0</title></rect>
+<text class="tick" x="222" y="307" text-anchor="end">OSO (α = 0.8, β = 1), budget 25600</text>
+<rect x="230" y="296" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.8, β = 1), budget 25600: 6.0</title></rect>
 <text class="label t2" x="556" y="308">6.0</text>
 </svg>

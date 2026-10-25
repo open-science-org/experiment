@@ -1,8 +1,8 @@
 {
   "experiment": "simple-ideas-6x8-p2-len3g2-comp0-7-f0-5-scaling-20261024",
   "date": "2026-10-25",
-  "commit": "9a11c8a",
-  "dirty": true,
+  "commit": "04dc47f",
+  "dirty": false,
   "command": "npm run sim -- simple-ideas-6x8-p2-len3g2-comp0-7-f0-5-scaling-20261024 --seeds 30 --save",
   "seeds": 30,
   "overrides": {},

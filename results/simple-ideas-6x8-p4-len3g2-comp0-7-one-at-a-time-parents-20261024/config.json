@@ -1,8 +1,8 @@
 {
   "experiment": "simple-ideas-6x8-p4-len3g2-comp0-7-one-at-a-time-parents-20261024",
   "date": "2026-10-25",
-  "commit": "9a11c8a",
-  "dirty": true,
+  "commit": "04dc47f",
+  "dirty": false,
   "command": "npm run sim -- simple-ideas-6x8-p4-len3g2-comp0-7-one-at-a-time-parents-20261024 --seeds 20 --save",
   "seeds": 20,
   "overrides": {},
