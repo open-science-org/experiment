@@ -171,6 +171,7 @@
   "alpha",
   "beta"
  ],
- "ranAt": "2026-10-25T03:49:58.526Z",
- "modelVersion": 3
+ "ranAt": "2026-10-25T05:53:49.185Z",
+ "modelVersion": 4,
+ "superseded": "A trial run while the simple model was being built; the suite run for this question is simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261023-4 (default graph) and the other suite cards."
 }

@@ -2,7 +2,7 @@
  "chart": "results/lean-tree/figures/compare.svg",
  "id": "lean-tree",
  "kind": "simulation",
- "date": "2026-10-23",
+ "date": "2026-10-25",
  "title": "The six rule settings on the Lean problem set's reference tree",
  "design": {
   "question": "On the Lean problem set's tree, which rule setting gets furthest?",
@@ -61,5 +61,6 @@
   "A simulation with guessed parameters: it shows how the rules play out, not that they work."
  ],
  "page": "results/lean-tree/summary.md",
- "modelVersion": 3
+ "ranAt": "2026-10-25T05:53:47.517Z",
+ "modelVersion": 4
 }

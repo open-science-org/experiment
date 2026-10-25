@@ -2,7 +2,7 @@
  "chart": "results/simple-20261023190525/figures/compare.svg",
  "id": "simple-20261023190525",
  "kind": "simulation",
- "date": "2026-10-23",
+ "date": "2026-10-25",
  "title": "Simple model on An abstract research field: α × β",
  "design": {
   "question": "On An abstract research field, how far does a society get for the same money, by α and β?",
@@ -12,153 +12,153 @@
   "better": "higher",
   "runs": "50 runs per row"
  },
- "answer": "Best: α = 1, β = 1, 8.0 (6 more tie). Best traditional: Traditional (α = 1, β = 0), 4.0. Clear difference.",
+ "answer": "Best: α = 1, β = 0.25, 6.0 (15 more tie). Best traditional: Traditional (α = 1, β = 0), 0.2. Clear difference.",
  "table": [
   {
    "society": "Traditional (α = 1, β = 0)",
-   "frontier": "4.0 ± 1.0",
-   "value gained": "65 ± 41",
+   "frontier": "0.2 ± 1.2",
+   "value gained": "8 ± 40",
    "sharing": "0.00 ± 0.00",
-   "ROI (value per spend)": "0.05 ± 0.03"
+   "ROI (value per spend)": "0.01 ± 0.04"
   },
   {
    "society": "α = 1, β = 0.25",
-   "frontier": "6.5 ± 0.8",
-   "value gained": "326 ± 347",
-   "sharing": "0.28 ± 0.06",
-   "ROI (value per spend)": "0.30 ± 0.35"
+   "frontier": "6.0 ± 0.0",
+   "value gained": "243 ± 39",
+   "sharing": "0.26 ± 0.07",
+   "ROI (value per spend)": "0.30 ± 0.11"
   },
   {
    "society": "α = 1, β = 0.5",
-   "frontier": "7.6 ± 0.6",
-   "value gained": "908 ± 390",
-   "sharing": "0.53 ± 0.07",
-   "ROI (value per spend)": "0.96 ± 0.58"
+   "frontier": "6.0 ± 0.0",
+   "value gained": "256 ± 0",
+   "sharing": "0.54 ± 0.08",
+   "ROI (value per spend)": "0.43 ± 0.16"
   },
   {
    "society": "α = 1, β = 0.75",
-   "frontier": "8.0 ± 0.1",
-   "value gained": "1158 ± 129",
-   "sharing": "0.78 ± 0.05",
-   "ROI (value per spend)": "1.46 ± 0.50"
+   "frontier": "6.0 ± 0.0",
+   "value gained": "253 ± 18",
+   "sharing": "0.77 ± 0.07",
+   "ROI (value per spend)": "0.53 ± 0.17"
   },
   {
    "society": "α = 1, β = 1",
-   "frontier": "8.0 ± 0.0",
-   "value gained": "1184 ± 0",
+   "frontier": "6.0 ± 0.0",
+   "value gained": "256 ± 0",
    "sharing": "1.00 ± 0.00",
-   "ROI (value per spend)": "1.70 ± 0.46"
+   "ROI (value per spend)": "0.65 ± 0.24"
   },
   {
    "society": "α = 0.8, β = 0",
-   "frontier": "3.8 ± 1.0",
-   "value gained": "65 ± 47",
+   "frontier": "0.4 ± 1.4",
+   "value gained": "8 ± 31",
    "sharing": "0.00 ± 0.00",
-   "ROI (value per spend)": "0.05 ± 0.04"
+   "ROI (value per spend)": "0.01 ± 0.03"
   },
   {
    "society": "α = 0.8, β = 0.25",
-   "frontier": "6.6 ± 0.8",
-   "value gained": "369 ± 305",
-   "sharing": "0.26 ± 0.06",
-   "ROI (value per spend)": "0.32 ± 0.29"
+   "frontier": "6.0 ± 0.1",
+   "value gained": "225 ± 61",
+   "sharing": "0.26 ± 0.07",
+   "ROI (value per spend)": "0.26 ± 0.11"
   },
   {
    "society": "α = 0.8, β = 0.5",
-   "frontier": "7.7 ± 0.5",
-   "value gained": "970 ± 358",
-   "sharing": "0.55 ± 0.08",
-   "ROI (value per spend)": "0.99 ± 0.45"
+   "frontier": "6.0 ± 0.0",
+   "value gained": "253 ± 18",
+   "sharing": "0.53 ± 0.08",
+   "ROI (value per spend)": "0.42 ± 0.11"
   },
   {
    "society": "α = 0.8, β = 0.75",
-   "frontier": "8.0 ± 0.2",
-   "value gained": "1143 ± 140",
-   "sharing": "0.77 ± 0.06",
-   "ROI (value per spend)": "1.36 ± 0.34"
+   "frontier": "6.0 ± 0.0",
+   "value gained": "256 ± 0",
+   "sharing": "0.77 ± 0.07",
+   "ROI (value per spend)": "0.51 ± 0.17"
   },
   {
    "society": "OSO (α = 0.8, β = 1)",
-   "frontier": "8.0 ± 0.0",
-   "value gained": "1184 ± 0",
+   "frontier": "6.0 ± 0.0",
+   "value gained": "256 ± 0",
    "sharing": "1.00 ± 0.00",
-   "ROI (value per spend)": "1.72 ± 0.43"
+   "ROI (value per spend)": "0.65 ± 0.22"
   },
   {
    "society": "α = 0.5, β = 0",
-   "frontier": "4.0 ± 1.0",
-   "value gained": "65 ± 37",
+   "frontier": "0.2 ± 1.2",
+   "value gained": "5 ± 25",
    "sharing": "0.00 ± 0.00",
-   "ROI (value per spend)": "0.05 ± 0.03"
+   "ROI (value per spend)": "0.00 ± 0.02"
   },
   {
    "society": "α = 0.5, β = 0.25",
-   "frontier": "6.6 ± 0.8",
-   "value gained": "356 ± 349",
-   "sharing": "0.27 ± 0.06",
-   "ROI (value per spend)": "0.32 ± 0.34"
+   "frontier": "6.0 ± 0.0",
+   "value gained": "230 ± 52",
+   "sharing": "0.28 ± 0.08",
+   "ROI (value per spend)": "0.27 ± 0.10"
   },
   {
    "society": "α = 0.5, β = 0.5",
-   "frontier": "7.7 ± 0.5",
-   "value gained": "901 ± 401",
-   "sharing": "0.55 ± 0.06",
-   "ROI (value per spend)": "0.91 ± 0.47"
+   "frontier": "6.0 ± 0.0",
+   "value gained": "256 ± 0",
+   "sharing": "0.53 ± 0.07",
+   "ROI (value per spend)": "0.44 ± 0.15"
   },
   {
    "society": "α = 0.5, β = 0.75",
-   "frontier": "7.9 ± 0.3",
-   "value gained": "1112 ± 226",
-   "sharing": "0.78 ± 0.06",
-   "ROI (value per spend)": "1.48 ± 0.56"
+   "frontier": "6.0 ± 0.0",
+   "value gained": "256 ± 0",
+   "sharing": "0.79 ± 0.06",
+   "ROI (value per spend)": "0.60 ± 0.20"
   },
   {
    "society": "OSO (α = 0.5, β = 1)",
-   "frontier": "8.0 ± 0.1",
-   "value gained": "1174 ± 72",
+   "frontier": "6.0 ± 0.0",
+   "value gained": "256 ± 0",
    "sharing": "1.00 ± 0.00",
-   "ROI (value per spend)": "1.68 ± 0.40"
+   "ROI (value per spend)": "0.74 ± 0.27"
   },
   {
    "society": "α = 0.2, β = 0",
-   "frontier": "3.8 ± 1.0",
-   "value gained": "60 ± 42",
+   "frontier": "0.4 ± 1.4",
+   "value gained": "8 ± 31",
    "sharing": "0.00 ± 0.00",
-   "ROI (value per spend)": "0.05 ± 0.04"
+   "ROI (value per spend)": "0.01 ± 0.03"
   },
   {
    "society": "α = 0.2, β = 0.25",
-   "frontier": "6.7 ± 0.8",
-   "value gained": "356 ± 316",
-   "sharing": "0.28 ± 0.06",
-   "ROI (value per spend)": "0.30 ± 0.28"
+   "frontier": "6.0 ± 0.2",
+   "value gained": "218 ± 70",
+   "sharing": "0.26 ± 0.07",
+   "ROI (value per spend)": "0.26 ± 0.12"
   },
   {
    "society": "α = 0.2, β = 0.5",
-   "frontier": "7.7 ± 0.5",
-   "value gained": "876 ± 393",
-   "sharing": "0.53 ± 0.08",
-   "ROI (value per spend)": "0.89 ± 0.49"
+   "frontier": "6.0 ± 0.0",
+   "value gained": "248 ± 31",
+   "sharing": "0.53 ± 0.09",
+   "ROI (value per spend)": "0.43 ± 0.15"
   },
   {
    "society": "α = 0.2, β = 0.75",
-   "frontier": "8.0 ± 0.2",
-   "value gained": "1164 ± 101",
-   "sharing": "0.79 ± 0.06",
-   "ROI (value per spend)": "1.46 ± 0.46"
+   "frontier": "6.0 ± 0.0",
+   "value gained": "253 ± 18",
+   "sharing": "0.78 ± 0.07",
+   "ROI (value per spend)": "0.58 ± 0.26"
   },
   {
    "society": "OSO (α = 0.2, β = 1)",
-   "frontier": "8.0 ± 0.0",
-   "value gained": "1184 ± 0",
+   "frontier": "6.0 ± 0.0",
+   "value gained": "256 ± 0",
    "sharing": "1.00 ± 0.00",
-   "ROI (value per spend)": "1.79 ± 0.44"
+   "ROI (value per spend)": "0.68 ± 0.23"
   }
  ],
  "caveats": [
   "A simulation with guessed parameters: it shows how the rules play out, not that they work."
  ],
  "page": "results/simple-20261023190525/summary.md",
- "superseded": "Earlier version (before 2026-10-24): run on the old random-layer graph, where every parent is required and each level has a fixed chance. Replaced by runs on the idea graph generator.",
- "modelVersion": 1
+ "ranAt": "2026-10-25T06:45:45.544Z",
+ "modelVersion": 4
 }

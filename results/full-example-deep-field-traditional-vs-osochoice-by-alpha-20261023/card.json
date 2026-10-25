@@ -7,7 +7,7 @@
  "design": {
   "question": "When agents choose what to publish, how much do they share (β) at each α, and how far do they get?",
   "compare": "Traditional, OSO (choice), by α, absorption rate",
-  "fixed": "the field \"An abstract research field\"",
+  "fixed": "the field \"the deep-field example\"",
   "measure": "all of hardest level, targets solved, bounty value, ROI, knowledge found (bits), knowledge per unit of money, money to the main level, waste",
   "better": "higher",
   "runs": "100 runs per row"
@@ -110,13 +110,13 @@
   "simulation",
   "full model",
   "example-deep-field",
-  "An abstract research field",
+  "the deep-field example",
   "Traditional",
   "OSO (choice)",
   "α, absorption rate",
   "suite 2026-10-24",
   "full model"
  ],
- "ranAt": "2026-10-25T03:49:32.881Z",
- "modelVersion": 3
+ "ranAt": "2026-10-25T06:41:13.018Z",
+ "modelVersion": 4
 }

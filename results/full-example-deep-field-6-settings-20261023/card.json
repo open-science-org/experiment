@@ -5,9 +5,9 @@
  "date": "2026-10-25",
  "title": "full-example-deep-field-6-settings-20261023",
  "design": {
-  "question": "On the abstract field preset, with every kind of agent and money following earnings, which of the six rule settings gets furthest?",
+  "question": "On the deep-field example, with every kind of agent and earnings shaping next round's money, which of the six rule settings gets furthest?",
   "compare": "Traditional, OSO (immediate), OSO (choice), Flow-back, finished-only, No flow-back, immediate, No flow-back, choice",
-  "fixed": "the field \"An abstract research field\"",
+  "fixed": "the field \"the deep-field example\"",
   "measure": "all of hardest level, targets solved, bounty value, ROI, knowledge found (bits), knowledge per unit of money, money to the main level, waste",
   "better": "higher",
   "runs": "100 runs per row"
@@ -99,7 +99,7 @@
   "simulation",
   "full model",
   "example-deep-field",
-  "An abstract research field",
+  "the deep-field example",
   "Traditional",
   "OSO (immediate)",
   "OSO (choice)",
@@ -109,6 +109,6 @@
   "suite 2026-10-24",
   "full model"
  ],
- "ranAt": "2026-10-25T03:49:32.865Z",
- "modelVersion": 3
+ "ranAt": "2026-10-25T06:41:13.017Z",
+ "modelVersion": 4
 }

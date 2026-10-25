@@ -24,37 +24,37 @@
 <rect x="16" y="38" width="12" height="10" rx="2" style="fill:var(--s2)"/><text class="label t2" x="33" y="47">OSO</text>
 <rect x="67" y="38" width="12" height="10" rx="2" style="fill:var(--s1)"/><text class="label t1" x="84" y="47">Traditional</text>
 <rect x="174" y="38" width="12" height="10" rx="2" style="fill:var(--dead)"/><text class="label " x="191" y="47">other</text>
-<text class="tick" x="222" y="73" text-anchor="end">OSO (α = 0.5, β = 1)</text>
-<rect x="230" y="62" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.5, β = 1): 8.7</title></rect>
-<text class="label t2" x="556" y="74">8.7</text>
-<text class="tick" x="222" y="99" text-anchor="end">α = 0.2, β = 0.75</text>
-<rect x="230" y="88" width="316.3" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.2, β = 0.75: 8.6</title></rect>
-<text class="label " x="552.3218390804598" y="100">8.6</text>
-<text class="tick" x="222" y="125" text-anchor="end">OSO (α = 0.2, β = 1)</text>
-<rect x="230" y="114" width="314.5" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.2, β = 1): 8.55</title></rect>
-<text class="label t2" x="550.4827586206898" y="126">8.55</text>
-<text class="tick" x="222" y="151" text-anchor="end">OSO (α = 0.8, β = 1)</text>
-<rect x="230" y="140" width="312.6" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.8, β = 1): 8.5</title></rect>
-<text class="label t2" x="548.6436781609195" y="152">8.5</text>
-<text class="tick" x="222" y="177" text-anchor="end">α = 1, β = 1</text>
-<rect x="230" y="166" width="309.9" height="16" rx="3" style="fill:var(--dead)"><title>α = 1, β = 1: 8.43</title></rect>
-<text class="label " x="545.8850574712644" y="178">8.43</text>
+<text class="tick" x="222" y="73" text-anchor="end">OSO (α = 0.2, β = 1)</text>
+<rect x="230" y="62" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.2, β = 1): 8.8</title></rect>
+<text class="label t2" x="556" y="74">8.8</text>
+<text class="tick" x="222" y="99" text-anchor="end">OSO (α = 0.5, β = 1)</text>
+<rect x="230" y="88" width="314.5" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.5, β = 1): 8.65</title></rect>
+<text class="label t2" x="550.5454545454545" y="100">8.65</text>
+<text class="tick" x="222" y="125" text-anchor="end">α = 1, β = 1</text>
+<rect x="230" y="114" width="312.7" height="16" rx="3" style="fill:var(--dead)"><title>α = 1, β = 1: 8.6</title></rect>
+<text class="label " x="548.7272727272727" y="126">8.6</text>
+<text class="tick" x="222" y="151" text-anchor="end">α = 0.2, β = 0.75</text>
+<rect x="230" y="140" width="308.2" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.2, β = 0.75: 8.47</title></rect>
+<text class="label " x="544.1818181818181" y="152">8.47</text>
+<text class="tick" x="222" y="177" text-anchor="end">α = 1, β = 0.75</text>
+<rect x="230" y="166" width="307.3" height="16" rx="3" style="fill:var(--dead)"><title>α = 1, β = 0.75: 8.45</title></rect>
+<text class="label " x="543.2727272727273" y="178">8.45</text>
 <text class="tick" x="222" y="203" text-anchor="end">α = 0.5, β = 0.75</text>
-<rect x="230" y="192" width="309.9" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.5, β = 0.75: 8.43</title></rect>
-<text class="label " x="545.8850574712644" y="204">8.43</text>
-<text class="tick" x="222" y="229" text-anchor="end">α = 1, β = 0.75</text>
-<rect x="230" y="218" width="300.7" height="16" rx="3" style="fill:var(--dead)"><title>α = 1, β = 0.75: 8.18</title></rect>
-<text class="label " x="536.6896551724138" y="230">8.18</text>
-<text class="tick" x="222" y="255" text-anchor="end">α = 0.5, β = 0.5</text>
-<rect x="230" y="244" width="298.9" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.5, β = 0.5: 8.13</title></rect>
-<text class="label " x="534.8505747126437" y="256">8.13</text>
-<text class="tick" x="222" y="281" text-anchor="end">α = 0.8, β = 0.75</text>
-<rect x="230" y="270" width="297.0" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.8, β = 0.75: 8.07</title></rect>
-<text class="label " x="533.0114942528735" y="282">8.07</text>
-<text class="tick" x="222" y="307" text-anchor="end">α = 0.2, β = 0.5</text>
-<rect x="230" y="296" width="296.1" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.2, β = 0.5: 8.05</title></rect>
-<text class="label " x="532.0919540229886" y="308">8.05</text>
+<rect x="230" y="192" width="306.4" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.5, β = 0.75: 8.43</title></rect>
+<text class="label " x="542.3636363636364" y="204">8.43</text>
+<text class="tick" x="222" y="229" text-anchor="end">α = 0.8, β = 0.75</text>
+<rect x="230" y="218" width="302.7" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.8, β = 0.75: 8.32</title></rect>
+<text class="label " x="538.7272727272726" y="230">8.32</text>
+<text class="tick" x="222" y="255" text-anchor="end">OSO (α = 0.8, β = 1)</text>
+<rect x="230" y="244" width="301.8" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.8, β = 1): 8.3</title></rect>
+<text class="label t2" x="537.8181818181818" y="256">8.3</text>
+<text class="tick" x="222" y="281" text-anchor="end">α = 0.2, β = 0.5</text>
+<rect x="230" y="270" width="289.1" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.2, β = 0.5: 7.95</title></rect>
+<text class="label " x="525.090909090909" y="282">7.95</text>
+<text class="tick" x="222" y="307" text-anchor="end">α = 0.5, β = 0.5</text>
+<rect x="230" y="296" width="285.5" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.5, β = 0.5: 7.85</title></rect>
+<text class="label " x="521.4545454545455" y="308">7.85</text>
 <text class="tick" x="222" y="333" text-anchor="end">Traditional (α = 1, β = 0)</text>
-<rect x="230" y="322" width="60.7" height="16" rx="3" style="fill:var(--s1)"><title>Traditional (α = 1, β = 0): 1.65</title></rect>
-<text class="label t1" x="296.6896551724138" y="334">1.65</text>
+<rect x="230" y="322" width="65.5" height="16" rx="3" style="fill:var(--s1)"><title>Traditional (α = 1, β = 0): 1.8</title></rect>
+<text class="label t1" x="301.45454545454544" y="334">1.8</text>
 </svg>

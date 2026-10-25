@@ -1,7 +1,7 @@
 {
   "experiment": "simple-ideas-6x8-p2-len3g2-comp0-7-one-at-a-time-parents-20261024",
   "date": "2026-10-25",
-  "commit": "04dc47f",
+  "commit": "e0930a2",
   "dirty": false,
   "command": "npm run sim -- simple-ideas-6x8-p2-len3g2-comp0-7-one-at-a-time-parents-20261024 --seeds 20 --save",
   "seeds": 20,
@@ -10,7 +10,7 @@
     "experiment": {
       "id": "simple-ideas-6x8-p2-len3g2-comp0-7-one-at-a-time-parents-20261024",
       "title": "Scaling, parents 2 (else default)",
-      "description": "The simple model on a generated idea graph (6 levels × 8 ideas, 2 parents each, sequences of 3 bits growing by 2 per level, composition 0.7); each run draws its own graph. Only α and β vary. Held fixed: 12 identical agents, a budget of 50 split equally every round (ρ = 0), no mint, no validation.",
+      "description": "The simple model on a generated idea graph (6 levels × 8 ideas, 2 parents each, sequences of 3 bits growing by 2 per level, composition 0.7); each run draws its own graph. Only α and β vary. Held fixed: 12 identical agents, a budget of 50 split equally every round (f = 0), no flat mint, a knowledge reward of 1 per new bit flowing back with α, no validation.",
       "seeds": 20,
       "set": {
         "world": {
@@ -37,7 +37,8 @@
         "rules": {
           "c": 0,
           "mint": 0,
-          "screen": 0
+          "screen": 0,
+          "mintPerBit": 1
         },
         "agents": {
           "mix": {
@@ -121,6 +122,9 @@
         "targetsSolved",
         "value",
         "roi",
+        "knowledge",
+        "knowledgePublished",
+        "knowledgePerMoney",
         "cost",
         "waste",
         "sharing",
@@ -155,7 +159,10 @@
         "lengthGrowth": 2,
         "composition": 0.7,
         "targets": 2,
-        "targetsFrom": 0
+        "targetsFrom": 0,
+        "bountyBase": 4,
+        "bountyGrowth": 2,
+        "attemptLimit": 24
       },
       "success": {
         "p0": 0.5,
@@ -266,6 +273,8 @@
         "alpha": 1,
         "c": 0,
         "mint": 0,
+        "mintPerBit": 1,
+        "alpha0": null,
         "screen": 0,
         "publishFailures": false,
         "visibility": {

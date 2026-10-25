@@ -72,14 +72,14 @@
 <circle class="dot f1" cx="356.4" cy="220" r="4.5"><title>θ, validation screen = 95%: +0.7</title></circle>
 <text class="tick" x="309.0512652419037" y="224" text-anchor="end" style="font-size:10px">0%</text>
 <text class="tick" x="422.59944932476725" y="224" style="font-size:10px">75%</text>
-<text class="tick" x="28" y="254">ρ, money follows earnings</text>
+<text class="tick" x="28" y="254">f, earnings shape next round's money</text>
 <line class="line c1" x1="260.41038416153145" x2="458.6534679428347" y1="250" y2="250" style="stroke-opacity:0.45;stroke-width:6"/>
 <line class="base" x1="379.9855775534286" x2="379.9855775534286" y1="241" y2="259" style="stroke-width:2.5"/>
-<circle class="dot f1" cx="458.7" cy="250" r="4.5"><title>ρ, money follows earnings = 0%: +1.4</title></circle>
-<circle class="dot f1" cx="458.7" cy="250" r="4.5"><title>ρ, money follows earnings = 25%: +1.4</title></circle>
-<circle class="dot f1" cx="380.0" cy="250" r="4.5"><title>ρ, money follows earnings = 50%: +0.9</title></circle>
-<circle class="dot f1" cx="269.9" cy="250" r="4.5"><title>ρ, money follows earnings = 75%: +0.2</title></circle>
-<circle class="dot f1" cx="260.4" cy="250" r="4.5"><title>ρ, money follows earnings = 100%: +0.1</title></circle>
+<circle class="dot f1" cx="458.7" cy="250" r="4.5"><title>f, earnings shape next round's money = 0%: +1.4</title></circle>
+<circle class="dot f1" cx="458.7" cy="250" r="4.5"><title>f, earnings shape next round's money = 25%: +1.4</title></circle>
+<circle class="dot f1" cx="380.0" cy="250" r="4.5"><title>f, earnings shape next round's money = 50%: +0.9</title></circle>
+<circle class="dot f1" cx="269.9" cy="250" r="4.5"><title>f, earnings shape next round's money = 75%: +0.2</title></circle>
+<circle class="dot f1" cx="260.4" cy="250" r="4.5"><title>f, earnings shape next round's money = 100%: +0.1</title></circle>
 <text class="tick" x="252.41038416153145" y="254" text-anchor="end" style="font-size:10px">100%</text>
 <text class="tick" x="466.6534679428347" y="254" style="font-size:10px">25%</text>
 <text class="label" x="20" y="292">Guessed: how agents think and see</text>

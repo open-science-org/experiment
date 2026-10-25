@@ -63,6 +63,6 @@ Values are mean ± standard deviation over runs.
 | α = 0.2, β = 0.75 | 6.0 ± 0.0 | 256 ± 0 | 0.64 ± 0.18 | 91 ± 11 | 87 ± 11 | 0.221 ± 0.052 | 0.78 ± 0.07 | 2.0 ± 0.0 | 324 ± 90 |
 | OSO (α = 0.2, β = 1) | 6.0 ± 0.0 | 256 ± 0 | 0.79 ± 0.21 | 91 ± 11 | 91 ± 11 | 0.277 ± 0.065 | 1.00 ± 0.00 | 2.0 ± 0.0 | 240 ± 104 |
 
-Code: commit `10c7482` (with uncommitted changes). Experiment: [config/experiments/simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261023.yaml](../../config/experiments/simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261023.yaml). Command: `npm run sim -- simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261023 --seeds 50 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `79c260a` (with uncommitted changes). Experiment: [config/experiments/simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261023.yaml](../../config/experiments/simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261023.yaml). Command: `npm run sim -- simple-ideas-6x8-p2-len3g2-comp0-7-alpha-beta-20261023 --seeds 50 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

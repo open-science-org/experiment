@@ -1,5 +1,5 @@
 {
- "ranAt": "2026-10-25T03:38:38.110Z",
+ "ranAt": "2026-10-25T06:41:13.028Z",
  "id": "example-tightly-linked",
  "kind": "field report",
  "date": "2026-10-25",
@@ -36,5 +36,5 @@
  ],
  "page": "reports/example-tightly-linked/card.md",
  "chart": "reports/example-tightly-linked/figures/frontier.svg",
- "modelVersion": 3
+ "modelVersion": 4
 }

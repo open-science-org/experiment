@@ -1,8 +1,8 @@
 {
   "experiment": "simple-ideas-7x7-p2-len3g2-comp0-7-alpha-beta-20261023",
   "date": "2026-10-25",
-  "commit": "04dc47f",
-  "dirty": false,
+  "commit": "79c260a",
+  "dirty": true,
   "command": "npm run sim -- simple-ideas-7x7-p2-len3g2-comp0-7-alpha-beta-20261023 --seeds 50 --save",
   "seeds": 50,
   "overrides": {},
@@ -262,6 +262,9 @@
         "targetsSolved",
         "value",
         "roi",
+        "knowledge",
+        "knowledgePublished",
+        "knowledgePerMoney",
         "cost",
         "waste",
         "sharing",
@@ -293,7 +296,11 @@
         "length": 3,
         "lengthGrowth": 2,
         "composition": 0.7,
-        "targets": 2
+        "targets": 2,
+        "targetsFrom": 0,
+        "bountyBase": 4,
+        "bountyGrowth": 2,
+        "attemptLimit": 24
       },
       "success": {
         "p0": 0.5,
@@ -404,6 +411,8 @@
         "alpha": 1,
         "c": 0,
         "mint": 0,
+        "mintPerBit": 0,
+        "alpha0": null,
         "screen": 0,
         "publishFailures": false,
         "visibility": {

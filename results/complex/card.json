@@ -2,7 +2,7 @@
  "chart": "results/complex/figures/compare.svg",
  "id": "complex",
  "kind": "simulation",
- "date": "2026-10-23",
+ "date": "2026-10-25",
  "title": "All together on the Lean tree: learning, shared failures, costly and fallible sharing",
  "design": {
   "question": "With learning, shared failures, and costly, fallible sharing all on, does OSO still lead?",
@@ -83,5 +83,6 @@
   "A simulation with guessed parameters: it shows how the rules play out, not that they work."
  ],
  "page": "results/complex/summary.md",
- "modelVersion": 3
+ "ranAt": "2026-10-25T05:53:26.458Z",
+ "modelVersion": 4
 }

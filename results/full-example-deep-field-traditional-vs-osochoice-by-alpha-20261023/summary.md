@@ -25,14 +25,14 @@
 | OSO (choice), α = 0.2 | 7.8 ± 0.5 | 1.6 ± 1.1 | 804 ± 583 | 0.87 ± 0.66 | 129 ± 20 | 0.138 ± 0.024 | 659 ± 168 | 0.64 ± 0.03 |
 | OSO (choice), α = 0 | 8.0 ± 0.0 | 3.7 ± 0.7 | 1910 ± 340 | 2.72 ± 0.84 | 188 ± 13 | 0.263 ± 0.054 | 391 ± 124 | 0.54 ± 0.07 |
 
-**Design** (fixed before the run): compared Traditional, OSO (choice), by α, absorption rate · held the same: the field "An abstract research field" · measure: all of hardest level, targets solved, bounty value, ROI, knowledge found (bits), knowledge per unit of money, money to the main level, waste · 100 runs per row.
+**Design** (fixed before the run): compared Traditional, OSO (choice), by α, absorption rate · held the same: the field "the deep-field example" · measure: all of hardest level, targets solved, bounty value, ROI, knowledge found (bits), knowledge per unit of money, money to the main level, waste · 100 runs per row.
 
 **Caveats:**
 - A simulation with guessed parameters: it shows how the rules play out, not that they work.
 
 <details><summary>Details</summary>
 
-Designed in the app on the field "An abstract research field" (spaces/example-deep-field.yaml): Traditional vs OSO (choice), varying α, absorption rate. α and c apply to the OSO (flow-back) settings only.
+Designed in the app on the field "the deep-field example" (spaces/example-deep-field.yaml): Traditional vs OSO (choice), varying α, absorption rate. α and c apply to the OSO (flow-back) settings only.
 
 Values are mean ± standard deviation over runs.
 
@@ -46,6 +46,6 @@ Values are mean ± standard deviation over runs.
 | OSO (choice), α = 0.2 | 7.8 ± 0.5 | 1.6 ± 1.1 | 804 ± 583 | 0.87 ± 0.66 | 129 ± 20 | 115 ± 28 | 0.138 ± 0.024 | 659 ± 168 | 0.64 ± 0.03 | 0.43 ± 0.09 | 0.82 |
 | OSO (choice), α = 0 | 8.0 ± 0.0 | 3.7 ± 0.7 | 1910 ± 340 | 2.72 ± 0.84 | 188 ± 13 | 188 ± 13 | 0.263 ± 0.054 | 391 ± 124 | 0.54 ± 0.07 | 0.97 ± 0.02 | 1.00 |
 
-Code: commit `10c7482` (with uncommitted changes). Experiment: [config/experiments/full-example-deep-field-traditional-vs-osochoice-by-alpha-20261023.yaml](../../config/experiments/full-example-deep-field-traditional-vs-osochoice-by-alpha-20261023.yaml). Command: `npm run sim -- full-example-deep-field-traditional-vs-osochoice-by-alpha-20261023 --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `94d7303` (with uncommitted changes). Experiment: [config/experiments/full-example-deep-field-traditional-vs-osochoice-by-alpha-20261023.yaml](../../config/experiments/full-example-deep-field-traditional-vs-osochoice-by-alpha-20261023.yaml). Command: `npm run sim -- full-example-deep-field-traditional-vs-osochoice-by-alpha-20261023 --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

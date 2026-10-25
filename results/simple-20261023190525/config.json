@@ -1,7 +1,7 @@
 {
   "experiment": "simple-20261023190525",
-  "date": "2026-10-23",
-  "commit": "1730b62",
+  "date": "2026-10-25",
+  "commit": "94d7303",
   "dirty": true,
   "command": "npm run sim -- simple-20261023190525 --seeds 50 --save",
   "seeds": 50,
@@ -22,7 +22,8 @@
         "rules": {
           "c": 0,
           "mint": 0,
-          "screen": 0
+          "screen": 0,
+          "mintPerBit": 1
         },
         "agents": {
           "mix": {
@@ -258,33 +259,19 @@
     },
     "base": {
       "world": {
-        "kind": "layered",
-        "levels": 8,
-        "width": 10,
-        "maxPrereqs": 3,
-        "skipProb": 0.25,
-        "areas": 3,
-        "areaStickiness": 0.8,
-        "targets": [
-          {
-            "level": 3,
-            "count": 2
-          },
-          {
-            "level": 5,
-            "count": 2
-          },
-          {
-            "level": 7,
-            "count": 2
-          },
-          {
-            "level": 8,
-            "count": 1
-          }
-        ],
+        "kind": "ideas",
+        "levels": 6,
+        "width": 8,
+        "parents": 2,
+        "skip": 0.2,
+        "length": 3,
+        "lengthGrowth": 2,
+        "composition": 0.7,
+        "targets": 2,
+        "targetsFrom": 0,
         "bountyBase": 4,
-        "bountyGrowth": 2
+        "bountyGrowth": 2,
+        "attemptLimit": 24
       },
       "success": {
         "p0": 0.5,
@@ -395,6 +382,8 @@
         "alpha": 1,
         "c": 0,
         "mint": 0,
+        "mintPerBit": 1,
+        "alpha0": null,
         "screen": 0,
         "publishFailures": false,
         "visibility": {

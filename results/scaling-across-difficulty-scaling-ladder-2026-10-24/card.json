@@ -2,7 +2,7 @@
  "id": "scaling-across-difficulty-scaling-ladder-2026-10-24",
  "kind": "simulation",
  "date": "2026-10-25",
- "ranAt": "2026-10-25T03:13:56.204Z",
+ "ranAt": "2026-10-25T07:06:05.699Z",
  "title": "Scaling across difficulty",
  "design": {
   "question": "As problems get harder, how much more money does each society need, and does the gap between traditional and OSO grow?",
@@ -12,51 +12,51 @@
   "better": "lower",
   "runs": "from the sweeps tagged \"scaling ladder 2026-10-24\""
  },
- "answer": "To solve half the targets, traditional needs 3.7× to 6.3× the money OSO needs. By difficulty: easy 3.8×, default 6.3×, medium 4.6×, hard 3.7×, very hard 4.6×.",
+ "answer": "To solve half the targets, traditional needs 3.6× to 6.5× the money OSO needs. By difficulty: easy 3.6×, default 6.5×, medium 4.8×, hard 4.1×, very hard 4.6×.",
  "table": [
   {
    "difficulty": "easy",
-   "Traditional (α = 1, β = 0)": "121",
-   "OSO (α = 0.8, β = 1)": "32",
-   "OSO (α = 0.2, β = 1)": "33",
-   "α = 0.8, β = 0.5": "47",
-   "α = 1, β = 1": "30",
-   "traditional ÷ OSO": "3.8×"
+   "Traditional (α = 1, β = 0)": "135",
+   "OSO (α = 0.8, β = 1)": "38",
+   "OSO (α = 0.2, β = 1)": "36",
+   "α = 0.8, β = 0.5": "51",
+   "α = 1, β = 1": "31",
+   "traditional ÷ OSO": "3.6×"
   },
   {
    "difficulty": "default",
-   "Traditional (α = 1, β = 0)": "2,045",
-   "OSO (α = 0.8, β = 1)": "325",
-   "OSO (α = 0.2, β = 1)": "275",
-   "α = 0.8, β = 0.5": "502",
-   "α = 1, β = 1": "273",
-   "traditional ÷ OSO": "6.3×"
+   "Traditional (α = 1, β = 0)": "2,081",
+   "OSO (α = 0.8, β = 1)": "322",
+   "OSO (α = 0.2, β = 1)": "327",
+   "α = 0.8, β = 0.5": "518",
+   "α = 1, β = 1": "346",
+   "traditional ÷ OSO": "6.5×"
   },
   {
    "difficulty": "medium",
-   "Traditional (α = 1, β = 0)": "2,721",
-   "OSO (α = 0.8, β = 1)": "593",
-   "OSO (α = 0.2, β = 1)": "516",
-   "α = 0.8, β = 0.5": "906",
-   "α = 1, β = 1": "595",
-   "traditional ÷ OSO": "4.6×"
+   "Traditional (α = 1, β = 0)": "2,857",
+   "OSO (α = 0.8, β = 1)": "600",
+   "OSO (α = 0.2, β = 1)": "525",
+   "α = 0.8, β = 0.5": "885",
+   "α = 1, β = 1": "553",
+   "traditional ÷ OSO": "4.8×"
   },
   {
    "difficulty": "hard",
-   "Traditional (α = 1, β = 0)": "26,442",
-   "OSO (α = 0.8, β = 1)": "7,053",
-   "OSO (α = 0.2, β = 1)": "5,948",
-   "α = 0.8, β = 0.5": "9,549",
-   "α = 1, β = 1": "6,578",
-   "traditional ÷ OSO": "3.7×"
+   "Traditional (α = 1, β = 0)": "27,357",
+   "OSO (α = 0.8, β = 1)": "6,602",
+   "OSO (α = 0.2, β = 1)": "6,167",
+   "α = 0.8, β = 0.5": "9,898",
+   "α = 1, β = 1": "6,365",
+   "traditional ÷ OSO": "4.1×"
   },
   {
    "difficulty": "very hard",
-   "Traditional (α = 1, β = 0)": "63,025",
-   "OSO (α = 0.8, β = 1)": "13,644",
-   "OSO (α = 0.2, β = 1)": "13,655",
-   "α = 0.8, β = 0.5": "19,722",
-   "α = 1, β = 1": "14,142",
+   "Traditional (α = 1, β = 0)": "63,351",
+   "OSO (α = 0.8, β = 1)": "13,676",
+   "OSO (α = 0.2, β = 1)": "13,770",
+   "α = 0.8, β = 0.5": "20,000",
+   "α = 1, β = 1": "13,857",
    "traditional ÷ OSO": "4.6×"
   }
  ],
@@ -73,5 +73,5 @@
   "scaling ladder 2026-10-24",
   "analysis"
  ],
- "modelVersion": 3
+ "modelVersion": 4
 }

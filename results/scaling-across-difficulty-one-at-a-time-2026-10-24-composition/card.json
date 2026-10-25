@@ -2,7 +2,7 @@
  "id": "scaling-across-difficulty-one-at-a-time-2026-10-24-composition",
  "kind": "simulation",
  "date": "2026-10-25",
- "ranAt": "2026-10-25T03:13:57.122Z",
+ "ranAt": "2026-10-25T07:06:06.517Z",
  "title": "Scaling as composition changes",
  "design": {
   "question": "As composition changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?",
@@ -12,39 +12,39 @@
   "better": "lower",
   "runs": "from the sweeps tagged \"one at a time 2026-10-24: composition\""
  },
- "answer": "To solve half the targets, traditional needs 6.0× to 7.2× the money OSO needs. By difficulty: composition 0.5 6.0×, composition 0.7 7.2×, composition 0.85 6.7×, composition 0.95 6.6×.",
+ "answer": "To solve half the targets, traditional needs 5.6× to 7.0× the money OSO needs. By difficulty: composition 0.5 6.0×, composition 0.7 7.0×, composition 0.85 5.6×, composition 0.95 6.3×.",
  "table": [
   {
    "difficulty": "composition 0.5",
-   "Traditional (α = 1, β = 0)": "4,092",
-   "OSO (α = 0.8, β = 1)": "686",
-   "OSO (α = 0.2, β = 1)": "610",
-   "α = 0.8, β = 0.5": "1,077",
+   "Traditional (α = 1, β = 0)": "4,205",
+   "OSO (α = 0.8, β = 1)": "705",
+   "OSO (α = 0.2, β = 1)": "654",
+   "α = 0.8, β = 0.5": "1,131",
    "traditional ÷ OSO": "6.0×"
   },
   {
    "difficulty": "composition 0.7",
-   "Traditional (α = 1, β = 0)": "2,197",
-   "OSO (α = 0.8, β = 1)": "306",
-   "OSO (α = 0.2, β = 1)": "273",
-   "α = 0.8, β = 0.5": "517",
-   "traditional ÷ OSO": "7.2×"
+   "Traditional (α = 1, β = 0)": "2,193",
+   "OSO (α = 0.8, β = 1)": "315",
+   "OSO (α = 0.2, β = 1)": "293",
+   "α = 0.8, β = 0.5": "533",
+   "traditional ÷ OSO": "7.0×"
   },
   {
    "difficulty": "composition 0.85",
-   "Traditional (α = 1, β = 0)": "1,181",
-   "OSO (α = 0.8, β = 1)": "176",
-   "OSO (α = 0.2, β = 1)": "194",
+   "Traditional (α = 1, β = 0)": "1,158",
+   "OSO (α = 0.8, β = 1)": "207",
+   "OSO (α = 0.2, β = 1)": "207",
    "α = 0.8, β = 0.5": "286",
-   "traditional ÷ OSO": "6.7×"
+   "traditional ÷ OSO": "5.6×"
   },
   {
    "difficulty": "composition 0.95",
-   "Traditional (α = 1, β = 0)": "1,094",
-   "OSO (α = 0.8, β = 1)": "167",
-   "OSO (α = 0.2, β = 1)": "157",
-   "α = 0.8, β = 0.5": "263",
-   "traditional ÷ OSO": "6.6×"
+   "Traditional (α = 1, β = 0)": "1,120",
+   "OSO (α = 0.8, β = 1)": "176",
+   "OSO (α = 0.2, β = 1)": "164",
+   "α = 0.8, β = 0.5": "270",
+   "traditional ÷ OSO": "6.3×"
   }
  ],
  "caveats": [
@@ -60,5 +60,5 @@
   "one at a time 2026-10-24: composition",
   "analysis"
  ],
- "modelVersion": 3
+ "modelVersion": 4
 }

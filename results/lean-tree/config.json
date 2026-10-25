@@ -1,7 +1,7 @@
 {
   "experiment": "lean-tree",
-  "date": "2026-10-23",
-  "commit": "ead6740",
+  "date": "2026-10-25",
+  "commit": "79c260a",
   "dirty": true,
   "command": "npm run sim -- lean-tree --seeds 100 --save",
   "seeds": 100,
@@ -178,6 +178,8 @@
         "alpha": 1,
         "c": 0,
         "mint": 1,
+        "mintPerBit": 0,
+        "alpha0": null,
         "screen": 0.5,
         "publishFailures": false,
         "visibility": {

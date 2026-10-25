@@ -4,15 +4,15 @@
 
 **For the same money, the OSO community got further, or got there more cheaply, than the traditional one.**
 
-- **How far:** with a budget of 400 money, OSO reached level **7.0** of 7 on average; traditional research reached **4.4**.
+- **How far:** with a budget of 400, OSO reached level **7.0** of 7 on average; traditional research reached **4.4**.
 - **Targets solved:** OSO solved **8.0** of 8; traditional solved **4.8**.
-- **Cost to reach level 5:** OSO 125 money; traditional 303 money (in the 44% of runs that got there).
+- **Cost to reach level 5:** OSO 125; traditional 303 (in the 44% of runs that got there).
 - **Return on the money (ROI):** OSO gained **2.01** in bounty value per unit spent (460 for 243); traditional **0.31** (118 for 394). Value gained is the bounties of the targets solved.
 - **Does flow-back make agents share?** When agents choose, sharing rises clearly (by 0.2 or more) once α is 0.6 or lower. At OSO's default α = 0.8, agents shared 42% of their intermediate ideas.
 - **Robustness:** OSO's lead in level is smallest when shared knowledge is **costly to take up** (+2.2 levels).
 - **Sensitivity:** Across the tested values of the parameters a market or community sets, OSO's lead (agents choosing what to share) runs from **+0.1** to **+2.6** levels. The smallest lead, at mint per idea = 0, is **within noise: no clear difference there**. The lead is most sensitive to **α, absorption rate**.
 
-*The verdict compares the hardest level reached, the targets solved and (when both communities reach level 5 in at least 90% of runs) the cost to get there, each against two standard errors. 100 simulated runs per setting · simulator commit `4bd670b+` · 2026-10-23. This is a simulation with guessed parameters, not evidence about real research; see [What this shows](#what-this-shows-and-what-it-does-not).*
+*The verdict compares the hardest level reached, the targets solved and (when both communities reach level 5 in at least 90% of runs) the cost to get there, each against two standard errors. 100 simulated runs per setting · simulator commit `94d7303+` · 2026-10-25. This is a simulation with guessed parameters, not evidence about real research; see [What this shows](#what-this-shows-and-what-it-does-not).*
 
 ## 1. The problem space
 
@@ -42,7 +42,7 @@ The tree has 42 ideas in 7 levels and 4 areas (A sequence, B sorting, C matrices
 
 How hard each level is, before an agent's skill:
 
-| level | results | targets | success chance per attempt |
+| level | ideas | targets | success chance per attempt |
 | --- | --- | --- | --- |
 | 1 | 20 | 1 | 50% |
 | 2 | 9 | 1 | 30% |
@@ -52,7 +52,7 @@ How hard each level is, before an agent's skill:
 | 6 | 1 | 0 | 4% |
 | 7 | 1 | 1 | 2% |
 
-The community has 12 agents (3 foundation, 3 racer, 2 explorer, 2 specialist, 1 freeRider, 1 gamer) and a budget of 400 money over 40 rounds.
+The community has 12 agents (3 foundation, 3 racer, 2 explorer, 2 specialist, 1 freeRider, 1 gamer) and a budget of 400 over 40 rounds.
 
 ## 2. Progress for the money
 
@@ -66,12 +66,12 @@ The rules are the only difference between rows ([specification, section 3](../..
 
 | setting | frontier | reach L5 | speed | cost | spend | targets solved | waste | credit | sharing | ROI (value per spend) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Traditional | 4.4 ± 1.2 | 0.44 | 31 ± 7 | 303 ± 66 | 394 ± 14 | 4.8 ± 1.5 | 0.53 ± 0.10 | 0.98 ± 0.04 | 0.01 ± 0.02 | 0.31 ± 0.29 |
-| OSO (immediate) | 7.0 ± 0.0 | 1.00 | 13 ± 3 | 125 ± 32 | 243 ± 59 | 8.0 ± 0.0 | 0.78 ± 0.05 | 0.73 ± 0.06 | 1.00 ± 0.00 | 2.01 ± 0.50 |
-| Flow-back, finished-only | 4.3 ± 1.1 | 0.48 | 33 ± 6 | 327 ± 64 | 392 ± 19 | 4.9 ± 1.7 | 0.55 ± 0.11 | 0.99 ± 0.03 | 0.01 ± 0.02 | 0.31 ± 0.30 |
-| No flow-back, immediate | 7.0 ± 0.1 | 1.00 | 14 ± 4 | 131 ± 39 | 246 ± 63 | 8.0 ± 0.1 | 0.77 ± 0.06 | 0.59 ± 0.08 | 1.00 ± 0.00 | 1.98 ± 0.53 |
-| No flow-back, choice | 4.9 ± 1.2 | 0.67 | 31 ± 7 | 301 ± 74 | 386 ± 33 | 5.9 ± 1.4 | 0.59 ± 0.13 | 0.84 ± 0.09 | 0.35 ± 0.05 | 0.49 ± 0.43 |
-| OSO (choice) | 5.2 ± 1.2 | 0.76 | 28 ± 8 | 273 ± 77 | 372 ± 54 | 6.3 ± 1.3 | 0.62 ± 0.13 | 0.84 ± 0.08 | 0.42 ± 0.06 | 0.65 ± 0.60 |
+| Traditional | 4.4 ± 1.2 | 0.44 | 31 ± 7 | 303 ± 66 | 394 ± 14 | 4.8 ± 1.5 | 0.77 ± 0.04 | 0.98 ± 0.04 | 0.01 ± 0.02 | 0.31 ± 0.29 |
+| OSO (immediate) | 7.0 ± 0.0 | 1.00 | 13 ± 3 | 125 ± 32 | 243 ± 59 | 8.0 ± 0.0 | 0.21 ± 0.05 | 0.73 ± 0.06 | 1.00 ± 0.00 | 2.01 ± 0.50 |
+| Flow-back, finished-only | 4.3 ± 1.1 | 0.48 | 33 ± 6 | 327 ± 64 | 392 ± 19 | 4.9 ± 1.7 | 0.77 ± 0.04 | 0.99 ± 0.03 | 0.01 ± 0.02 | 0.31 ± 0.30 |
+| No flow-back, immediate | 7.0 ± 0.1 | 1.00 | 14 ± 4 | 131 ± 39 | 246 ± 63 | 8.0 ± 0.1 | 0.22 ± 0.06 | 0.59 ± 0.08 | 1.00 ± 0.00 | 1.98 ± 0.53 |
+| No flow-back, choice | 4.9 ± 1.2 | 0.67 | 31 ± 7 | 301 ± 74 | 386 ± 33 | 5.9 ± 1.4 | 0.73 ± 0.06 | 0.84 ± 0.09 | 0.35 ± 0.05 | 0.49 ± 0.43 |
+| OSO (choice) | 5.2 ± 1.2 | 0.76 | 28 ± 8 | 273 ± 77 | 372 ± 54 | 6.3 ± 1.3 | 0.68 ± 0.07 | 0.84 ± 0.08 | 0.42 ± 0.06 | 0.65 ± 0.60 |
 
 Values are mean ± standard deviation over runs. *frontier*: hardest level published; *reach L5*: share of runs reaching level 5; *speed*, *cost*: rounds and money to reach it; *credit*: how closely bounty pay matches true contribution; *sharing*: share of intermediate ideas published as soon as they were proved.
 
@@ -119,7 +119,7 @@ Across the tested values of the parameters a market or community sets, OSO's lea
 | c, cited share of the mint | share of each new mint paid to the ideas it built on | 0%, 5%, 15%, 30%, 50% | +0.7 to +0.9 |
 | mint per idea | tokens minted for each validated idea, relative to bounties (the smallest bounty is a few units) | 0, 0.5, 1, 2, 4 | +0.1 to +1.7 |
 | θ, validation screen | chance validators reject a trivial idea | 0%, 25%, 50%, 75%, 95% | +0.5 to +1.1 |
-| ρ, money follows earnings | share of each round's money funders give by recent earnings rather than equally | 0%, 25%, 50%, 75%, 100% | +0.1 to +1.4 |
+| f, earnings shape next round's money | share of each round's money funders give by recent earnings rather than equally | 0%, 25%, 50%, 75%, 100% | +0.1 to +1.4 |
 | ψ, scoop risk | how likely agents think a shared lemma lets a rival take the target | 0, 0.25, 0.5, 0.75, 0.9 | +0.4 to +2.6 |
 | κ, value of being used | how much agents think publishing raises a lemma's use | 0, 0.5, 1, 2, 4 | +0.6 to +1.6 |
 | σ₀, perception noise | how noisily agents see the value of what they might attempt | 0, 0.5, 1, 2 | +0.3 to +1.6 |
@@ -164,11 +164,11 @@ Each cell: share of intermediate ideas published · hardest level reached.
 | θ, validation screen | 50% (this space) | 5.2 | 4.4 | +0.9 | 6.3 | 4.8 | 42% |
 | θ, validation screen | 75% | 5.6 | 4.5 | +1.1 | 6.8 | 5.1 | 42% |
 | θ, validation screen | 95% | 5.9 | 5.2 | +0.7 | 7.0 | 6.1 | 43% |
-| ρ, money follows earnings | 0% | 4.8 | 3.5 | +1.4 | 5.9 | 3.6 | 43% |
-| ρ, money follows earnings | 25% | 4.9 | 3.5 | +1.4 | 6.0 | 3.8 | 42% |
-| ρ, money follows earnings | 50% (this space) | 5.2 | 4.4 | +0.9 | 6.3 | 4.8 | 42% |
-| ρ, money follows earnings | 75% | 5.6 | 5.4 | +0.2 | 6.8 | 6.2 | 42% |
-| ρ, money follows earnings | 100% | 6.5 | 6.4 | +0.1 | 7.5 | 7.5 | 44% |
+| f, earnings shape next round's money | 0% | 4.8 | 3.5 | +1.4 | 5.9 | 3.6 | 43% |
+| f, earnings shape next round's money | 25% | 4.9 | 3.5 | +1.4 | 6.0 | 3.8 | 42% |
+| f, earnings shape next round's money | 50% (this space) | 5.2 | 4.4 | +0.9 | 6.3 | 4.8 | 42% |
+| f, earnings shape next round's money | 75% | 5.6 | 5.4 | +0.2 | 6.8 | 6.2 | 42% |
+| f, earnings shape next round's money | 100% | 6.5 | 6.4 | +0.1 | 7.5 | 7.5 | 44% |
 | ψ, scoop risk | 0 | 7.0 | 4.4 | +2.6 | 8.0 | 4.8 | 99% |
 | ψ, scoop risk | 0.25 | 5.8 | 4.4 | +1.4 | 7.0 | 4.8 | 58% |
 | ψ, scoop risk | 0.5 (this space) | 5.2 | 4.4 | +0.9 | 6.3 | 4.8 | 42% |
@@ -208,4 +208,4 @@ Each cell: share of intermediate ideas published · hardest level reached.
 npm run sim -- report lean-problem-set --seeds 100
 ```
 
-The space is [spaces/lean-problem-set.yaml](../../spaces/lean-problem-set.yaml) (written by hand from the Lean problem set's reference proofs). Every number above is in [data.json](data.json). Generated by the OSO simulator at commit `4bd670b+` (with uncommitted changes).
+The space is [spaces/lean-problem-set.yaml](../../spaces/lean-problem-set.yaml) (written by hand from the Lean problem set's reference proofs). Every number above is in [data.json](data.json). Generated by the OSO simulator at commit `94d7303+` (with uncommitted changes).

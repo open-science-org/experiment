@@ -1,7 +1,7 @@
 {
   "experiment": "simple-ideas-10x10-p2-5-len4g3-comp0-7-bounties-from-5-f0-5-scaling-20261024",
   "date": "2026-10-25",
-  "commit": "04dc47f",
+  "commit": "e0930a2",
   "dirty": false,
   "command": "npm run sim -- simple-ideas-10x10-p2-5-len4g3-comp0-7-bounties-from-5-f0-5-scaling-20261024 --seeds 30 --save",
   "seeds": 30,
@@ -37,7 +37,8 @@
         "rules": {
           "c": 0,
           "mint": 0,
-          "screen": 0
+          "screen": 0,
+          "mintPerBit": 1
         },
         "agents": {
           "mix": {
@@ -137,6 +138,9 @@
         "targetsSolved",
         "value",
         "roi",
+        "knowledge",
+        "knowledgePublished",
+        "knowledgePerMoney",
         "cost",
         "waste",
         "sharing",
@@ -172,7 +176,10 @@
         "lengthGrowth": 3,
         "composition": 0.7,
         "targets": 2,
-        "targetsFrom": 5
+        "targetsFrom": 5,
+        "bountyBase": 4,
+        "bountyGrowth": 2,
+        "attemptLimit": 24
       },
       "success": {
         "p0": 0.5,
@@ -283,6 +290,8 @@
         "alpha": 1,
         "c": 0,
         "mint": 0,
+        "mintPerBit": 1,
+        "alpha0": null,
         "screen": 0,
         "publishFailures": false,
         "visibility": {

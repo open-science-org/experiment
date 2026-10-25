@@ -28,13 +28,13 @@ Values are mean ± standard deviation over runs.
 
 | setting | frontier | reach L5 | speed | ROI (value per spend) | cost | spend | targets solved | breadth | waste | credit | sharing | gamer share of pay |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Traditional | 4.4 ± 1.2 | 0.44 | 31 ± 7 | 0.31 ± 0.29 | 303 ± 66 | 394 ± 14 | 4.8 ± 1.5 | 0.60 ± 0.19 | 0.53 ± 0.10 | 0.98 ± 0.04 | 0.01 ± 0.02 | 0.89 |
-| OSO (immediate) | 7.0 ± 0.0 | 1.00 | 13 ± 3 | 2.01 ± 0.50 | 125 ± 32 | 243 ± 59 | 8.0 ± 0.0 | 1.00 ± 0.00 | 0.78 ± 0.05 | 0.73 ± 0.06 | 1.00 ± 0.00 | 0.14 |
-| Flow-back, finished-only | 4.3 ± 1.1 | 0.48 | 33 ± 6 | 0.31 ± 0.30 | 327 ± 64 | 392 ± 19 | 4.9 ± 1.7 | 0.62 ± 0.21 | 0.55 ± 0.11 | 0.99 ± 0.03 | 0.01 ± 0.02 | 0.86 |
-| No flow-back, immediate | 7.0 ± 0.1 | 1.00 | 14 ± 4 | 1.98 ± 0.53 | 131 ± 39 | 246 ± 63 | 8.0 ± 0.1 | 1.00 ± 0.02 | 0.77 ± 0.06 | 0.59 ± 0.08 | 1.00 ± 0.00 | 0.15 |
-| No flow-back, choice | 4.9 ± 1.2 | 0.67 | 31 ± 7 | 0.49 ± 0.43 | 301 ± 74 | 386 ± 33 | 5.9 ± 1.4 | 0.73 ± 0.18 | 0.59 ± 0.13 | 0.84 ± 0.09 | 0.35 ± 0.05 | 0.68 |
-| OSO (choice) | 5.2 ± 1.2 | 0.76 | 28 ± 8 | 0.65 ± 0.60 | 273 ± 77 | 372 ± 54 | 6.3 ± 1.3 | 0.79 ± 0.17 | 0.62 ± 0.13 | 0.84 ± 0.08 | 0.42 ± 0.06 | 0.53 |
+| Traditional | 4.4 ± 1.2 | 0.44 | 31 ± 7 | 0.31 ± 0.29 | 303 ± 66 | 394 ± 14 | 4.8 ± 1.5 | 0.60 ± 0.19 | 0.77 ± 0.04 | 0.98 ± 0.04 | 0.01 ± 0.02 | 0.89 |
+| OSO (immediate) | 7.0 ± 0.0 | 1.00 | 13 ± 3 | 2.01 ± 0.50 | 125 ± 32 | 243 ± 59 | 8.0 ± 0.0 | 1.00 ± 0.00 | 0.21 ± 0.05 | 0.73 ± 0.06 | 1.00 ± 0.00 | 0.14 |
+| Flow-back, finished-only | 4.3 ± 1.1 | 0.48 | 33 ± 6 | 0.31 ± 0.30 | 327 ± 64 | 392 ± 19 | 4.9 ± 1.7 | 0.62 ± 0.21 | 0.77 ± 0.04 | 0.99 ± 0.03 | 0.01 ± 0.02 | 0.86 |
+| No flow-back, immediate | 7.0 ± 0.1 | 1.00 | 14 ± 4 | 1.98 ± 0.53 | 131 ± 39 | 246 ± 63 | 8.0 ± 0.1 | 1.00 ± 0.02 | 0.22 ± 0.06 | 0.59 ± 0.08 | 1.00 ± 0.00 | 0.15 |
+| No flow-back, choice | 4.9 ± 1.2 | 0.67 | 31 ± 7 | 0.49 ± 0.43 | 301 ± 74 | 386 ± 33 | 5.9 ± 1.4 | 0.73 ± 0.18 | 0.73 ± 0.06 | 0.84 ± 0.09 | 0.35 ± 0.05 | 0.68 |
+| OSO (choice) | 5.2 ± 1.2 | 0.76 | 28 ± 8 | 0.65 ± 0.60 | 273 ± 77 | 372 ± 54 | 6.3 ± 1.3 | 0.79 ± 0.17 | 0.68 ± 0.07 | 0.84 ± 0.08 | 0.42 ± 0.06 | 0.53 |
 
-Code: commit `ead6740` (with uncommitted changes). Experiment: [config/experiments/lean-tree.yaml](../../config/experiments/lean-tree.yaml). Command: `npm run sim -- lean-tree --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `79c260a` (with uncommitted changes). Experiment: [config/experiments/lean-tree.yaml](../../config/experiments/lean-tree.yaml). Command: `npm run sim -- lean-tree --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

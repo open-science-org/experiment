@@ -1,5 +1,5 @@
 {
- "ranAt": "2026-10-25T03:38:38.106Z",
+ "ranAt": "2026-10-25T06:41:13.024Z",
  "id": "example-narrow-stages",
  "kind": "field report",
  "date": "2026-10-25",
@@ -36,5 +36,5 @@
  ],
  "page": "reports/example-narrow-stages/card.md",
  "chart": "reports/example-narrow-stages/figures/frontier.svg",
- "modelVersion": 3
+ "modelVersion": 4
 }
