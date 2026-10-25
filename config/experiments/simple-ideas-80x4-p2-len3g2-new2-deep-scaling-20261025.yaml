@@ -1,0 +1,112 @@
+# Deep graph 2026-10-25: 80 levels
+id: simple-ideas-80x4-p2-len3g2-new2-deep-scaling-20261025
+title: "Deep graph: 80 levels, each step equally hard"
+description: "The simple model on a deep generated idea graph (80 levels × 4 ideas, 2 parents each;
+  every idea adds exactly 2 new bits to what it inherits, so each step is equally hard at any depth;
+  2 bounties on the top level). Held fixed: 12 identical agents, equal money every round (f = 0), no
+  flat mint, a knowledge reward of 1 per new bit flowing back with α, no validation."
+seeds: 30
+set:
+  world:
+    kind: ideas
+    levels: 80
+    width: 4
+    parents: 2
+    skip: 0.2
+    length: 3
+    lengthGrowth: 2
+    composition: 0.7
+    newBits: 2
+    targets: 2
+    targetsFrom: 0
+    bountyBase: 16
+    bountyGrowth: 1
+  budget:
+    X: 75
+    allocation:
+      rho: 0
+  measures:
+    targetLevel: 80
+  rules:
+    c: 0
+    mint: 0
+    screen: 0
+    mintPerBit: 1
+  agents:
+    mix:
+      foundation: 0
+      racer: 0
+      explorer: 0
+      specialist: 0
+      freeRider: 0
+      gamer: 0
+      plain: 12
+factors:
+  - name: society
+    levels:
+      - label: Traditional (α = 1, β = 0)
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: chance
+            beta: 0
+      - label: OSO (α = 0.8, β = 1)
+        set:
+          rules.alpha: 0.8
+          rules.visibility:
+            kind: chance
+            beta: 1
+      - label: OSO (α = 0.2, β = 1)
+        set:
+          rules.alpha: 0.2
+          rules.visibility:
+            kind: chance
+            beta: 1
+      - label: α = 0.8, β = 0.5
+        set:
+          rules.alpha: 0.8
+          rules.visibility:
+            kind: chance
+            beta: 0.5
+      - label: α = 1, β = 1
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: chance
+            beta: 1
+  - name: budget
+    path: budget.X
+    values:
+      - 512
+      - 1024
+      - 2048
+      - 4096
+      - 8192
+      - 16384
+      - 32768
+      - 65536
+      - 131072
+columns:
+  - frontier
+  - targetsSolved
+  - value
+  - roi
+  - knowledge
+  - knowledgePublished
+  - knowledgePerMoney
+  - cost
+  - waste
+  - sharing
+  - reachTarget
+question: On a graph 80 levels deep where every step is equally hard, how much money does each
+  society need, and does traditional research fall further behind as the chain of work gets longer?
+compare: five societies (traditional, OSO at α = 0.8 and 0.2, half-open, open without flow-back) × 9 budgets
+fixed: a deep generated graph (80 levels × 4, 2 new bits per step), 12 identical agents, equal
+  money, knowledge reward 1 per new bit, no validation
+tags:
+  - simulation
+  - simple model
+  - generated idea graph
+  - scaling
+  - deep graph 2026-10-25
+  - difficulty depth 80

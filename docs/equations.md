@@ -175,6 +175,7 @@ One generator makes idea graphs of any shape, with three groups of controls that
 | | skip | chance a parent comes from an older level instead of the level just below | 0.2 |
 | **Difficulty** | length $L_1$, growth $g$ | an idea at level $\ell$ is a sequence of $L_\ell = L_1 + g\,(\ell - 1)$ bits | 3, 2 |
 | **Attribution** | composition $\kappa$ | the share of an idea's bits that are pieces of its parents' sequences | 0.7 |
+| | new bits per idea $n$ (optional) | instead of $\kappa$: each idea inherits all but $n$ bits, so every step is equally hard at any depth (used for the deep-graph runs) | off |
 | Bounties | ideas with a bounty | how many top-level ideas carry one, of $B_0 \cdot 2^{\ell - 1}$ | 2 |
 
 **Building one idea** $x$ at level $\ell$: it takes $\kappa\,L_\ell$ bits from its parents, one contiguous piece from each in equal shares, and adds $L_\ell - \kappa L_\ell$ new bits of its own. Write $\text{bits}(x)$ for its set of bits.

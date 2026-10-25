@@ -298,6 +298,9 @@ export interface IdeasParams extends Record<string, unknown> {
   /** Attribution: the share of an idea's length made of pieces of its parents' sequences (0: none, 1: all
    *  it can). The rest are its own new bits. */
   composition: number;
+  /** Optional: new bits per idea (0 = off). An idea then inherits all but this many bits from its parents, so each
+   *  step is equally hard at any depth, instead of composition setting the share inherited. */
+  newBits?: number;
   /** Bounties: how many ideas on each bountied level carry one, the first level that has bounties (0 or the
    *  top level: the top only), and their size: bountyBase · bountyGrowth^(level − 1). */
   targets: number;
@@ -336,7 +339,8 @@ export function ideasWorld(params: IdeasParams, rng: Rng): World {
       }
       const parents = [...ps].sort((u, v) => u - v);
       // Inherited: composition × length bits, taken as one contiguous piece from each parent, in equal shares.
-      const want = parents.length ? Math.min(length - 1, Math.round(params.composition * length)) : 0;
+      // With newBits set, an idea inherits all but that many bits, so every step adds the same work at any depth.
+      const want = !parents.length ? 0 : (params.newBits ?? 0) > 0 ? Math.max(0, length - params.newBits!) : Math.min(length - 1, Math.round(params.composition * length));
       const inherited = new Set<number>();
       parents.forEach((y, j) => {
         const seq = bits[y];
@@ -346,7 +350,9 @@ export function ideasWorld(params: IdeasParams, rng: Rng): World {
         const start = rng.int(seq.length - take + 1);
         for (const b of seq.slice(start, start + take)) inherited.add(b);
       });
-      const own = Math.max(1, length - inherited.size);
+      // With newBits set, pieces that overlap leave the idea short: top up from the parents' other bits.
+      if ((params.newBits ?? 0) > 0) for (const y of parents) for (const b of bits[y]) if (inherited.size < want) inherited.add(b);
+      const own = (params.newBits ?? 0) > 0 && parents.length ? params.newBits! : Math.max(1, length - inherited.size);
       level.push(l); prereqs.push(parents);
       bits.push([...inherited, ...Array.from({ length: own }, () => nextBit++)]);
       byLevel[l].push(x);
@@ -378,6 +384,6 @@ export function ideasWorld(params: IdeasParams, rng: Rng): World {
 
 worlds.register<IdeasParams>('ideas', {
   description: 'A general idea graph: ideas are bit sequences, part pieces of their parents\' sequences (composition), part new; set structure (levels, width, parents, skip), difficulty (length, lengthGrowth) and attribution (composition) separately',
-  defaults: { levels: 6, width: 8, parents: 2, skip: 0.2, length: 3, lengthGrowth: 2, composition: 0.7, targets: 2, targetsFrom: 0, bountyBase: 4, bountyGrowth: 2, attemptLimit: 24 },
+  defaults: { levels: 6, width: 8, parents: 2, skip: 0.2, length: 3, lengthGrowth: 2, composition: 0.7, newBits: 0, targets: 2, targetsFrom: 0, bountyBase: 4, bountyGrowth: 2, attemptLimit: 24 },
   create: (params) => (_success, rng) => ideasWorld(params, rng),
 });

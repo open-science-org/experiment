@@ -411,3 +411,14 @@ test('the knowledge reward pays each new bit once, and alpha0 only moves who get
     assert.ok(Math.abs(r.totalEarnings - r.value - r.knowledgePublished) < 1e-6, `alpha0 ${a0}: ${r.totalEarnings} vs ${r.value} + ${r.knowledgePublished}`);
   }
 });
+
+test('with newBits set, every idea adds the same number of new bits at any depth', async () => {
+  const { ideasWorld } = await import('../src/engine/world.ts');
+  const { Rng } = await import('../src/engine/rng.ts');
+  const w = ideasWorld({ levels: 30, width: 3, parents: 2, skip: 0, length: 3, lengthGrowth: 2, composition: 0.7, newBits: 2, targets: 1, targetsFrom: 0, bountyBase: 4, bountyGrowth: 1, attemptLimit: 24 }, new Rng(3));
+  for (let x = 0; x < w.n; x++) {
+    if (!w.prereqs[x].length) continue;
+    const fromParents = new Set(w.prereqs[x].flatMap((y) => w.bits![y]));
+    assert.equal(w.bits![x].filter((b) => !fromParents.has(b)).length, 2, `idea ${x} at level ${w.level[x]}`);
+  }
+});

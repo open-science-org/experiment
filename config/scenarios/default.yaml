@@ -12,6 +12,7 @@ world:
   length: 3              # difficulty: new bits at level 1, and added per level
   lengthGrowth: 2
   composition: 0.7       # attribution: share of an idea's bits taken from its parents
+  newBits: 0             # optional: new bits per idea; it inherits the rest (0 = off, composition decides)
   targets: 2             # bounties per level, on levels targetsFrom to the top (0: the top only)
   targetsFrom: 0
   bountyBase: 4          # bounty = bountyBase · bountyGrowth^(level − 1)
