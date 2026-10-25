@@ -33,7 +33,7 @@ export function slopeOf(points: { budget: number; value: number }[]): number | n
   return xs.reduce((a, x, i) => a + (x - mx) * (ys[i] - my), 0) / xs.reduce((a, x) => a + (x - mx) ** 2, 0);
 }
 
-export function writeLadder(tag: string, order: string[]): string {
+export function writeLadder(tag: string, order: string[] = [], what = 'difficulty'): string {
   const ids = readdirSync(EXPERIMENTS_DIR).filter((f) => f.endsWith('.yaml')).map((f) => f.slice(0, -5))
     .filter((id) => (loadExperiment(id).tags ?? []).includes(tag) && existsSync(join(RESULTS_DIR, id, 'runs.jsonl')));
   if (!ids.length) throw new Error(`no finished experiments tagged "${tag}"`);
@@ -42,7 +42,8 @@ export function writeLadder(tag: string, order: string[]): string {
     const level = (spec.tags ?? []).find((t) => t.startsWith('difficulty '))?.slice('difficulty '.length) ?? id;
     const runs = readFileSync(join(RESULTS_DIR, id, 'runs.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l));
     return { id, title: spec.title, level, budgets: [...new Set(runs.map((r) => Number(r.budget)))].sort((a, b) => a - b), societies: [...new Set(runs.map((r) => String(r.society)))], runs };
-  }).sort((a, b) => order.indexOf(a.level) - order.indexOf(b.level));
+  // Named difficulties in the given order; numbered steps ("length growth 3") by their number.
+  }).sort((a, b) => (order.length ? order.indexOf(a.level) - order.indexOf(b.level) : parseFloat(a.level.replace(/^[^\d.]*/, '')) - parseFloat(b.level.replace(/^[^\d.]*/, ''))));
   const societies = sweeps[0].societies;
   // Per difficulty and society: share of targets solved and bounty value, by budget.
   const table = sweeps.map((s) => ({
@@ -62,7 +63,7 @@ export function writeLadder(tag: string, order: string[]): string {
   const sx = (i: number) => l + (i / Math.max(1, table.length - 1)) * pw, sy = (v: number) => tp + ph - ((L(v) - L(lo)) / (L(hi) - L(lo))) * ph;
   const colour = (so: string) => (/^Traditional/.test(so) ? '#2a78d6' : /^OSO/.test(so) ? '#eb6834' : '#8a8f98');
   const dash = (so: string, k: number) => (/^Traditional|^OSO/.test(so) ? '' : ['8 4', '2 4', '10 4 2 4'][k % 3]);
-  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" font-family="system-ui, sans-serif"><rect width="${W}" height="${H}" fill="#fff"/><text x="${l}" y="22" font-size="15" font-weight="700" fill="#1f1f1f">Money needed to solve half the targets, by difficulty</text>`;
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" font-family="system-ui, sans-serif"><rect width="${W}" height="${H}" fill="#fff"/><text x="${l}" y="22" font-size="15" font-weight="700" fill="#1f1f1f">Money needed to solve half the targets, by ${what}</text>`;
   for (let e = L(lo); e <= L(hi) + 1e-9; e++) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(10 ** e)}" y2="${sy(10 ** e)}" stroke="#e6e6e6"/><text x="${l - 8}" y="${sy(10 ** e) + 4}" text-anchor="end" font-size="11" fill="#6b6b6b">${(10 ** e).toLocaleString('en-US')}</text>`;
   table.forEach((t, i) => { svg += `<text x="${sx(i)}" y="${tp + ph + 18}" text-anchor="middle" font-size="12" fill="#2b2b2b">${t.level}</text>`; });
   svg += `<text x="${l + pw / 2}" y="${H - 4}" text-anchor="middle" font-size="11" fill="#6b6b6b">difficulty (budget on a log scale; a missing point: never got there within the sweep)</text>`;
@@ -92,8 +93,8 @@ export function writeLadder(tag: string, order: string[]): string {
   const md = (rs: Record<string, string>[]) => [`| ${Object.keys(rs[0]).join(' | ')} |`, `| ${Object.keys(rs[0]).map(() => '---').join(' | ')} |`, ...rs.map((r) => `| ${Object.values(r).join(' | ')} |`)].join('\n');
   writeCard(dir, {
     id, kind: 'simulation', date: new Date().toISOString().slice(0, 10), ranAt: new Date().toISOString(),
-    title: 'Scaling across difficulty',
-    design: { question: 'As problems get harder, how much more money does each society need, and does the gap between traditional and OSO grow?', compare: `${societies.length} societies on ${table.length} difficulties (${table.map((t) => t.level).join(', ')})`, fixed: 'the simple model: 12 identical agents, equal money each round, no mint, no validation', measure: 'money needed to solve half the targets', better: 'lower', runs: `from the sweeps tagged "${tag}"` },
+    title: what === 'difficulty' ? 'Scaling across difficulty' : `Scaling as ${what} changes`,
+    design: { question: what === 'difficulty' ? 'As problems get harder, how much more money does each society need, and does the gap between traditional and OSO grow?' : `As ${what} changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?`, compare: `${societies.length} societies on ${table.length} difficulties (${table.map((t) => t.level).join(', ')})`, fixed: 'the simple model: 12 identical agents, equal money each round, no mint, no validation', measure: 'money needed to solve half the targets', better: 'lower', runs: `from the sweeps tagged "${tag}"` },
     answer, table: rows, caveats: ['Read off between the two budgets that bracket half the targets, in log budget.', 'Each difficulty has its own budget range; "> x" means not reached within it.'],
     page: `results/${id}/summary.md`, chart: `results/${id}/figures/compare.svg`, tags: ['scaling', 'scaling law', 'difficulty', tag, 'analysis'],
   }, `**Log–log slope of bounty value against budget** (where value is above 0 and below 90% of its most; a slope of 1 means value grows in proportion to money):\n\n${md(slopes)}\n\nFrom: ${sweeps.map((s) => `[${s.title}](../${s.id}/summary.md)`).join(', ')}.`);

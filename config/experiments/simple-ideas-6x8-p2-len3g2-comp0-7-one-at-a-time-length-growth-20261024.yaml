@@ -1,0 +1,102 @@
+# One at a time 2026-10-24: length growth 2
+id: simple-ideas-6x8-p2-len3g2-comp0-7-one-at-a-time-length-growth-20261024
+title: Scaling, length growth 2 (else default)
+description: "The simple model on a generated idea graph (6 levels × 8 ideas, 2 parents each,
+  sequences of 3 bits growing by 2 per level, composition 0.7); each run draws its own graph. Only α
+  and β vary. Held fixed: 12 identical agents, a budget of 50 split equally every round (ρ = 0), no
+  mint, no validation."
+seeds: 20
+set:
+  world:
+    kind: ideas
+    levels: 6
+    width: 8
+    parents: 2
+    skip: 0.2
+    length: 3
+    lengthGrowth: 2
+    composition: 0.7
+    targets: 2
+    targetsFrom: 0
+  budget:
+    X: 50
+    allocation:
+      rho: 0
+  measures:
+    targetLevel: 6
+  rules:
+    c: 0
+    mint: 0
+    screen: 0
+  agents:
+    mix:
+      foundation: 0
+      racer: 0
+      explorer: 0
+      specialist: 0
+      freeRider: 0
+      gamer: 0
+      plain: 12
+factors:
+  - name: society
+    levels:
+      - label: Traditional (α = 1, β = 0)
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: chance
+            beta: 0
+      - label: OSO (α = 0.8, β = 1)
+        set:
+          rules.alpha: 0.8
+          rules.visibility:
+            kind: chance
+            beta: 1
+      - label: α = 0.8, β = 0.5
+        set:
+          rules.alpha: 0.8
+          rules.visibility:
+            kind: chance
+            beta: 0.5
+  - name: budget
+    path: budget.X
+    values:
+      - 50
+      - 100
+      - 200
+      - 400
+      - 800
+      - 1600
+      - 3200
+      - 6400
+      - 12800
+      - 25600
+      - 51200
+      - 102400
+columns:
+  - frontier
+  - targetsSolved
+  - value
+  - roi
+  - cost
+  - waste
+  - sharing
+  - reachTarget
+question: With length growth 2 and everything else as the default graph, how does what each society
+  achieves grow with its budget?
+compare: three societies × budgets 50 to 102400
+fixed: a generated idea graph (6 levels × 8 ideas, 2 parents each, sequences of 3 bits growing by 2
+  per level, composition 0.7), 12 identical agents, budget 50 split equally, no mint, no validation
+tags:
+  - simulation
+  - simple model
+  - generated idea graph
+  - ideas
+  - levels 6
+  - parents 2
+  - length 3
+  - composition 0.7
+  - alpha
+  - beta
+  - "one at a time 2026-10-24: length growth"
+  - difficulty length growth 2

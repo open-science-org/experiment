@@ -1,0 +1,59 @@
+{
+ "id": "scaling-across-difficulty-one-at-a-time-2026-10-24-composition",
+ "kind": "simulation",
+ "date": "2026-10-25",
+ "ranAt": "2026-10-25T01:47:02.840Z",
+ "title": "Scaling as composition changes",
+ "design": {
+  "question": "As composition changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?",
+  "compare": "3 societies on 4 difficulties (composition 0.5, composition 0.7, composition 0.85, composition 0.95)",
+  "fixed": "the simple model: 12 identical agents, equal money each round, no mint, no validation",
+  "measure": "money needed to solve half the targets",
+  "better": "lower",
+  "runs": "from the sweeps tagged \"one at a time 2026-10-24: composition\""
+ },
+ "answer": "To solve half the targets, traditional needs 5.9× to 7.2× the money OSO needs. By difficulty: composition 0.5 7.2×, composition 0.7 6.3×, composition 0.85 5.9×, composition 0.95 6.3×.",
+ "table": [
+  {
+   "difficulty": "composition 0.5",
+   "Traditional (α = 1, β = 0)": "4,257",
+   "OSO (α = 0.8, β = 1)": "592",
+   "α = 0.8, β = 0.5": "1,096",
+   "traditional ÷ OSO": "7.2×"
+  },
+  {
+   "difficulty": "composition 0.7",
+   "Traditional (α = 1, β = 0)": "2,046",
+   "OSO (α = 0.8, β = 1)": "323",
+   "α = 0.8, β = 0.5": "538",
+   "traditional ÷ OSO": "6.3×"
+  },
+  {
+   "difficulty": "composition 0.85",
+   "Traditional (α = 1, β = 0)": "1,307",
+   "OSO (α = 0.8, β = 1)": "221",
+   "α = 0.8, β = 0.5": "302",
+   "traditional ÷ OSO": "5.9×"
+  },
+  {
+   "difficulty": "composition 0.95",
+   "Traditional (α = 1, β = 0)": "1,102",
+   "OSO (α = 0.8, β = 1)": "174",
+   "α = 0.8, β = 0.5": "290",
+   "traditional ÷ OSO": "6.3×"
+  }
+ ],
+ "caveats": [
+  "Read off between the two budgets that bracket half the targets, in log budget.",
+  "Each difficulty has its own budget range; \"> x\" means not reached within it."
+ ],
+ "page": "results/scaling-across-difficulty-one-at-a-time-2026-10-24-composition/summary.md",
+ "chart": "results/scaling-across-difficulty-one-at-a-time-2026-10-24-composition/figures/compare.svg",
+ "tags": [
+  "scaling",
+  "scaling law",
+  "difficulty",
+  "one at a time 2026-10-24: composition",
+  "analysis"
+ ]
+}

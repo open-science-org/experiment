@@ -40,7 +40,7 @@ args.forEach((a, i) => {
   try { sets[path] = JSON.parse(text); } catch { sets[path] = text; }
 });
 const skip = new Set<number>();
-args.forEach((a, i) => { if (a === '--seeds' || a === '--set') skip.add(i + 1); });
+args.forEach((a, i) => { if (a === '--seeds' || a === '--set' || a === '--what') skip.add(i + 1); });
 const target = args.find((a, i) => !a.startsWith('--') && !skip.has(i));
 const resultsDir = RESULTS_DIR;
 const experimentIds = readdirSync(EXPERIMENTS_DIR).filter((f) => f.endsWith('.yaml')).map((f) => f.slice(0, -5)).sort();
@@ -68,7 +68,8 @@ if (target === 'ladder') {
   // Scaling across difficulty, from budget sweeps sharing a tag: npm run sim -- ladder "<tag>".
   if (!second) throw new Error('usage: npm run sim -- ladder "<tag of the sweeps>"');
   const { writeLadder } = await import('./report/ladder.ts');
-  console.log(`${writeLadder(second, ['easy', 'default', 'medium', 'hard', 'very hard'])}/summary.md`);
+  const what = args[args.indexOf('--what') + 1] && args.includes('--what') ? args[args.indexOf('--what') + 1] : 'difficulty';
+  console.log(`${writeLadder(second, what === 'difficulty' ? ['easy', 'default', 'medium', 'hard', 'very hard'] : [], what)}/summary.md`);
   process.exit(0);
 }
 

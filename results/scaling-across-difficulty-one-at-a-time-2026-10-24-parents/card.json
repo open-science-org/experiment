@@ -1,0 +1,59 @@
+{
+ "id": "scaling-across-difficulty-one-at-a-time-2026-10-24-parents",
+ "kind": "simulation",
+ "date": "2026-10-25",
+ "ranAt": "2026-10-25T01:47:02.626Z",
+ "title": "Scaling as parents changes",
+ "design": {
+  "question": "As parents changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?",
+  "compare": "3 societies on 4 difficulties (parents 1, parents 2, parents 3, parents 4)",
+  "fixed": "the simple model: 12 identical agents, equal money each round, no mint, no validation",
+  "measure": "money needed to solve half the targets",
+  "better": "lower",
+  "runs": "from the sweeps tagged \"one at a time 2026-10-24: parents\""
+ },
+ "answer": "To solve half the targets, traditional needs 4.4× to 6.9× the money OSO needs. By difficulty: parents 1 4.4×, parents 2 6.3×, parents 3 6.9×, parents 4 6.5×.",
+ "table": [
+  {
+   "difficulty": "parents 1",
+   "Traditional (α = 1, β = 0)": "1,029",
+   "OSO (α = 0.8, β = 1)": "235",
+   "α = 0.8, β = 0.5": "400",
+   "traditional ÷ OSO": "4.4×"
+  },
+  {
+   "difficulty": "parents 2",
+   "Traditional (α = 1, β = 0)": "2,046",
+   "OSO (α = 0.8, β = 1)": "323",
+   "α = 0.8, β = 0.5": "538",
+   "traditional ÷ OSO": "6.3×"
+  },
+  {
+   "difficulty": "parents 3",
+   "Traditional (α = 1, β = 0)": "2,288",
+   "OSO (α = 0.8, β = 1)": "332",
+   "α = 0.8, β = 0.5": "579",
+   "traditional ÷ OSO": "6.9×"
+  },
+  {
+   "difficulty": "parents 4",
+   "Traditional (α = 1, β = 0)": "2,363",
+   "OSO (α = 0.8, β = 1)": "362",
+   "α = 0.8, β = 0.5": "592",
+   "traditional ÷ OSO": "6.5×"
+  }
+ ],
+ "caveats": [
+  "Read off between the two budgets that bracket half the targets, in log budget.",
+  "Each difficulty has its own budget range; \"> x\" means not reached within it."
+ ],
+ "page": "results/scaling-across-difficulty-one-at-a-time-2026-10-24-parents/summary.md",
+ "chart": "results/scaling-across-difficulty-one-at-a-time-2026-10-24-parents/figures/compare.svg",
+ "tags": [
+  "scaling",
+  "scaling law",
+  "difficulty",
+  "one at a time 2026-10-24: parents",
+  "analysis"
+ ]
+}
