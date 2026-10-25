@@ -43,4 +43,4 @@ The same as the full model ([section 11](equations.md#11-measures)): the hardest
 
 ## What to expect
 
-With money split equally and every agent the same, $\alpha$ changes who is paid, and only slightly what agents choose to attempt, so $\beta$ decides how far a society gets. $\alpha$ matters again once money follows earnings ($f > 0$), or when agents choose whether to publish ([full model, section 9](equations.md#9-choosing-whether-to-share-where-β-comes-from)), where $\beta$ comes out of $\alpha$.
+With money split equally and every agent the same, $\alpha$ changes who is paid, and only slightly what agents choose to attempt, so $\beta$ decides how far a society gets. $\alpha$ matters again once earnings shape next round's money ($f > 0$), or when agents choose whether to publish ([full model, section 9](equations.md#9-choosing-whether-to-share-where-β-comes-from)), where $\beta$ comes out of $\alpha$.

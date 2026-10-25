@@ -79,7 +79,7 @@ export const SENSITIVITY: SensitivityParam[] = [
   { id: 'c', label: 'c, cited share of the mint', meaning: 'share of each new mint paid to the ideas it built on', path: 'rules.c', values: [0, 0.05, 0.15, 0.3, 0.5], group: 'market', osoOnly: true, format: pctFmt },
   { id: 'mint', label: 'mint per idea', meaning: 'tokens minted for each validated idea, relative to bounties (the smallest bounty is a few units)', path: 'rules.mint', values: [0, 0.5, 1, 2, 4], group: 'market' },
   { id: 'screen', label: 'θ, validation screen', meaning: 'chance validators reject a trivial idea', path: 'rules.screen', values: [0, 0.25, 0.5, 0.75, 0.95], group: 'market', format: pctFmt },
-  { id: 'rho', label: 'f, funding: money follows earnings', meaning: 'share of each round\'s money funders give by recent earnings rather than equally', path: 'budget.allocation.rho', values: [0, 0.25, 0.5, 0.75, 1], group: 'market', format: pctFmt },
+  { id: 'rho', label: 'f, earnings shape next round\'s money', meaning: 'share of each round\'s money funders give by recent earnings rather than equally', path: 'budget.allocation.rho', values: [0, 0.25, 0.5, 0.75, 1], group: 'market', format: pctFmt },
   { id: 'psi', label: 'ψ, scoop risk', meaning: 'how likely agents think a shared lemma lets a rival take the target', path: 'behaviour.psi', values: [0, 0.25, 0.5, 0.75, 0.9], group: 'guess' },
   { id: 'kappa', label: 'κ, value of being used', meaning: 'how much agents think publishing raises a lemma\'s use', path: 'behaviour.kappa', values: [0, 0.5, 1, 2, 4], group: 'guess' },
   { id: 'noise', label: 'σ₀, perception noise', meaning: 'how noisily agents see the value of what they might attempt', path: 'behaviour.perceptionNoise', values: [0, 0.5, 1, 2], group: 'guess' },

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 615" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-label="One round as a loop of six steps. 1 Money: each agent gets money_i, part equal and part by recent earnings, weighted by f. 2 Choose what to attempt: the idea with the best score U. 3 Try: success chance pi = s times p, number of attempts money over k. 4 Share or keep: publish if the gain beats the scoop risk. 5 Rewards: the mint and the bounty; the author keeps alpha, the absorption rate, and 1 minus alpha flows back to the ideas it built on; traditional alpha 1 and c 0, OSO alpha 0.8 and c 0.15. 6 Earnings: recent earnings E bar, which feed the next round's money through f. An inner dashed loop: expected flow-back changes what agents choose to try and whether they share.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 615" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-label="One round as a loop of six steps. 1 Money: each agent gets money_i, part equal and part by recent earnings, weighted by f. 2 Choose what to attempt: the idea with the best score U. 3 Try: success chance pi = s times p, number of attempts money over k. 4 Share or keep: publish if the gain beats the scoop risk. 5 Rewards: the mint and the bounty; the author keeps alpha, the absorption rate, and 1 minus alpha flows back to the ideas it built on; traditional alpha 1 and c 0, OSO alpha 0.8 and c 0.15. 6 Earnings: earnings E, which feed the next round's money through f. An inner dashed loop: expected flow-back changes what agents choose to try and whether they share.">
   <defs>
     <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6b6b6b"/></marker>
     <marker id="arrInk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2b2b2b"/></marker>
@@ -35,19 +35,19 @@
 
   <!-- formulas -->
   <g font-size="14.5" font-style="italic" font-family="Georgia, 'Times New Roman', serif" fill="#2b2b2b">
-    <text x="46" y="88">moneyᵢ = Budget/R · [ (1−f)/N + f Ēᵢ/ΣĒ ]</text>
+    <text x="46" y="88">moneyᵢ = Budget/R · [ (1−f)/N + f Eᵢ/ΣE ]</text>
     <text x="341" y="88">pick the x with the best Uᵢ,ₓ</text>
     <text x="636" y="88">πᵢ,ₓ = min(1, sᵢ pₓ)</text>
     <text x="636" y="398">share if gain ≥ scoop risk</text>
     <text x="341" y="398">idea absorbs α, 1−α flows back</text>
-    <text x="46" y="398">Ēᵢ ← 0.7 Ēᵢ + 0.3 × earned</text>
+    <text x="46" y="398">Eᵢ ← 0.7 Eᵢ + 0.3 × earned</text>
   </g>
 
   <!-- symbols in each step -->
   <g font-size="12" fill="#4a4a4a">
     <text x="46" y="116">Budget, R: total money, rounds</text>
-    <text x="46" y="134">N: agents · Ēᵢ: recent earnings</text>
-    <text x="46" y="152"><tspan font-weight="700" fill="#2b2b2b">f</tspan>: how far money follows earnings</text>
+    <text x="46" y="134">N: agents · Eᵢ: earnings</text>
+    <text x="46" y="152"><tspan font-weight="700" fill="#2b2b2b">f</tspan>: how much earnings shape next round</text>
     <text x="46" y="170">0 equal · 0.5 default · 1 all by earnings</text>
 
     <text x="341" y="116">Vᵢ,ₓ: worth = mint + bounty + flow-back</text>
