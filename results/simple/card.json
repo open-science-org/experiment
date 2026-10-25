@@ -1,8 +1,8 @@
 {
  "id": "simple",
  "kind": "simulation",
- "date": "2026-10-23",
- "title": "The simple model: one chain, shared vs. hidden progress",
+ "date": "2026-10-25",
+ "title": "The one-chain check: shared vs. hidden progress",
  "design": {
   "question": "Does the simulator match the exact mathematics of shared against hidden progress?",
   "compare": "progress shared or hidden, for communities of 1 to 16 agents",
@@ -63,5 +63,6 @@
   "A simulation with guessed parameters: it shows how the rules play out, not that they work."
  ],
  "page": "results/simple/summary.md",
- "modelVersion": 3
+ "ranAt": "2026-10-25T17:10:42.572Z",
+ "modelVersion": 5
 }
