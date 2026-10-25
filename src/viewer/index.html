@@ -439,11 +439,11 @@ const overviewData = async () => (OV ??= await api('/api/overview'));
 async function route() {
   const path = location.hash.slice(1).split('?')[0] || '/';
   // Old links still work.
-  const old = { '/design': '/new', '/community': '/live?tab=ai', '/replay': '/live?tab=sim', '/pilot': '/live?tab=attempts', '/experiments': '/' };
+  const old = { '/runs/history': '/runs', '/history': '/runs', '/runs/live': '/live', '/design': '/new', '/community': '/live?tab=ai', '/replay': '/live?tab=sim', '/pilot': '/live?tab=attempts', '/experiments': '/' };
   if (old[path]) { const q = location.hash.split('?')[1]; location.hash = '#' + old[path] + (q ? (old[path].includes('?') ? '&' : '?') + q : ''); return; }
   const top = '/' + (path.split('/')[1] ?? '');
   for (const a of document.querySelectorAll('nav.side a')) {
-    const isEq = top === '/equations' || /^\/doc\/docs\/equations(-simple)?\.md$/.test(path);
+    const isEq = top === '/equations' || /^\/doc\/docs\/equations(-simple|-steps)?\.md$/.test(path);
     const isHow = !isEq && (top === '/how' || (top === '/doc' && /^\/doc\/(docs\/|README\.md|lean\/)/.test(path)));
     const isRuns = ['/', '/runs', '/live'].includes(top) || (top === '/doc' && !isEq && !isHow);
     const here = isEq ? a.getAttribute('href') === '#/equations' : isHow ? a.getAttribute('href') === '#/how' : isRuns ? a.getAttribute('href') === '#/runs' : a.getAttribute('href') === '#' + top;
@@ -1551,10 +1551,10 @@ function legend() {
   const node = (fill, stroke, dash = '') => `<svg width="16" height="16"><circle cx="8" cy="8" r="6" fill="${fill}" stroke="${stroke}" stroke-width="2" ${dash}/></svg>`;
   $('sim-legend').innerHTML = [
     `<span>${node('var(--surface)', 'var(--ink-3)')}not proved yet</span>`,
-    `<span>${node('var(--s1-soft)', 'var(--s1)')}proved, but kept hidden (number = how many agents hold it)</span>`,
-    `<span>${node('var(--s1)', 'var(--s1)')}published: anyone can build on it</span>`,
+    `<span>${node('color-mix(in srgb, var(--ink-2) 22%, var(--surface))', 'var(--ink-2)')}proved, but kept hidden (number = how many agents hold it)</span>`,
+    `<span>${node('var(--ink-2)', 'var(--ink-2)')}published: anyone can build on it (each panel in its society's colour: traditional blue, OSO orange)</span>`,
     `<span><svg width="16" height="16"><polygon points="8,1 10,6 15,6 11,9 12.5,15 8,11.5 3.5,15 5,9 1,6 6,6" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.2"/></svg>target (with bounty)</span>`,
-    `<span><svg width="20" height="16"><circle cx="10" cy="8" r="7" fill="none" stroke="var(--s2)" stroke-width="2"/></svg>attempted this round (dashed: every attempt failed)</span>`,
+    `<span><svg width="20" height="16"><circle cx="10" cy="8" r="7" fill="none" stroke="var(--ink)" stroke-width="2"/></svg>attempted this round (dashed: every attempt failed)</span>`,
     `<span><svg width="20" height="16"><circle cx="10" cy="8" r="6" fill="var(--surface)" stroke="var(--ink-3)" stroke-width="1.6"/><path d="M10 1 A7 7 0 0 1 17 8" fill="none" stroke="var(--ink)" stroke-width="2.4"/></svg>bits resolved by the agent closest to it (generated graphs)</span>`,
     `<span><svg width="24" height="16"><line x1="2" y1="8" x2="22" y2="8" stroke="var(--flow)" stroke-width="3"/></svg><b style="color:var(--flow)">flow-back</b>: a bounty paid this round, and what reached each idea</span>`,
   ].join('');
@@ -1639,26 +1639,30 @@ function drawPane(pane, t) {
   const pubN = [...s.published].filter((a) => a >= 0).length;
   const hiddenN = s.hidden.filter((h) => h > 0).length;
   const done = t >= snaps.length - 1;
+  // The panel's colour is its society's: traditional blue, OSO (or agents choosing with flow-back) orange, others grey.
+  const lab = run.setting.label, am = /α = ([\d.]+)/.exec(lab);
+  const acc = /^Traditional/.test(lab) ? 'var(--s1)' : /^OSO/.test(lab) || (/^Agents choose/.test(lab) && am && Number(am[1]) < 1) ? 'var(--s2)' : 'var(--ink-2)';
+  const soft = `color-mix(in srgb, ${acc} 22%, var(--surface))`;
   let svg = `<svg class="tree" viewBox="0 0 ${lay.W} ${lay.H}" role="img" aria-label="Research tree for ${esc(run.setting.label)} at round ${t}">`;
   for (let r = 0; r < w.n; r++) for (const j of w.prereqs[r]) {
     const on = s.published[j] >= 0 && s.published[r] >= 0;
-    svg += `<line x1="${lay.pos[j][0]}" y1="${lay.pos[j][1]}" x2="${lay.pos[r][0]}" y2="${lay.pos[r][1]}" stroke="${on ? 'var(--s1)' : 'var(--line)'}" stroke-width="${on ? 1.4 : 1}" stroke-opacity="${on ? 0.6 : 1}"/>`;
+    svg += `<line x1="${lay.pos[j][0]}" y1="${lay.pos[j][1]}" x2="${lay.pos[r][0]}" y2="${lay.pos[r][1]}" stroke="${on ? acc : 'var(--line)'}" stroke-width="${on ? 1.4 : 1}" stroke-opacity="${on ? 0.6 : 1}"/>`;
   }
   for (let r = 0; r < w.n; r++) {
     const [x, y] = lay.pos[r];
     const pub = s.published[r] >= 0, hid = s.hidden[r] > 0;
-    const fill = pub ? 'var(--s1)' : hid ? 'var(--s1-soft)' : 'var(--surface)';
-    const stroke = pub || hid ? 'var(--s1)' : 'var(--ink-3)';
+    const fill = pub ? acc : hid ? soft : 'var(--surface)';
+    const stroke = pub || hid ? acc : 'var(--ink-3)';
     const tip = `${name(run, r)} · level ${w.level[r]}${w.bits ? ` · sequence ${w.bits[r].map((b) => w.tosses?.[b] ?? '·').join('')}` : ''} · chance per attempt ${(w.p[r] * 100).toFixed(1)}%${w.isTarget[r] ? ` · target, bounty ${w.bounty[r]}` : ''}${pub ? ` · published by agent ${s.published[r] + 1}` : hid ? ` · held privately by ${s.hidden[r]} agent(s)` : ''}`;
     const tr = s.tried.get(r);
-    if (tr) svg += `<circle cx="${x}" cy="${y}" r="${w.isTarget[r] ? 13 : 10}" fill="none" stroke="var(--s2)" stroke-width="2" ${tr.ok ? '' : 'stroke-dasharray="3 2"'}/>`;
+    if (tr) svg += `<circle cx="${x}" cy="${y}" r="${w.isTarget[r] ? 13 : 10}" fill="none" stroke="var(--ink)" stroke-width="2" ${tr.ok ? '' : 'stroke-dasharray="3 2"'}/>`;
     if (w.isTarget[r]) {
       const pts = Array.from({ length: 10 }, (_, k) => { const a = -Math.PI / 2 + k * Math.PI / 5, rad = k % 2 ? 4 : 9; return `${(x + rad * Math.cos(a)).toFixed(1)},${(y + rad * Math.sin(a)).toFixed(1)}`; }).join(' ');
-      svg += `<polygon points="${pts}" fill="${fill}" stroke="${pub ? 'var(--s1)' : 'var(--ink)'}" stroke-width="1.3"><title>${esc(tip)}</title></polygon>`;
+      svg += `<polygon points="${pts}" fill="${fill}" stroke="${pub ? acc : 'var(--ink)'}" stroke-width="1.3"><title>${esc(tip)}</title></polygon>`;
     } else {
       svg += `<circle cx="${x}" cy="${y}" r="6" fill="${fill}" stroke="${stroke}" stroke-width="1.6"><title>${esc(tip)}</title></circle>`;
     }
-    if (hid && !pub) svg += `<text x="${x}" y="${y + 3.5}" text-anchor="middle" font-size="9" font-weight="700" fill="var(--s1)">${s.hidden[r]}</text>`;
+    if (hid && !pub) svg += `<text x="${x}" y="${y + 3.5}" text-anchor="middle" font-size="9" font-weight="700" fill="${acc}">${s.hidden[r]}</text>`;
     // Generated graphs: an arc shows the share of the idea's bits the closest agent has resolved.
     if (s.res && !pub && s.res[r] > 0 && s.res[r] < 1) {
       const R = w.isTarget[r] ? 12 : 9, a = 2 * Math.PI * s.res[r], x1 = x + R * Math.sin(a), y1 = y - R * Math.cos(a);
@@ -1677,7 +1681,7 @@ function drawPane(pane, t) {
   const b = s.beta ?? { proved: 0, atOnce: 0 };
   const roundLine = `<p class="muted" style="margin:4px 0">This round: ${b.proved ? `<b>${b.atOnce} of ${b.proved}</b> new intermediate ideas published at once (β ≈ ${(b.atOnce / b.proved).toFixed(2)})` : 'no new intermediate ideas'}${s.flowed ? ` · <b style="color:var(--flow)">${s.flowed.toFixed(1)}</b> flowed back` : ''}</p>`;
   const maxE = Math.max(1e-9, ...s.earnings);
-  const agents = run.agents.map((a) => `<tr><td>${a.id + 1}</td><td>${esc(a.archetype)}</td><td>${s.proved[a.id]}</td><td>${s.pubs[a.id]}</td><td style="width:40%"><div class="meter" style="width:${(100 * s.earnings[a.id] / maxE).toFixed(1)}%" title="${s.earnings[a.id].toFixed(1)}"></div></td><td>${s.earnings[a.id].toFixed(0)}</td></tr>`).join('');
+  const agents = run.agents.map((a) => `<tr><td>${a.id + 1}</td><td>${esc(a.archetype)}</td><td>${s.proved[a.id]}</td><td>${s.pubs[a.id]}</td><td style="width:40%"><div class="meter" style="background:${acc};width:${(100 * s.earnings[a.id] / maxE).toFixed(1)}%" title="${s.earnings[a.id].toFixed(1)}"></div></td><td>${s.earnings[a.id].toFixed(0)}</td></tr>`).join('');
   el.innerHTML = `<h2>${esc(run.setting.label)}${done ? ' <span class="muted">· run ended</span>' : ''}</h2>
     <div class="stats">
       <div class="stat">Money spent<b>${s.spend.toFixed(0)}<span class="muted"> / ${run.budget.X}</span></b></div>

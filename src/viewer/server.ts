@@ -108,6 +108,8 @@ function replayOf(sc: ReturnType<typeof loadScenario>, seed: number, label: stri
 function resultData(id: string) {
   if (!/^[\w.-]+$/.test(id) || !existsSync(join(ROOT, 'config', 'experiments', `${id}.yaml`)) || !existsSync(join(RESULTS_DIR, id, 'runs.jsonl'))) return { ok: false };
   const spec = loadExperiment(id);
+  // An experiment with its own analysis (the one-chain check) answers with its own table, not these charts.
+  if (spec.analysis) return { ok: false };
   const rows = expand(spec);
   const keys = Object.keys(rows[0]?.labels ?? {});
   const label = (labels: Record<string, unknown>) => keys.map((k) => (typeof labels[k] === 'number' ? `${k.split(',')[0]} ${labels[k]}` : String(labels[k]).replace(/^OSO \(immediate\)$/, 'OSO'))).join(', ') || 'all';
