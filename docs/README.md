@@ -6,18 +6,18 @@
 
 | | Simulation | AI models |
 | --- | --- | --- |
-| The ideas | made-up ideas in a tree | real theorems in Lean |
+| The ideas | made-up ideas in a generated graph | real theorems in Lean |
 | Who does the work | simple formula agents | AI models (Claude, GPT, DeepSeek, …) |
 | Does an attempt work? | a dice roll | Lean checks the proof |
 | Cost | free, 100 runs in seconds | real money per call |
 
 **The two sets of rules:**
 - **Traditional:** ideas stay private until a big piece of work is finished. The author keeps all the credit.
-- **OSO:** every idea is published at once. Each idea absorbs a share α of the credit for its author (0.8), called the absorption rate; the rest flows back to the ideas it built on.
+- **OSO:** every idea is published at once. Each idea keeps a share α of the credit for its author (0.8), called the absorption rate; the rest flows back to the ideas it built on.
 
-**What a test measures:** how far the team gets (the hardest idea found), how many targets it solves, and how much money that takes.
+**What a test measures:** how far the team gets (the hardest idea found), the bounties it wins, the knowledge it finds (in bits), the money that takes, and how much is wasted on repeated work.
 
-**Every test is planned before it runs:** the question, what is compared, what stays the same, and the one main number. The answer is worked out from that number, never written by hand.
+**Every test is planned before it runs:** the question, what is compared and what stays the same. The answer is worked out from every measure, never written by hand.
 
 ## Words
 
@@ -43,9 +43,8 @@ One word for each idea, used everywhere in this repository.
 
 - [Equations](equations.md): every rule as a formula, on one page.
 - [Model versions](model-versions.md): what changed in each version of the model; every result records the version it ran on.
-- [The full design](design.md): every part defined once, for both kinds of test.
-- [Not yet measured](design.md#12-not-yet-measured): what the tests still use a stand-in or a guess for.
-- [The simulation in detail](simulator.md): the agents, one round step by step, how agents decide, and what the results say.
+- [The design](design.md): the question, the rules compared, validity, plans, and what is [not yet measured](design.md#not-yet-measured).
+- [Code guide](simulator.md): where the model lives in the code, configuration, plugins and tests.
 - [The default settings](../config/scenarios/default.yaml), each with a comment.
 - [The Lean problems](../lean/README.md): the AI-model tests.
 - [The repository](../README.md): commands, layout and the app.

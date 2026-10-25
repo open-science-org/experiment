@@ -493,9 +493,9 @@ export { parse as parseYaml };
 
 /**
  * The simple model: only α (absorption rate) and β (chance an intermediate idea is published at once) vary.
- * Everything else is held fixed: 12 identical agents, equal money every round (f = 0), no mint (m = 0, so
- * bounties are the only value), no validation (θ = 0; no agent games, so nothing trivial is submitted),
- * and the topic's own idea graph and bounties.
+ * Everything else is held fixed: 12 identical agents, equal money every round (f = 0), no flat mint (m = 0)
+ * but a knowledge reward of 1 per new bit flowing back with α, no validation (θ = 0; no agent games), and the
+ * chosen idea graph and bounties.
  */
 /** The generator's controls (world kind 'ideas'): structure, difficulty and attribution. */
 export interface GraphControls { levels: number; width: number; parents: number; skip: number; length: number; lengthGrowth: number; composition: number; targets: number; targetsFrom: number }
@@ -571,7 +571,7 @@ export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
   return {
     id: d.id,
     title: d.title || d.question || `Simple model on ${space.spec.title}: α × β`,
-    description: `The simple model on the field "${space.spec.title}" (spaces/${d.space}.yaml): only α and β vary. Held fixed: ${SIMPLE_AGENTS} identical agents, equal money every round (f = 0), no mint (m = 0), no validation (θ = 0), the field's idea graph and bounties.`,
+    description: `The simple model on the field "${space.spec.title}" (spaces/${d.space}.yaml): only α and β vary. Held fixed: ${SIMPLE_AGENTS} identical agents, equal money every round (f = 0), no flat mint (m = 0), a knowledge reward of 1 per new bit flowing back with α, no validation (θ = 0), the field's idea graph and bounties.`,
     seeds: d.seeds,
     ...(space.spec.scenarioFile ? { scenario: space.spec.scenarioFile } : {}),
     set: merge(merge(expandPaths(space.spec.scenario ?? {}), expandPaths(SIMPLE_FIXED)), { agents: { mix } }) as Record<string, unknown>,
@@ -579,7 +579,7 @@ export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
     columns: ['frontier', 'targetsSolved', 'value', 'roi', 'knowledge', 'knowledgePublished', 'knowledgePerMoney', 'cost', 'waste', 'sharing', 'reachTarget'],
     question: d.question || `On ${space.spec.title}, how far does a society get for the same money, by α and β?`,
     compare: `α in {${d.alphas.join(', ')}} × β in {${d.betas.join(', ')}}`,
-    fixed: `the field "${space.spec.title}", ${SIMPLE_AGENTS} identical agents, equal money each round, no mint, no validation`,
+    fixed: `the field "${space.spec.title}", ${SIMPLE_AGENTS} identical agents, equal money each round, no flat mint, knowledge reward 1 per new bit, no validation`,
     tags: simpleTags(d, space.spec.title),
   };
 }
@@ -598,14 +598,14 @@ function simpleOnGraph(d: SimpleDesign, g: GraphControls): ExperimentSpec {
   return {
     id: d.id,
     title: d.title || d.question || `Simple model on a generated idea graph: α × β`,
-    description: `The simple model on a generated idea graph (${graphText(g)}); each run draws its own graph. Only α and β vary. Held fixed: ${SIMPLE_AGENTS} identical agents, a budget of ${budget} split equally every round (f = 0), no mint, no validation.`,
+    description: `The simple model on a generated idea graph (${graphText(g)}); each run draws its own graph. Only α and β vary. Held fixed: ${SIMPLE_AGENTS} identical agents, a budget of ${budget} split equally every round (f = 0), no flat mint, a knowledge reward of 1 per new bit flowing back with α, no validation.`,
     seeds: d.seeds,
     set: merge(expandPaths({ world: { kind: 'ideas', ...g }, 'budget.X': budget, 'measures.targetLevel': g.levels, ...SIMPLE_FIXED }), { agents: { mix } }) as Record<string, unknown>,
     factors: [{ name: 'society', levels: societies(d) }],
     columns: ['frontier', 'targetsSolved', 'value', 'roi', 'knowledge', 'knowledgePublished', 'knowledgePerMoney', 'cost', 'waste', 'sharing', 'reachTarget'],
     question: d.question || `On a generated idea graph${presetTitle(d.preset) ? ` (from the ${presetTitle(d.preset)} preset)` : ''}, how far does a society get for the same money, by α and β?`,
     compare: `α in {${d.alphas.join(', ')}} × β in {${d.betas.join(', ')}}`,
-    fixed: `a generated idea graph (${graphText(g)}), ${SIMPLE_AGENTS} identical agents, budget ${budget} split equally, no mint, no validation`,
+    fixed: `a generated idea graph (${graphText(g)}), ${SIMPLE_AGENTS} identical agents, budget ${budget} split equally, no flat mint, knowledge reward 1 per new bit, no validation`,
     tags: ['simulation', 'simple model', 'generated idea graph', 'ideas', `levels ${g.levels}`, `parents ${g.parents}`, `length ${g.length}`, `composition ${g.composition}`, 'alpha', 'beta'],
   };
 }

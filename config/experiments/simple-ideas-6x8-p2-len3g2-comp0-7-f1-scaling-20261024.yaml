@@ -28,6 +28,7 @@ set:
     c: 0
     mint: 0
     screen: 0
+    mintPerBit: 1
   agents:
     mix:
       foundation: 0
@@ -92,6 +93,9 @@ columns:
   - targetsSolved
   - value
   - roi
+  - knowledge
+  - knowledgePublished
+  - knowledgePerMoney
   - cost
   - waste
   - sharing

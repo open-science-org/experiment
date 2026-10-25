@@ -367,7 +367,7 @@ It is the **sharing** measure on the result cards. Measured on the default field
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | $\beta$ | 0.23 | 0.22 | 0.25 | 0.28 | 0.34 | 0.47 | 0.63 | 0.77 |
 
-Even with no flow-back ($\alpha = 1$), about a quarter of ideas are published: dead ends (no bounty after them, so nothing to be scooped and the whole mint lost by waiting) and agents with high openness. $\beta$ rises steeply only once $\alpha \le 0.4$, because the scoop risk is the whole bounty after $x$, while the flow-back to an intermediate idea is only a share of it. Everything here rests on $\psi$, which is a guess (see [not yet measured](design.md#12-not-yet-measured)).
+Even with no flow-back ($\alpha = 1$), about a quarter of ideas are published: dead ends (no bounty after them, so nothing to be scooped and the whole mint lost by waiting) and agents with high openness. $\beta$ rises steeply only once $\alpha \le 0.4$, because the scoop risk is the whole bounty after $x$, while the flow-back to an intermediate idea is only a share of it. Everything here rests on $\psi$, which is a guess (see [not yet measured](design.md#not-yet-measured)).
 
 ## 10. Sharing and its costs
 
@@ -425,4 +425,4 @@ $$w_{y \to x} = \frac{\text{spent}_y}{\sum_{y' \to x} \text{spent}_{y'}}$$
 - **Choices** (what to attempt, whether to pass) are the models' own, not the formulas of sections 8 and 9. Sharing is set by the rules: traditional publishes when an idea with a bounty is proved, OSO at once.
 - **ROI** is bounty value per dollar.
 
-What is still a stand-in or a guess: [the design, section 12](design.md#12-not-yet-measured).
+What is still a stand-in or a guess: [the design: not yet measured](design.md#not-yet-measured).

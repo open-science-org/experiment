@@ -3,8 +3,8 @@ id: simple-ideas-6x8-p2-len3g2-comp0-7-scaling-ladder-20261024
 title: "Scaling: Default graph (6 × 8)"
 description: "The simple model on a generated idea graph (6 levels × 8 ideas, 2 parents each,
   sequences of 3 bits growing by 2 per level, composition 0.7); each run draws its own graph. Only α
-  and β vary. Held fixed: 12 identical agents, a budget of 75 split equally every round (ρ = 0), no
-  mint, no validation."
+  and β vary. Held fixed: 12 identical agents, a budget of 75 split equally every round (f = 0), no flat
+  mint, a knowledge reward of 1 per new bit flowing back with α, no validation."
 seeds: 30
 set:
   world:
@@ -28,6 +28,7 @@ set:
     c: 0
     mint: 0
     screen: 0
+    mintPerBit: 1
   agents:
     mix:
       foundation: 0
@@ -86,6 +87,9 @@ columns:
   - targetsSolved
   - value
   - roi
+  - knowledge
+  - knowledgePublished
+  - knowledgePerMoney
   - cost
   - waste
   - sharing

@@ -1,6 +1,6 @@
 # The Lean problem set
 
-The problems for the Lean instantiation of the [demo experiment specification](../docs/design.md) (section 6.2). Agents prove theorems in Lean 4.35.0, with Lean's core library and no Mathlib; Lean checks every proof, and a proof records exactly which earlier theorems it uses.
+The problems for the AI-model tests (see [the design](../docs/design.md)). Agents prove theorems in Lean 4.35.0, with Lean's core library and no Mathlib; Lean checks every proof, and a proof records exactly which earlier theorems it uses.
 
 **Public here:** the definitions every agent sees ([Problems/Defs.lean](Problems/Defs.lean)) and the posted targets ([Problems/Targets.lean](Problems/Targets.lean)). Three areas: a number sequence (A), sorting (B) and 2 × 2 integer matrices (C), with targets that join areas.
 
@@ -19,4 +19,14 @@ The problems for the Lean instantiation of the [demo experiment specification](.
 
 **Rules for agents:** core lemmas and tactics may be cited freely (they play the role of existing literature). Not allowed: `grind` (it proves the polynomial identities by brute force and would flatten the tree), `sorry`, `native_decide`, search tactics, commands that run code, and new declarations.
 
-**The pilot** (`npm run pilot`, in [src/lean/](../src/lean/)) measures how hard each theorem is for a real agent. See the [README](../README.md#the-lean-pilot).
+**The pilot** (`npm run pilot`, in [src/lean/](../src/lean/)) measures how hard each theorem is for a real model:
+
+```sh
+npm run pilot -- selftest                       # every reference proof through the checker
+npm run pilot -- calibrate --dry-run            # how many attempts and calls a run makes
+npm run pilot -- calibrate                      # the real run; needs an API key in .env
+```
+
+- **An attempt** is a first proof plus up to three repairs, each sent back with Lean's errors. Each theorem is tried with its lemmas given as a library, and each target also alone, to test whether it really needs them.
+- **The checker** ([src/lean/checker.ts](../src/lean/checker.ts)) imports only the public definitions and states the agent's library as axioms. `#print axioms` then lists exactly which library theorems a proof used: the soundness check and the attribution in one. A check takes about 0.3 seconds. All 42 reference proofs pass, using exactly the theorems the reference tree says.
+- **Transcripts** contain proofs, so they stay in `lean/runs/` (private); public summaries use anonymous ids.
