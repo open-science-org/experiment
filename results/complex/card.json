@@ -12,15 +12,15 @@
   "better": "higher",
   "runs": "100 runs per row"
  },
- "answer": "Best: free and correct, OSO, 7.0 (1 more tie). Best traditional: free and correct, Traditional, 5.6. Clear difference.",
+ "answer": "Best: free and correct, OSO, 7.0 (3 more tie). Best traditional: free and correct, Traditional, 6.2. Clear difference.",
  "table": [
   {
    "knowledge": "free and correct",
    "setting": "Traditional",
-   "frontier": "5.6 ± 1.4",
-   "reach L5": "0.81",
-   "speed": "30 ± 7",
-   "ROI (value per spend)": "0.69 ± 0.51"
+   "frontier": "6.2 ± 1.3",
+   "reach L5": "0.87",
+   "speed": "25 ± 7",
+   "ROI (value per spend)": "1.20 ± 0.70"
   },
   {
    "knowledge": "free and correct",
@@ -28,7 +28,7 @@
    "frontier": "7.0 ± 0.0",
    "reach L5": "1.00",
    "speed": "12 ± 3",
-   "ROI (value per spend)": "2.49 ± 0.57"
+   "ROI (value per spend)": "2.66 ± 0.50"
   },
   {
    "knowledge": "free and correct",
@@ -36,53 +36,53 @@
    "frontier": "7.0 ± 0.0",
    "reach L5": "1.00",
    "speed": "10 ± 2",
-   "ROI (value per spend)": "3.09 ± 0.52"
+   "ROI (value per spend)": "3.37 ± 0.47"
   },
   {
    "knowledge": "free and correct",
    "setting": "OSO (choice)",
-   "frontier": "6.2 ± 1.2",
-   "reach L5": "0.92",
-   "speed": "25 ± 8",
-   "ROI (value per spend)": "1.23 ± 0.80"
+   "frontier": "6.8 ± 0.7",
+   "reach L5": "0.98",
+   "speed": "21 ± 7",
+   "ROI (value per spend)": "1.67 ± 0.70"
   },
   {
    "knowledge": "costly and fallible",
    "setting": "Traditional",
-   "frontier": "5.1 ± 1.4",
-   "reach L5": "0.66",
-   "speed": "31 ± 8",
-   "ROI (value per spend)": "0.55 ± 0.50"
+   "frontier": "6.0 ± 1.4",
+   "reach L5": "0.82",
+   "speed": "25 ± 8",
+   "ROI (value per spend)": "1.08 ± 0.75"
   },
   {
    "knowledge": "costly and fallible",
    "setting": "OSO (immediate)",
-   "frontier": "6.9 ± 0.4",
+   "frontier": "7.0 ± 0.3",
    "reach L5": "1.00",
-   "speed": "16 ± 7",
-   "ROI (value per spend)": "1.88 ± 0.71"
+   "speed": "13 ± 5",
+   "ROI (value per spend)": "2.20 ± 0.60"
   },
   {
    "knowledge": "costly and fallible",
    "setting": "OSO + public failures",
-   "frontier": "6.9 ± 0.4",
+   "frontier": "7.0 ± 0.0",
    "reach L5": "1.00",
-   "speed": "16 ± 7",
-   "ROI (value per spend)": "1.90 ± 0.70"
+   "speed": "12 ± 5",
+   "ROI (value per spend)": "2.22 ± 0.52"
   },
   {
    "knowledge": "costly and fallible",
    "setting": "OSO (choice)",
-   "frontier": "5.4 ± 1.3",
-   "reach L5": "0.78",
-   "speed": "27 ± 9",
-   "ROI (value per spend)": "0.84 ± 0.82"
+   "frontier": "6.5 ± 0.9",
+   "reach L5": "0.97",
+   "speed": "22 ± 8",
+   "ROI (value per spend)": "1.57 ± 0.78"
   }
  ],
  "caveats": [
   "A simulation with guessed parameters: it shows how the rules play out, not that they work."
  ],
  "page": "results/complex/summary.md",
- "ranAt": "2026-10-25T05:53:26.458Z",
- "modelVersion": 4
+ "ranAt": "2026-10-25T17:03:25.992Z",
+ "modelVersion": 5
 }

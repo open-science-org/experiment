@@ -2,20 +2,20 @@
 
 **Question:** With learning, shared failures, and costly, fallible sharing all on, does OSO still lead?
 
-**Answer:** Best: free and correct, OSO, 7.0 (1 more tie). Best traditional: free and correct, Traditional, 5.6. Clear difference.
+**Answer:** Best: free and correct, OSO, 7.0 (3 more tie). Best traditional: free and correct, Traditional, 6.2. Clear difference.
 
 ![All together on the Lean tree: learning, shared failures, costly and fallible sharing](figures/compare.svg)
 
 | knowledge | setting | frontier | reach L5 | speed | ROI (value per spend) |
 | --- | --- | --- | --- | --- | --- |
-| free and correct | Traditional | 5.6 ± 1.4 | 0.81 | 30 ± 7 | 0.69 ± 0.51 |
-| free and correct | OSO (immediate) | 7.0 ± 0.0 | 1.00 | 12 ± 3 | 2.49 ± 0.57 |
-| free and correct | OSO + public failures | 7.0 ± 0.0 | 1.00 | 10 ± 2 | 3.09 ± 0.52 |
-| free and correct | OSO (choice) | 6.2 ± 1.2 | 0.92 | 25 ± 8 | 1.23 ± 0.80 |
-| costly and fallible | Traditional | 5.1 ± 1.4 | 0.66 | 31 ± 8 | 0.55 ± 0.50 |
-| costly and fallible | OSO (immediate) | 6.9 ± 0.4 | 1.00 | 16 ± 7 | 1.88 ± 0.71 |
-| costly and fallible | OSO + public failures | 6.9 ± 0.4 | 1.00 | 16 ± 7 | 1.90 ± 0.70 |
-| costly and fallible | OSO (choice) | 5.4 ± 1.3 | 0.78 | 27 ± 9 | 0.84 ± 0.82 |
+| free and correct | Traditional | 6.2 ± 1.3 | 0.87 | 25 ± 7 | 1.20 ± 0.70 |
+| free and correct | OSO (immediate) | 7.0 ± 0.0 | 1.00 | 12 ± 3 | 2.66 ± 0.50 |
+| free and correct | OSO + public failures | 7.0 ± 0.0 | 1.00 | 10 ± 2 | 3.37 ± 0.47 |
+| free and correct | OSO (choice) | 6.8 ± 0.7 | 0.98 | 21 ± 7 | 1.67 ± 0.70 |
+| costly and fallible | Traditional | 6.0 ± 1.4 | 0.82 | 25 ± 8 | 1.08 ± 0.75 |
+| costly and fallible | OSO (immediate) | 7.0 ± 0.3 | 1.00 | 13 ± 5 | 2.20 ± 0.60 |
+| costly and fallible | OSO + public failures | 7.0 ± 0.0 | 1.00 | 12 ± 5 | 2.22 ± 0.52 |
+| costly and fallible | OSO (choice) | 6.5 ± 0.9 | 0.97 | 22 ± 8 | 1.57 ± 0.78 |
 
 **Design** (fixed before the run): compared the rule settings, with every optional mechanism on · held the same: the Lean tree, agents and budget · measure: hardest level published, higher is better · 100 runs per row.
 
@@ -30,15 +30,15 @@ Values are mean ± standard deviation over runs.
 
 | knowledge | setting | frontier | reach L5 | speed | ROI (value per spend) | cost | spend | targets solved | take up spend | rejected targets | retracted | sharing | credit |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| free and correct | Traditional | 5.6 ± 1.4 | 0.81 | 30 ± 7 | 0.69 ± 0.51 | 294 ± 67 | 383 ± 40 | 6.2 ± 1.5 | 0.00 ± 0.00 | 0.0 ± 0.0 | 0.0 ± 0.0 | 0.01 ± 0.02 | 0.98 ± 0.04 |
-| free and correct | OSO (immediate) | 7.0 ± 0.0 | 1.00 | 12 ± 3 | 2.49 ± 0.57 | 114 ± 32 | 194 ± 42 | 8.0 ± 0.0 | 0.00 ± 0.00 | 0.0 ± 0.0 | 0.0 ± 0.0 | 1.00 ± 0.00 | 0.74 ± 0.07 |
-| free and correct | OSO + public failures | 7.0 ± 0.0 | 1.00 | 10 ± 2 | 3.09 ± 0.52 | 96 ± 25 | 153 ± 24 | 8.0 ± 0.0 | 0.00 ± 0.00 | 0.0 ± 0.0 | 0.0 ± 0.0 | 1.00 ± 0.00 | 0.73 ± 0.06 |
-| free and correct | OSO (choice) | 6.2 ± 1.2 | 0.92 | 25 ± 8 | 1.23 ± 0.80 | 248 ± 76 | 330 ± 81 | 7.3 ± 1.2 | 0.00 ± 0.00 | 0.0 ± 0.0 | 0.0 ± 0.0 | 0.42 ± 0.05 | 0.88 ± 0.08 |
-| costly and fallible | Traditional | 5.1 ± 1.4 | 0.66 | 31 ± 8 | 0.55 ± 0.50 | 301 ± 76 | 384 ± 39 | 5.6 ± 1.6 | 0.12 ± 0.06 | 1.2 ± 1.1 | 1.7 ± 1.9 | 0.01 ± 0.02 | 0.99 ± 0.01 |
-| costly and fallible | OSO (immediate) | 6.9 ± 0.4 | 1.00 | 16 ± 7 | 1.88 ± 0.71 | 159 ± 69 | 257 ± 80 | 7.8 ± 0.7 | 0.42 ± 0.07 | 1.8 ± 1.3 | 2.6 ± 2.5 | 0.93 ± 0.07 | 0.89 ± 0.11 |
-| costly and fallible | OSO + public failures | 6.9 ± 0.4 | 1.00 | 16 ± 7 | 1.90 ± 0.70 | 158 ± 65 | 259 ± 80 | 7.9 ± 0.5 | 0.42 ± 0.07 | 2.1 ± 1.7 | 3.5 ± 3.1 | 0.91 ± 0.08 | 0.88 ± 0.11 |
-| costly and fallible | OSO (choice) | 5.4 ± 1.3 | 0.78 | 27 ± 9 | 0.84 ± 0.82 | 261 ± 86 | 352 ± 77 | 6.2 ± 1.6 | 0.25 ± 0.09 | 1.4 ± 1.1 | 2.2 ± 2.5 | 0.41 ± 0.06 | 0.90 ± 0.08 |
+| free and correct | Traditional | 6.2 ± 1.3 | 0.87 | 25 ± 7 | 1.20 ± 0.70 | 241 ± 69 | 333 ± 69 | 7.1 ± 1.5 | 0.00 ± 0.00 | 0.0 ± 0.0 | 0.0 ± 0.0 | 0.01 ± 0.02 | 0.99 ± 0.04 |
+| free and correct | OSO (immediate) | 7.0 ± 0.0 | 1.00 | 12 ± 3 | 2.66 ± 0.50 | 110 ± 31 | 179 ± 33 | 8.0 ± 0.0 | 0.00 ± 0.00 | 0.0 ± 0.0 | 0.0 ± 0.0 | 1.00 ± 0.00 | 0.76 ± 0.09 |
+| free and correct | OSO + public failures | 7.0 ± 0.0 | 1.00 | 10 ± 2 | 3.37 ± 0.47 | 92 ± 19 | 139 ± 19 | 8.0 ± 0.0 | 0.00 ± 0.00 | 0.0 ± 0.0 | 0.0 ± 0.0 | 1.00 ± 0.00 | 0.74 ± 0.08 |
+| free and correct | OSO (choice) | 6.8 ± 0.7 | 0.98 | 21 ± 7 | 1.67 ± 0.70 | 206 ± 65 | 286 ± 80 | 7.8 ± 0.5 | 0.00 ± 0.00 | 0.0 ± 0.0 | 0.0 ± 0.0 | 0.44 ± 0.06 | 0.91 ± 0.07 |
+| costly and fallible | Traditional | 6.0 ± 1.4 | 0.82 | 25 ± 8 | 1.08 ± 0.75 | 243 ± 78 | 342 ± 72 | 6.8 ± 1.6 | 0.16 ± 0.06 | 1.3 ± 1.2 | 2.2 ± 2.6 | 0.02 ± 0.02 | 1.00 ± 0.01 |
+| costly and fallible | OSO (immediate) | 7.0 ± 0.3 | 1.00 | 13 ± 5 | 2.20 ± 0.60 | 124 ± 52 | 222 ± 66 | 8.0 ± 0.3 | 0.44 ± 0.05 | 1.7 ± 1.3 | 2.5 ± 2.5 | 0.93 ± 0.07 | 0.93 ± 0.09 |
+| costly and fallible | OSO + public failures | 7.0 ± 0.0 | 1.00 | 12 ± 5 | 2.22 ± 0.52 | 121 ± 47 | 220 ± 59 | 8.0 ± 0.1 | 0.44 ± 0.05 | 1.9 ± 1.5 | 2.9 ± 2.9 | 0.93 ± 0.07 | 0.93 ± 0.09 |
+| costly and fallible | OSO (choice) | 6.5 ± 0.9 | 0.97 | 22 ± 8 | 1.57 ± 0.78 | 212 ± 76 | 290 ± 85 | 7.6 ± 0.9 | 0.31 ± 0.08 | 1.9 ± 1.4 | 2.9 ± 2.5 | 0.42 ± 0.06 | 0.96 ± 0.05 |
 
-Code: commit `79c260a` (with uncommitted changes). Experiment: [config/experiments/complex.yaml](../../config/experiments/complex.yaml). Command: `npm run sim -- complex --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `cd9fb92` (with uncommitted changes). Experiment: [config/experiments/complex.yaml](../../config/experiments/complex.yaml). Command: `npm run sim -- complex --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

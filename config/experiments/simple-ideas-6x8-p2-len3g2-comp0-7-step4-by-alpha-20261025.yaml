@@ -1,0 +1,101 @@
+# Step by step 2026-10-25: step 4
+id: simple-ideas-6x8-p2-len3g2-comp0-7-step4-by-alpha-20261025
+title: "Step 4: Different kinds of agents"
+description: "The simple model on a generated idea graph (6 levels × 8 ideas, 2 parents each,
+  sequences of 3 bits growing by 2 per level, composition 0.7); each run draws its own graph. Only α
+  and β vary. Held fixed: 12 identical agents, a budget of 1200 split equally every round (f = 0),
+  no flat mint, a knowledge reward of 1 per new bit flowing back with α, no validation. Step 4 adds:
+  agents choose what to share; earnings shape next round's money; different kinds of agents."
+seeds: 100
+set:
+  world:
+    kind: ideas
+    levels: 6
+    width: 8
+    parents: 2
+    skip: 0.2
+    length: 3
+    lengthGrowth: 2
+    composition: 0.7
+    targets: 2
+    targetsFrom: 0
+  budget:
+    X: 1200
+    allocation:
+      rho: 0.5
+  measures:
+    targetLevel: 6
+  rules:
+    c: 0
+    mint: 0
+    screen: 0
+    mintPerBit: 1
+  agents:
+    mix:
+      foundation: 3
+      racer: 3
+      explorer: 2
+      specialist: 0
+      freeRider: 1
+      gamer: 0
+      plain: 3
+factors:
+  - name: society
+    levels:
+      - label: Traditional (α = 1, finished work only)
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: finished-only
+      - label: Agents choose, α = 1
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: choice
+      - label: Agents choose, α = 0.8
+        set:
+          rules.alpha: 0.8
+          rules.visibility:
+            kind: choice
+      - label: Agents choose, α = 0.2
+        set:
+          rules.alpha: 0.2
+          rules.visibility:
+            kind: choice
+      - label: Agents choose, α = 0
+        set:
+          rules.alpha: 0
+          rules.visibility:
+            kind: choice
+columns:
+  - frontier
+  - targetsSolved
+  - value
+  - roi
+  - knowledge
+  - knowledgePublished
+  - knowledgePerMoney
+  - cost
+  - waste
+  - sharing
+  - reachTarget
+question: With agents choose what to share; earnings shape next round's money; different kinds of
+  agents, how far does a society get for the same money, and how much do agents share, by α?
+compare: traditional against agents choosing what to share, at α in {1, 0.8, 0.2, 0}
+fixed: a generated idea graph (6 levels × 8 ideas, 2 parents each, sequences of 3 bits growing by 2
+  per level, composition 0.7), 12 identical agents, budget 1200 split equally, no flat mint,
+  knowledge reward 1 per new bit, no validation; plus agents choose what to share; earnings shape
+  next round's money; different kinds of agents
+tags:
+  - simulation
+  - simple model
+  - generated idea graph
+  - ideas
+  - levels 6
+  - parents 2
+  - length 3
+  - composition 0.7
+  - alpha
+  - step by step
+  - step 4
+  - steps 2026-10-25

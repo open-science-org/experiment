@@ -10,4 +10,6 @@ The model's version goes up whenever a change alters what runs produce. New opti
 | 2 | 2026-10-24 | **The idea graph generator.** Ideas are coin-toss sequences; an attempt works with chance $2^{-\text{unresolved bits}}$; parents help but are not required; link weights are each parent's share of the bits (Shapley). Waste counts all repeated work, published or private. |
 | 1 | 2026-10-21 | **Random-layer world.** Every parent required, a fixed chance per level ($0.5 \cdot 0.6^{\ell-1}$), three areas. |
 
+v5 changed only defaults that every simple-model experiment already set (no flat mint, knowledge reward 1 per bit), so simple-model results from v4 are identical under v5 and are marked v5.
+
 Results made before versioning started (2026-10-25) were stamped by when they ran: those on the random-layer world as version 1, the archived copies of the example reports as version 3.

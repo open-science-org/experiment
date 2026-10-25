@@ -2,27 +2,27 @@
 
 **Question:** On the narrow-stages example, with every kind of agent and earnings shaping next round's money, which of the six rule settings gets furthest?
 
-**Answer:** Best overall: OSO. Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, knowledge found (bits), knowledge per unit of money, money to the main level and waste. (8 measures; a clear difference is more than 2.7 standard errors.)
+**Answer:** Best overall: No flow-back, immediate. Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, knowledge found (bits), knowledge per unit of money, money to the main level and waste. (8 measures; a clear difference is more than 2.7 standard errors.)
 
-- hardest level: 6.00 against traditional 2.88, clearly better.
-- targets solved: 2.75 against traditional 0.65, clearly better.
-- bounty value: 1337 against traditional 316, clearly better.
-- ROI: 1.38 against traditional 0.23, clearly better.
-- knowledge found (bits): 144 against traditional 92, clearly better.
-- knowledge per unit of money: 0.14 against traditional 0.07, clearly better.
-- money to the main level: 654 against traditional 1039, clearly better.
-- waste: 0.52 against traditional 0.75, clearly better.
+- hardest level: 6.00 against traditional 0.36, clearly better.
+- targets solved: 2.67 against traditional 0.09, clearly better.
+- bounty value: 1298 against traditional 44, clearly better.
+- ROI: 1.49 against traditional 0.03, clearly better.
+- knowledge found (bits): 157 against traditional 79, clearly better.
+- knowledge per unit of money: 0.17 against traditional 0.06, clearly better.
+- money to the main level: 564 against traditional 1012, clearly better.
+- waste: 0.45 against traditional 0.72, clearly better.
 
 ![full-example-narrow-stages-6-settings-20261023](figures/compare.svg)
 
 | setting | frontier | targets solved | value gained | ROI (value per spend) | knowledge (bits) | bits per money | cost | waste |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Traditional | 2.9 ± 3.0 | 0.7 ± 0.8 | 316 ± 387 | 0.23 ± 0.30 | 92 ± 15 | 0.067 ± 0.012 | 1039 ± 270 | 0.75 ± 0.03 |
-| OSO (immediate) | 6.0 ± 0.0 | 2.8 ± 0.6 | 1337 ± 304 | 1.38 ± 0.56 | 144 ± 16 | 0.143 ± 0.036 | 654 ± 266 | 0.52 ± 0.04 |
-| OSO (choice) | 5.4 ± 0.9 | 0.9 ± 1.0 | 418 ± 469 | 0.32 ± 0.37 | 105 ± 16 | 0.077 ± 0.014 | 988 ± 272 | 0.72 ± 0.03 |
-| Flow-back, finished-only | 2.6 ± 3.0 | 0.6 ± 0.7 | 277 ± 361 | 0.20 ± 0.26 | 92 ± 14 | 0.066 ± 0.010 | 1046 ± 244 | 0.74 ± 0.03 |
-| No flow-back, immediate | 6.0 ± 0.1 | 2.6 ± 0.8 | 1244 ± 380 | 1.26 ± 0.62 | 143 ± 14 | 0.137 ± 0.039 | 610 ± 246 | 0.52 ± 0.04 |
-| No flow-back, choice | 5.2 ± 1.1 | 0.7 ± 0.8 | 355 ± 402 | 0.26 ± 0.30 | 101 ± 17 | 0.073 ± 0.013 | 1031 ± 284 | 0.73 ± 0.03 |
+| Traditional | 0.4 ± 1.4 | 0.1 ± 0.4 | 44 ± 184 | 0.03 ± 0.13 | 79 ± 12 | 0.057 ± 0.008 | 1012 ± 336 | 0.72 ± 0.05 |
+| OSO (immediate) | 6.0 ± 0.1 | 2.7 ± 0.7 | 1327 ± 358 | 1.59 ± 0.74 | 157 ± 19 | 0.176 ± 0.049 | 565 ± 243 | 0.45 ± 0.07 |
+| OSO (choice) | 5.8 ± 0.6 | 1.7 ± 1.3 | 836 ± 630 | 0.76 ± 0.67 | 134 ± 20 | 0.111 ± 0.031 | 875 ± 286 | 0.62 ± 0.08 |
+| Flow-back, finished-only | 0.4 ± 1.4 | 0.1 ± 0.3 | 39 ± 165 | 0.03 ± 0.12 | 79 ± 12 | 0.057 ± 0.009 | 1106 ± 240 | 0.72 ± 0.05 |
+| No flow-back, immediate | 6.0 ± 0.0 | 2.7 ± 0.7 | 1298 ± 353 | 1.49 ± 0.72 | 157 ± 18 | 0.169 ± 0.048 | 564 ± 209 | 0.45 ± 0.07 |
+| No flow-back, choice | 5.8 ± 0.6 | 1.4 ± 1.2 | 700 ± 599 | 0.63 ± 0.64 | 130 ± 19 | 0.105 ± 0.030 | 851 ± 297 | 0.64 ± 0.08 |
 
 **Design** (fixed before the run): compared Traditional, OSO (immediate), OSO (choice), Flow-back, finished-only, No flow-back, immediate, No flow-back, choice · held the same: the narrow-stages example · measure: all of hardest level, targets solved, bounty value, ROI, knowledge found (bits), knowledge per unit of money, money to the main level, waste · 100 runs per row.
 
@@ -37,13 +37,13 @@ Values are mean ± standard deviation over runs.
 
 | setting | frontier | targets solved | value gained | ROI (value per spend) | knowledge (bits) | knowledge published (bits) | bits per money | cost | waste | sharing | reach L6 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Traditional | 2.9 ± 3.0 | 0.7 ± 0.8 | 316 ± 387 | 0.23 ± 0.30 | 92 ± 15 | 23 ± 27 | 0.067 ± 0.012 | 1039 ± 270 | 0.75 ± 0.03 | 0.00 ± 0.00 | 0.48 |
-| OSO (immediate) | 6.0 ± 0.0 | 2.8 ± 0.6 | 1337 ± 304 | 1.38 ± 0.56 | 144 ± 16 | 144 ± 16 | 0.143 ± 0.036 | 654 ± 266 | 0.52 ± 0.04 | 1.00 ± 0.00 | 1.00 |
-| OSO (choice) | 5.4 ± 0.9 | 0.9 ± 1.0 | 418 ± 469 | 0.32 ± 0.37 | 105 ± 16 | 81 ± 28 | 0.077 ± 0.014 | 988 ± 272 | 0.72 ± 0.03 | 0.38 ± 0.11 | 0.62 |
-| Flow-back, finished-only | 2.6 ± 3.0 | 0.6 ± 0.7 | 277 ± 361 | 0.20 ± 0.26 | 92 ± 14 | 20 ± 25 | 0.066 ± 0.010 | 1046 ± 244 | 0.74 ± 0.03 | 0.00 ± 0.00 | 0.43 |
-| No flow-back, immediate | 6.0 ± 0.1 | 2.6 ± 0.8 | 1244 ± 380 | 1.26 ± 0.62 | 143 ± 14 | 143 ± 14 | 0.137 ± 0.039 | 610 ± 246 | 0.52 ± 0.04 | 1.00 ± 0.00 | 0.98 |
-| No flow-back, choice | 5.2 ± 1.1 | 0.7 ± 0.8 | 355 ± 402 | 0.26 ± 0.30 | 101 ± 17 | 72 ± 28 | 0.073 ± 0.013 | 1031 ± 284 | 0.73 ± 0.03 | 0.37 ± 0.12 | 0.58 |
+| Traditional | 0.4 ± 1.4 | 0.1 ± 0.4 | 44 ± 184 | 0.03 ± 0.13 | 79 ± 12 | 2 ± 9 | 0.057 ± 0.008 | 1012 ± 336 | 0.72 ± 0.05 | 0.00 ± 0.00 | 0.06 |
+| OSO (immediate) | 6.0 ± 0.1 | 2.7 ± 0.7 | 1327 ± 358 | 1.59 ± 0.74 | 157 ± 19 | 157 ± 19 | 0.176 ± 0.049 | 565 ± 243 | 0.45 ± 0.07 | 1.00 ± 0.00 | 0.99 |
+| OSO (choice) | 5.8 ± 0.6 | 1.7 ± 1.3 | 836 ± 630 | 0.76 ± 0.67 | 134 ± 20 | 120 ± 34 | 0.111 ± 0.031 | 875 ± 286 | 0.62 ± 0.08 | 0.44 ± 0.12 | 0.84 |
+| Flow-back, finished-only | 0.4 ± 1.4 | 0.1 ± 0.3 | 39 ± 165 | 0.03 ± 0.12 | 79 ± 12 | 2 ± 10 | 0.057 ± 0.009 | 1106 ± 240 | 0.72 ± 0.05 | 0.00 ± 0.00 | 0.06 |
+| No flow-back, immediate | 6.0 ± 0.0 | 2.7 ± 0.7 | 1298 ± 353 | 1.49 ± 0.72 | 157 ± 18 | 157 ± 18 | 0.169 ± 0.048 | 564 ± 209 | 0.45 ± 0.07 | 1.00 ± 0.00 | 1.00 |
+| No flow-back, choice | 5.8 ± 0.6 | 1.4 ± 1.2 | 700 ± 599 | 0.63 ± 0.64 | 130 ± 19 | 112 ± 32 | 0.105 ± 0.030 | 851 ± 297 | 0.64 ± 0.08 | 0.43 ± 0.12 | 0.81 |
 
-Code: commit `94d7303` (with uncommitted changes). Experiment: [config/experiments/full-example-narrow-stages-6-settings-20261023.yaml](../../config/experiments/full-example-narrow-stages-6-settings-20261023.yaml). Command: `npm run sim -- full-example-narrow-stages-6-settings-20261023 --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `cd9fb92` (with uncommitted changes). Experiment: [config/experiments/full-example-narrow-stages-6-settings-20261023.yaml](../../config/experiments/full-example-narrow-stages-6-settings-20261023.yaml). Command: `npm run sim -- full-example-narrow-stages-6-settings-20261023 --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

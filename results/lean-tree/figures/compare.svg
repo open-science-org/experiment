@@ -28,18 +28,18 @@
 <rect x="230" y="62" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO: 7.0</title></rect>
 <text class="label t2" x="556" y="74">7.0</text>
 <text class="tick" x="222" y="99" text-anchor="end">No flow-back, immediate</text>
-<rect x="230" y="88" width="319.1" height="16" rx="3" style="fill:var(--dead)"><title>No flow-back, immediate: 6.98</title></rect>
-<text class="label " x="555.0857142857143" y="100">6.98</text>
+<rect x="230" y="88" width="319.5" height="16" rx="3" style="fill:var(--dead)"><title>No flow-back, immediate: 6.99</title></rect>
+<text class="label " x="555.5428571428572" y="100">6.99</text>
 <text class="tick" x="222" y="125" text-anchor="end">OSO (choice)</text>
-<rect x="230" y="114" width="239.1" height="16" rx="3" style="fill:var(--s2)"><title>OSO (choice): 5.23</title></rect>
-<text class="label t2" x="475.0857142857143" y="126">5.23</text>
+<rect x="230" y="114" width="279.3" height="16" rx="3" style="fill:var(--s2)"><title>OSO (choice): 6.11</title></rect>
+<text class="label t2" x="515.3142857142857" y="126">6.11</text>
 <text class="tick" x="222" y="151" text-anchor="end">No flow-back, choice</text>
-<rect x="230" y="140" width="222.2" height="16" rx="3" style="fill:var(--dead)"><title>No flow-back, choice: 4.86</title></rect>
-<text class="label " x="458.1714285714286" y="152">4.86</text>
-<text class="tick" x="222" y="177" text-anchor="end">Traditional</text>
-<rect x="230" y="166" width="199.3" height="16" rx="3" style="fill:var(--s1)"><title>Traditional: 4.36</title></rect>
-<text class="label t1" x="435.3142857142857" y="178">4.36</text>
-<text class="tick" x="222" y="203" text-anchor="end">Flow-back, finished-only</text>
-<rect x="230" y="192" width="194.7" height="16" rx="3" style="fill:var(--dead)"><title>Flow-back, finished-only: 4.26</title></rect>
-<text class="label " x="430.74285714285713" y="204">4.26</text>
+<rect x="230" y="140" width="261.9" height="16" rx="3" style="fill:var(--dead)"><title>No flow-back, choice: 5.73</title></rect>
+<text class="label " x="497.9428571428572" y="152">5.73</text>
+<text class="tick" x="222" y="177" text-anchor="end">Flow-back, finished-only</text>
+<rect x="230" y="166" width="260.6" height="16" rx="3" style="fill:var(--dead)"><title>Flow-back, finished-only: 5.7</title></rect>
+<text class="label " x="496.57142857142856" y="178">5.7</text>
+<text class="tick" x="222" y="203" text-anchor="end">Traditional</text>
+<rect x="230" y="192" width="235.4" height="16" rx="3" style="fill:var(--s1)"><title>Traditional: 5.15</title></rect>
+<text class="label t1" x="471.42857142857144" y="204">5.15</text>
 </svg>

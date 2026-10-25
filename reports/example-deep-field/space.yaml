@@ -26,6 +26,6 @@ scenario:
   measures:
     targetLevel: 8
   budget:
-    X: 800
-    rounds: 67
+    X: 760
+    rounds: 63
     perAgentPerRound: null

@@ -1,5 +1,5 @@
 {
- "ranAt": "2026-10-25T06:41:13.021Z",
+ "ranAt": "2026-10-25T17:05:30.919Z",
  "id": "example-deep-field",
  "kind": "field report",
  "date": "2026-10-25",
@@ -7,33 +7,33 @@
  "design": {
   "question": "For the same money, does OSO get further than traditional research in Example: a deep, wide field?",
   "compare": "the six rule settings, an α sweep, the parameters one by one, costly and fallible sharing",
-  "fixed": "the field, 12 agents and a budget of 800",
+  "fixed": "the field, 12 agents and a budget of 760",
   "measure": "hardest level reached",
   "better": "higher",
   "runs": "100 runs per setting"
  },
- "answer": "OSO ahead: level 8.0 against 1.5 of 8; targets 3.4 against 0.3 of 4; ROI 2.73 against 0.17.",
+ "answer": "OSO ahead: level 8.0 against 0.2 of 8; targets 3.7 against 0.0 of 4; ROI 3.24 against 0.02.",
  "table": [
   {
    "rules": "Traditional",
-   "hardest level": "1.5 of 8",
-   "targets solved": "0.3 of 4",
-   "cost to level 8": 622,
-   "ROI": "0.17 (133 for 794)"
+   "hardest level": "0.2 of 8",
+   "targets solved": "0.0 of 4",
+   "cost to level 8": 570,
+   "ROI": "0.02 (15 for 757)"
   },
   {
    "rules": "OSO",
    "hardest level": "8.0 of 8",
-   "targets solved": "3.4 of 4",
-   "cost to level 8": 398,
-   "ROI": "2.73 (1756 for 684)"
+   "targets solved": "3.7 of 4",
+   "cost to level 8": 338,
+   "ROI": "3.24 (1874 for 613)"
   }
  ],
  "caveats": [
   "A simulation with guessed parameters: it shows how the rules play out if the field works as described.",
-  "OSO's lead as the market-set parameters vary: 0.5 to 5.9 levels."
+  "OSO's lead as the market-set parameters vary: 4.1 to 7.7 levels."
  ],
  "page": "reports/example-deep-field/card.md",
  "chart": "reports/example-deep-field/figures/frontier.svg",
- "modelVersion": 4
+ "modelVersion": 5
 }

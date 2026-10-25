@@ -592,7 +592,7 @@ export function societyLabel(alpha: number, beta: number): string {
 }
 
 export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
-  if (!d.id) d = { ...d, id: simpleName(d) };
+  if (!d.id) d = { ...d, id: d.step ? simpleName(d, d.step > 1 ? `step${Math.round(d.step)}-by-alpha` : 'step1-alpha-beta') : simpleName(d) };
   if (!ID.test(d.id)) throw new Error('the experiment name must be kebab-case (a-z, 0-9, hyphens)');
   const check = (xs: number[], name: string, lo: number, hi: number) => {
     if (!xs.length) throw new Error(`give at least one value of ${name}`);
@@ -601,7 +601,6 @@ export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
   check(d.alphas, 'α', 0, 1); check(d.betas, 'β', 0, 1);
   if (d.alphas.length * d.betas.length > 60) throw new Error('at most 60 societies (α values × β values)');
   if (!(d.seeds >= 1 && d.seeds <= 1000)) throw new Error('runs per society must be between 1 and 1000');
-  if ((d.step ?? 1) > 1 && !d.id.includes('-step')) d = { ...d, id: d.id.replace(/-(alpha-beta|alpha-at-beta-[0-9-]+|beta-at-alpha-[0-9-]+|alpha-[0-9-]+-beta-[0-9-]+)(-\d+)?$/, '') + `-step${Math.round(d.step!)}-by-alpha` };
   if (d.graph) return withStep(simpleOnGraph(d, d.graph), d);
   const { space } = withCalibratedBudget(loadSpace(d.space));
   // Every agent kind the topic has is set to 0, then 12 plain agents: the mix is replaced whole.

@@ -1,5 +1,5 @@
 {
- "ranAt": "2026-10-25T06:41:13.028Z",
+ "ranAt": "2026-10-25T17:05:30.918Z",
  "id": "example-tightly-linked",
  "kind": "field report",
  "date": "2026-10-25",
@@ -7,34 +7,34 @@
  "design": {
   "question": "For the same money, does OSO get further than traditional research in Example: small and tightly linked (battery story)?",
   "compare": "the six rule settings, an α sweep, the parameters one by one, costly and fallible sharing",
-  "fixed": "the field, 12 agents and a budget of 260",
+  "fixed": "the field, 12 agents and a budget of 180",
   "measure": "hardest level reached",
   "better": "higher",
   "runs": "100 runs per setting"
  },
- "answer": "OSO ahead: level 5.0 against 1.6 of 5; targets 1.9 against 0.4 of 2; ROI 5.36 against 0.74.",
+ "answer": "OSO ahead: level 5.0 against 0.3 of 5; targets 1.9 against 0.1 of 2; ROI 6.46 against 0.19.",
  "table": [
   {
    "rules": "Traditional",
-   "hardest level": "1.6 of 5",
-   "targets solved": "0.4 of 2",
-   "cost to level 5": 188,
-   "ROI": "0.74 (172 for 251)"
+   "hardest level": "0.3 of 5",
+   "targets solved": "0.1 of 2",
+   "cost to level 5": 142,
+   "ROI": "0.19 (32 for 179)"
   },
   {
    "rules": "OSO",
    "hardest level": "5.0 of 5",
    "targets solved": "1.9 of 2",
-   "cost to level 5": 120,
-   "ROI": "5.36 (772 for 165)"
+   "cost to level 5": 94,
+   "ROI": "6.46 (740 for 128)"
   }
  ],
  "caveats": [
   "A simulation with guessed parameters: it shows how the rules play out if the field works as described.",
-  "OSO's lead as the market-set parameters vary: 0.4 to 3.2 levels.",
+  "OSO's lead as the market-set parameters vary: 0.7 to 4.5 levels.",
   "A preset of the idea graph generator. A small field where ideas lean heavily on what came before (composition 0.8) and each one needs several earlier results (2.5 parents). The numbers are illustrative, not measured from the field."
  ],
  "page": "reports/example-tightly-linked/card.md",
  "chart": "reports/example-tightly-linked/figures/frontier.svg",
- "modelVersion": 4
+ "modelVersion": 5
 }

@@ -29,8 +29,8 @@ scenario:
   measures:
     targetLevel: 5
   budget:
-    X: 260
-    rounds: 22
+    X: 180
+    rounds: 15
     perAgentPerRound: null
 notes: A preset of the idea graph generator. A small field where ideas lean heavily on what came
   before (composition 0.8) and each one needs several earlier results (2.5 parents). The numbers are

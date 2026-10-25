@@ -7,294 +7,294 @@
   "maxLevel": 5,
   "targetLevel": 5,
   "targets": 2,
-  "budget": 260,
+  "budget": 180,
   "traditional": {
-   "frontier": 1.65,
-   "reach": 0.33,
-   "cost": 187.7090909090911,
-   "targetsSolved": 0.43,
-   "value": 172,
-   "spend": 250.69500000000045,
-   "roi": 0.7428297795402447
+   "frontier": 0.3,
+   "reach": 0.06,
+   "cost": 141.83333333333334,
+   "targetsSolved": 0.08,
+   "value": 32,
+   "spend": 179.44600000000005,
+   "roi": 0.19261952674184127
   },
   "oso": {
    "frontier": 5,
    "reach": 1,
-   "cost": 120.058,
-   "targetsSolved": 1.93,
-   "value": 772,
-   "spend": 165.34800000000013,
-   "roi": 5.358445216653949
+   "cost": 93.77399999999994,
+   "targetsSolved": 1.85,
+   "value": 740,
+   "spend": 128.34599999999998,
+   "roi": 6.462151737526953
   },
   "osoChoice": {
-   "frontier": 2.67,
-   "sharing": 0.10070710906740317
+   "frontier": 1.79,
+   "sharing": 0.08202599606276076
   },
-  "alphaStar": 0.5,
+  "alphaStar": 0.6,
   "robustness": [
    {
     "condition": "free and correct",
-    "osoLead": 3.35
+    "osoLead": 4.7
    },
    {
     "condition": "costly to take up",
-    "osoLead": 3.1300000000000003
+    "osoLead": 4.44
    },
    {
     "condition": "sometimes wrong",
-    "osoLead": 3.7
+    "osoLead": 4.79
    },
    {
     "condition": "costly and sometimes wrong",
-    "osoLead": 3.38
+    "osoLead": 4.359999999999999
    }
   ],
   "sensitivity": [
    {
     "parameter": "α, absorption rate",
     "group": "market",
-    "min": 0.9199999999999999,
-    "max": 3.1599999999999997,
+    "min": 1,
+    "max": 4.53,
     "base": 0.8
    },
    {
     "parameter": "c, cited share of the mint",
     "group": "market",
-    "min": 1.02,
-    "max": 1.21,
+    "min": 1.49,
+    "max": 1.49,
     "base": 0.15
    },
    {
     "parameter": "mint per idea",
     "group": "market",
-    "min": 0.9900000000000002,
-    "max": 1.4700000000000002,
-    "base": 1
+    "min": 0.75,
+    "max": 1.5899999999999999,
+    "base": 0
    },
    {
     "parameter": "θ, validation screen",
     "group": "market",
-    "min": 0.76,
-    "max": 1.77,
+    "min": 1.49,
+    "max": 1.49,
     "base": 0.5
    },
    {
     "parameter": "f, earnings shape next round's money",
     "group": "market",
-    "min": 0.41999999999999993,
-    "max": 1.27,
+    "min": 0.71,
+    "max": 1.64,
     "base": 0.5
    },
    {
     "parameter": "ψ, scoop risk",
     "group": "guess",
-    "min": 0.8999999999999999,
-    "max": 3.35,
+    "min": 1.1099999999999999,
+    "max": 4.7,
     "base": 0.5
    },
    {
     "parameter": "κ, value of being used",
     "group": "guess",
-    "min": 0.77,
-    "max": 1.5700000000000003,
+    "min": 0.99,
+    "max": 2.54,
     "base": 1
    },
    {
     "parameter": "σ₀, perception noise",
     "group": "guess",
-    "min": 0.9899999999999998,
-    "max": 1.3299999999999998,
+    "min": 0.99,
+    "max": 2.15,
     "base": 1
    },
    {
     "parameter": "τ, choice randomness",
     "group": "guess",
-    "min": 0.34999999999999964,
-    "max": 1.6800000000000002,
+    "min": 0.75,
+    "max": 2.1,
     "base": 0.3
    },
    {
     "parameter": "attribution error",
     "group": "guess",
-    "min": 1.02,
-    "max": 1.3599999999999999,
+    "min": 1.39,
+    "max": 1.49,
     "base": 0
    }
   ],
   "seeds": 100,
-  "commit": "94d7303+",
+  "commit": "cd9fb92+",
   "date": "2026-10-25"
  },
  "settings": [
   {
    "setting": "Traditional",
-   "frontier": "1.6 ± 2.4",
-   "reach L5": "0.33",
-   "speed": "16 ± 4",
-   "cost": "188 ± 50",
-   "spend": "251 ± 16",
-   "targets solved": "0.4 ± 0.7",
-   "waste": "0.54 ± 0.07",
-   "credit": "0.32 ± 0.47",
-   "sharing": "0.01 ± 0.02",
-   "ROI (value per spend)": "0.74 ± 1.24"
+   "frontier": "0.3 ± 1.2",
+   "reach L5": "0.06",
+   "speed": "12 ± 2",
+   "cost": "142 ± 30",
+   "spend": "179 ± 4",
+   "targets solved": "0.1 ± 0.3",
+   "waste": "0.38 ± 0.10",
+   "credit": "0.06 ± 0.24",
+   "sharing": "0.00 ± 0.03",
+   "ROI (value per spend)": "0.19 ± 0.84"
   },
   {
    "setting": "OSO (immediate)",
    "frontier": "5.0 ± 0.0",
    "reach L5": "1.00",
-   "speed": "11 ± 4",
-   "cost": "120 ± 50",
-   "spend": "165 ± 52",
-   "targets solved": "1.9 ± 0.3",
-   "waste": "0.32 ± 0.07",
-   "credit": "0.47 ± 0.17",
+   "speed": "8 ± 3",
+   "cost": "94 ± 32",
+   "spend": "128 ± 35",
+   "targets solved": "1.9 ± 0.4",
+   "waste": "0.20 ± 0.07",
+   "credit": "0.46 ± 0.16",
    "sharing": "1.00 ± 0.00",
-   "ROI (value per spend)": "5.36 ± 2.44"
+   "ROI (value per spend)": "6.46 ± 2.73"
   },
   {
    "setting": "Flow-back, finished-only",
-   "frontier": "1.6 ± 2.4",
-   "reach L5": "0.33",
-   "speed": "17 ± 4",
-   "cost": "196 ± 48",
-   "spend": "252 ± 11",
-   "targets solved": "0.4 ± 0.7",
-   "waste": "0.54 ± 0.07",
-   "credit": "0.32 ± 0.47",
-   "sharing": "0.01 ± 0.02",
-   "ROI (value per spend)": "0.70 ± 1.13"
+   "frontier": "0.2 ± 1.0",
+   "reach L5": "0.04",
+   "speed": "12 ± 2",
+   "cost": "141 ± 25",
+   "spend": "180 ± 1",
+   "targets solved": "0.0 ± 0.2",
+   "waste": "0.39 ± 0.10",
+   "credit": "0.04 ± 0.20",
+   "sharing": "0.00 ± 0.00",
+   "ROI (value per spend)": "0.09 ± 0.45"
   },
   {
    "setting": "No flow-back, immediate",
    "frontier": "5.0 ± 0.2",
-   "reach L5": "0.97",
-   "speed": "10 ± 4",
-   "cost": "115 ± 49",
-   "spend": "163 ± 57",
-   "targets solved": "1.9 ± 0.4",
-   "waste": "0.32 ± 0.08",
-   "credit": "0.34 ± 0.19",
+   "reach L5": "0.96",
+   "speed": "8 ± 3",
+   "cost": "91 ± 34",
+   "spend": "130 ± 35",
+   "targets solved": "1.8 ± 0.6",
+   "waste": "0.19 ± 0.06",
+   "credit": "0.37 ± 0.22",
    "sharing": "1.00 ± 0.00",
-   "ROI (value per spend)": "5.41 ± 2.60"
+   "ROI (value per spend)": "6.14 ± 2.93"
   },
   {
    "setting": "No flow-back, choice",
-   "frontier": "2.7 ± 2.2",
-   "reach L5": "0.42",
-   "speed": "17 ± 4",
-   "cost": "194 ± 49",
-   "spend": "251 ± 17",
-   "targets solved": "0.5 ± 0.7",
-   "waste": "0.55 ± 0.07",
-   "credit": "0.38 ± 0.47",
-   "sharing": "0.07 ± 0.08",
-   "ROI (value per spend)": "0.90 ± 1.29"
+   "frontier": "1.3 ± 2.0",
+   "reach L5": "0.17",
+   "speed": "11 ± 3",
+   "cost": "135 ± 37",
+   "spend": "177 ± 10",
+   "targets solved": "0.3 ± 0.6",
+   "waste": "0.37 ± 0.10",
+   "credit": "0.17 ± 0.38",
+   "sharing": "0.06 ± 0.10",
+   "ROI (value per spend)": "0.69 ± 1.67"
   },
   {
    "setting": "OSO (choice)",
-   "frontier": "2.7 ± 2.1",
-   "reach L5": "0.38",
-   "speed": "16 ± 5",
-   "cost": "182 ± 54",
-   "spend": "249 ± 19",
-   "targets solved": "0.5 ± 0.8",
-   "waste": "0.54 ± 0.07",
-   "credit": "0.30 ± 0.43",
-   "sharing": "0.10 ± 0.11",
-   "ROI (value per spend)": "0.91 ± 1.44"
+   "frontier": "1.8 ± 2.2",
+   "reach L5": "0.28",
+   "speed": "12 ± 3",
+   "cost": "136 ± 32",
+   "spend": "175 ± 12",
+   "targets solved": "0.4 ± 0.7",
+   "waste": "0.37 ± 0.09",
+   "credit": "0.24 ± 0.42",
+   "sharing": "0.08 ± 0.13",
+   "ROI (value per spend)": "1.05 ± 1.97"
   }
  ],
  "alpha": [
   {
    "α": 1,
-   "intermediate ideas shared": "7%",
-   "frontier": "2.7",
-   "reach level 5": "42%",
-   "targets solved": "0.5"
+   "intermediate ideas shared": "6%",
+   "frontier": "1.3",
+   "reach level 5": "17%",
+   "targets solved": "0.3"
   },
   {
    "α": 0.8,
-   "intermediate ideas shared": "10%",
-   "frontier": "2.7",
-   "reach level 5": "38%",
-   "targets solved": "0.5"
+   "intermediate ideas shared": "8%",
+   "frontier": "1.8",
+   "reach level 5": "28%",
+   "targets solved": "0.4"
   },
   {
    "α": 0.6,
-   "intermediate ideas shared": "21%",
-   "frontier": "3.9",
+   "intermediate ideas shared": "28%",
+   "frontier": "4.0",
    "reach level 5": "67%",
    "targets solved": "1.0"
   },
   {
    "α": 0.5,
-   "intermediate ideas shared": "29%",
-   "frontier": "4.1",
-   "reach level 5": "68%",
-   "targets solved": "1.0"
+   "intermediate ideas shared": "40%",
+   "frontier": "4.3",
+   "reach level 5": "73%",
+   "targets solved": "1.1"
   },
   {
    "α": 0.4,
-   "intermediate ideas shared": "37%",
-   "frontier": "4.5",
-   "reach level 5": "79%",
-   "targets solved": "1.2"
-  },
-  {
-   "α": 0.3,
-   "intermediate ideas shared": "47%",
+   "intermediate ideas shared": "45%",
    "frontier": "4.8",
-   "reach level 5": "92%",
+   "reach level 5": "91%",
    "targets solved": "1.5"
   },
   {
-   "α": 0.2,
-   "intermediate ideas shared": "54%",
+   "α": 0.3,
+   "intermediate ideas shared": "50%",
    "frontier": "4.8",
-   "reach level 5": "89%",
+   "reach level 5": "91%",
    "targets solved": "1.6"
   },
   {
+   "α": 0.2,
+   "intermediate ideas shared": "56%",
+   "frontier": "4.8",
+   "reach level 5": "86%",
+   "targets solved": "1.5"
+  },
+  {
    "α": 0.1,
-   "intermediate ideas shared": "63%",
-   "frontier": "5.0",
-   "reach level 5": "98%",
-   "targets solved": "1.8"
+   "intermediate ideas shared": "62%",
+   "frontier": "4.9",
+   "reach level 5": "94%",
+   "targets solved": "1.7"
   }
  ],
  "robustness": [
   {
    "shared knowledge": "free and correct",
-   "traditional frontier": "1.6",
+   "traditional frontier": "0.3",
    "OSO frontier": "5.0",
-   "OSO lead": "+3.4",
-   "traditional targets": "0.4",
+   "OSO lead": "+4.7",
+   "traditional targets": "0.1",
    "OSO targets": "1.9"
   },
   {
    "shared knowledge": "costly to take up",
-   "traditional frontier": "1.6",
-   "OSO frontier": "4.8",
-   "OSO lead": "+3.1",
-   "traditional targets": "0.4",
-   "OSO targets": "1.3"
+   "traditional frontier": "0.3",
+   "OSO frontier": "4.7",
+   "OSO lead": "+4.4",
+   "traditional targets": "0.1",
+   "OSO targets": "1.2"
   },
   {
    "shared knowledge": "sometimes wrong",
-   "traditional frontier": "1.3",
-   "OSO frontier": "5.0",
-   "OSO lead": "+3.7",
-   "traditional targets": "0.3",
-   "OSO targets": "1.8"
+   "traditional frontier": "0.1",
+   "OSO frontier": "4.9",
+   "OSO lead": "+4.8",
+   "traditional targets": "0.0",
+   "OSO targets": "1.6"
   },
   {
    "shared knowledge": "costly and sometimes wrong",
-   "traditional frontier": "1.3",
-   "OSO frontier": "4.6",
-   "OSO lead": "+3.4",
-   "traditional targets": "0.3",
-   "OSO targets": "1.0"
+   "traditional frontier": "0.1",
+   "OSO frontier": "4.5",
+   "OSO lead": "+4.4",
+   "traditional targets": "0.0",
+   "OSO targets": "0.9"
   }
  ],
  "sensitivity": [
@@ -302,523 +302,523 @@
    "parameter": "α, absorption rate",
    "value": "0.2",
    "OSO frontier": "4.8",
-   "traditional frontier": "1.6",
-   "OSO lead": "+3.2",
-   "OSO targets": "1.6",
-   "traditional targets": "0.4",
-   "ideas shared": "54%"
+   "traditional frontier": "0.3",
+   "OSO lead": "+4.5",
+   "OSO targets": "1.5",
+   "traditional targets": "0.1",
+   "ideas shared": "56%"
   },
   {
    "parameter": "α, absorption rate",
    "value": "0.4",
-   "OSO frontier": "4.5",
-   "traditional frontier": "1.6",
-   "OSO lead": "+2.9",
-   "OSO targets": "1.2",
-   "traditional targets": "0.4",
-   "ideas shared": "37%"
+   "OSO frontier": "4.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+4.5",
+   "OSO targets": "1.5",
+   "traditional targets": "0.1",
+   "ideas shared": "45%"
   },
   {
    "parameter": "α, absorption rate",
    "value": "0.6",
-   "OSO frontier": "3.9",
-   "traditional frontier": "1.6",
-   "OSO lead": "+2.2",
+   "OSO frontier": "4.0",
+   "traditional frontier": "0.3",
+   "OSO lead": "+3.7",
    "OSO targets": "1.0",
-   "traditional targets": "0.4",
-   "ideas shared": "21%"
+   "traditional targets": "0.1",
+   "ideas shared": "28%"
   },
   {
    "parameter": "α, absorption rate",
    "value": "0.8 (this space)",
-   "OSO frontier": "2.7",
-   "traditional frontier": "1.6",
-   "OSO lead": "+1.0",
-   "OSO targets": "0.5",
-   "traditional targets": "0.4",
-   "ideas shared": "10%"
+   "OSO frontier": "1.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.5",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "ideas shared": "8%"
   },
   {
    "parameter": "α, absorption rate",
    "value": "0.95",
-   "OSO frontier": "2.6",
-   "traditional frontier": "1.6",
-   "OSO lead": "+0.9",
-   "OSO targets": "0.5",
-   "traditional targets": "0.4",
-   "ideas shared": "7%"
+   "OSO frontier": "1.3",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.0",
+   "OSO targets": "0.3",
+   "traditional targets": "0.1",
+   "ideas shared": "5%"
   },
   {
    "parameter": "c, cited share of the mint",
    "value": "0%",
-   "OSO frontier": "2.8",
-   "traditional frontier": "1.6",
-   "OSO lead": "+1.1",
-   "OSO targets": "0.5",
-   "traditional targets": "0.4",
-   "ideas shared": "10%"
+   "OSO frontier": "1.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.5",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "ideas shared": "8%"
   },
   {
    "parameter": "c, cited share of the mint",
    "value": "5%",
-   "OSO frontier": "2.8",
-   "traditional frontier": "1.6",
-   "OSO lead": "+1.1",
-   "OSO targets": "0.5",
-   "traditional targets": "0.4",
-   "ideas shared": "10%"
+   "OSO frontier": "1.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.5",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "ideas shared": "8%"
   },
   {
    "parameter": "c, cited share of the mint",
    "value": "15% (this space)",
-   "OSO frontier": "2.7",
-   "traditional frontier": "1.6",
-   "OSO lead": "+1.0",
-   "OSO targets": "0.5",
-   "traditional targets": "0.4",
-   "ideas shared": "10%"
+   "OSO frontier": "1.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.5",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "ideas shared": "8%"
   },
   {
    "parameter": "c, cited share of the mint",
    "value": "30%",
-   "OSO frontier": "2.9",
-   "traditional frontier": "1.6",
-   "OSO lead": "+1.2",
-   "OSO targets": "0.6",
-   "traditional targets": "0.4",
-   "ideas shared": "11%"
+   "OSO frontier": "1.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.5",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "ideas shared": "8%"
   },
   {
    "parameter": "c, cited share of the mint",
    "value": "50%",
-   "OSO frontier": "2.8",
-   "traditional frontier": "1.6",
-   "OSO lead": "+1.1",
-   "OSO targets": "0.6",
-   "traditional targets": "0.4",
-   "ideas shared": "11%"
+   "OSO frontier": "1.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.5",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "ideas shared": "8%"
   },
   {
    "parameter": "mint per idea",
-   "value": "0",
-   "OSO frontier": "1.6",
-   "traditional frontier": "0.5",
-   "OSO lead": "+1.1",
-   "OSO targets": "0.3",
+   "value": "0 (this space)",
+   "OSO frontier": "1.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.5",
+   "OSO targets": "0.4",
    "traditional targets": "0.1",
-   "ideas shared": "6%"
+   "ideas shared": "8%"
   },
   {
    "parameter": "mint per idea",
    "value": "0.5",
-   "OSO frontier": "2.7",
-   "traditional frontier": "1.8",
-   "OSO lead": "+1.0",
-   "OSO targets": "0.6",
-   "traditional targets": "0.5",
-   "ideas shared": "10%"
-  },
-  {
-   "parameter": "mint per idea",
-   "value": "1 (this space)",
-   "OSO frontier": "2.7",
-   "traditional frontier": "1.6",
-   "OSO lead": "+1.0",
-   "OSO targets": "0.5",
-   "traditional targets": "0.4",
-   "ideas shared": "10%"
-  },
-  {
-   "parameter": "mint per idea",
-   "value": "2",
-   "OSO frontier": "3.0",
-   "traditional frontier": "1.8",
-   "OSO lead": "+1.3",
-   "OSO targets": "0.7",
-   "traditional targets": "0.4",
-   "ideas shared": "11%"
-  },
-  {
-   "parameter": "mint per idea",
-   "value": "4",
-   "OSO frontier": "3.2",
-   "traditional frontier": "1.8",
-   "OSO lead": "+1.5",
-   "OSO targets": "0.7",
-   "traditional targets": "0.4",
-   "ideas shared": "14%"
-  },
-  {
-   "parameter": "θ, validation screen",
-   "value": "0%",
-   "OSO frontier": "3.2",
-   "traditional frontier": "2.1",
-   "OSO lead": "+1.1",
-   "OSO targets": "0.7",
-   "traditional targets": "0.6",
-   "ideas shared": "11%"
-  },
-  {
-   "parameter": "θ, validation screen",
-   "value": "25%",
-   "OSO frontier": "3.0",
-   "traditional frontier": "2.1",
-   "OSO lead": "+0.9",
-   "OSO targets": "0.6",
-   "traditional targets": "0.6",
-   "ideas shared": "10%"
-  },
-  {
-   "parameter": "θ, validation screen",
-   "value": "50% (this space)",
-   "OSO frontier": "2.7",
-   "traditional frontier": "1.6",
-   "OSO lead": "+1.0",
-   "OSO targets": "0.5",
-   "traditional targets": "0.4",
-   "ideas shared": "10%"
-  },
-  {
-   "parameter": "θ, validation screen",
-   "value": "75%",
-   "OSO frontier": "2.2",
-   "traditional frontier": "1.4",
-   "OSO lead": "+0.8",
-   "OSO targets": "0.4",
-   "traditional targets": "0.4",
-   "ideas shared": "7%"
-  },
-  {
-   "parameter": "θ, validation screen",
-   "value": "95%",
-   "OSO frontier": "2.4",
+   "OSO frontier": "1.4",
    "traditional frontier": "0.7",
-   "OSO lead": "+1.8",
-   "OSO targets": "0.6",
+   "OSO lead": "+0.8",
+   "OSO targets": "0.1",
    "traditional targets": "0.2",
    "ideas shared": "9%"
   },
   {
-   "parameter": "f, earnings shape next round's money",
-   "value": "0%",
-   "OSO frontier": "1.7",
-   "traditional frontier": "0.4",
-   "OSO lead": "+1.3",
-   "OSO targets": "0.2",
+   "parameter": "mint per idea",
+   "value": "1",
+   "OSO frontier": "1.5",
+   "traditional frontier": "0.6",
+   "OSO lead": "+0.9",
+   "OSO targets": "0.1",
    "traditional targets": "0.1",
-   "ideas shared": "7%"
+   "ideas shared": "8%"
+  },
+  {
+   "parameter": "mint per idea",
+   "value": "2",
+   "OSO frontier": "1.8",
+   "traditional frontier": "0.6",
+   "OSO lead": "+1.2",
+   "OSO targets": "0.3",
+   "traditional targets": "0.1",
+   "ideas shared": "10%"
+  },
+  {
+   "parameter": "mint per idea",
+   "value": "4",
+   "OSO frontier": "2.2",
+   "traditional frontier": "0.6",
+   "OSO lead": "+1.6",
+   "OSO targets": "0.2",
+   "traditional targets": "0.2",
+   "ideas shared": "15%"
+  },
+  {
+   "parameter": "θ, validation screen",
+   "value": "0%",
+   "OSO frontier": "1.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.5",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "ideas shared": "8%"
+  },
+  {
+   "parameter": "θ, validation screen",
+   "value": "25%",
+   "OSO frontier": "1.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.5",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "ideas shared": "8%"
+  },
+  {
+   "parameter": "θ, validation screen",
+   "value": "50% (this space)",
+   "OSO frontier": "1.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.5",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "ideas shared": "8%"
+  },
+  {
+   "parameter": "θ, validation screen",
+   "value": "75%",
+   "OSO frontier": "1.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.5",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "ideas shared": "8%"
+  },
+  {
+   "parameter": "θ, validation screen",
+   "value": "95%",
+   "OSO frontier": "1.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.5",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "ideas shared": "8%"
   },
   {
    "parameter": "f, earnings shape next round's money",
-   "value": "25%",
-   "OSO frontier": "1.5",
-   "traditional frontier": "0.5",
-   "OSO lead": "+1.0",
-   "OSO targets": "0.2",
+   "value": "0%",
+   "OSO frontier": "1.0",
+   "traditional frontier": "0.3",
+   "OSO lead": "+0.7",
+   "OSO targets": "0.0",
    "traditional targets": "0.1",
    "ideas shared": "6%"
   },
   {
    "parameter": "f, earnings shape next round's money",
-   "value": "50% (this space)",
-   "OSO frontier": "2.7",
-   "traditional frontier": "1.6",
+   "value": "25%",
+   "OSO frontier": "1.3",
+   "traditional frontier": "0.3",
    "OSO lead": "+1.0",
-   "OSO targets": "0.5",
-   "traditional targets": "0.4",
-   "ideas shared": "10%"
+   "OSO targets": "0.1",
+   "traditional targets": "0.1",
+   "ideas shared": "7%"
+  },
+  {
+   "parameter": "f, earnings shape next round's money",
+   "value": "50% (this space)",
+   "OSO frontier": "1.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.5",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "ideas shared": "8%"
   },
   {
    "parameter": "f, earnings shape next round's money",
    "value": "75%",
-   "OSO frontier": "3.8",
-   "traditional frontier": "3.4",
-   "OSO lead": "+0.4",
-   "OSO targets": "1.1",
-   "traditional targets": "1.1",
-   "ideas shared": "13%"
+   "OSO frontier": "1.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.5",
+   "OSO targets": "0.6",
+   "traditional targets": "0.1",
+   "ideas shared": "10%"
   },
   {
    "parameter": "f, earnings shape next round's money",
    "value": "100%",
-   "OSO frontier": "4.4",
-   "traditional frontier": "4.0",
-   "OSO lead": "+0.5",
-   "OSO targets": "1.5",
-   "traditional targets": "1.4",
-   "ideas shared": "19%"
+   "OSO frontier": "1.9",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.6",
+   "OSO targets": "0.6",
+   "traditional targets": "0.1",
+   "ideas shared": "10%"
   },
   {
    "parameter": "ψ, scoop risk",
    "value": "0",
    "OSO frontier": "5.0",
-   "traditional frontier": "1.6",
-   "OSO lead": "+3.4",
+   "traditional frontier": "0.3",
+   "OSO lead": "+4.7",
    "OSO targets": "1.9",
-   "traditional targets": "0.4",
-   "ideas shared": "99%"
+   "traditional targets": "0.1",
+   "ideas shared": "100%"
   },
   {
    "parameter": "ψ, scoop risk",
    "value": "0.25",
-   "OSO frontier": "3.0",
-   "traditional frontier": "1.6",
-   "OSO lead": "+1.4",
-   "OSO targets": "0.7",
-   "traditional targets": "0.4",
-   "ideas shared": "13%"
+   "OSO frontier": "2.6",
+   "traditional frontier": "0.3",
+   "OSO lead": "+2.3",
+   "OSO targets": "0.5",
+   "traditional targets": "0.1",
+   "ideas shared": "14%"
   },
   {
    "parameter": "ψ, scoop risk",
    "value": "0.5 (this space)",
-   "OSO frontier": "2.7",
-   "traditional frontier": "1.6",
-   "OSO lead": "+1.0",
-   "OSO targets": "0.5",
-   "traditional targets": "0.4",
-   "ideas shared": "10%"
+   "OSO frontier": "1.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.5",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "ideas shared": "8%"
   },
   {
    "parameter": "ψ, scoop risk",
    "value": "0.75",
-   "OSO frontier": "2.6",
-   "traditional frontier": "1.6",
-   "OSO lead": "+1.0",
-   "OSO targets": "0.5",
-   "traditional targets": "0.4",
-   "ideas shared": "9%"
+   "OSO frontier": "1.5",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.2",
+   "OSO targets": "0.3",
+   "traditional targets": "0.1",
+   "ideas shared": "6%"
   },
   {
    "parameter": "ψ, scoop risk",
    "value": "0.9",
-   "OSO frontier": "2.5",
-   "traditional frontier": "1.6",
-   "OSO lead": "+0.9",
-   "OSO targets": "0.5",
-   "traditional targets": "0.4",
-   "ideas shared": "8%"
+   "OSO frontier": "1.4",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.1",
+   "OSO targets": "0.3",
+   "traditional targets": "0.1",
+   "ideas shared": "5%"
   },
   {
    "parameter": "κ, value of being used",
    "value": "0",
-   "OSO frontier": "2.4",
-   "traditional frontier": "1.6",
-   "OSO lead": "+0.8",
-   "OSO targets": "0.4",
-   "traditional targets": "0.4",
-   "ideas shared": "7%"
+   "OSO frontier": "1.3",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.0",
+   "OSO targets": "0.2",
+   "traditional targets": "0.1",
+   "ideas shared": "5%"
   },
   {
    "parameter": "κ, value of being used",
    "value": "0.5",
-   "OSO frontier": "2.5",
-   "traditional frontier": "1.6",
-   "OSO lead": "+0.9",
-   "OSO targets": "0.5",
-   "traditional targets": "0.4",
-   "ideas shared": "8%"
+   "OSO frontier": "1.6",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.3",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "ideas shared": "7%"
   },
   {
    "parameter": "κ, value of being used",
    "value": "1 (this space)",
-   "OSO frontier": "2.7",
-   "traditional frontier": "1.6",
-   "OSO lead": "+1.0",
-   "OSO targets": "0.5",
-   "traditional targets": "0.4",
-   "ideas shared": "10%"
+   "OSO frontier": "1.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.5",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "ideas shared": "8%"
   },
   {
    "parameter": "κ, value of being used",
    "value": "2",
-   "OSO frontier": "2.9",
-   "traditional frontier": "1.6",
-   "OSO lead": "+1.3",
-   "OSO targets": "0.6",
-   "traditional targets": "0.4",
-   "ideas shared": "12%"
+   "OSO frontier": "2.1",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.8",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "ideas shared": "11%"
   },
   {
    "parameter": "κ, value of being used",
    "value": "4",
-   "OSO frontier": "3.2",
-   "traditional frontier": "1.6",
-   "OSO lead": "+1.6",
-   "OSO targets": "0.7",
-   "traditional targets": "0.4",
-   "ideas shared": "16%"
+   "OSO frontier": "2.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+2.5",
+   "OSO targets": "0.5",
+   "traditional targets": "0.1",
+   "ideas shared": "19%"
   },
   {
    "parameter": "σ₀, perception noise",
    "value": "0",
-   "OSO frontier": "2.8",
-   "traditional frontier": "1.9",
+   "OSO frontier": "1.2",
+   "traditional frontier": "0.2",
    "OSO lead": "+1.0",
-   "OSO targets": "0.6",
-   "traditional targets": "0.5",
-   "ideas shared": "8%"
+   "OSO targets": "0.3",
+   "traditional targets": "0.0",
+   "ideas shared": "5%"
   },
   {
    "parameter": "σ₀, perception noise",
    "value": "0.5",
-   "OSO frontier": "2.8",
-   "traditional frontier": "1.7",
-   "OSO lead": "+1.1",
-   "OSO targets": "0.7",
-   "traditional targets": "0.5",
-   "ideas shared": "7%"
+   "OSO frontier": "1.2",
+   "traditional frontier": "0.2",
+   "OSO lead": "+1.0",
+   "OSO targets": "0.3",
+   "traditional targets": "0.0",
+   "ideas shared": "5%"
   },
   {
    "parameter": "σ₀, perception noise",
    "value": "1 (this space)",
-   "OSO frontier": "2.7",
-   "traditional frontier": "1.6",
-   "OSO lead": "+1.0",
-   "OSO targets": "0.5",
-   "traditional targets": "0.4",
-   "ideas shared": "10%"
+   "OSO frontier": "1.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.5",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "ideas shared": "8%"
   },
   {
    "parameter": "σ₀, perception noise",
    "value": "2",
-   "OSO frontier": "3.0",
-   "traditional frontier": "1.7",
-   "OSO lead": "+1.3",
+   "OSO frontier": "2.4",
+   "traditional frontier": "0.2",
+   "OSO lead": "+2.1",
    "OSO targets": "0.5",
-   "traditional targets": "0.5",
+   "traditional targets": "0.1",
    "ideas shared": "14%"
   },
   {
    "parameter": "τ, choice randomness",
    "value": "0.05",
-   "OSO frontier": "2.5",
-   "traditional frontier": "2.2",
-   "OSO lead": "+0.3",
-   "OSO targets": "0.7",
-   "traditional targets": "0.6",
+   "OSO frontier": "1.1",
+   "traditional frontier": "0.3",
+   "OSO lead": "+0.8",
+   "OSO targets": "0.3",
+   "traditional targets": "0.1",
    "ideas shared": "5%"
   },
   {
    "parameter": "τ, choice randomness",
    "value": "0.15",
-   "OSO frontier": "2.9",
-   "traditional frontier": "2.3",
-   "OSO lead": "+0.6",
-   "OSO targets": "0.8",
-   "traditional targets": "0.6",
-   "ideas shared": "6%"
+   "OSO frontier": "1.1",
+   "traditional frontier": "0.3",
+   "OSO lead": "+0.8",
+   "OSO targets": "0.2",
+   "traditional targets": "0.1",
+   "ideas shared": "4%"
   },
   {
    "parameter": "τ, choice randomness",
    "value": "0.3 (this space)",
-   "OSO frontier": "2.7",
-   "traditional frontier": "1.6",
-   "OSO lead": "+1.0",
-   "OSO targets": "0.5",
-   "traditional targets": "0.4",
-   "ideas shared": "10%"
+   "OSO frontier": "1.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.5",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "ideas shared": "8%"
   },
   {
    "parameter": "τ, choice randomness",
    "value": "0.6",
-   "OSO frontier": "2.4",
-   "traditional frontier": "1.1",
-   "OSO lead": "+1.3",
-   "OSO targets": "0.4",
-   "traditional targets": "0.3",
-   "ideas shared": "11%"
+   "OSO frontier": "2.1",
+   "traditional frontier": "0.1",
+   "OSO lead": "+2.0",
+   "OSO targets": "0.5",
+   "traditional targets": "0.0",
+   "ideas shared": "13%"
   },
   {
    "parameter": "τ, choice randomness",
    "value": "1",
-   "OSO frontier": "2.6",
-   "traditional frontier": "0.9",
-   "OSO lead": "+1.7",
-   "OSO targets": "0.3",
-   "traditional targets": "0.2",
-   "ideas shared": "13%"
+   "OSO frontier": "2.2",
+   "traditional frontier": "0.1",
+   "OSO lead": "+2.1",
+   "OSO targets": "0.5",
+   "traditional targets": "0.0",
+   "ideas shared": "14%"
   },
   {
    "parameter": "attribution error",
    "value": "0 (this space)",
-   "OSO frontier": "2.7",
-   "traditional frontier": "1.6",
-   "OSO lead": "+1.0",
-   "OSO targets": "0.5",
-   "traditional targets": "0.4",
-   "ideas shared": "10%"
+   "OSO frontier": "1.8",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.5",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "ideas shared": "8%"
   },
   {
    "parameter": "attribution error",
    "value": "0.1",
-   "OSO frontier": "2.8",
-   "traditional frontier": "1.6",
-   "OSO lead": "+1.1",
-   "OSO targets": "0.5",
-   "traditional targets": "0.4",
-   "ideas shared": "9%"
+   "OSO frontier": "1.7",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.4",
+   "OSO targets": "0.4",
+   "traditional targets": "0.1",
+   "ideas shared": "7%"
   },
   {
    "parameter": "attribution error",
    "value": "0.3",
-   "OSO frontier": "3.0",
-   "traditional frontier": "1.6",
-   "OSO lead": "+1.3",
-   "OSO targets": "0.6",
-   "traditional targets": "0.4",
-   "ideas shared": "10%"
+   "OSO frontier": "1.7",
+   "traditional frontier": "0.3",
+   "OSO lead": "+1.4",
+   "OSO targets": "0.3",
+   "traditional targets": "0.1",
+   "ideas shared": "7%"
   },
   {
    "parameter": "attribution error",
    "value": "0.6",
-   "OSO frontier": "3.0",
-   "traditional frontier": "1.6",
+   "OSO frontier": "1.7",
+   "traditional frontier": "0.3",
    "OSO lead": "+1.4",
-   "OSO targets": "0.6",
-   "traditional targets": "0.4",
-   "ideas shared": "10%"
+   "OSO targets": "0.3",
+   "traditional targets": "0.1",
+   "ideas shared": "8%"
   }
  ],
  "flowBackGrid": [
   {
    "α \\ c": 0.95,
-   "0%": "7% · 2.6",
-   "5%": "7% · 2.6",
-   "15%": "7% · 2.6",
-   "30%": "7% · 2.6",
-   "50%": "7% · 2.5"
+   "0%": "5% · 1.3",
+   "5%": "5% · 1.3",
+   "15%": "5% · 1.3",
+   "30%": "5% · 1.3",
+   "50%": "5% · 1.3"
   },
   {
    "α \\ c": 0.8,
-   "0%": "10% · 2.8",
-   "5%": "10% · 2.8",
-   "15%": "10% · 2.7",
-   "30%": "11% · 2.9",
-   "50%": "11% · 2.8"
+   "0%": "8% · 1.8",
+   "5%": "8% · 1.8",
+   "15%": "8% · 1.8",
+   "30%": "8% · 1.8",
+   "50%": "8% · 1.8"
   },
   {
    "α \\ c": 0.6,
-   "0%": "21% · 3.9",
-   "5%": "21% · 3.9",
-   "15%": "21% · 3.9",
-   "30%": "21% · 3.9",
-   "50%": "21% · 4.0"
+   "0%": "28% · 4.0",
+   "5%": "28% · 4.0",
+   "15%": "28% · 4.0",
+   "30%": "28% · 4.0",
+   "50%": "28% · 4.0"
   },
   {
    "α \\ c": 0.4,
-   "0%": "38% · 4.6",
-   "5%": "37% · 4.6",
-   "15%": "37% · 4.5",
-   "30%": "38% · 4.5",
-   "50%": "37% · 4.5"
+   "0%": "45% · 4.8",
+   "5%": "45% · 4.8",
+   "15%": "45% · 4.8",
+   "30%": "45% · 4.8",
+   "50%": "45% · 4.8"
   },
   {
    "α \\ c": 0.2,
-   "0%": "54% · 4.8",
-   "5%": "54% · 4.8",
-   "15%": "54% · 4.8",
-   "30%": "53% · 4.8",
-   "50%": "53% · 4.9"
+   "0%": "56% · 4.8",
+   "5%": "56% · 4.8",
+   "15%": "56% · 4.8",
+   "30%": "56% · 4.8",
+   "50%": "56% · 4.8"
   }
  ],
  "curves": {
@@ -828,35 +828,51 @@
     0
    ],
    [
-    6.5,
+    4.5,
     0
    ],
    [
-    13,
+    9,
     0
    ],
    [
-    19.5,
+    13.5,
     0
    ],
    [
-    26,
+    18,
     0
    ],
    [
-    32.5,
+    22.5,
     0
    ],
    [
-    39,
+    27,
     0
    ],
    [
-    45.5,
+    31.5,
     0
    ],
    [
-    52,
+    36,
+    0
+   ],
+   [
+    40.5,
+    0
+   ],
+   [
+    45,
+    0
+   ],
+   [
+    49.5,
+    0
+   ],
+   [
+    54,
     0
    ],
    [
@@ -864,128 +880,112 @@
     0
    ],
    [
-    65,
+    63,
     0
    ],
    [
-    71.5,
+    67.5,
     0
    ],
    [
-    78,
+    72,
     0
    ],
    [
-    84.5,
+    76.5,
     0
    ],
    [
-    91,
+    81,
+    0
+   ],
+   [
+    85.5,
+    0
+   ],
+   [
+    90,
+    0
+   ],
+   [
+    94.5,
+    0
+   ],
+   [
+    99,
+    0
+   ],
+   [
+    103.5,
+    0
+   ],
+   [
+    108,
     0.05
    ],
    [
-    97.5,
+    112.5,
     0.05
-   ],
-   [
-    104,
-    0.05
-   ],
-   [
-    110.5,
-    0.1
    ],
    [
     117,
-    0.1
+    0.05
    ],
    [
-    123.5,
+    121.5,
     0.15
    ],
    [
-    130,
+    126,
+    0.15
+   ],
+   [
+    130.5,
+    0.15
+   ],
+   [
+    135,
+    0.15
+   ],
+   [
+    139.5,
+    0.15
+   ],
+   [
+    144,
+    0.15
+   ],
+   [
+    148.5,
+    0.15
+   ],
+   [
+    153,
+    0.15
+   ],
+   [
+    157.5,
+    0.2
+   ],
+   [
+    162,
+    0.2
+   ],
+   [
+    166.5,
+    0.2
+   ],
+   [
+    171,
     0.25
    ],
    [
-    136.5,
-    0.35
-   ],
-   [
-    143,
-    0.45
-   ],
-   [
-    149.5,
-    0.5
-   ],
-   [
-    156,
-    0.5
-   ],
-   [
-    162.5,
-    0.6
-   ],
-   [
-    169,
-    0.6
-   ],
-   [
     175.5,
-    0.65
+    0.25
    ],
    [
-    182,
-    0.75
-   ],
-   [
-    188.5,
-    0.8
-   ],
-   [
-    195,
-    0.9
-   ],
-   [
-    201.5,
-    0.95
-   ],
-   [
-    208,
-    0.95
-   ],
-   [
-    214.5,
-    0.95
-   ],
-   [
-    221,
-    1.15
-   ],
-   [
-    227.5,
-    1.15
-   ],
-   [
-    234,
-    1.3
-   ],
-   [
-    240.5,
-    1.35
-   ],
-   [
-    247,
-    1.45
-   ],
-   [
-    253.5,
-    1.5
-   ],
-   [
-    260,
-    1.65
+    180,
+    0.3
    ]
   ],
   "OSO (immediate)": [
@@ -994,163 +994,163 @@
     0
    ],
    [
-    6.5,
-    0.18
+    4.5,
+    0
    ],
    [
-    13,
-    0.18
+    9,
+    0
    ],
    [
-    19.5,
-    0.8
+    13.5,
+    0.91
    ],
    [
-    26,
-    0.9
+    18,
+    0.91
    ],
    [
-    32.5,
-    1.38
+    22.5,
+    1.16
    ],
    [
-    39,
-    1.5
+    27,
+    1.48
    ],
    [
-    45.5,
-    1.95
+    31.5,
+    1.56
    ],
    [
-    52,
-    2.18
+    36,
+    2.17
+   ],
+   [
+    40.5,
+    2.17
+   ],
+   [
+    45,
+    2.39
+   ],
+   [
+    49.5,
+    2.64
+   ],
+   [
+    54,
+    2.64
    ],
    [
     58.5,
-    2.45
+    2.79
    ],
    [
-    65,
-    2.66
+    63,
+    3.21
    ],
    [
-    71.5,
-    2.91
+    67.5,
+    3.33
    ],
    [
-    78,
-    3.23
+    72,
+    3.57
    ],
    [
-    84.5,
-    3.34
+    76.5,
+    3.57
    ],
    [
-    91,
-    3.7
+    81,
+    3.68
    ],
    [
-    97.5,
-    3.7
+    85.5,
+    4.02
    ],
    [
-    104,
-    3.95
+    90,
+    4.02
    ],
    [
-    110.5,
-    3.96
+    94.5,
+    4.25
+   ],
+   [
+    99,
+    4.32
+   ],
+   [
+    103.5,
+    4.38
+   ],
+   [
+    108,
+    4.56
+   ],
+   [
+    112.5,
+    4.56
    ],
    [
     117,
-    4.17
-   ],
-   [
-    123.5,
-    4.21
-   ],
-   [
-    130,
-    4.33
-   ],
-   [
-    136.5,
-    4.41
-   ],
-   [
-    143,
-    4.51
-   ],
-   [
-    149.5,
-    4.61
-   ],
-   [
-    156,
     4.63
    ],
    [
-    162.5,
-    4.72
+    121.5,
+    4.7
    ],
    [
-    169,
-    4.72
+    126,
+    4.7
    ],
    [
-    175.5,
-    4.8
+    130.5,
+    4.78
    ],
    [
-    182,
+    135,
     4.81
    ],
    [
-    188.5,
-    4.85
+    139.5,
+    4.83
    ],
    [
-    195,
-    4.87
-   ],
-   [
-    201.5,
-    4.91
-   ],
-   [
-    208,
-    4.92
-   ],
-   [
-    214.5,
+    144,
     4.93
    ],
    [
-    221,
-    4.97
+    148.5,
+    4.93
    ],
    [
-    227.5,
-    4.97
+    153,
+    4.95
    ],
    [
-    234,
+    157.5,
     4.98
    ],
    [
-    240.5,
+    162,
     4.98
    ],
    [
-    247,
-    5
+    166.5,
+    4.99
    ],
    [
-    253.5,
-    5
+    171,
+    4.99
    ],
    [
-    260,
+    175.5,
+    4.99
+   ],
+   [
+    180,
     5
    ]
   ],
@@ -1160,164 +1160,164 @@
     0
    ],
    [
-    6.5,
-    0.02
+    4.5,
+    0
    ],
    [
-    13,
-    0.02
+    9,
+    0
    ],
    [
-    19.5,
-    0.05
+    13.5,
+    0.1
    ],
    [
-    26,
-    0.05
+    18,
+    0.1
    ],
    [
-    32.5,
-    0.07
+    22.5,
+    0.1
    ],
    [
-    39,
-    0.07
+    27,
+    0.13
    ],
    [
-    45.5,
-    0.12
+    31.5,
+    0.13
    ],
    [
-    52,
-    0.12
+    36,
+    0.22
    ],
    [
-    58.5,
-    0.14
+    40.5,
+    0.22
    ],
    [
-    65,
-    0.17
+    45,
+    0.22
    ],
    [
-    71.5,
-    0.23
-   ],
-   [
-    78,
-    0.23
-   ],
-   [
-    84.5,
+    49.5,
     0.24
    ],
    [
-    91,
+    54,
+    0.24
+   ],
+   [
+    58.5,
+    0.24
+   ],
+   [
+    63,
+    0.29
+   ],
+   [
+    67.5,
+    0.32
+   ],
+   [
+    72,
     0.39
    ],
    [
-    97.5,
+    76.5,
     0.39
    ],
    [
-    104,
-    0.43
+    81,
+    0.39
    ],
    [
-    110.5,
+    85.5,
+    0.46
+   ],
+   [
+    90,
+    0.46
+   ],
+   [
+    94.5,
     0.5
    ],
    [
-    117,
-    0.56
+    99,
+    0.58
    ],
    [
-    123.5,
-    0.6
+    103.5,
+    0.58
    ],
    [
-    130,
+    108,
     0.69
    ],
    [
-    136.5,
-    0.78
+    112.5,
+    0.69
    ],
    [
-    143,
+    117,
+    0.79
+   ],
+   [
+    121.5,
     0.9
    ],
    [
-    149.5,
-    0.97
+    126,
+    0.9
    ],
    [
-    156,
-    0.98
+    130.5,
+    0.96
    ],
    [
-    162.5,
-    1.26
+    135,
+    1.02
    ],
    [
-    169,
-    1.27
+    139.5,
+    1.06
    ],
    [
-    175.5,
+    144,
+    1.18
+   ],
+   [
+    148.5,
+    1.18
+   ],
+   [
+    153,
+    1.2
+   ],
+   [
+    157.5,
+    1.4
+   ],
+   [
+    162,
+    1.4
+   ],
+   [
+    166.5,
     1.44
    ],
    [
-    182,
-    1.53
+    171,
+    1.55
    ],
    [
-    188.5,
-    1.58
+    175.5,
+    1.62
    ],
    [
-    195,
-    1.64
-   ],
-   [
-    201.5,
-    1.67
-   ],
-   [
-    208,
-    1.69
-   ],
-   [
-    214.5,
-    1.71
-   ],
-   [
-    221,
-    1.97
-   ],
-   [
-    227.5,
-    1.97
-   ],
-   [
-    234,
-    2.35
-   ],
-   [
-    240.5,
-    2.41
-   ],
-   [
-    247,
-    2.55
-   ],
-   [
-    253.5,
-    2.61
-   ],
-   [
-    260,
-    2.67
+    180,
+    1.79
    ]
   ]
  },

@@ -1,0 +1,103 @@
+{
+ "chart": "results/simple-ideas-6x8-p2-len3g2-comp0-7-step2-by-alpha-20261025/figures/compare.svg",
+ "id": "simple-ideas-6x8-p2-len3g2-comp0-7-step2-by-alpha-20261025",
+ "kind": "simulation",
+ "date": "2026-10-25",
+ "title": "Step 2: Agents choose what to share",
+ "design": {
+  "question": "With agents choose what to share, how far does a society get for the same money, and how much do agents share, by α?",
+  "compare": "traditional against agents choosing what to share, at α in {1, 0.8, 0.2, 0}",
+  "fixed": "a generated idea graph (6 levels × 8 ideas, 2 parents each, sequences of 3 bits growing by 2 per level, composition 0.7), 12 identical agents, budget 1200 split equally, no flat mint, knowledge reward 1 per new bit, no validation; plus agents choose what to share",
+  "measure": "all of hardest level, targets solved, bounty value, ROI, knowledge found (bits), knowledge per unit of money, money to the main level, waste",
+  "better": "higher",
+  "runs": "100 runs per row"
+ },
+ "answer": "Best overall: Agents choose, α = 0. Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, knowledge found (bits), knowledge per unit of money, money to the main level and waste. (8 measures; a clear difference is more than 2.7 standard errors.)",
+ "answers": [
+  "hardest level: 6.00 against traditional 0.48, clearly better.",
+  "targets solved: 2.00 against traditional 0.09, clearly better.",
+  "bounty value: 256 against traditional 12, clearly better.",
+  "ROI: 0.47 against traditional 0.01, clearly better.",
+  "knowledge found (bits): 126 against traditional 60, clearly better.",
+  "knowledge per unit of money: 0.22 against traditional 0.05, clearly better.",
+  "money to the main level: 323 against traditional 932, clearly better.",
+  "waste: 0.54 against traditional 0.72, clearly better."
+ ],
+ "table": [
+  {
+   "society": "Traditional (α = 1, finished work only)",
+   "frontier": "0.5 ± 1.6",
+   "targets solved": "0.1 ± 0.3",
+   "value gained": "12 ± 41",
+   "ROI (value per spend)": "0.01 ± 0.04",
+   "knowledge (bits)": "60 ± 8",
+   "bits per money": "0.051 ± 0.007",
+   "cost": "932 ± 300",
+   "waste": "0.72 ± 0.04"
+  },
+  {
+   "society": "Agents choose, α = 1",
+   "frontier": "4.9 ± 1.4",
+   "targets solved": "0.4 ± 0.6",
+   "value gained": "49 ± 83",
+   "ROI (value per spend)": "0.04 ± 0.08",
+   "knowledge (bits)": "76 ± 17",
+   "bits per money": "0.065 ± 0.016",
+   "cost": "895 ± 218",
+   "waste": "0.70 ± 0.05"
+  },
+  {
+   "society": "Agents choose, α = 0.8",
+   "frontier": "5.4 ± 1.0",
+   "targets solved": "0.6 ± 0.8",
+   "value gained": "79 ± 104",
+   "ROI (value per spend)": "0.07 ± 0.10",
+   "knowledge (bits)": "82 ± 16",
+   "bits per money": "0.072 ± 0.018",
+   "cost": "871 ± 250",
+   "waste": "0.70 ± 0.04"
+  },
+  {
+   "society": "Agents choose, α = 0.2",
+   "frontier": "6.0 ± 0.0",
+   "targets solved": "2.0 ± 0.0",
+   "value gained": "256 ± 0",
+   "ROI (value per spend)": "0.45 ± 0.13",
+   "knowledge (bits)": "107 ± 16",
+   "bits per money": "0.182 ± 0.037",
+   "cost": "439 ± 138",
+   "waste": "0.54 ± 0.06"
+  },
+  {
+   "society": "Agents choose, α = 0",
+   "frontier": "6.0 ± 0.0",
+   "targets solved": "2.0 ± 0.0",
+   "value gained": "256 ± 0",
+   "ROI (value per spend)": "0.47 ± 0.14",
+   "knowledge (bits)": "126 ± 13",
+   "bits per money": "0.223 ± 0.050",
+   "cost": "323 ± 117",
+   "waste": "0.54 ± 0.09"
+  }
+ ],
+ "caveats": [
+  "A simulation with guessed parameters: it shows how the rules play out, not that they work."
+ ],
+ "page": "results/simple-ideas-6x8-p2-len3g2-comp0-7-step2-by-alpha-20261025/summary.md",
+ "tags": [
+  "simulation",
+  "simple model",
+  "generated idea graph",
+  "ideas",
+  "levels 6",
+  "parents 2",
+  "length 3",
+  "composition 0.7",
+  "alpha",
+  "step by step",
+  "step 2",
+  "steps 2026-10-25"
+ ],
+ "ranAt": "2026-10-25T17:03:16.845Z",
+ "modelVersion": 5
+}
