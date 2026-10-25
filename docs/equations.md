@@ -205,7 +205,7 @@ Reports made before October 24 used hand-written graphs; they are kept as earlie
 
 ### 3.2 The Lean problem set: parents required
 
-The Lean problem set's tree (the real structure of the theorems the AI models prove), and every result saved before October 23, use this rule: an idea can be attempted only once all its parents are known. The example tree follows it too.
+The Lean problem set's tree (the real structure of the theorems the AI models prove) uses this rule, as did every result on model version 1: an idea can be attempted only once all its parents are known. The example tree follows it too.
 
 - **Chance per attempt** falls with the level, once every parent is known; all parents are required:
 
