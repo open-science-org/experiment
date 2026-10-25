@@ -29,8 +29,8 @@ scenario:
   measures:
     targetLevel: 6
   budget:
-    X: 1400
-    rounds: 117
+    X: 1350
+    rounds: 113
     perAgentPerRound: null
 notes: A preset of the idea graph generator. Each stage reuses only part of the evidence before it
   (composition 0.5), many hits and leads go nowhere, and the stages get much harder. The numbers are
