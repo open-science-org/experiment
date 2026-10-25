@@ -171,7 +171,7 @@ function runOne(spec: ExperimentSpec) {
   ].join('\n'));
   const log = join(resultsDir, 'LOG.md');
   if (!existsSync(log)) {
-    writeFileSync(log, '# Simulation log\n\nOne line per saved experiment, newest last. Findings are discussed in [the simulator doc](../docs/simulator.md#5-results).\n\n| Date | Experiment | Commit | Seeds | Command |\n| --- | --- | --- | --- | --- |\n');
+    writeFileSync(log, '# Simulation log\n\nOne line per saved experiment, newest last. Results are browsed in the app (Runs → Results).\n\n| Date | Experiment | Commit | Seeds | Command |\n| --- | --- | --- | --- | --- |\n');
   }
   appendFileSync(log, `| ${date} | [${spec.id}](${spec.id}/summary.md) | \`${commit}\`${dirty ? ' (uncommitted changes)' : ''} | ${n} | \`${command}\` |\n`);
   console.log(`Saved to results/${spec.id}/ (commit ${commit}${dirty ? ', uncommitted changes' : ''}).`);

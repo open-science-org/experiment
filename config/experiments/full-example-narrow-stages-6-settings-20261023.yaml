@@ -1,7 +1,7 @@
 # Suite 2026-10-24: full model
 id: full-example-narrow-stages-6-settings-20261023
 title: full-example-narrow-stages-6-settings-20261023
-description: 'Designed in the app on the field "Early-stage drug discovery"
+description: 'Designed in the app on the narrow-stages example
   (spaces/example-narrow-stages.yaml): Traditional vs OSO (immediate) vs OSO (choice) vs Flow-back,
   finished-only vs No flow-back, immediate vs No flow-back, choice. α and c apply to the OSO
   (flow-back) settings only.'
@@ -45,20 +45,23 @@ columns:
   - targetsSolved
   - value
   - roi
+  - knowledge
+  - knowledgePublished
+  - knowledgePerMoney
   - cost
   - waste
   - sharing
   - reachTarget
-question: On the drug discovery preset, with every kind of agent and money following earnings, which
+question: On the narrow-stages example, with every kind of agent and earnings shaping next round's money, which
   of the six rule settings gets furthest?
 compare: Traditional, OSO (immediate), OSO (choice), Flow-back, finished-only, No flow-back,
   immediate, No flow-back, choice
-fixed: the field "Early-stage drug discovery"
+fixed: the narrow-stages example
 tags:
   - simulation
   - full model
   - example-narrow-stages
-  - Early-stage drug discovery
+  - narrow-stages example
   - Traditional
   - OSO (immediate)
   - OSO (choice)
