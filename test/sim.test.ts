@@ -300,7 +300,7 @@ test('the designer turns a design into a valid experiment and rejects bad design
   assert.equal(c.runs, 12);
   const spec = design.experimentFor(d);
   assert.equal(spec.factors?.[0].name, 'setting');
-  assert.equal((spec.set as Record<string, Record<string, unknown>>).budget.X, 230, 'uses the calibrated budget');
+  assert.equal((spec.set as Record<string, Record<string, unknown>>).budget.X, 260, 'uses the calibrated budget');
   assert.equal(design.checkExperiment({ ...d, id: 'Bad Name' }).ok, false);
   assert.equal(design.checkExperiment({ ...d, settings: [] }).ok, false);
   assert.equal(design.checkExperiment({ ...d, vary: [{ path: 'rules.nope', values: [1] }] }).ok, false);

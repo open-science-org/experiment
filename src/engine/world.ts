@@ -344,12 +344,18 @@ export function ideasWorld(params: IdeasParams, rng: Rng): World {
     const fromParents = new Set(prereqs[x].flatMap((y) => bits[y]));
     return 2 ** -b.filter((bit) => !fromParents.has(bit)).length;
   });
-  // Bounties on every level from targetsFrom to the top (the top only by default), spread across each level.
+  // Bounties on every level from targetsFrom to the top (the top only by default). On each such level they go,
+  // at random, to ideas among the half that rest on the most earlier ideas, the way a funder would pick ideas that
+  // need a lot of earlier work. Drawn from their own stream, so the graph and its sequences are unchanged.
   const bounty = new Array<number>(level.length).fill(0);
+  const before: Set<number>[] = [];
+  for (let x = 0; x < level.length; x++) { const a = new Set<number>(); for (const y of prereqs[x]) { a.add(y); for (const z of before[y]) a.add(z); } before.push(a); }
+  const pickRng = rng.fork(53);
   const from = params.targetsFrom >= 1 && params.targetsFrom <= levels ? params.targetsFrom : levels;
   for (let l = from; l <= levels; l++) {
     const row = byLevel[l], nT = Math.min(params.targets, row.length);
-    for (let k = 0; k < nT; k++) bounty[row[Math.floor((k + 0.5) * row.length / nT)]] = params.bountyBase * params.bountyGrowth ** (l - 1);
+    const pool = [...row].sort((x, y) => before[y].size - before[x].size || x - y).slice(0, Math.max(nT, Math.ceil(row.length / 2)));
+    for (const t of pickRng.shuffle(pool).slice(0, nT)) bounty[t] = params.bountyBase * params.bountyGrowth ** (l - 1);
   }
   // Each bit's toss, from its own stream so the graph and the run are unchanged.
   const tossRng = rng.fork(97);
