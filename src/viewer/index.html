@@ -540,8 +540,11 @@ async function exploreIn(id, root) {
   // An α × β grid (the simple model) can be drawn as a heat map.
   const ab = data.rows.map((r) => /α = ([\d.]+), β = ([\d.]+)/.exec(r.label)).map((m) => m && [Number(m[1]), Number(m[2])]);
   const grid = ab.every(Boolean) && new Set(ab.map((x) => x[0])).size > 1 && new Set(ab.map((x) => x[1])).size > 1;
+  // Agents choosing what to share (step by step, steps 2 to 5): β is an outcome, so draw sharing and a measure by α.
+  const choose = data.rows.map((r) => /^Agents choose, α = ([\d.]+)$/.exec(r.label)).map((m) => (m ? Number(m[1]) : null));
+  const byAlpha = choose.filter((x) => x !== null).length >= 2;
   box.innerHTML = `<div class="pane"><div class="row"><b>Compare on</b> <select id="x-measure">${data.measures.map((m) => `<option value="${m.id}">${esc(m.name)}</option>`).join('')}</select>
-      <select id="x-kind"><option value="dots">dot plot</option>${grid ? '<option value="heat" selected>heat map, α × β</option>' : ''}</select><span class="muted" id="x-note"></span></div><div id="x-bars"></div></div>
+      <select id="x-kind"><option value="dots">dot plot</option>${grid ? '<option value="heat" selected>heat map, α × β</option>' : ''}${byAlpha ? '<option value="alpha" selected>sharing and this measure, by α</option>' : ''}</select><span class="muted" id="x-note"></span></div><div id="x-bars"></div></div>
     ${hasProgress ? `<div class="pane"><div class="row"><b>Over the run</b> <select id="x-var">${data.progress.map((v) => `<option value="${v.id}">${esc(v.name)}</option>`).join('')}</select><label style="margin-right:6px"><input type="checkbox" id="x-logx"> log x</label><label style="margin-right:8px"><input type="checkbox" id="x-log"> log y</label><span class="muted" id="x-lognote">mean over runs, by money spent</span></div><div class="choice" id="x-rows"></div><div id="x-lines"></div></div>` : '<p class="muted">Progress over the run is recorded for runs made from 24 October on; rerun this experiment to see it.</p>'}`;
   if (img) img.replaceWith(box); else root.querySelector('h1')?.after(box);
   // A budget sweep: one line per society, budget on the x-axis.
@@ -625,10 +628,37 @@ async function exploreIn(id, root) {
     $('x-note').textContent = `darker = better (${m.better} is better). Traditional is α = 1, β = 0 (bottom left); OSO is β = 1.`;
     return svg + '</svg>';
   };
+  // Two panels, one scale each: left, the share of ideas agents chose to publish (β, an outcome); right, the
+  // chosen measure. α runs from 1 (nothing flows back) on the left to 0 on the right. Traditional: a dashed line.
+  const alphaView = (m) => {
+    const pts = data.rows.map((r, k) => ({ a: choose[k], r })).filter((p) => p.a !== null).sort((x, y) => y.a - x.a);
+    const trad = data.rows.find((r) => /^Traditional/.test(r.label));
+    const panel = (title, get, lo0, hi0, refLine) => {
+      const W = 330, H = 220, l = 46, rr = 14, t = 30, b = 40, pw = W - l - rr, ph = H - t - b;
+      const vals = pts.flatMap((p) => { const st = get(p.r); return st?.n ? [st.mean - 2 * se2(st), st.mean + 2 * se2(st)] : []; }).concat(refLine !== null ? [refLine] : []);
+      const nice = (x) => { const e = 10 ** Math.floor(Math.log10(x || 1)); return [1, 2, 2.5, 5, 10].map((k) => k * e).find((v) => v >= x); };
+      const lo = lo0 ?? Math.min(0, ...vals), hi = hi0 ?? nice(Math.max(...vals));
+      const sx = (a) => l + (1 - a) * pw, sy = (v) => t + ph - ((v - lo) / (hi - lo || 1)) * ph;
+      let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W * 1.3}px;height:auto" role="img" aria-label="${esc(title)} by α"><text x="${l}" y="16" font-size="13" font-weight="700" fill="var(--ink)">${esc(title)}</text>`;
+      for (let k = 0; k <= 4; k++) { const v = lo + ((hi - lo) * k) / 4; svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(v)}" y2="${sy(v)}" stroke="var(--line)"/><text x="${l - 6}" y="${sy(v) + 4}" text-anchor="end" font-size="10" fill="var(--ink-3)">${f(v)}</text>`; }
+      for (const a of [1, 0.8, 0.6, 0.4, 0.2, 0]) svg += `<text x="${sx(a)}" y="${t + ph + 15}" text-anchor="middle" font-size="10" fill="var(--ink-3)">${a}</text>`;
+      svg += `<text x="${l + pw / 2}" y="${H - 6}" text-anchor="middle" font-size="11" fill="var(--ink-3)">α (1: nothing flows back → 0: all flows back)</text>`;
+      if (refLine !== null) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(refLine)}" y2="${sy(refLine)}" stroke="var(--s1)" stroke-width="2" stroke-dasharray="6 4"/><text x="${l + pw - 2}" y="${sy(refLine) - 5}" text-anchor="end" font-size="10" font-weight="700" fill="var(--s1)">traditional ${f(refLine)}</text>`;
+      const xy = pts.map((p) => ({ a: p.a, st: get(p.r) })).filter((p) => p.st?.n);
+      svg += `<path d="${xy.map((p, k) => `${k ? 'L' : 'M'}${sx(p.a).toFixed(1)} ${sy(p.st.mean).toFixed(1)}`).join(' ')}" fill="none" stroke="var(--s2)" stroke-width="2"/>`;
+      for (const p of xy) { const e = 2 * se2(p.st); svg += `<line x1="${sx(p.a)}" x2="${sx(p.a)}" y1="${sy(p.st.mean - e)}" y2="${sy(p.st.mean + e)}" stroke="var(--s2)" stroke-width="2" opacity="0.5"/><circle cx="${sx(p.a)}" cy="${sy(p.st.mean)}" r="5" fill="var(--s2)" stroke="var(--surface)" stroke-width="2"><title>α = ${p.a}: ${f(p.st.mean)} ± ${f(2 * se2(p.st))} (${p.st.n} runs)</title></circle>`; }
+      return svg + '</svg>';
+    };
+    const shareTrad = trad?.stats.sharing?.n ? trad.stats.sharing.mean : null;
+    $('x-note').textContent = 'orange: agents choosing what to share; dashed blue: traditional. Bars: 95% interval.';
+    return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">${panel('Share of ideas published (β, chosen)', (r) => r.stats.sharing, 0, 1, shareTrad)}${panel(m.name, (r) => r.stats[m.id], null, null, trad?.stats[m.id]?.n ? trad.stats[m.id].mean : null)}</div>`;
+  };
+  const se2 = (st) => st.sd / Math.sqrt(Math.max(1, st.n));
   const bars = () => {
     const m = data.measures.find((x) => x.id === $('x-measure').value);
-    $('x-bars').innerHTML = $('x-kind').value === 'heat' && grid ? heat(m) : dots(m);
+    $('x-bars').innerHTML = $('x-kind').value === 'heat' && grid ? heat(m) : $('x-kind').value === 'alpha' && byAlpha ? alphaView(m) : dots(m);
   };
+  if (byAlpha) $('x-measure').value = 'targetsSolved';
   $('x-kind').onchange = bars;
   $('x-measure').onchange = bars; bars();
   if (!hasProgress) return;
