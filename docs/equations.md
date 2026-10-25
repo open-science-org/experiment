@@ -70,7 +70,7 @@ Grouped by what they belong to, in the order of the sections below. A hat marks 
 | $\text{Budget},\ R,\ N$ | total money, number of rounds, number of agents | 1200, 120, 12 |
 | $k_i$ | cost of one attempt | 1 (explorer 0.3) |
 | $f$ | funding: how far money follows past earnings | 0.5 |
-| $b_i,\ \bar E_i$ | agent $i$'s money this round, its recent earnings | |
+| $\text{money}_i,\ \bar E_i$ | agent $i$'s money this round, and its recent earnings | |
 
 **The mint** ([section 6](#6-the-mint))
 
@@ -246,9 +246,9 @@ $$\pi_{i,x} = \min\!\Big(\text{cap},\ s_i \, p_x \big(1 + \text{gain}\,(n^{\text
 
 Each round releases $\text{Budget}/R$. Agent $i$ gets part of it equally (out of $N$ agents) and part by its recent earnings $\bar E_i$:
 
-$$b_i = \frac{\text{Budget}}{R}\left[\frac{1-f}{N} + f\,\frac{\bar E_i}{\sum_{i'} \bar E_{i'}}\right] \qquad \bar E_i \leftarrow 0.7\,\bar E_i + 0.3 \times \text{this round's earnings}$$
+$$\text{money}_i = \frac{\text{Budget}}{R}\left[\frac{1-f}{N} + f\,\frac{\bar E_i}{\sum_{i'} \bar E_{i'}}\right] \qquad \bar E_i \leftarrow 0.7\,\bar E_i + 0.3 \times \text{this round's earnings}$$
 
-It makes $\lfloor b_i / k_i \rfloor$ attempts and keeps the rest for the next round. The run stops when the money is spent or every bounty is won.
+It makes $\lfloor \text{money}_i / k_i \rfloor$ attempts and keeps the rest for the next round. The run stops when the money is spent or every bounty is won.
 
 *Example:* with the defaults, each round releases $1200/120 = 10$. An agent earning nothing still gets $10 \times 0.5/12 \approx 0.42$; one earning half of everything gets $0.42 + 10 \times 0.5 \times 0.5 \approx 2.9$.
 

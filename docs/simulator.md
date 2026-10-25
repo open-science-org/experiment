@@ -186,9 +186,9 @@ The budget is 1,200 over R = 120 rounds, so 10 per round.
 
 1. **Budgets.** Agent i gets:
 
-   b_i = 10 · [ (1 − f)/12 + f · Ē_i / Σ Ē ]
+   money_i = 10 · [ (1 − f)/12 + f · Ē_i / Σ Ē ]
 
-   with f = 0.5. Ē_i is its smoothed recent earnings: Ē ← 0.7·Ē + 0.3·(this round's earnings). Before anyone earns, the split is equal. An agent makes floor(b_i / k_i) attempts and carries the remainder to the next round. All attempts in a round are shuffled, so agents interleave and race.
+   with f = 0.5. Ē_i is its smoothed recent earnings: Ē ← 0.7·Ē + 0.3·(this round's earnings). Before anyone earns, the split is equal. An agent makes floor(money_i / k_i) attempts and carries the remainder to the next round. All attempts in a round are shuffled, so agents interleave and race.
 2. **Delayed publications** due this round are made.
 3. **Rivals.** For each idea, count how many agents could attempt it now. This is the race estimate used in scoring.
 4. **Attempts,** one at a time:

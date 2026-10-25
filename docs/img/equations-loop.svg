@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 615" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-label="One round as a loop of six steps. 1 Money: each agent gets b_i, part equal and part by recent earnings, weighted by rho. 2 Choose what to attempt: the idea with the best score U. 3 Try: success chance pi = s times p, number of attempts b over k. 4 Share or keep: publish if the gain beats the scoop risk. 5 Rewards: the mint and the bounty; the author keeps alpha, the absorption rate, and 1 minus alpha flows back to the ideas it built on; traditional alpha 1 and c 0, OSO alpha 0.8 and c 0.15. 6 Earnings: recent earnings E bar, which feed the next round's money through rho. An inner dashed loop: expected flow-back changes what agents choose to try and whether they share.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 615" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-label="One round as a loop of six steps. 1 Money: each agent gets money_i, part equal and part by recent earnings, weighted by f. 2 Choose what to attempt: the idea with the best score U. 3 Try: success chance pi = s times p, number of attempts money over k. 4 Share or keep: publish if the gain beats the scoop risk. 5 Rewards: the mint and the bounty; the author keeps alpha, the absorption rate, and 1 minus alpha flows back to the ideas it built on; traditional alpha 1 and c 0, OSO alpha 0.8 and c 0.15. 6 Earnings: recent earnings E bar, which feed the next round's money through f. An inner dashed loop: expected flow-back changes what agents choose to try and whether they share.">
   <defs>
     <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6b6b6b"/></marker>
     <marker id="arrInk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2b2b2b"/></marker>
@@ -35,7 +35,7 @@
 
   <!-- formulas -->
   <g font-size="14.5" font-style="italic" font-family="Georgia, 'Times New Roman', serif" fill="#2b2b2b">
-    <text x="46" y="88">bᵢ = Budget/R · [ (1−f)/N + f Ēᵢ/ΣĒ ]</text>
+    <text x="46" y="88">moneyᵢ = Budget/R · [ (1−f)/N + f Ēᵢ/ΣĒ ]</text>
     <text x="341" y="88">pick the x with the best Uᵢ,ₓ</text>
     <text x="636" y="88">πᵢ,ₓ = min(1, sᵢ pₓ)</text>
     <text x="636" y="398">share if gain ≥ scoop risk</text>
@@ -55,7 +55,7 @@
     <text x="341" y="152">δᵢ patience · γᵢ risk · qᵢ judgement</text>
     <text x="341" y="170">τ, ε: choice randomness</text>
 
-    <text x="636" y="116">attempts = bᵢ / kᵢ</text>
+    <text x="636" y="116">attempts = moneyᵢ / kᵢ</text>
     <text x="636" y="134">sᵢ: skill · pₓ: chance at level ℓₓ</text>
     <text x="636" y="152">kᵢ: cost of one attempt</text>
     <text x="636" y="170">a success is a new idea x</text>
@@ -89,7 +89,7 @@
     <line x1="323" y1="420" x2="284" y2="420"/>
   </g>
   <g font-size="11.5" fill="#5f5d58" text-anchor="middle">
-    <text x="301" y="102">bᵢ</text>
+    <text x="301" y="102">moneyᵢ</text>
     <text x="596" y="102">x</text>
     <text x="760" y="262" text-anchor="start">new idea</text>
     <text x="598" y="412">shared</text>
