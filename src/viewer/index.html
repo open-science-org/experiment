@@ -248,14 +248,14 @@
       <button class="btn" role="tab" data-model="full">Full model</button>
     </div>
     <div class="step" id="n-simple">
-      <p class="muted" style="margin-top:0">Only two settings change between societies. <b>α</b>, the absorption rate: the share of incoming value an idea keeps for its author (1 = nothing flows back). <b>β</b>: the chance an intermediate idea is published as soon as it is proved (0 = closed, 1 = open). Everything else is held fixed: 12 identical agents, equal money every round, no mint (bounties are the only value), no validation. The idea graph is generated from the controls below, or taken from a topic. <a href="#/equations?m=simple">The equations →</a></p>
+      <p class="muted" style="margin-top:0">Only two settings change between societies. <b>α</b>, the absorption rate: the share of incoming value an idea keeps for its author (1 = nothing flows back). <b>β</b>: the chance an intermediate idea is published as soon as it is proved (0 = closed, 1 = open). Everything else is held fixed: 12 identical agents, equal money every round, no mint (bounties are the only value), no validation. The idea graph is generated from the controls below, or the Lean problem set. <a href="#/equations?m=simple">The equations →</a></p>
       <div class="row"><label>Question <span class="info" title="Optional. It labels the run: it becomes the title and question on the result card and in History, and you can search by it. It does not change the result: the answer is worked out from the measure you pick. Left empty, the question shown in grey is used.">ⓘ</span> <input id="s-question" placeholder="What do you want to find out?" style="width:620px"></label><span class="muted">optional</span></div>
       <div class="row choice" role="radiogroup" aria-label="Idea graph"><b>Idea graph</b>
         <label><input type="radio" name="s-graph" value="generated" checked> Generated <span class="info" title="Drawn from the controls below; every run draws its own graph.">ⓘ</span></label>
         <label><input type="radio" name="s-graph" value="topic"> The Lean problem set <span class="info" title="The real structure of the theorems the AI models prove; parents are required.">ⓘ</span></label>
         <label id="g-preset-ctl">Start from <select id="g-preset"><option value="">the defaults</option></select> <span class="info" title="A preset fills the controls; you can change them after.">ⓘ</span></label>
       </div>
-      <div class="row" id="s-topic-row"><label>Topic <select id="s-space"></select></label></div>
+      <div class="row" id="s-topic-row"><label>Problem set <select id="s-space"></select></label></div>
       <div id="s-gen">
         <div class="gen-groups">
           <fieldset><legend>Structure</legend>
@@ -296,7 +296,7 @@
       </div>
       <div class="row">
         <label id="n-field-sim">Idea graph <select id="e-space"></select> <span class="info" title="A preset of the generator, or the Lean problem set. Each has a full report on Results.">ⓘ</span></label>
-        <span id="n-field-ai" class="hidden">Topic: <b>Lean problems</b> <span class="info" title="8 theorems to prove, each with a reward. Lean checks every proof.">ⓘ</span></span>
+        <span id="n-field-ai" class="hidden">Problem set: <b>Lean problems</b> <span class="info" title="8 theorems to prove, each with a reward. Lean checks every proof.">ⓘ</span></span>
         <span id="n-measure-sim" class="muted" title="The bar for a clear difference is raised for the number of measures.">Judged on every measure: hardest level, targets solved, bounty value, ROI, money to the main level and waste.</span>
         <span id="n-measure-ai" class="hidden">Measure: <b>targets solved</b></span>
         <label id="n-runs-sim">Runs <input id="e-seeds" type="number" min="1" max="1000" value="50" style="width:70px"></label>
@@ -401,28 +401,6 @@
     </div>
   </section>
 
-  <!-- Fields -->
-  <section id="view-fields" class="hidden">
-    <div class="fields" id="fields-list"></div>
-    <details class="step" style="margin-top:14px"><summary><b>Add a topic</b></summary>
-      <div class="choice" role="radiogroup">
-        <label><input type="radio" name="fmode" value="describe" checked> Describe it</label>
-        <label><input type="radio" name="fmode" value="edit"> Write the file</label>
-      </div>
-      <div id="f-existing" class="hidden"><select id="f-pick"></select><a id="f-report-link" href="#"></a></div>
-      <div id="f-describe">
-        <textarea id="f-desc" class="prose" rows="3" placeholder="For example: protein design. Agents start from known folds, then design binders, then enzymes. Three enzymes are the bounties."></textarea>
-        <div class="row"><button class="btn primary" id="f-draft">Draft it</button><span class="muted">An AI model writes the file. A few cents.</span></div>
-      </div>
-      <div id="f-edit" class="hidden">
-        <div class="row"><label>Start from <select id="f-start"><option value="">a blank file</option></select></label><a href="#" id="f-graph-example" class="hidden">example</a></div>
-        <textarea id="f-yaml" rows="20" spellcheck="false"></textarea>
-        <div class="row"><button class="btn" id="f-check">Check</button><button class="btn primary" id="f-save">Save</button><label><input type="checkbox" id="f-overwrite"> replace a field with this id</label></div>
-      </div>
-      <div id="f-job" class="joblog hidden" aria-live="polite"></div>
-      <div id="f-result"></div>
-    </details>
-  </section>
 </main>
 </div>
 
@@ -437,7 +415,7 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 const api = (path) => fetch(path).then(async (r) => { const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText); return j; });
 const money = (x) => '$' + (x < 0.1 ? x.toFixed(3) : x.toFixed(2));
 
-const VIEWS = ['view-history', 'view-overview', 'view-doc', 'view-new', 'view-live', 'view-fields'];
+const VIEWS = ['view-history', 'view-overview', 'view-doc', 'view-new', 'view-live'];
 const RUNS_VIEWS = { 'view-history': 'history', 'view-overview': 'results', 'view-live': 'live' };
 const show = (view) => {
   for (const v of VIEWS) $(v).classList.toggle('hidden', v !== view);
@@ -707,7 +685,7 @@ async function drawHistory() {
 }
 
 const watchable = (c) => (c.kind === 'simulation' && c.id !== 'simple' ? `#/live?tab=sim&experiment=${encodeURIComponent(c.id)}` : c.kind === 'field report' ? `#/live?tab=sim&space=${encodeURIComponent(c.id)}` : c.kind === 'race' && !c.invalid ? `#/live?tab=ai` : '');
-const KINDWORD = { race: 'ai models', 'model pilot': 'ai models', 'field report': 'topic report simulation', simulation: 'simulation' };
+const KINDWORD = { race: 'ai models', 'model pilot': 'ai models', 'field report': 'preset report simulation', simulation: 'simulation' };
 async function drawResults() {
   OV = null;
   const ov = await overviewData();
@@ -760,7 +738,7 @@ async function drawResults() {
   const hay = (c) => { const t = [c.id, c.title, c.kind, KINDWORD[c.kind] ?? '', c.date, c.design.question, c.design.compare, c.design.fixed, c.answer, ...(c.tags ?? [])].join(' ').toLowerCase(); return t + ' ' + t.replace(/[αβfθψκητ]/g, (g) => ` ${GREEK[g]} `); };
   const found = words.length ? cards.filter((c) => words.every((w) => hay(c).includes(w))) : null;
   $('view-overview').innerHTML = `
-    <div class="row search"><input id="r-search" type="search" placeholder="Search results: name, topic, model, α, β, a question…" value="${esc(resultsQuery)}" style="width:420px"><span class="muted">${found ? `${found.length} found` : `${cards.length} results`}</span></div>
+    <div class="row search"><input id="r-search" type="search" placeholder="Search results: name, preset, model, α, β, a question…" value="${esc(resultsQuery)}" style="width:420px"><span class="muted">${found ? `${found.length} found` : `${cards.length} results`}</span></div>
     ${found ? `<section class="group"><h2>Search <span class="muted">· ${found.length} of ${cards.length}</span></h2><div class="fields">${found.map(card).join('') || '<p class="muted">Nothing matches.</p>'}</div></section>` : `
     <h2 class="first">At a glance <span class="muted">· OSO orange, traditional blue</span></h2>
     <div class="glance">${glance}</div>
@@ -787,18 +765,6 @@ function showTab(t) {
 }
 for (const b of document.querySelectorAll('#view-live .tabs .btn')) b.onclick = () => { location.hash = '#/live?tab=' + b.dataset.tab; };
 
-/* Fields */
-async function enterFields() {
-  await enterDesign();
-  OV = null;
-  const ov = await overviewData();
-  const f1 = (x) => (Number.isFinite(x) ? x.toFixed(1) : '–');
-  const bar = (label, v, max, cls) => `<span>${label}</span><div class="b ${cls}" style="width:${(100 * v / max).toFixed(1)}%"></div><span class="n">${f1(v)}</span>`;
-  $('fields-list').innerHTML = ov.fields.sort((a, b) => a.title.localeCompare(b.title)).map((h) => `<div class="res">
-    <h3>${esc(h.title)}</h3><p class="q">${esc(h.summary)}</p>
-    <div class="pair">${bar('OSO', h.oso.frontier, h.maxLevel, 'oso')}${bar('traditional', h.traditional.frontier, h.maxLevel, 'trad')}</div>
-    <div class="meta">Hardest level reached, of ${h.maxLevel} · <a href="#/doc/reports/${h.id}/card.md">Result</a> · <a href="#/doc/reports/${h.id}/report.md">Full report</a> · <a href="#/live?tab=sim&space=${h.id}">Watch</a></div></div>`).join('');
-}
 
 /* ------------------------------------------------------------------ Communities: OSO vs traditional, live or replayed */
 const C = { run: null, now: 0, t0: 0, t1: 0, timer: null, poll: null, ready: false };
@@ -1054,8 +1020,7 @@ function follow(jobId, logEl, onDone) {
 async function refreshSpaces() {
   D.spaces = await api('/api/spaces');
   const opts = D.spaces.map((s) => `<option value="${s.id}">${esc(s.title)}</option>`).join('');
-  for (const id of ['f-pick', 'e-space']) { const v = $(id).value; $(id).innerHTML = opts; if (v) $(id).value = v; }
-  $('f-start').innerHTML = '<option value="">a blank file</option>' + opts;
+  { const v = $('e-space').value; $('e-space').innerHTML = opts; if (v) $('e-space').value = v; }
   OV = null;
 }
 
@@ -1065,7 +1030,7 @@ const who = () => document.querySelector('input[name=who]:checked')?.value ?? 's
 
 /** Example questions for simulations: each fills in the form; the person then presses Run. */
 const EXAMPLES = [
-  { label: 'Does OSO beat traditional here?', question: 'For the same money, does OSO get further than traditional research on this topic?', settings: ['traditional', 'oso'], measure: 'frontier' },
+  { label: 'Does OSO beat traditional here?', question: 'For the same money, does OSO get further than traditional research on this preset?', settings: ['traditional', 'oso'], measure: 'frontier' },
   { label: 'Sharing or credit: which one helps?', question: 'Is it sharing at once, or credit flowing back, that makes OSO get further?', settings: ['traditional', 'oso', 'sharingOnly', 'creditOnly'], measure: 'frontier' },
   { label: 'How much credit makes agents share?', question: 'When agents choose what to publish, how low must α be before most of them share?', settings: ['osoChoice'], measure: 'sharing', vary: { 'rules.alpha': '0.8, 0.5, 0.3, 0.1' } },
   { label: 'What if shared ideas are sometimes wrong?', question: 'Does OSO still get further when some shared ideas are wrong?', settings: ['traditional', 'oso'], measure: 'frontier', vary: { 'knowledge.errorRate': '0, 0.05, 0.15' } },
@@ -1196,37 +1161,6 @@ async function enterDesign() {
   designReady = true;
   D.opts = await api('/api/design/options');
   await refreshSpaces();
-  // Step 1
-  const modes = { describe: 'f-describe', edit: 'f-edit' };
-  for (const r of document.querySelectorAll('input[name=fmode]')) r.onchange = () => { for (const [m, el] of Object.entries(modes)) $(el).classList.toggle('hidden', m !== r.value); $('f-result').innerHTML = ''; };
-
-  $('f-yaml').value = D.opts.template;
-  $('f-start').onchange = async () => { $('f-yaml').value = $('f-start').value ? (await api('/api/spaces/yaml?id=' + $('f-start').value)).yaml : D.opts.template; };
-  $('f-graph-example').onclick = async (e) => { e.preventDefault(); $('f-start').value = 'solid-state-battery'; $('f-start').onchange(); };
-  $('f-check').onclick = () => checkField();
-  $('f-save').onclick = async () => {
-    const c = await checkField(); if (!c?.ok) return;
-    try {
-      const r = await post('/api/spaces/save', { yaml: $('f-yaml').value, overwrite: $('f-overwrite').checked });
-      await refreshSpaces();
-      $('f-pick').value = r.id; $('e-space').value = r.id;
-      $('f-result').insertAdjacentHTML('afterbegin', `<p><span class="ok">Saved.</span> <button class="btn" id="f-build">Make its report</button> <span class="muted">about a minute</span></p>`);
-      $('f-build').onclick = () => post('/api/reports/build', { space: r.id, seeds: 100 }).then((j) => follow(j.job, $('f-job'), async (job) => { await refreshSpaces(); if (job.status === 'done') { $('f-result').insertAdjacentHTML('afterbegin', `<p><a href="#/doc/reports/${esc(r.id)}/card.md">See the result →</a></p>`); enterFields(); } }));
-      designCheck();
-    } catch (e) { $('f-result').insertAdjacentHTML('afterbegin', `<p class="no">${esc(e.message)}</p>`); }
-  };
-  $('f-draft').onclick = async () => {
-    try {
-      const j = await post('/api/spaces/generate', { description: $('f-desc').value });
-      follow(j.job, $('f-job'), (job) => {
-        if (job.status !== 'done') return;
-        document.querySelector('input[name=fmode][value=edit]').checked = true;
-        for (const [m, el] of Object.entries(modes)) $(el).classList.toggle('hidden', m !== 'edit');
-        $('f-yaml').value = job.result.yaml;
-        checkField();
-      });
-    } catch (e) { $('f-job').classList.remove('hidden'); $('f-job').textContent = e.message; }
-  };
   // Step 2
   const SETTING_NOTES = {
     traditional: 'publish only finished work; nothing flows back',
@@ -1283,14 +1217,6 @@ async function enterDesign() {
   designCheck();
 }
 
-async function checkField() {
-  $('f-result').innerHTML = '<p class="muted">Checking and test-running…</p>';
-  const c = await post('/api/spaces/check', { yaml: $('f-yaml').value });
-  if (!c.ok) { $('f-result').innerHTML = `<p class="no">Not valid yet:</p><pre class="err">${esc(c.error)}</pre>`; return c; }
-  const s = c.summary;
-  $('f-result').innerHTML = `<p><span class="ok">Valid</span>, and a test run works. <b>${esc(c.title)}</b> (<code>${esc(c.id)}</code>${c.exists ? ', <span class="no">a field with this id exists</span>' : ''}): ${s.results} ideas in ${s.levels} levels, ${s.targets} targets, ${s.deadEnds} dead ends; ${s.agents} agents; budget ${s.budget}${s.calibrated ? ' (calibrated: the smallest budget at which OSO solves about 90% of the targets)' : ''}.</p><div class="preview">${c.svg}</div>`;
-  return c;
-}
 
 /* Parameters: their state, rows, and the explainer with its example tree. */
 const P = {};
@@ -1307,12 +1233,12 @@ function drawAgents() {
   const kinds = Object.keys(D.agents.archetypes).sort((a, b) => (D.agents.mix[b] ?? 0) - (D.agents.mix[a] ?? 0));
   const total = Object.values(D.agents.mix).reduce((a, b) => a + (b || 0), 0);
   $('a-summary').textContent = `${total} agents${agentsChanged() ? ' · changed' : ''}`;
-  $('a-legend').innerHTML = D.opts.traits.map((tr) => `<dt>${esc(tr.label)}</dt><dd>${esc(tr.explain)}</dd>`).join('') + '<dt>specialist</dt><dd>Much better in one area, much worse elsewhere.</dd>';
+  $('a-legend').innerHTML = D.opts.traits.map((tr) => `<dt>${esc(tr.label)}</dt><dd>${esc(tr.explain)}</dd>`).join('') + '<dt>specialist</dt><dd>Much better in one area, much worse elsewhere. Only the Lean problem set has areas; on generated graphs this has no effect.</dd>';
   $('a-kinds').innerHTML = kinds.map((k) => {
     const t = D.agents.archetypes[k], n = D.agents.mix[k] ?? 0, info = D.opts.kinds?.[k];
     return `<div class="kind" data-k="${esc(k)}"><div class="khead"><b>${esc(info?.name ?? k)}</b><label>how many <input type="number" class="a-n" min="0" max="50" value="${n}" style="width:60px"></label></div>${info ? `<div class="kwhat">${esc(info.what)}</div>` : ''}` +
       D.opts.traits.map((tr) => `<div class="trait" data-tr="${tr.key}" title="${esc(tr.explain)}"><span>${esc(tr.label)}</span><input type="range" min="${tr.min}" max="${tr.max}" step="${tr.step}" value="${t[tr.key]}" aria-label="${esc(k)} ${esc(tr.label)}"><input type="number" min="${tr.min}" max="${tr.max}" step="${tr.step}" value="${t[tr.key]}"></div>`).join('') +
-      `<label style="font-size:12px" title="Much better in one area, worse elsewhere"><input type="checkbox" class="a-spec" ${t.specialist ? 'checked' : ''}> specialist</label></div>`;
+      `<label style="font-size:12px" title="Much better in one area, worse elsewhere (Lean problem set only; generated graphs have no areas)"><input type="checkbox" class="a-spec" ${t.specialist ? 'checked' : ''}> specialist</label></div>`;
   }).join('');
   for (const card of $('a-kinds').querySelectorAll('.kind')) {
     const k = card.dataset.k;

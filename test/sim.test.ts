@@ -22,9 +22,12 @@ const worldOf = (sc: Scenario, seed: number) => worlds.create(sc.world, 'world')
 /** The default scenario with a named preset and further overrides. */
 const scenarioFor = (name: string, ...overrides: Record<string, unknown>[]) => loadScenario(null, preset(name), ...overrides);
 const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
+/** The random-layer world (every parent required, a fixed chance per level). The mechanism tests below were
+ * calibrated on it; the default world is now the idea generator. */
+const LAYERED = { world: { kind: 'layered' } };
 
 test("the simulator's waterfall pays what the ledger's OIP-14 waterfall pays", () => {
-  const sc = loadScenario(null, { world: { levels: 4, width: 3, targets: [{ level: 4, count: 1 }] } });
+  const sc = loadScenario(null, { world: { kind: 'layered', levels: 4, width: 3, targets: [{ level: 4, count: 1 }] } });
   const world = worldOf(sc, 7);
   // Integer weights in bps, as the ledger stores them, used by both sides.
   const bps = world.weights.map((ws) => {
@@ -108,13 +111,13 @@ test('everything paid out equals mints plus bounties of solved targets', () => {
 });
 
 test('prediction 1: sharing pools search, so OSO reaches deeper than traditional for the same budget', () => {
-  const frontier = (setting: string) => mean(Array.from({ length: 12 }, (_, k) => run(scenarioFor(setting), 100 + k).frontier));
+  const frontier = (setting: string) => mean(Array.from({ length: 12 }, (_, k) => run(scenarioFor(setting, LAYERED), 100 + k).frontier));
   assert.ok(frontier('oso') > frontier('traditional') + 1);
 });
 
 test('prediction 2: with enough flow-back, agents choose to share', () => {
   const sharing = (alpha: number) => mean(Array.from({ length: 12 }, (_, k) =>
-    run(loadScenario(null, { 'behaviour.psi': 0.1, rules: { alpha, c: alpha === 1 ? 0 : 0.15, visibility: { kind: 'choice' } } }), 200 + k).sharingRate));
+    run(loadScenario(null, LAYERED, { 'behaviour.psi': 0.1, rules: { alpha, c: alpha === 1 ? 0 : 0.15, visibility: { kind: 'choice' } } }), 200 + k).sharingRate));
   assert.ok(sharing(0.3) > sharing(1) + 0.3);
 });
 
@@ -161,7 +164,7 @@ test('experiments expand factors, presets, patches and exclusions into rows', ()
 });
 
 test('delayed visibility publishes lemmas the stated number of rounds later', () => {
-  const r = run(loadScenario(null, { 'rules.visibility': { kind: 'delayed', d: 3 } }), 4);
+  const r = run(loadScenario(null, LAYERED, { 'rules.visibility': { kind: 'delayed', d: 3 } }), 4);
   assert.ok(r.publicationLag >= 3, `lag ${r.publicationLag}`);
 });
 
@@ -181,7 +184,7 @@ test('a learning oracle, where failures raise the next chance, reaches deeper th
 });
 
 test('deciders can differ by archetype, and a zero-intelligence decider runs', () => {
-  const sc = loadScenario(null, { 'agents.deciders': { gamer: { kind: 'random' }, racer: { kind: 'random', publish: 0 } } });
+  const sc = loadScenario(null, LAYERED, { 'agents.deciders': { gamer: { kind: 'random' }, racer: { kind: 'random', publish: 0 } } });
   const r = run(sc, 3);
   assert.ok(r.published > 0);
   // A random gamer never games, so nothing trivial is farmed.
@@ -192,7 +195,7 @@ test('deciders can differ by archetype, and a zero-intelligence decider runs', (
 });
 
 test('costly knowledge is paid from the budget, so spend never exceeds X', () => {
-  const runs = (absorbCost: number) => Array.from({ length: 10 }, (_, k) => run(scenarioFor('oso', { 'knowledge.absorbCost': absorbCost }), 700 + k));
+  const runs = (absorbCost: number) => Array.from({ length: 10 }, (_, k) => run(scenarioFor('oso', LAYERED, { 'knowledge.absorbCost': absorbCost }), 700 + k));
   const free = runs(0);
   const costly = runs(1);
   for (const r of costly) assert.ok(r.spend <= 1200 + 1e-9, `spend ${r.spend}`);
@@ -234,7 +237,7 @@ test('problem spaces load, and a bad space is rejected with a usable message', a
   for (const id of spaceIds()) assert.equal(loadSpace(id).spec.id, id);
   const good = loadSpace('drug-discovery').spec;
   assert.throws(() => parseSpace({ ...good, id: 'Not Kebab' }), /kebab-case/);
-  assert.throws(() => parseSpace({ ...good, glossary: { result: 'x', target: '', attempt: 'y' } }), /glossary.target/);
+  assert.throws(() => parseSpace({ ...good, glossary: { idea: 'x', target: '', attempt: 'y' } }), /glossary.target/);
   assert.throws(() => parseSpace({ ...good, scenario: { 'world.targets': [] } }), /no targets/);
   assert.throws(() => parseSpace({ ...good, scenario: { ...good.scenario, 'measures.targetLevel': 9 } }), /deepest level/);
 });
@@ -304,9 +307,6 @@ test('the designer turns a design into a valid experiment and rejects bad design
   assert.equal(design.checkExperiment({ ...d, id: 'Bad Name' }).ok, false);
   assert.equal(design.checkExperiment({ ...d, settings: [] }).ok, false);
   assert.equal(design.checkExperiment({ ...d, vary: [{ path: 'rules.nope', values: [1] }] }).ok, false);
-  const f = design.checkField(readFileSync(new URL('../spaces/drug-discovery.yaml', import.meta.url), 'utf8'));
-  assert.ok(f.ok && f.svg?.startsWith('<svg'));
-  assert.equal(design.checkField('id: x\ntitle: y').ok, false);
   // α belongs to the flow-back settings: varying it leaves the traditional row traditional.
   const { expand } = await import('../src/experiments/experiment.ts');
   const rows = expand(design.experimentFor({ ...d, settings: ['traditional', 'osoChoice'], vary: [{ path: 'rules.alpha', values: [0.2, 0.6] }], set: { 'rules.c': 0.3, 'rules.screen': 0.9 } }));
@@ -346,7 +346,7 @@ test('the simple model (α, β): beta sets the share of ideas published at once'
 test('the idea graph generator: structure, length and composition are set separately', async () => {
   const { ideasWorld } = await import('../src/engine/world.ts');
   const { Rng } = await import('../src/engine/rng.ts');
-  const base = { levels: 5, width: 6, parents: 2, skip: 0.2, length: 3, lengthGrowth: 2, composition: 0.7, targets: 2, bountyBase: 4, bountyGrowth: 2, attemptLimit: 24 };
+  const base = { levels: 5, width: 6, parents: 2, skip: 0.2, length: 3, lengthGrowth: 2, composition: 0.7, targets: 2, targetsFrom: 0, bountyBase: 4, bountyGrowth: 2, attemptLimit: 24 };
   const w = ideasWorld(base, new Rng(7));
   assert.equal(w.n, 30);
   // Difficulty: an idea at level l is a sequence of length + lengthGrowth·(l − 1) bits.

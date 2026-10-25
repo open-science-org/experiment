@@ -1,50 +1,51 @@
 {
- "chart": "results/my-experiment/figures/compare.svg",
- "id": "my-experiment",
- "kind": "simulation",
- "date": "2026-10-23",
- "title": "my-experiment",
- "design": {
-  "question": "my-experiment",
-  "compare": "setting",
-  "fixed": "the field, agents and budget",
-  "measure": "hardest level published",
-  "better": "higher",
-  "runs": "50 runs per row"
- },
- "answer": "Best: OSO, 6.9. Best traditional: Traditional, 4.1. Clear difference.",
- "table": [
-  {
-   "setting": "Traditional",
-   "frontier": "4.1 ± 1.2",
-   "reach L7": "0.00",
-   "cost": "–",
-   "ROI (value per spend)": "0.07 ± 0.04"
+  "chart": "results/my-experiment/figures/compare.svg",
+  "id": "my-experiment",
+  "kind": "simulation",
+  "date": "2026-10-23",
+  "title": "my-experiment",
+  "design": {
+    "question": "my-experiment",
+    "compare": "setting",
+    "fixed": "the field, agents and budget",
+    "measure": "hardest level published",
+    "better": "higher",
+    "runs": "50 runs per row"
   },
-  {
-   "setting": "OSO (immediate)",
-   "frontier": "6.9 ± 0.7",
-   "reach L7": "0.74",
-   "cost": "833 ± 196",
-   "ROI (value per spend)": "0.33 ± 0.33"
-  },
-  {
-   "setting": "OSO (choice)",
-   "frontier": "5.0 ± 0.8",
-   "reach L7": "0.04",
-   "cost": "1100 ± 34",
-   "ROI (value per spend)": "0.09 ± 0.05"
-  },
-  {
-   "setting": "Flow-back, finished-only",
-   "frontier": "4.2 ± 1.1",
-   "reach L7": "0.02",
-   "cost": "1145 ± 0",
-   "ROI (value per spend)": "0.06 ± 0.05"
-  }
- ],
- "caveats": [
-  "A simulation with guessed parameters: it shows how the rules play out, not that they work."
- ],
- "page": "results/my-experiment/summary.md"
+  "answer": "Best: OSO, 6.9. Best traditional: Traditional, 4.1. Clear difference.",
+  "table": [
+    {
+      "setting": "Traditional",
+      "frontier": "4.1 ± 1.2",
+      "reach L7": "0.00",
+      "cost": "–",
+      "ROI (value per spend)": "0.07 ± 0.04"
+    },
+    {
+      "setting": "OSO (immediate)",
+      "frontier": "6.9 ± 0.7",
+      "reach L7": "0.74",
+      "cost": "833 ± 196",
+      "ROI (value per spend)": "0.33 ± 0.33"
+    },
+    {
+      "setting": "OSO (choice)",
+      "frontier": "5.0 ± 0.8",
+      "reach L7": "0.04",
+      "cost": "1100 ± 34",
+      "ROI (value per spend)": "0.09 ± 0.05"
+    },
+    {
+      "setting": "Flow-back, finished-only",
+      "frontier": "4.2 ± 1.1",
+      "reach L7": "0.02",
+      "cost": "1145 ± 0",
+      "ROI (value per spend)": "0.06 ± 0.05"
+    }
+  ],
+  "caveats": [
+    "A simulation with guessed parameters: it shows how the rules play out, not that they work."
+  ],
+  "page": "results/my-experiment/summary.md",
+  "superseded": "Earlier version (before 2026-10-24): run on the old random-layer graph, where every parent is required and each level has a fixed chance. Replaced by runs on the idea graph generator."
 }

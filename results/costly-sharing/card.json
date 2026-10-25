@@ -1,238 +1,239 @@
 {
- "chart": "results/costly-sharing/figures/compare.svg",
- "id": "costly-sharing",
- "kind": "simulation",
- "date": "2026-10-23",
- "title": "Sharing isn't free: taking up costs and wrong ideas",
- "design": {
-  "question": "Does OSO's lead survive when taking up ideas costs money, or ideas are sometimes wrong?",
-  "compare": "uptake cost × error rate × traditional or OSO",
-  "fixed": "the field, agents and budget",
-  "measure": "hardest level published",
-  "better": "higher",
-  "runs": "100 runs per row"
- },
- "answer": "Best: OSO, uptake cost 0, error rate 0, 7.9. Best traditional: Traditional, uptake cost 0.5, error rate 0, 5.7. Clear difference.",
- "table": [
-  {
-   "setting": "Traditional",
-   "uptake cost": 0,
-   "error rate": 0,
-   "frontier": "5.7 ± 1.2",
-   "reach L7": "0.35",
-   "cost": "957 ± 161",
-   "ROI (value per spend)": "0.22 ± 0.18"
+  "chart": "results/costly-sharing/figures/compare.svg",
+  "id": "costly-sharing",
+  "kind": "simulation",
+  "date": "2026-10-23",
+  "title": "Sharing isn't free: taking up costs and wrong ideas",
+  "design": {
+    "question": "Does OSO's lead survive when taking up ideas costs money, or ideas are sometimes wrong?",
+    "compare": "uptake cost × error rate × traditional or OSO",
+    "fixed": "the field, agents and budget",
+    "measure": "hardest level published",
+    "better": "higher",
+    "runs": "100 runs per row"
   },
-  {
-   "setting": "Traditional",
-   "uptake cost": 0,
-   "error rate": 0.05,
-   "frontier": "5.1 ± 1.0",
-   "reach L7": "0.15",
-   "cost": "1061 ± 122",
-   "ROI (value per spend)": "0.15 ± 0.11"
-  },
-  {
-   "setting": "Traditional",
-   "uptake cost": 0,
-   "error rate": 0.15,
-   "frontier": "4.5 ± 0.9",
-   "reach L7": "0.02",
-   "cost": "989 ± 234",
-   "ROI (value per spend)": "0.09 ± 0.05"
-  },
-  {
-   "setting": "Traditional",
-   "uptake cost": 0.25,
-   "error rate": 0,
-   "frontier": "5.5 ± 1.1",
-   "reach L7": "0.27",
-   "cost": "975 ± 167",
-   "ROI (value per spend)": "0.21 ± 0.19"
-  },
-  {
-   "setting": "Traditional",
-   "uptake cost": 0.25,
-   "error rate": 0.05,
-   "frontier": "5.1 ± 1.0",
-   "reach L7": "0.12",
-   "cost": "954 ± 114",
-   "ROI (value per spend)": "0.14 ± 0.11"
-  },
-  {
-   "setting": "Traditional",
-   "uptake cost": 0.25,
-   "error rate": 0.15,
-   "frontier": "4.5 ± 0.9",
-   "reach L7": "0.01",
-   "cost": "895 ± 0",
-   "ROI (value per spend)": "0.08 ± 0.05"
-  },
-  {
-   "setting": "Traditional",
-   "uptake cost": 0.5,
-   "error rate": 0,
-   "frontier": "5.7 ± 1.1",
-   "reach L7": "0.35",
-   "cost": "996 ± 134",
-   "ROI (value per spend)": "0.22 ± 0.18"
-  },
-  {
-   "setting": "Traditional",
-   "uptake cost": 0.5,
-   "error rate": 0.05,
-   "frontier": "5.2 ± 1.0",
-   "reach L7": "0.15",
-   "cost": "976 ± 192",
-   "ROI (value per spend)": "0.16 ± 0.17"
-  },
-  {
-   "setting": "Traditional",
-   "uptake cost": 0.5,
-   "error rate": 0.15,
-   "frontier": "4.4 ± 1.0",
-   "reach L7": "0.01",
-   "cost": "585 ± 0",
-   "ROI (value per spend)": "0.09 ± 0.13"
-  },
-  {
-   "setting": "Traditional",
-   "uptake cost": 1,
-   "error rate": 0,
-   "frontier": "5.5 ± 1.1",
-   "reach L7": "0.30",
-   "cost": "1009 ± 170",
-   "ROI (value per spend)": "0.20 ± 0.16"
-  },
-  {
-   "setting": "Traditional",
-   "uptake cost": 1,
-   "error rate": 0.05,
-   "frontier": "5.2 ± 0.9",
-   "reach L7": "0.14",
-   "cost": "1008 ± 128",
-   "ROI (value per spend)": "0.14 ± 0.11"
-  },
-  {
-   "setting": "Traditional",
-   "uptake cost": 1,
-   "error rate": 0.15,
-   "frontier": "4.5 ± 1.0",
-   "reach L7": "0.03",
-   "cost": "1070 ± 74",
-   "ROI (value per spend)": "0.09 ± 0.06"
-  },
-  {
-   "setting": "OSO (immediate)",
-   "uptake cost": 0,
-   "error rate": 0,
-   "frontier": "7.9 ± 0.2",
-   "reach L7": "1.00",
-   "cost": "485 ± 141",
-   "ROI (value per spend)": "1.44 ± 0.48"
-  },
-  {
-   "setting": "OSO (immediate)",
-   "uptake cost": 0,
-   "error rate": 0.05,
-   "frontier": "7.6 ± 0.5",
-   "reach L7": "1.00",
-   "cost": "568 ± 178",
-   "ROI (value per spend)": "0.86 ± 0.54"
-  },
-  {
-   "setting": "OSO (immediate)",
-   "uptake cost": 0,
-   "error rate": 0.15,
-   "frontier": "7.2 ± 0.5",
-   "reach L7": "0.96",
-   "cost": "629 ± 188",
-   "ROI (value per spend)": "0.36 ± 0.30"
-  },
-  {
-   "setting": "OSO (immediate)",
-   "uptake cost": 0.25,
-   "error rate": 0,
-   "frontier": "7.8 ± 0.4",
-   "reach L7": "1.00",
-   "cost": "627 ± 173",
-   "ROI (value per spend)": "1.06 ± 0.47"
-  },
-  {
-   "setting": "OSO (immediate)",
-   "uptake cost": 0.25,
-   "error rate": 0.05,
-   "frontier": "7.4 ± 0.5",
-   "reach L7": "0.99",
-   "cost": "675 ± 222",
-   "ROI (value per spend)": "0.63 ± 0.52"
-  },
-  {
-   "setting": "OSO (immediate)",
-   "uptake cost": 0.25,
-   "error rate": 0.15,
-   "frontier": "7.1 ± 0.5",
-   "reach L7": "0.92",
-   "cost": "781 ± 215",
-   "ROI (value per spend)": "0.26 ± 0.23"
-  },
-  {
-   "setting": "OSO (immediate)",
-   "uptake cost": 0.5,
-   "error rate": 0,
-   "frontier": "7.7 ± 0.5",
-   "reach L7": "0.99",
-   "cost": "626 ± 228",
-   "ROI (value per spend)": "1.01 ± 0.59"
-  },
-  {
-   "setting": "OSO (immediate)",
-   "uptake cost": 0.5,
-   "error rate": 0.05,
-   "frontier": "7.2 ± 0.6",
-   "reach L7": "0.92",
-   "cost": "679 ± 261",
-   "ROI (value per spend)": "0.56 ± 0.50"
-  },
-  {
-   "setting": "OSO (immediate)",
-   "uptake cost": 0.5,
-   "error rate": 0.15,
-   "frontier": "7.0 ± 0.6",
-   "reach L7": "0.84",
-   "cost": "759 ± 250",
-   "ROI (value per spend)": "0.24 ± 0.24"
-  },
-  {
-   "setting": "OSO (immediate)",
-   "uptake cost": 1,
-   "error rate": 0,
-   "frontier": "7.3 ± 0.7",
-   "reach L7": "0.87",
-   "cost": "663 ± 260",
-   "ROI (value per spend)": "0.69 ± 0.61"
-  },
-  {
-   "setting": "OSO (immediate)",
-   "uptake cost": 1,
-   "error rate": 0.05,
-   "frontier": "6.8 ± 0.7",
-   "reach L7": "0.72",
-   "cost": "695 ± 250",
-   "ROI (value per spend)": "0.29 ± 0.31"
-  },
-  {
-   "setting": "OSO (immediate)",
-   "uptake cost": 1,
-   "error rate": 0.15,
-   "frontier": "6.6 ± 0.6",
-   "reach L7": "0.62",
-   "cost": "744 ± 255",
-   "ROI (value per spend)": "0.15 ± 0.23"
-  }
- ],
- "caveats": [
-  "A simulation with guessed parameters: it shows how the rules play out, not that they work."
- ],
- "page": "results/costly-sharing/summary.md"
+  "answer": "Best: OSO, uptake cost 0, error rate 0, 7.9. Best traditional: Traditional, uptake cost 0.5, error rate 0, 5.7. Clear difference.",
+  "table": [
+    {
+      "setting": "Traditional",
+      "uptake cost": 0,
+      "error rate": 0,
+      "frontier": "5.7 ± 1.2",
+      "reach L7": "0.35",
+      "cost": "957 ± 161",
+      "ROI (value per spend)": "0.22 ± 0.18"
+    },
+    {
+      "setting": "Traditional",
+      "uptake cost": 0,
+      "error rate": 0.05,
+      "frontier": "5.1 ± 1.0",
+      "reach L7": "0.15",
+      "cost": "1061 ± 122",
+      "ROI (value per spend)": "0.15 ± 0.11"
+    },
+    {
+      "setting": "Traditional",
+      "uptake cost": 0,
+      "error rate": 0.15,
+      "frontier": "4.5 ± 0.9",
+      "reach L7": "0.02",
+      "cost": "989 ± 234",
+      "ROI (value per spend)": "0.09 ± 0.05"
+    },
+    {
+      "setting": "Traditional",
+      "uptake cost": 0.25,
+      "error rate": 0,
+      "frontier": "5.5 ± 1.1",
+      "reach L7": "0.27",
+      "cost": "975 ± 167",
+      "ROI (value per spend)": "0.21 ± 0.19"
+    },
+    {
+      "setting": "Traditional",
+      "uptake cost": 0.25,
+      "error rate": 0.05,
+      "frontier": "5.1 ± 1.0",
+      "reach L7": "0.12",
+      "cost": "954 ± 114",
+      "ROI (value per spend)": "0.14 ± 0.11"
+    },
+    {
+      "setting": "Traditional",
+      "uptake cost": 0.25,
+      "error rate": 0.15,
+      "frontier": "4.5 ± 0.9",
+      "reach L7": "0.01",
+      "cost": "895 ± 0",
+      "ROI (value per spend)": "0.08 ± 0.05"
+    },
+    {
+      "setting": "Traditional",
+      "uptake cost": 0.5,
+      "error rate": 0,
+      "frontier": "5.7 ± 1.1",
+      "reach L7": "0.35",
+      "cost": "996 ± 134",
+      "ROI (value per spend)": "0.22 ± 0.18"
+    },
+    {
+      "setting": "Traditional",
+      "uptake cost": 0.5,
+      "error rate": 0.05,
+      "frontier": "5.2 ± 1.0",
+      "reach L7": "0.15",
+      "cost": "976 ± 192",
+      "ROI (value per spend)": "0.16 ± 0.17"
+    },
+    {
+      "setting": "Traditional",
+      "uptake cost": 0.5,
+      "error rate": 0.15,
+      "frontier": "4.4 ± 1.0",
+      "reach L7": "0.01",
+      "cost": "585 ± 0",
+      "ROI (value per spend)": "0.09 ± 0.13"
+    },
+    {
+      "setting": "Traditional",
+      "uptake cost": 1,
+      "error rate": 0,
+      "frontier": "5.5 ± 1.1",
+      "reach L7": "0.30",
+      "cost": "1009 ± 170",
+      "ROI (value per spend)": "0.20 ± 0.16"
+    },
+    {
+      "setting": "Traditional",
+      "uptake cost": 1,
+      "error rate": 0.05,
+      "frontier": "5.2 ± 0.9",
+      "reach L7": "0.14",
+      "cost": "1008 ± 128",
+      "ROI (value per spend)": "0.14 ± 0.11"
+    },
+    {
+      "setting": "Traditional",
+      "uptake cost": 1,
+      "error rate": 0.15,
+      "frontier": "4.5 ± 1.0",
+      "reach L7": "0.03",
+      "cost": "1070 ± 74",
+      "ROI (value per spend)": "0.09 ± 0.06"
+    },
+    {
+      "setting": "OSO (immediate)",
+      "uptake cost": 0,
+      "error rate": 0,
+      "frontier": "7.9 ± 0.2",
+      "reach L7": "1.00",
+      "cost": "485 ± 141",
+      "ROI (value per spend)": "1.44 ± 0.48"
+    },
+    {
+      "setting": "OSO (immediate)",
+      "uptake cost": 0,
+      "error rate": 0.05,
+      "frontier": "7.6 ± 0.5",
+      "reach L7": "1.00",
+      "cost": "568 ± 178",
+      "ROI (value per spend)": "0.86 ± 0.54"
+    },
+    {
+      "setting": "OSO (immediate)",
+      "uptake cost": 0,
+      "error rate": 0.15,
+      "frontier": "7.2 ± 0.5",
+      "reach L7": "0.96",
+      "cost": "629 ± 188",
+      "ROI (value per spend)": "0.36 ± 0.30"
+    },
+    {
+      "setting": "OSO (immediate)",
+      "uptake cost": 0.25,
+      "error rate": 0,
+      "frontier": "7.8 ± 0.4",
+      "reach L7": "1.00",
+      "cost": "627 ± 173",
+      "ROI (value per spend)": "1.06 ± 0.47"
+    },
+    {
+      "setting": "OSO (immediate)",
+      "uptake cost": 0.25,
+      "error rate": 0.05,
+      "frontier": "7.4 ± 0.5",
+      "reach L7": "0.99",
+      "cost": "675 ± 222",
+      "ROI (value per spend)": "0.63 ± 0.52"
+    },
+    {
+      "setting": "OSO (immediate)",
+      "uptake cost": 0.25,
+      "error rate": 0.15,
+      "frontier": "7.1 ± 0.5",
+      "reach L7": "0.92",
+      "cost": "781 ± 215",
+      "ROI (value per spend)": "0.26 ± 0.23"
+    },
+    {
+      "setting": "OSO (immediate)",
+      "uptake cost": 0.5,
+      "error rate": 0,
+      "frontier": "7.7 ± 0.5",
+      "reach L7": "0.99",
+      "cost": "626 ± 228",
+      "ROI (value per spend)": "1.01 ± 0.59"
+    },
+    {
+      "setting": "OSO (immediate)",
+      "uptake cost": 0.5,
+      "error rate": 0.05,
+      "frontier": "7.2 ± 0.6",
+      "reach L7": "0.92",
+      "cost": "679 ± 261",
+      "ROI (value per spend)": "0.56 ± 0.50"
+    },
+    {
+      "setting": "OSO (immediate)",
+      "uptake cost": 0.5,
+      "error rate": 0.15,
+      "frontier": "7.0 ± 0.6",
+      "reach L7": "0.84",
+      "cost": "759 ± 250",
+      "ROI (value per spend)": "0.24 ± 0.24"
+    },
+    {
+      "setting": "OSO (immediate)",
+      "uptake cost": 1,
+      "error rate": 0,
+      "frontier": "7.3 ± 0.7",
+      "reach L7": "0.87",
+      "cost": "663 ± 260",
+      "ROI (value per spend)": "0.69 ± 0.61"
+    },
+    {
+      "setting": "OSO (immediate)",
+      "uptake cost": 1,
+      "error rate": 0.05,
+      "frontier": "6.8 ± 0.7",
+      "reach L7": "0.72",
+      "cost": "695 ± 250",
+      "ROI (value per spend)": "0.29 ± 0.31"
+    },
+    {
+      "setting": "OSO (immediate)",
+      "uptake cost": 1,
+      "error rate": 0.15,
+      "frontier": "6.6 ± 0.6",
+      "reach L7": "0.62",
+      "cost": "744 ± 255",
+      "ROI (value per spend)": "0.15 ± 0.23"
+    }
+  ],
+  "caveats": [
+    "A simulation with guessed parameters: it shows how the rules play out, not that they work."
+  ],
+  "page": "results/costly-sharing/summary.md",
+  "superseded": "Earlier version (before 2026-10-24): run on the old random-layer graph, where every parent is required and each level has a fixed chance. Replaced by runs on the idea graph generator."
 }

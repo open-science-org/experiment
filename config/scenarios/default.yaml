@@ -4,22 +4,21 @@
 # `npm run sim -- plugins`. The model is described in docs/simulator.md.
 
 world:
-  kind: layered          # a random DAG in levels (also: chain, file)
-  levels: 8
-  width: 10              # ideas per level
-  maxPrereqs: 3          # each idea builds on 1 to maxPrereqs others
-  skipProb: 0.25         # chance an extra parent comes from any lower level
-  areas: 3
-  areaStickiness: 0.8    # chance an idea stays in its main parent's area
-  targets:               # targets placed per level, among ideas with the most ancestors
-    - { level: 3, count: 2 }
-    - { level: 5, count: 2 }
-    - { level: 7, count: 2 }
-    - { level: 8, count: 1 }
+  kind: ideas            # the idea graph generator (docs/equations.md, section 3.1; also: file, chain)
+  levels: 6              # structure: levels, ideas per level, parents per idea, chance a parent skips a level
+  width: 8
+  parents: 2
+  skip: 0.2
+  length: 3              # difficulty: new bits at level 1, and added per level
+  lengthGrowth: 2
+  composition: 0.7       # attribution: share of an idea's bits taken from its parents
+  targets: 2             # bounties per level, on levels targetsFrom to the top (0: the top only)
+  targetsFrom: 0
   bountyBase: 4          # bounty = bountyBase · bountyGrowth^(level − 1)
   bountyGrowth: 2
+  attemptLimit: 24       # ideas with more unresolved bits than this cannot be attempted
 
-success:                 # success chance per attempt, before skill: p = p0 · eta^(level − 1)
+success:                 # only for graphs without bits (the Lean problem set): p = p0 · eta^(level − 1)
   p0: 0.5
   eta: 0.6
   oracle:

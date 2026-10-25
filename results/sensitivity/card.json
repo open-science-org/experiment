@@ -1,86 +1,87 @@
 {
- "chart": "results/sensitivity/figures/compare.svg",
- "id": "sensitivity",
- "kind": "simulation",
- "date": "2026-10-23",
- "title": "How much the traditional-vs-OSO gap depends on the gamer and the funding loop",
- "design": {
-  "question": "How much of OSO's lead depends on the gaming agent and the funding loop?",
-  "compare": "traditional and OSO, under four variants",
-  "fixed": "the field and budget",
-  "measure": "hardest level published",
-  "better": "higher",
-  "runs": "100 runs per row"
- },
- "answer": "Best: no funding loop (ρ = 0), OSO, 8.0 (3 more tie). Best traditional: no gamer, Traditional, 7.0. Clear difference.",
- "table": [
-  {
-   "variant": "default (ρ = 0.5, θ = 0.5)",
-   "setting": "Traditional",
-   "frontier": "5.7 ± 1.2",
-   "reach L7": "0.35",
-   "speed": "96 ± 16",
-   "ROI (value per spend)": "0.22 ± 0.18"
+  "chart": "results/sensitivity/figures/compare.svg",
+  "id": "sensitivity",
+  "kind": "simulation",
+  "date": "2026-10-23",
+  "title": "How much the traditional-vs-OSO gap depends on the gamer and the funding loop",
+  "design": {
+    "question": "How much of OSO's lead depends on the gaming agent and the funding loop?",
+    "compare": "traditional and OSO, under four variants",
+    "fixed": "the field and budget",
+    "measure": "hardest level published",
+    "better": "higher",
+    "runs": "100 runs per row"
   },
-  {
-   "variant": "default (ρ = 0.5, θ = 0.5)",
-   "setting": "OSO (immediate)",
-   "frontier": "7.9 ± 0.2",
-   "reach L7": "1.00",
-   "speed": "49 ± 14",
-   "ROI (value per spend)": "1.44 ± 0.48"
-  },
-  {
-   "variant": "no funding loop (ρ = 0)",
-   "setting": "Traditional",
-   "frontier": "4.6 ± 0.9",
-   "reach L7": "0.01",
-   "speed": "111 ± 0",
-   "ROI (value per spend)": "0.09 ± 0.05"
-  },
-  {
-   "variant": "no funding loop (ρ = 0)",
-   "setting": "OSO (immediate)",
-   "frontier": "8.0 ± 0.1",
-   "reach L7": "1.00",
-   "speed": "44 ± 11",
-   "ROI (value per spend)": "1.53 ± 0.43"
-  },
-  {
-   "variant": "strong screen (θ = 0.9)",
-   "setting": "Traditional",
-   "frontier": "5.7 ± 1.1",
-   "reach L7": "0.32",
-   "speed": "97 ± 15",
-   "ROI (value per spend)": "0.24 ± 0.27"
-  },
-  {
-   "variant": "strong screen (θ = 0.9)",
-   "setting": "OSO (immediate)",
-   "frontier": "8.0 ± 0.2",
-   "reach L7": "1.00",
-   "speed": "46 ± 13",
-   "ROI (value per spend)": "1.55 ± 0.46"
-  },
-  {
-   "variant": "no gamer",
-   "setting": "Traditional",
-   "frontier": "7.0 ± 1.2",
-   "reach L7": "0.77",
-   "speed": "84 ± 21",
-   "ROI (value per spend)": "0.66 ± 0.46"
-  },
-  {
-   "variant": "no gamer",
-   "setting": "OSO (immediate)",
-   "frontier": "8.0 ± 0.1",
-   "reach L7": "1.00",
-   "speed": "42 ± 13",
-   "ROI (value per spend)": "1.62 ± 0.48"
-  }
- ],
- "caveats": [
-  "A simulation with guessed parameters: it shows how the rules play out, not that they work."
- ],
- "page": "results/sensitivity/summary.md"
+  "answer": "Best: no funding loop (ρ = 0), OSO, 8.0 (3 more tie). Best traditional: no gamer, Traditional, 7.0. Clear difference.",
+  "table": [
+    {
+      "variant": "default (ρ = 0.5, θ = 0.5)",
+      "setting": "Traditional",
+      "frontier": "5.7 ± 1.2",
+      "reach L7": "0.35",
+      "speed": "96 ± 16",
+      "ROI (value per spend)": "0.22 ± 0.18"
+    },
+    {
+      "variant": "default (ρ = 0.5, θ = 0.5)",
+      "setting": "OSO (immediate)",
+      "frontier": "7.9 ± 0.2",
+      "reach L7": "1.00",
+      "speed": "49 ± 14",
+      "ROI (value per spend)": "1.44 ± 0.48"
+    },
+    {
+      "variant": "no funding loop (ρ = 0)",
+      "setting": "Traditional",
+      "frontier": "4.6 ± 0.9",
+      "reach L7": "0.01",
+      "speed": "111 ± 0",
+      "ROI (value per spend)": "0.09 ± 0.05"
+    },
+    {
+      "variant": "no funding loop (ρ = 0)",
+      "setting": "OSO (immediate)",
+      "frontier": "8.0 ± 0.1",
+      "reach L7": "1.00",
+      "speed": "44 ± 11",
+      "ROI (value per spend)": "1.53 ± 0.43"
+    },
+    {
+      "variant": "strong screen (θ = 0.9)",
+      "setting": "Traditional",
+      "frontier": "5.7 ± 1.1",
+      "reach L7": "0.32",
+      "speed": "97 ± 15",
+      "ROI (value per spend)": "0.24 ± 0.27"
+    },
+    {
+      "variant": "strong screen (θ = 0.9)",
+      "setting": "OSO (immediate)",
+      "frontier": "8.0 ± 0.2",
+      "reach L7": "1.00",
+      "speed": "46 ± 13",
+      "ROI (value per spend)": "1.55 ± 0.46"
+    },
+    {
+      "variant": "no gamer",
+      "setting": "Traditional",
+      "frontier": "7.0 ± 1.2",
+      "reach L7": "0.77",
+      "speed": "84 ± 21",
+      "ROI (value per spend)": "0.66 ± 0.46"
+    },
+    {
+      "variant": "no gamer",
+      "setting": "OSO (immediate)",
+      "frontier": "8.0 ± 0.1",
+      "reach L7": "1.00",
+      "speed": "42 ± 13",
+      "ROI (value per spend)": "1.62 ± 0.48"
+    }
+  ],
+  "caveats": [
+    "A simulation with guessed parameters: it shows how the rules play out, not that they work."
+  ],
+  "page": "results/sensitivity/summary.md",
+  "superseded": "Earlier version (before 2026-10-24): run on the old random-layer graph, where every parent is required and each level has a fixed chance. Replaced by runs on the idea graph generator."
 }

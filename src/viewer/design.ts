@@ -104,7 +104,7 @@ export const KINDS: Record<string, { name: string; what: string }> = {
   foundation: { name: 'Foundation builder', what: 'Patient and careful; builds the basic ideas others need, and likes sharing.' },
   racer: { name: 'Target racer', what: 'Impatient; chases the bounties and long shots, and never shares for its own sake.' },
   explorer: { name: 'Cheap explorer', what: 'Less skilled and a poor judge, but each attempt is cheap, so it attempts a lot.' },
-  specialist: { name: 'Specialist', what: 'Much better in its own area (1.6×), much worse elsewhere (0.4×).' },
+  specialist: { name: 'Specialist', what: 'Much better in its own area (1.6×), much worse elsewhere (0.4×). Only the Lean problem set has areas; on generated graphs the area boost does not apply.' },
   freeRider: { name: 'Free rider', what: "Uses everyone's ideas and dislikes sharing its own." },
   gamer: { name: 'Gamer', what: 'Spends most attempts on trivial ideas to collect their small rewards.' },
   plain: { name: 'Plain', what: 'Average at everything, no preferences; uses every idea it sees. A baseline.' },
@@ -147,48 +147,10 @@ export function options() {
     flowBackSettings: FLOW_BACK,
     columns: Object.keys(COLUMNS).map((id) => ({ id, meaning: COLUMN_INFO[id] ?? id })),
     defaultColumns: ['frontier', 'reachTarget', 'cost', 'targetsSolved', 'value', 'roi', 'sharing'],
-    template: spaceToYaml({
-      id: 'my-field', title: 'My field', summary: 'One sentence about the field.',
-      description: 'What the field is, its stages or areas, and what progress means in it.',
-      glossary: { idea: 'a finding later work can build on', target: 'a finding with a bounty', attempt: 'one attempt at a finding' },
-      areas: ['area 1', 'area 2'],
-      scenario: { world: { kind: 'layered', levels: 6, width: 8, maxPrereqs: 2, areas: 2, targets: [{ level: 6, count: 2 }], bountyBase: 4, bountyGrowth: 2 }, success: { p0: 0.5, eta: 0.55 }, measures: { targetLevel: 5 } },
-      notes: 'Which numbers are guesses.',
-    } as SpaceSpec),
   };
 }
 
 const ID = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-
-/** Validates a field's YAML, test-runs it, calibrates its budget if needed, and draws its tree. */
-export function checkField(yamlText: string) {
-  try {
-    const space = checkSpace(yamlText);
-    const { space: ready, calibrated } = withCalibratedBudget(space);
-    const sc = ready.scenario;
-    const w = worlds.create(sc.world, 'world')(sc.success, new Rng(1).fork(1));
-    return {
-      ok: true, id: space.spec.id, title: space.spec.title, exists: existsSync(join(SPACES_DIR, `${space.spec.id}.yaml`)),
-      summary: { results: w.n, levels: w.levels, targets: w.targets.length, deadEnds: w.deadEnd.filter(Boolean).length, agents: spaceAgents(ready), budget: sc.budget.X, calibrated },
-      svg: worldFigure(w, `The research tree: ${space.spec.title}`, space.spec.areas),
-    };
-  } catch (e) {
-    return { ok: false, error: (e as Error).message };
-  }
-}
-
-export function saveField(yamlText: string, overwrite = false) {
-  const space = checkSpace(yamlText);
-  const path = join(SPACES_DIR, `${space.spec.id}.yaml`);
-  if (existsSync(path) && !overwrite) throw new Error(`a field called "${space.spec.id}" already exists; change its id, or save over it`);
-  writeFileSync(path, yamlText.endsWith('\n') ? yamlText : `${yamlText}\n`);
-  return { id: space.spec.id };
-}
-
-export function fieldYaml(id: string): string {
-  if (!ID.test(id)) throw new Error('bad id');
-  return readFileSync(join(SPACES_DIR, `${id}.yaml`), 'utf8');
-}
 
 export interface Design {
   id: string;
@@ -508,24 +470,6 @@ export function buildReportJob(space: string, seeds: number): Job {
   return cliJob('report', `Standard report: ${space}`, ['report', space, '--seeds', String(Math.max(10, Math.min(500, seeds)))], () => ({ doc: `reports/${space}/report.md` }));
 }
 
-export function generateFieldJob(description: string): Job {
-  if (description.trim().length < 20) throw new Error('describe the field in at least a sentence');
-  const job = newJob('generate', `Draft a field: ${description.slice(0, 60)}`);
-  (async () => {
-    try {
-      const { complete, via } = await anyComplete((m) => job.log.push(m.trim()));
-      const space = await generateSpace(description, complete, { log: (s) => job.log.push(s.trim()), via });
-      job.result = { yaml: spaceToYaml(space.spec) };
-      job.status = 'done';
-    } catch (e) {
-      job.log.push((e as Error).message);
-      job.status = 'failed';
-    }
-    job.endedAt = Date.now();
-  })();
-  return job;
-}
-
 export function getJob(id: string): Job {
   const job = jobs.get(id);
   if (!job) throw new Error('no such job');
@@ -568,7 +512,7 @@ export function graphPresets() {
     .filter((sp) => (sp.scenario?.world as { kind?: string } | undefined)?.kind === 'ideas')
     .map((sp) => {
       const w = sp.scenario!.world as Record<string, number>;
-      return { id: sp.id, title: sp.title, summary: sp.summary, controls: Object.fromEntries(keys.map((k) => [k, w[k] ?? GRAPH_DEFAULTS[k]])) as GraphControls };
+      return { id: sp.id, title: sp.title, summary: sp.summary, controls: Object.fromEntries(keys.map((k) => [k, w[k] ?? GRAPH_DEFAULTS[k]])) as unknown as GraphControls };
     });
 }
 

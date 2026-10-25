@@ -15,9 +15,9 @@ Every rule of the experiment as a formula, in the order a run uses them. Each fo
 
 ## One round, as a loop
 
-![One round as a loop of six steps: 1 money, 2 choose what to attempt, 3 attempt, 4 publish or keep, 5 rewards, 6 earnings, which feed the next round's money through rho. Dashed: alpha and c send credit back to earlier ideas, which changes what agents choose to try and share](img/equations-loop.svg)
+![One round as a loop of six steps: 1 money, 2 choose what to attempt, 3 attempt, 4 publish or keep, 5 rewards, 6 earnings, which shape the next round's money through f. Dashed: alpha and c send credit back to earlier ideas, which changes what agents choose to try and share](img/equations-loop.svg)
 
-A run is $R$ rounds (120 by default). A **round** is one pass through steps 1 to 6: that round's money $\text{Budget}/R$ is split among the agents, each makes the attempts it can afford, new ideas are shared or kept, rewards are paid and recent earnings are updated. The **next round** starts again at step 1, with the money split by those updated earnings. Each step's box names its section and symbols. Two loops feed back:
+A run is $R$ rounds (120 by default). A **round** is one pass through steps 1 to 6: that round's money $\text{Budget}/R$ is split among the agents, each makes the attempts it can afford, new ideas are shared or kept, rewards are paid and earnings are updated. The **next round** starts again at step 1, with the money split by those updated earnings. Each step's box names its section and symbols. Two loops feed back:
 
 - **Earnings shape next round's research money ($f$).** Earnings in step 6 set next round's money in step 1. This happens under both rules.
 - **Credit flows back (absorption rate $\alpha$, and $c$).** Rewards in step 5 reach earlier ideas, so agents expect more from building and sharing (steps 2 and 4). This is where traditional ($\alpha = 1$, $c = 0$) and OSO ($\alpha = 0.8$, $c = 0.15$) differ.
@@ -187,7 +187,7 @@ $$\phi_{y \to x} = \sum_{b \,\in\, \text{bits}(x) \cap \text{bits}(y)} \frac{1}{
 
 *Example:* $y$ = HHT and $x$ = HHTHHH ($x$ took all 3 of $y$'s bits and added 3). From scratch, $W_x = 2^6 = 64$ attempts; knowing $y$, $W_x = 2^3 = 8$. If $x$ instead has two parents HHTH and THHH that overlap in TH, each resolves 4 of $x$'s 6 bits; the 2 shared bits are split, so each contributes $2 + 1 = 3$: weights 50% each.
 
-**Presets.** Three topics are named settings of the generator, each with its story (description and glossary) and a full report on the Results page:
+**Presets.** Three named settings of the generator, each with its story (description and glossary) and a full report on the Results page:
 
 | Preset | Levels × width | Parents | Length, growth | Composition | Why |
 | --- | --- | --- | --- | --- | --- |
@@ -234,7 +234,7 @@ The chance that agent $i$'s try at $x$ works:
 
 $$\pi_{i,x} = \min(1,\ s_i \, p_x)$$
 
-A specialist's skill is $\times 1.6$ in its own area and $\times 0.4$ elsewhere. An attempt costs $k_i$. A success on an idea someone else already published is a **duplicate** and earns nothing.
+A specialist's skill is $\times 1.6$ in its own area and $\times 0.4$ elsewhere; only the Lean problem set has areas, so on generated graphs this does not apply. An attempt costs $k_i$. A success on an idea someone else already published is a **duplicate** and earns nothing.
 
 *Example:* a cheap explorer ($s = 0.5$) attempting $x$: $\pi = 0.5 \times 0.18 = 0.09$, about one success in eleven attempts.
 

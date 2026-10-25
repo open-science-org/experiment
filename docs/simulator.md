@@ -47,7 +47,7 @@ Where each element of the [specification](design.md) lives:
 
 | Specification | Configuration (scenario) | Code |
 | --- | --- | --- |
-| Research tree, targets, bounties (2.1) | `world` (plugin: `layered`, `chain`, `file`) | `world.ts` |
+| Research tree, targets, bounties (2.1) | `world` (plugin: `ideas`, `chain`, `file`) | `world.ts` |
 | Success oracle and chance p (2.2) | `success.oracle` (plugin: `chance`, `learning`); p from `success` (p0, eta), agent `skill`, specialist boost | `oracles.ts`; `model.ts`, `attempt` |
 | Knowledge, publishing, uptake (2.3) | `rules.visibility` (plugin), agent `reuse` | `rules.ts` (`visibilities`), `model.ts` (`publishBundle`, uptake loop) |
 | Costly and fallible knowledge (2.3) | `knowledge.absorbCost`, `knowledge.errorRate` | `model.ts` (`absorb`, `retract`) |
@@ -108,31 +108,22 @@ The default scenario ([scenarios/default.yaml](../config/scenarios/default.yaml)
 2. **Agents with different traits.**
 3. **Rewards:** a mint per idea and a bounty per target, paid through the OSO flow-back.
 4. **Choices:** agents decide what to attempt and, in one setting, whether to publish.
-5. **A funding loop:** earnings buy future money.
+5. **A funding loop:** earnings shape next round's research money (f).
 
 ### 2.1 The world (`world.ts`)
 
-**Layout.** 8 levels of 10 ideas each, so 80 ideas.
-- **Parents.** An idea at level ℓ ≥ 2 has one main parent at level ℓ − 1, plus up to two extra parents. Each extra one comes from the level just below, or (with probability 0.25) from any lower level. Ideas at level 1 are roots.
-- **Areas.** There are 3. An idea is in the same area as its main parent with probability 0.8; otherwise its area is random.
+The default world is drawn by the **idea graph generator** (`kind: ideas`), defined on the [Equations page, section 3.1](equations.md#31-the-generator):
 
-**Difficulty.** Every attempt on an idea at level ℓ succeeds with probability:
+- **Structure.** 6 levels of 8 ideas. Each idea above level 1 has about 2 parents from the level below (a parent comes from any lower level with chance 0.2).
+- **Difficulty.** Each idea is a coin-toss sequence (bits). Level 1 ideas have 3 new bits, and each level adds 2 more. An attempt works with chance 2^-(bits the agent has not yet resolved), times its skill. Knowing an idea resolves all its bits, so parents make an idea easier but are not required. Ideas with more than 24 unresolved bits cannot be attempted.
+- **Attribution.** 70% of an idea's bits come from its parents (composition 0.7). A parent's link weight is its share of those bits; a bit several parents share is split equally (the Shapley value).
+- **Bounties.** 2 on the top level, or on every level from `targetsFrom` up. On each such level they go at random to ideas among the half that rest on the most earlier ideas. Bounty 4 · 2^(ℓ−1).
 
-  p = 0.5 · 0.6^(ℓ−1)
-
-That is 50% at level 1, 18% at level 3, 6.5% at level 5, 2.3% at level 7 and 1.4% at level 8, for an agent of skill 1.
-
-**Targets.** Two each at levels 3, 5 and 7, and one at level 8.
-- **Placement:** each is chosen at random from the half of its level with the most ancestors, so targets need real composition.
-- **Bounty:** 4 · 2^(ℓ−1), so 16, 64, 256 and 512.
-
-**Dead ends.** Ideas with no target below them. On average about 31 of the 80 ideas (over 200 worlds).
-
-**Link weights.** An idea's parents share its attribution in proportion to their cost, 1/p. Harder parents count more. The ledger can use noisy weights (spread σ_w), but the default is exact.
-
-[world-example.svg](img/world-example.svg) draws the world of seed 1 (`node src/report/draw-world.ts 1 > world.svg`).
+The three presets (abstract field, drug discovery, battery) are named settings of the generator. The Lean problem set is a world read from a file, where every parent is required and each idea has its own chance (`success` settings).
 
 Every run draws a new world from its seed. Within an experiment, the same seed gives the same world and agents in every setting, so the settings are compared on identical worlds.
+
+Results before 2026-10-24 used a random-layer world (`kind: layered`: every parent required, chance 0.5 · 0.6^(ℓ−1) per level, 3 areas). It is kept for those results and the mechanism tests.
 
 ### 2.2 Agents (`agents.ts`)
 
@@ -143,7 +134,7 @@ There are 12 agents. Each has eight traits:
 | Foundation builder | 3 | 1.0 | 0.7 | 1.0 | 0.98 | 0.2 | 0.9 | 0.5 | 0 |
 | Target racer | 3 | 1.0 | 0.5 | 1.0 | 0.85 | −0.2 | 0.6 | 0 | 0 |
 | Cheap explorer | 2 | 0.5 | 0.3 | 0.3 | 0.95 | 0 | 0.8 | 0.2 | 0 |
-| Specialist | 2 | 1.0 (×1.6 in its area, ×0.4 elsewhere) | 0.6 | 1.0 | 0.95 | 0 | 0.8 | 0.2 | 0 |
+| Specialist | 2 | 1.0 (×1.6 in its area, ×0.4 elsewhere; only where ideas have areas, as in the Lean problem set) | 0.6 | 1.0 | 0.95 | 0 | 0.8 | 0.2 | 0 |
 | Free rider | 1 | 0.8 | 0.5 | 1.0 | 0.9 | 0 | 1.0 | −1 | 0 |
 | Gamer | 1 | 0.8 | 0.3 | 0.5 | 0.9 | 0 | 0.8 | 0 | 0.6 |
 
@@ -186,14 +177,14 @@ The budget is 1,200 over R = 120 rounds, so 10 per round.
 
 1. **Budgets.** Agent i gets:
 
-   money_i = 10 · [ (1 − f)/12 + f · Ē_i / Σ Ē ]
+   money_i = 10 · [ (1 − f)/12 + f · E_i / Σ E ]
 
-   with f = 0.5. Ē_i is its smoothed recent earnings: Ē ← 0.7·Ē + 0.3·(this round's earnings). Before anyone earns, the split is equal. An agent makes floor(money_i / k_i) attempts and carries the remainder to the next round. All attempts in a round are shuffled, so agents interleave and race.
+   with f = 0.5. E_i is its earnings, with earlier rounds fading: E ← 0.7·E + 0.3·(this round's earnings). Before anyone earns, the split is equal. An agent makes floor(money_i / k_i) attempts and carries the remainder to the next round. All attempts in a round are shuffled, so agents interleave and race.
 2. **Delayed publications** due this round are made.
 3. **Rivals.** For each idea, count how many agents could attempt it now. This is the race estimate used in scoring.
 4. **Attempts,** one at a time:
    - With probability g, the agent farms a trivial idea. It costs k, and the validation screen rejects it with probability θ = 0.5. If accepted, it earns the mint m = 1.
-   - Otherwise the agent lists its **frontier**: ideas it doesn't know whose parents it all knows. If the frontier is empty, it spends nothing.
+   - Otherwise the agent lists its **frontier**: the ideas it can attempt (on a generated graph, any idea it doesn't know within the attempt limit; on the Lean problem set, ideas whose parents it all knows). If the frontier is empty, it spends nothing.
    - With probability ε = 0.05 it picks a random idea from the frontier. Otherwise it picks by softmax over the score U (section 2.5): the probability is proportional to exp((U − U_best) / (τ·|U_best|)), with τ = 0.3.
    - It spends k, and succeeds with probability π.
    - **On success:** if someone else already published the idea, the proof is a duplicate and earns nothing. Otherwise the visibility rule decides whether to publish.
@@ -202,7 +193,7 @@ The budget is 1,200 over R = 120 rounds, so 10 per round.
    - **Bounty:** if the idea is a target, its bounty enters it through flow-back.
    - **Uptake:** every other agent takes the idea up at once with probability ω.
 6. **Uptake.** Every agent takes up each published idea it doesn't yet know, with probability ω.
-7. **Earnings** are added up and Ē is updated.
+7. **Earnings** are added up and E is updated.
 8. **Stopping.** The run ends when the budget is spent, or as soon as every target is solved, since a funder stops paying then.
 
 The symbols below are the ones on the [Equations](equations.md) page, where each formula is worked out on an example tree.
@@ -286,8 +277,8 @@ A **scenario** is one complete setup: the world, the agents, the rules, the budg
 
 | Section | Settings | Defaults |
 | --- | --- | --- |
-| `world` | A world generator (`kind`) and its parameters | `layered`: 8 levels × 10, ≤ 3 parents, 3 areas, targets at levels 3, 5, 7, 8, bounty 4·2^(ℓ−1) |
-| `success` | Success chance per attempt by level, p = p0 · eta^(level − 1), and the success oracle | p0 = 0.5, eta = 0.6; oracle `chance` |
+| `world` | A world generator (`kind`) and its parameters | `ideas`: 6 levels × 8, 2 parents, 3 bits + 2 per level, composition 0.7, 2 bounties on the top level, bounty 4·2^(ℓ−1) |
+| `success` | For worlds without bits (Lean problem set): chance per attempt by level, p = p0 · eta^(level − 1); and the success oracle | p0 = 0.5, eta = 0.6; oracle `chance` |
 | `attribution` | Noise in the ledger's link weights | 0 (exact) |
 | `agents` | Archetypes and their traits, the mix, specialist boost and penalty | 12 agents of six archetypes (section 2.2) |
 | `rules` | α, c, mint, validation screen θ, visibility rule, publishing failures | Traditional: α = 1, c = 0, finished-only, θ = 0.5, failures private |
@@ -333,7 +324,7 @@ Components chosen by `kind` are plugins. `npm run sim -- plugins` lists them wit
 
 | Registry | In a scenario | Built in |
 | --- | --- | --- |
-| `worlds` (src/engine/world.ts) | `world.kind` | `layered` (random levels), `chain` (the one-chain check), `file` (any DAG from JSON) |
+| `worlds` (src/engine/world.ts) | `world.kind` | `ideas` (the generator), `chain` (the one-chain check), `file` (any DAG from JSON, such as the Lean problem set), `layered` (earlier results only) |
 | `visibilities` (src/engine/rules.ts) | `rules.visibility.kind` | `finished-only`, `immediate`, `delayed` (`d`), `choice` |
 | `allocations` (src/engine/rules.ts) | `budget.allocation.kind` | `earnings-share` (`rho`, `smoothing`), `equal` |
 | `oracles` (src/engine/oracles.ts) | `success.oracle.kind` | `chance` (succeeds with chance p), `learning` (`gain`, `cap`: each failure raises the next chance) |
@@ -396,6 +387,8 @@ Computed at the end of each run (`model.ts`, function `measure`):
 Tables show mean ± standard deviation over seeds. Per-run values, including the frontier at 11 points of spend, are in each experiment's `runs.jsonl`.
 
 ## 5. Results
+
+**Current results** are on the app's Runs page (and in [results/](../results/LOG.md)): the simple model on generated graphs, the scaling runs, and the AI tests. The rest of this section is **earlier work, before 2026-10-24**, on the old random-layer world with the full model. Its findings are kept for the record; where they differ from the current runs, the current runs hold.
 
 Logged in [results/](../results/LOG.md). Every saved result names the commit that produced it. To regenerate one:
 
@@ -500,7 +493,7 @@ What it is good for:
 
 | Path | Contents |
 | --- | --- |
-| `src/engine/` | The environment and its plugins: `model.ts` (one run), `world.ts` (worlds `layered`, `chain`, `graph`, `file`; flow-back shares; attribution value S), `agents.ts`, `rules.ts` (visibility, allocation, choice policies), `oracles.ts`, `deciders.ts`, `measures.ts` (measures and table columns), `config.ts` (scenario types, loading, merging, validation), `registry.ts`, `rng.ts` (seeded xoshiro128\*\*) |
+| `src/engine/` | The environment and its plugins: `model.ts` (one run), `world.ts` (worlds `ideas`, `chain`, `graph`, `file`, and the earlier `layered`; flow-back shares; attribution value S), `agents.ts`, `rules.ts` (visibility, allocation, choice policies), `oracles.ts`, `deciders.ts`, `measures.ts` (measures and table columns), `config.ts` (scenario types, loading, merging, validation), `registry.ts`, `rng.ts` (seeded xoshiro128\*\*) |
 | `src/experiments/` | `experiment.ts` expands experiments into rows and runs them; `analytic.ts` holds the one-chain check's exact predictions |
 | `src/spaces/` | `spaces.ts` loads and validates problem spaces and calibrates budgets; `new-space.ts` has Claude write a space |
 | `src/report/` | `battery.ts` (the canonical experiments), `report.ts` (the canonical report and index), `figures.ts` (SVG charts), `draw-world.ts` |

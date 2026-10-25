@@ -1,36 +1,37 @@
 {
- "chart": "results/exp-202610220048/figures/compare.svg",
- "id": "exp-202610220048",
- "kind": "simulation",
- "date": "2026-10-23",
- "title": "exp-202610220048",
- "design": {
-  "question": "Traditional vs OSO (immediate) on An abstract research field: which gets furthest?",
-  "compare": "Traditional, OSO (immediate)",
-  "fixed": "the field \"An abstract research field\", with θ, validation screen = 0.65",
-  "measure": "hardest level published",
-  "better": "higher",
-  "runs": "50 runs per row"
- },
- "answer": "Best: OSO, 8.0. Best traditional: Traditional, 5.7. Clear difference.",
- "table": [
-  {
-   "setting": "Traditional",
-   "frontier": "5.7 ± 1.1",
-   "reach L7": "0.34",
-   "cost": "984 ± 88",
-   "ROI (value per spend)": "0.23 ± 0.20"
+  "chart": "results/exp-202610220048/figures/compare.svg",
+  "id": "exp-202610220048",
+  "kind": "simulation",
+  "date": "2026-10-23",
+  "title": "exp-202610220048",
+  "design": {
+    "question": "Traditional vs OSO (immediate) on An abstract research field: which gets furthest?",
+    "compare": "Traditional, OSO (immediate)",
+    "fixed": "the field \"An abstract research field\", with θ, validation screen = 0.65",
+    "measure": "hardest level published",
+    "better": "higher",
+    "runs": "50 runs per row"
   },
-  {
-   "setting": "OSO (immediate)",
-   "frontier": "8.0 ± 0.1",
-   "reach L7": "1.00",
-   "cost": "451 ± 127",
-   "ROI (value per spend)": "1.56 ± 0.61"
-  }
- ],
- "caveats": [
-  "A simulation with guessed parameters: it shows how the rules play out, not that they work."
- ],
- "page": "results/exp-202610220048/summary.md"
+  "answer": "Best: OSO, 8.0. Best traditional: Traditional, 5.7. Clear difference.",
+  "table": [
+    {
+      "setting": "Traditional",
+      "frontier": "5.7 ± 1.1",
+      "reach L7": "0.34",
+      "cost": "984 ± 88",
+      "ROI (value per spend)": "0.23 ± 0.20"
+    },
+    {
+      "setting": "OSO (immediate)",
+      "frontier": "8.0 ± 0.1",
+      "reach L7": "1.00",
+      "cost": "451 ± 127",
+      "ROI (value per spend)": "1.56 ± 0.61"
+    }
+  ],
+  "caveats": [
+    "A simulation with guessed parameters: it shows how the rules play out, not that they work."
+  ],
+  "page": "results/exp-202610220048/summary.md",
+  "superseded": "Earlier version (before 2026-10-24): run on the old random-layer graph, where every parent is required and each level has a fixed chance. Replaced by runs on the idea graph generator."
 }

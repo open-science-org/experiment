@@ -24,7 +24,7 @@ The same as in the full model ([sections 1 to 3](equations.md#1-an-idea)): ideas
 
 ## One round
 
-1. **Money.** Each agent gets $b = \dfrac{\text{Budget}}{R\,N}$, makes as many attempts as that pays for, and carries the rest to the next round.
+1. **Money.** Each agent gets $\text{money}_i = \dfrac{\text{Budget}}{R\,N}$, makes as many attempts as that pays for, and carries the rest to the next round.
 2. **What to attempt.** Each agent scores the ideas it can attempt and picks a good one, as in the full model ([section 8](equations.md#8-choosing-what-to-attempt)), with every agent's traits the same.
 3. **An attempt** at $x$ works with chance $p_x$. A success on an idea someone already published is a duplicate and earns nothing.
 4. **Publish or keep.** An idea with a bounty is published at once. Any other idea is published at once **with chance $\beta$**; otherwise it stays private until its author proves an idea with a bounty that rests on it, and is published with that one:

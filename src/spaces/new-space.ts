@@ -77,16 +77,17 @@ Write ONE problem-space file as YAML in a single \`\`\`yaml code block, and noth
 - id: kebab-case name.
 - title: a short title.
 - summary: one sentence.
-- description: a paragraph in plain words: what the field is, what its stages or areas are, what progress means.
-- glossary: { idea, target, attempt, area (optional), agent (optional) }: what each term means in this field, as short noun phrases.
-- areas: names of the areas, in index order (optional).
-- scenario: overrides of the default scenario below. Change only what the field needs. Usually: world, success, measures.targetLevel, and sometimes agents.mix.
+- description: a paragraph in plain words: what the field is, what its stages are, what progress means.
+- glossary: { idea, target, attempt, agent (optional) }: what each term means in this field, as short noun phrases.
+- scenario: overrides of the default scenario below. Change only what the field needs. Usually: world, measures.targetLevel, and sometimes agents.mix.
 - notes: caveats, such as which numbers are guesses (optional).
 
-Choosing the world (scenario.world):
-- kind: layered, for a field best described by its stages: levels (number of stages), width (results per stage), maxPrereqs, skipProb, areas, areaStickiness, targets (a list of { level, count }), bountyBase and bountyGrowth (bounty = bountyBase · bountyGrowth^(level − 1)).
-- kind: graph, for a small field with a known structure: nodes, a list of { id, prereqs (ids listed earlier), area (from 0), p (optional success chance per attempt), bounty (makes it a target) }. Keep it under 60 nodes.
-Targets must exist. measures.targetLevel must not exceed the deepest level; set it to the level of the main targets or one below. Success chances: success.p0 is the chance at level 1 and success.eta the factor per level; most fields fall between eta 0.4 (steep) and 0.8 (gentle). Do not set the budget: it is calibrated automatically.
+Choosing the world (scenario.world): always kind: ideas, the idea graph generator. Each idea is a coin-toss sequence (bits); an attempt works with chance 2^-(bits not yet known), so earlier ideas make later ones easier. Set three things separately:
+- structure: levels (stages), width (ideas per stage), parents (average parents per idea), skip (chance a parent comes from any lower stage);
+- difficulty: length (new bits at level 1) and lengthGrowth (bits added per level); 2^length is about the attempts a level-1 idea needs;
+- attribution: composition (0 to 1, share of an idea's bits taken from its parents).
+Bounties: targets (per level), targetsFrom (lowest level with bounties; 0 means the top level only), bountyBase and bountyGrowth (bounty = bountyBase · bountyGrowth^(level − 1)).
+measures.targetLevel must not exceed levels; set it to the level of the main targets or one below. Do not set the budget: it is calibrated automatically.
 
 Every setting, with its default and meaning (config/scenarios/default.yaml):
 \`\`\`yaml

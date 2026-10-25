@@ -295,9 +295,6 @@ const server = createServer(async (req, res) => {
       if (req.headers['x-oso-app'] !== '1') return send(403, { error: 'forbidden' });
       const b = await body(req);
       const job = (j: design.Job) => send(200, { job: j.id });
-      if (url.pathname === '/api/spaces/check') return send(200, design.checkField(String(b.yaml ?? '')));
-      if (url.pathname === '/api/spaces/save') { const r = design.saveField(String(b.yaml ?? ''), b.overwrite === true); spaces.delete(r.id); return send(200, r); }
-      if (url.pathname === '/api/spaces/generate') return job(design.generateFieldJob(String(b.description ?? '')));
       if (url.pathname === '/api/experiments/check') return send(200, design.checkExperiment(b.design as design.Design));
       if (url.pathname === '/api/experiments/run') return job(design.runExperimentJob(b.design as design.Design, b.overwrite === true));
       if (url.pathname === '/api/name/ai') return send(200, { name: design.aiName(b.design as design.RaceDesign) });
@@ -316,7 +313,6 @@ const server = createServer(async (req, res) => {
     if (url.pathname === '/api/models') return send(200, await models());
     if (url.pathname === '/api/balance') return send(200, await balance());
     if (url.pathname === '/api/design/field') return send(200, design.fieldValues(url.searchParams.get('id') ?? ''));
-    if (url.pathname === '/api/spaces/yaml') return send(200, { yaml: design.fieldYaml(url.searchParams.get('id') ?? '') });
     if (url.pathname === '/api/jobs') return send(200, design.listJobs());
     if (url.pathname.startsWith('/api/jobs/')) return send(200, design.getJob(url.pathname.slice('/api/jobs/'.length)));
     if (url.pathname.startsWith('/katex/')) {

@@ -139,7 +139,7 @@ All payments use one ledger, with the rules of OIP-8 and OIP-14.
 | --- | --- |
 | **Budget** | Total money the funder spends in a run |
 | **Round** | One step of the run. Each round releases Budget / R, where R is the number of rounds |
-| **Allocation** | How a round's money is split among agents. The default is half equally, half in proportion to recent earnings (f = 0.5), so earnings buy future money |
+| **Allocation** | How a round's money is split among agents. The default is half equally, half in proportion to earnings (f = 0.5), so this round's earnings shape next round's research money |
 | **Stop** | A run ends when the budget is spent, or as soon as every target is solved |
 
 ### 2.6 One round
@@ -320,7 +320,7 @@ Each element is replaceable without changing the others:
 
 | Extension point | Built today | Examples of more complex experiments |
 | --- | --- | --- |
-| World | Random layers, chain, DAG from a file, the Lean reference tree | The Lean reference tree with measured p; a real field's citation graph |
+| World | The idea graph generator (bits; structure, difficulty, attribution) and its presets, chain, DAG from a file, the Lean reference tree | The Lean reference tree with measured p; a real field's citation graph |
 | Knowledge | Free and correct; costly to take up; fallible, with retraction | Partial ideas; reviews that catch errors before a target does |
 | Success oracle | Chance p; learning from own and public failures | Lean checker |
 | Agents (deciders) | Formula agents; a random baseline; different deciders per archetype | LLM agents; mixed populations of formula and LLM agents |
@@ -331,18 +331,17 @@ Each element is replaceable without changing the others:
 
 In the simulator, every element is a plugin: world, success oracle, deciders, visibility, allocation, choice policy, measures and analyses. Experiments are YAML files ([the simulator doc, section 3](../docs/simulator.md#3-configuration-and-extending)). For the Lean experiment, an LLM decider and a Lean-checker oracle become two more plugins, once the core loop is made asynchronous.
 
-## 8. Problem spaces and canonical reports
+## 8. Presets and canonical reports
 
 The framework is meant to be used beyond the cases built so far. Anyone can describe a new field and get a report on it that answers the same questions, in the same form, as every other field.
 
-**A problem space** is one file ([spaces/](../spaces/)). It holds:
+**A preset** is one file ([spaces/](../spaces/)). It holds:
 - a title, a one-sentence summary and a plain-language description of the field;
-- a **glossary** of what an idea, a target, an attempt, an area and an agent mean in that field;
-- the area names;
-- the scenario: the research tree, success chances, targets, agents and anything else that differs from the defaults.
+- a **glossary** of what an idea, a target, an attempt and an agent mean in that field;
+- the scenario: the idea generator's settings (structure, difficulty, attribution, bounties), the agents and anything else that differs from the defaults. The Lean problem set is the exception: its graph is read from a file, and its ideas have areas.
 
 **Adding one:**
-- **By hand:** copy an example space and edit it. `npm run sim -- check <space>` validates it and test-runs it.
+- **By hand:** copy a preset and change its settings. `npm run sim -- check <space>` validates it and test-runs it.
 - **By description:** `npm run sim -- new "<a description of the field>"`.
   - Claude (claude-opus-5-5) writes the space file from the description, the documented settings and two example spaces. This needs an Anthropic API key (`ANTHROPIC_API_KEY`).
   - The file is checked against the scenario rules and test-run once; any error is sent back to the model to fix, up to three times.
@@ -358,7 +357,7 @@ The framework is meant to be used beyond the cases built so far. Anyone can desc
 | 3. The six settings | Section 3's settings, with the standard measures |
 | 4. Does flow-back make agents share? | Sharing and reach as α falls, with α\* |
 | 5. When sharing is costly or sometimes wrong | The lead under free, costly, fallible, and costly-and-fallible knowledge |
-| 6. Sensitivity to the parameters | OSO's lead as each parameter is varied alone. Two groups: those communities, funders or the protocol set (α, c, mint per idea, validation screen θ, how far money follows earnings f), and those we guessed about agents (ψ, κ, perception noise, choice randomness, attribution error). Also α × c together. Because communities will set these values, the result must hold across them. |
+| 6. Sensitivity to the parameters | OSO's lead as each parameter is varied alone. Two groups: those communities, funders or the protocol set (α, c, mint per idea, validation screen θ, how much this round's earnings shape next round's money, f), and those we guessed about agents (ψ, κ, perception noise, choice randomness, attribution error). Also α × c together. Because communities will set these values, the result must hold across them. |
 | What this shows | The limits, plus the space's own notes |
 | Reproduce | The command, the space file, the data, and the simulator commit |
 
