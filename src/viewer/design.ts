@@ -152,6 +152,7 @@ export function options() {
     personas: PERSONAS,
     personaFeatures: PERSONA_FEATURES,
     flowBackSettings: FLOW_BACK,
+    steps: STEPS.map(({ step, title, adds }) => ({ step, title, adds })),
     columns: Object.keys(COLUMNS).map((id) => ({ id, meaning: COLUMN_INFO[id] ?? id })),
     defaultColumns: ['frontier', 'reachTarget', 'cost', 'targetsSolved', 'value', 'roi', 'sharing'],
   };
@@ -503,7 +504,44 @@ export const GRAPH_DEFAULTS: GraphControls = { levels: 6, width: 8, parents: 2, 
 const GRAPH_RANGES: Record<keyof GraphControls, [number, number]> = { levels: [1, 15], width: [1, 30], parents: [1, 6], skip: [0, 1], length: [1, 12], lengthGrowth: [0, 6], composition: [0, 1], targets: [1, 10], targetsFrom: [0, 15] };
 
 /** The simple model's design: a topic, or a generated idea graph (graph), and the α and β values. */
-export interface SimpleDesign { id: string; title?: string; question?: string; space: string; graph?: GraphControls; preset?: string; budget?: number; alphas: number[]; betas: number[]; seeds: number; measure?: string }
+export interface SimpleDesign { id: string; title?: string; question?: string; space: string; graph?: GraphControls; preset?: string; budget?: number; alphas: number[]; betas: number[]; seeds: number; measure?: string; step?: number }
+
+/**
+ * The model step by step: step 1 is the simple model; each later step adds one mechanism on top of the one
+ * before. From step 2 on, agents choose what to publish, so β is no longer set: it comes out of their choices.
+ */
+export const STEPS: { step: number; title: string; adds: string; set: Record<string, unknown> }[] = [
+  { step: 1, title: 'The simple model', adds: 'identical agents, equal money each round, the knowledge reward; α and β are set', set: {} },
+  { step: 2, title: 'Agents choose what to share', adds: 'each agent decides whether to publish an idea, weighing its reward against the risk that a rival uses it to win a bounty first; β is no longer set', set: {} },
+  { step: 3, title: 'Earnings shape next round\'s money', adds: 'half of each round\'s money goes to agents by what they earned (f = 0.5)', set: { 'budget.allocation.rho': 0.5 } },
+  { step: 4, title: 'Different kinds of agents', adds: 'foundation builders, target racers, cheap explorers and a free rider replace most of the identical agents', set: { agents: { mix: { foundation: 3, racer: 3, explorer: 2, freeRider: 1, plain: 3, specialist: 0, gamer: 0 } } } },
+  { step: 5, title: 'A gamer, and validation', adds: 'one agent spends attempts on trivial ideas; validators reject them half the time (θ = 0.5)', set: { agents: { mix: { foundation: 3, racer: 3, explorer: 2, freeRider: 1, plain: 2, specialist: 0, gamer: 1 } }, 'rules.screen': 0.5 } },
+];
+
+/** Applies steps 2 to d.step on top of a simple-model experiment. */
+function withStep(spec: ExperimentSpec, d: SimpleDesign): ExperimentSpec {
+  const k = Math.round(d.step ?? 1);
+  if (k <= 1) return spec;
+  if (k > STEPS.length) throw new Error(`step must be between 1 and ${STEPS.length}`);
+  let set = spec.set as Record<string, unknown>;
+  for (const st of STEPS.slice(1, k)) set = merge(set, expandPaths(st.set)) as Record<string, unknown>;
+  const levels: Level[] = [
+    { label: 'Traditional (α = 1, finished work only)', set: { 'rules.alpha': 1, 'rules.visibility': { kind: 'finished-only' } } },
+    ...d.alphas.map((a) => ({ label: `Agents choose, α = ${a}`, set: { 'rules.alpha': a, 'rules.visibility': { kind: 'choice' } } })),
+  ];
+  const added = STEPS.slice(1, k).map((st) => st.title.toLowerCase()).join('; ');
+  return {
+    ...spec,
+    title: d.title || d.question || `Step ${k} (${STEPS[k - 1].title.toLowerCase()}): traditional vs agents choosing, by α`,
+    description: `${spec.description} Step ${k} adds: ${added}.`,
+    set,
+    factors: [{ name: 'society', levels }],
+    question: d.question || `With ${added}, how far does a society get for the same money, and how much do agents share, by α?`,
+    compare: `traditional against agents choosing what to share, at α in {${d.alphas.join(', ')}}`,
+    fixed: `${spec.fixed}; plus ${added}`,
+    tags: [...(spec.tags ?? []).filter((t) => t !== 'beta'), 'step by step', `step ${k}`],
+  };
+}
 
 function checkGraph(g: GraphControls) {
   for (const [k, [lo, hi]] of Object.entries(GRAPH_RANGES)) {
@@ -563,12 +601,13 @@ export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
   check(d.alphas, 'α', 0, 1); check(d.betas, 'β', 0, 1);
   if (d.alphas.length * d.betas.length > 60) throw new Error('at most 60 societies (α values × β values)');
   if (!(d.seeds >= 1 && d.seeds <= 1000)) throw new Error('runs per society must be between 1 and 1000');
-  if (d.graph) return simpleOnGraph(d, d.graph);
+  if ((d.step ?? 1) > 1 && !d.id.includes('-step')) d = { ...d, id: d.id.replace(/-(alpha-beta|alpha-at-beta-[0-9-]+|beta-at-alpha-[0-9-]+|alpha-[0-9-]+-beta-[0-9-]+)(-\d+)?$/, '') + `-step${Math.round(d.step!)}-by-alpha` };
+  if (d.graph) return withStep(simpleOnGraph(d, d.graph), d);
   const { space } = withCalibratedBudget(loadSpace(d.space));
   // Every agent kind the topic has is set to 0, then 12 plain agents: the mix is replaced whole.
   const mix = Object.fromEntries([...Object.keys(space.scenario.agents.mix), 'plain'].map((k) => [k, k === 'plain' ? SIMPLE_AGENTS : 0]));
   const levels = societies(d);
-  return {
+  return withStep({
     id: d.id,
     title: d.title || d.question || `Simple model on ${space.spec.title}: α × β`,
     description: `The simple model on the field "${space.spec.title}" (spaces/${d.space}.yaml): only α and β vary. Held fixed: ${SIMPLE_AGENTS} identical agents, equal money every round (f = 0), no flat mint (m = 0), a knowledge reward of 1 per new bit flowing back with α, no validation (θ = 0), the field's idea graph and bounties.`,
@@ -581,7 +620,7 @@ export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
     compare: `α in {${d.alphas.join(', ')}} × β in {${d.betas.join(', ')}}`,
     fixed: `the field "${space.spec.title}", ${SIMPLE_AGENTS} identical agents, equal money each round, no flat mint, knowledge reward 1 per new bit, no validation`,
     tags: simpleTags(d, space.spec.title),
-  };
+  }, d);
 }
 
 const societies = (d: SimpleDesign): Level[] => d.alphas.flatMap((a) => d.betas.map((b) => ({ label: societyLabel(a, b), set: { 'rules.alpha': a, 'rules.visibility': { kind: 'chance', beta: b } } })));
@@ -614,7 +653,7 @@ export function checkSimple(d: SimpleDesign) {
   try {
     const spec = simpleExperimentFor(d);
     const rows = expand(spec);
-    return { ok: true, rows: rows.length, runs: rows.length * spec.seeds, exists: existsSync(join(EXPERIMENTS_DIR, `${d.id}.yaml`)), name: simpleName(d), question: simpleExperimentFor({ ...d, question: '', title: '' }).question };
+    return { ok: true, rows: rows.length, runs: rows.length * spec.seeds, exists: existsSync(join(EXPERIMENTS_DIR, `${d.id}.yaml`)), name: d.id || spec.id, question: simpleExperimentFor({ ...d, question: '', title: '' }).question };
   } catch (e) {
     return { ok: false, error: (e as Error).message };
   }

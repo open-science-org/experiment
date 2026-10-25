@@ -52,8 +52,8 @@ agents:
 rules:                   # the only thing that differs between traditional research and OSO
   alpha: 1               # absorption rate: how much of incoming value an idea absorbs (traditional: 1)
   c: 0                   # share of each mint paid to what it built on (traditional: 0)
-  mint: 1                # flat mint per published idea
-  mintPerBit: 0          # knowledge reward: paid per new bit (bits in no published idea yet) on publication
+  mint: 0                # flat mint per published idea (off since model v5; the knowledge reward replaces it)
+  mintPerBit: 1          # knowledge reward: paid per new bit (bits in no published idea yet) on publication
   alpha0: null           # absorption rate of the knowledge reward (null: the same as alpha)
   screen: 0.5            # chance the validation screen rejects a trivial idea (θ)
   publishFailures: false # make failed attempts public, so others learn from them (with oracle: learning)

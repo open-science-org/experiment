@@ -98,12 +98,12 @@ test('runs are reproducible from their seed', () => {
   assert.deepEqual(run(scenarioFor('osoChoice'), 11), run(scenarioFor('osoChoice'), 11));
 });
 
-test('everything paid out equals mints plus bounties of solved targets', () => {
+test('everything paid out equals mints, knowledge rewards and bounties of solved targets', () => {
   for (const setting of ['traditional', 'oso', 'creditOnly', 'sharingOnly', 'traditionalChoice', 'osoChoice']) {
     const sc = scenarioFor(setting);
     const r = run(sc, 5);
     const world = worldOf(sc, 5);
-    const solvedBounty = r.totalEarnings - (r.published + r.trivialPublished) * sc.rules.mint;
+    const solvedBounty = r.totalEarnings - (r.published + r.trivialPublished) * sc.rules.mint - r.knowledgePublished * sc.rules.mintPerBit;
     const bounties = world.targets.map((t) => world.bounty[t]);
     const subsetSums = bounties.reduce<number[]>((sums, x) => [...sums, ...sums.map((y) => y + x)], [0]);
     assert.ok(subsetSums.some((x) => Math.abs(x - solvedBounty) < 1e-6), `${setting}: unexplained payout ${solvedBounty}`);
@@ -303,7 +303,7 @@ test('the designer turns a design into a valid experiment and rejects bad design
   assert.equal(c.runs, 12);
   const spec = design.experimentFor(d);
   assert.equal(spec.factors?.[0].name, 'setting');
-  assert.equal((spec.set as Record<string, Record<string, unknown>>).budget.X, 260, 'uses the calibrated budget');
+  assert.equal((spec.set as Record<string, Record<string, unknown>>).budget.X, 180, 'uses the calibrated budget');
   assert.equal(design.checkExperiment({ ...d, id: 'Bad Name' }).ok, false);
   assert.equal(design.checkExperiment({ ...d, settings: [] }).ok, false);
   assert.equal(design.checkExperiment({ ...d, vary: [{ path: 'rules.nope', values: [1] }] }).ok, false);
@@ -421,4 +421,19 @@ test('with newBits set, every idea adds the same number of new bits at any depth
     const fromParents = new Set(w.prereqs[x].flatMap((y) => w.bits![y]));
     assert.equal(w.bits![x].filter((b) => !fromParents.has(b)).length, 2, `idea ${x} at level ${w.level[x]}`);
   }
+});
+
+test('the model step by step: each step adds its mechanism, and agents choose from step 2', async () => {
+  const design = await import('../src/viewer/design.ts');
+  const { expand } = await import('../src/experiments/experiment.ts');
+  const d = { id: '', space: '', graph: design.GRAPH_DEFAULTS, budget: 300, alphas: [0.8, 0.2], betas: [0, 1], seeds: 2 };
+  assert.equal(expand(design.simpleExperimentFor({ ...d, step: 1 })).length, 4, 'step 1: alpha × beta');
+  const rows = expand(design.simpleExperimentFor({ ...d, step: 5 }));
+  assert.equal(rows.length, 3, 'traditional plus one row per alpha');
+  const sc = rows[1].scenario;
+  assert.equal(sc.rules.visibility.kind, 'choice');
+  assert.equal(sc.budget.allocation.rho, 0.5);
+  assert.equal(sc.agents.mix.gamer, 1);
+  assert.equal(sc.rules.screen, 0.5);
+  assert.equal(Object.values(sc.agents.mix).reduce((a, b) => a + b, 0), 12);
 });

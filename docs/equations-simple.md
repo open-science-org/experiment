@@ -1,7 +1,7 @@
 <!-- math -->
 # Equations: the simple model
 
-*Model version 4 ([what changed in each version](model-versions.md)).*
+*Model version 5 ([what changed in each version](model-versions.md)).*
 
 The simple model keeps only the two mechanisms at the core of OSO, and holds everything else fixed:
 

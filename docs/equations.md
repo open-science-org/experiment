@@ -1,7 +1,7 @@
 <!-- math -->
 # Equations
 
-*Model version 4 ([what changed in each version](model-versions.md)).*
+*Model version 5 ([what changed in each version](model-versions.md)).*
 
 Every rule of the experiment as a formula, in the order a run uses them. Each formula has one line saying what it does, and is worked out on the small tree below. The simulation uses all of them; the AI-model tests use the same rules, except where [section 12](#12-ai-model-tests-what-changes) says otherwise. The same ideas in words: [How it works](README.md). Full definitions: [the design](design.md).
 
@@ -78,9 +78,9 @@ Grouped by what they belong to, in the order of the sections below. A hat marks 
 
 | Symbol | Meaning | In the example | Default |
 | --- | --- | --- | --- |
-| $m$ | tokens minted for each new idea | | 1 |
+| $m$ | flat mint: tokens for each new idea (off since model v5) | | 0 |
 | $c$ | cited share: part of each mint passed to the parents | | traditional 0, OSO 0.15 |
-| $m_{\text{bit}}$ | knowledge reward: paid per new bit when an idea is published | reward 3 for HHTHHH | full model 0, simple model 1 |
+| $m_{\text{bit}}$ | knowledge reward: paid per new bit when an idea is published | reward 3 for HHTHHH | 1 |
 | $\alpha_0$ | absorption rate of the knowledge reward: the share an idea keeps, the rest flows to its parents | keeps 2.4 of 3 | $= \alpha$ |
 | $m_x$ | what $x$'s author gets from its mint | $m_{y_1} = 0.85$ | $(1-c)\,m$; $m$ for a root |
 | $\theta$ | chance a trivial idea is rejected | | 0.5 |
@@ -261,7 +261,7 @@ $E_i$ is what agent $i$ earned this round, plus a fading share of earlier rounds
 
 ## 6. The mint
 
-Every new idea mints $m$ tokens. Its author gets $m_x = (1-c)\,m$, and $c\,m$ goes to its parents by link weight, then flows back from there (section 7). A root keeps all of $m$.
+**Since model v5 the flat mint is off ($m = 0$) and the knowledge reward below replaces it.** The flat mint is kept as an option: every new idea mints $m$ tokens; its author gets $m_x = (1-c)\,m$, and $c\,m$ goes to its parents by link weight, then flows back from there (section 7). A root keeps all of $m$.
 
 *Example* ($c = 0.15$): when $y_1$ is published, its author gets $m_{y_1} = 0.85$, and the authors of $z_1$ and $z_2$ get 0.075 each.
 
@@ -271,7 +271,7 @@ Every new idea mints $m$ tokens. Its author gets $m_x = (1-c)\,m$, and $c\,m$ go
 
 $$\text{reward}_x = m_{\text{bit}} \cdot \big|\text{bits}(x) \setminus \text{published bits}\big| \qquad \text{share}_0(x, x) = \alpha_0$$
 
-A trivial idea or a copy adds no new bits, so it earns nothing; publishing first pays, because once those bits are public they are no longer new. By default $\alpha_0 = \alpha$. The full model has $m_{\text{bit}} = 0$ (off); the simple model has $m_{\text{bit}} = 1$. On the Lean problem set (no bits) an idea's new bits are $\log_2(1/p_x)$.
+A trivial idea or a copy adds no new bits, so it earns nothing; publishing first pays, because once those bits are public they are no longer new. By default $\alpha_0 = \alpha$ and $m_{\text{bit}} = 1$, in every model; since model v5 it replaces the flat mint, which is off ($m = 0$). On the Lean problem set (no bits) an idea's new bits are $\log_2(1/p_x)$.
 
 *Example* ($m_{\text{bit}} = 1$, $\alpha_0 = 0.8$): HHT is public; publishing HHTHHH adds 3 new bits, a reward of 3. Its author keeps 2.4, and 0.6 flows to the author of HHT.
 

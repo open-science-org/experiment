@@ -134,6 +134,9 @@
   .param.sel { border-color: var(--s1); box-shadow: 0 0 0 1px var(--s1); }
   .param .ptop { font-size: 13px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
   .param .ptop b { white-space: nowrap; }
+  .steps-list { margin: 4px 0 10px 18px; padding: 0; font-size: 13px; }
+  .steps-list li { margin: 2px 0; }
+  .steps-list li.off { color: var(--ink-3); }
   .param .pctl { display: flex; gap: 10px; align-items: center; margin-top: 6px; flex-wrap: wrap; }
   .param input[type=range] { min-width: 140px; }
   .param input[type=number] { width: 86px; }
@@ -245,10 +248,11 @@
   <section id="view-new" class="hidden">
     <div class="tabs" role="tablist" id="n-model" aria-label="Which model">
       <button class="btn" role="tab" data-model="simple">Simple model (α, β)</button>
+      <button class="btn" role="tab" data-model="steps">Step by step</button>
       <button class="btn" role="tab" data-model="full">Full model</button>
     </div>
     <div class="step" id="n-simple">
-      <p class="muted" style="margin-top:0">Only two settings change between societies. <b>α</b>, the absorption rate: the share of incoming value an idea keeps for its author (1 = nothing flows back). <b>β</b>: the chance an intermediate idea is published as soon as it is proved (0 = closed, 1 = open). Everything else is held fixed: 12 identical agents, equal money every round, no mint (bounties are the only value), no validation. The idea graph is generated from the controls below, or the Lean problem set. <a href="#/equations?m=simple">The equations →</a></p>
+      <p class="muted" style="margin-top:0">Only two settings change between societies. <b>α</b>, the absorption rate: the share of incoming value an idea keeps for its author (1 = nothing flows back). <b>β</b>: the chance an intermediate idea is published as soon as it is proved (0 = closed, 1 = open). Everything else is held fixed: 12 identical agents, equal money every round, a knowledge reward of 1 per new bit (flowing back with α) and the bounties, no validation. The idea graph is generated from the controls below, or the Lean problem set. <a href="#/equations?m=simple">The equations →</a></p>
       <div class="row"><label>Question <span class="info" title="Optional. It labels the run: it becomes the title and question on the result card and in History, and you can search by it. It does not change the result: the answer is worked out from the measure you pick. Left empty, the question shown in grey is used.">ⓘ</span> <input id="s-question" placeholder="What do you want to find out?" style="width:620px"></label><span class="muted">optional</span></div>
       <div class="row choice" role="radiogroup" aria-label="Idea graph"><b>Idea graph</b>
         <label><input type="radio" name="s-graph" value="generated" checked> Generated <span class="info" title="Drawn from the controls below; every run draws its own graph.">ⓘ</span></label>
@@ -280,7 +284,11 @@
       </div>
       <div class="row"><span class="muted" title="The bar for a clear difference is raised for the number of measures, so judging on all of them does not make a false difference more likely.">Judged on every measure: hardest level, targets solved, bounty value, ROI, money to the main level and waste.</span><label>Runs per society <input id="s-seeds" type="number" min="1" max="1000" value="50" style="width:70px"></label></div>
       <div class="row"><label>α values <input id="s-alphas" value="1, 0.8, 0.5, 0.2" style="width:200px"></label><span class="muted">1 = nothing flows back; lower = more flows back to the ideas it built on</span></div>
-      <div class="row"><label>β values <input id="s-betas" value="0, 0.25, 0.5, 0.75, 1" style="width:200px"></label><span class="muted">0 = publish only with the target; 1 = publish every idea at once</span></div>
+      <div id="s-step-box" class="hidden">
+        <div class="row"><label><b>Step</b> <select id="s-step"></select></label><span class="muted">Each step adds one mechanism to the one before. <a href="#/equations?m=steps">The steps →</a></span></div>
+        <ol id="s-step-list" class="steps-list"></ol>
+      </div>
+      <div class="row" id="s-betas-row"><label>β values <input id="s-betas" value="0, 0.25, 0.5, 0.75, 1" style="width:200px"></label><span class="muted">0 = publish only with the target; 1 = publish every idea at once</span></div>
       <div class="row"><button class="btn primary" id="s-run">Run</button><span id="s-summary" class="muted"></span></div>
       <div id="s-live" class="pane hidden"></div>
       <div id="s-job" class="joblog hidden" aria-live="polite"></div>
@@ -449,7 +457,7 @@ async function route() {
   // Topics are now presets of the generator: their reports are on Results.
   if (path === '/topics' || path === '/fields') { location.hash = '#/'; return; }
   if (path === '/how') { show('view-doc'); return openDoc('docs/README.md'); }
-  if (path === '/equations') { show('view-doc'); return openDoc(params().get('m') === 'full' ? 'docs/equations.md' : 'docs/equations-simple.md'); }
+  if (path === '/equations') { show('view-doc'); return openDoc(params().get('m') === 'full' ? 'docs/equations.md' : params().get('m') === 'steps' ? 'docs/equations-steps.md' : 'docs/equations-simple.md'); }
   show('view-overview'); drawResults();
 }
 window.addEventListener('hashchange', route);
@@ -461,8 +469,8 @@ async function openDoc(path) {
     const field = /^reports\/([^/]+)\/report\.md$/.exec(d.path);
     const fieldId = /^reports\/([^/]+)\//.exec(d.path)?.[1];
     const howDoc = /^(docs\/|README\.md|lean\/)/.test(d.path);
-    const eqDoc = d.path === 'docs/equations.md' || d.path === 'docs/equations-simple.md';
-    $('doc-crumbs').innerHTML = eqDoc ? `<div class="tabs" role="tablist"><a class="btn" role="tab" href="#/equations?m=simple" aria-selected="${d.path.endsWith('simple.md')}">Simple model (α, β)</a><a class="btn" role="tab" href="#/equations?m=full" aria-selected="${!d.path.endsWith('simple.md')}">Full model</a></div>` : howDoc ? (d.path === 'docs/README.md' ? '' : '<a href="#/how">← How it works</a>') : `<a href="#/runs/results">← Results</a>${fieldId ? ` · <a href="#/doc/reports/${fieldId}/report.md">Full report</a> · <a href="#/live?tab=sim&space=${fieldId}">Watch a simulation</a>` : ''}`;
+    const eqDoc = ['docs/equations.md', 'docs/equations-simple.md', 'docs/equations-steps.md'].includes(d.path);
+    $('doc-crumbs').innerHTML = eqDoc ? `<div class="tabs" role="tablist"><a class="btn" role="tab" href="#/equations?m=simple" aria-selected="${d.path.endsWith('simple.md')}">Simple model (α, β)</a><a class="btn" role="tab" href="#/equations?m=steps" aria-selected="${d.path.endsWith('steps.md')}">Step by step</a><a class="btn" role="tab" href="#/equations?m=full" aria-selected="${d.path === 'docs/equations.md'}">Full model</a></div>` : howDoc ? (d.path === 'docs/README.md' ? '' : '<a href="#/how">← How it works</a>') : `<a href="#/runs/results">← Results</a>${fieldId ? ` · <a href="#/doc/reports/${fieldId}/report.md">Full report</a> · <a href="#/live?tab=sim&space=${fieldId}">Watch a simulation</a>` : ''}`;
     $('doc-body').innerHTML = d.html;
     // A saved simulation: interactive charts in place of its fixed comparison chart.
     const rid = /^results\/([^/]+)\/summary\.md$/.exec(d.path)?.[1];
@@ -575,6 +583,8 @@ async function exploreIn(id, root) {
       });
       $('x-scaling').innerHTML = svg + '</svg>';
     };
+    // Knowledge found counts private work too, so a closed society does not look stuck at zero.
+    if (data.measures.some((m) => m.id === 'knowledge')) $('x-smeasure').value = 'knowledge';
     $('x-smeasure').onchange = draw; $('x-slogy').onchange = draw; $('x-slogx').onchange = draw; draw();
   }
   const f = (v) => (Math.abs(v) < 10 ? v.toFixed(2) : v.toFixed(0));
@@ -1050,10 +1060,28 @@ function useExample(x) {
 }
 let newReady = false;
 let simpleReady = false;
+let newMode = 'simple';
 function showModel(m) {
+  newMode = m;
   for (const b of $('n-model').querySelectorAll('button')) b.setAttribute('aria-selected', b.dataset.model === m);
-  $('n-simple').classList.toggle('hidden', m !== 'simple');
+  $('n-simple').classList.toggle('hidden', m !== 'simple' && m !== 'steps');
+  $('s-step-box').classList.toggle('hidden', m !== 'steps');
+  stepView();
+  if (simpleReady && (m === 'simple' || m === 'steps')) simpleCheck();
   $('n-full').classList.toggle('hidden', m !== 'full');
+}
+/** The step picker: what each step adds, the chosen one and those before it marked; β only at step 1. */
+function stepView() {
+  const steps = D.opts?.steps;
+  if (!steps || !$('s-step')) return;
+  if (!$('s-step').options.length) {
+    $('s-step').innerHTML = steps.map((st) => `<option value="${st.step}">${st.step}. ${esc(st.title)}</option>`).join('');
+    $('s-step').value = String(steps.length);
+    $('s-step').onchange = () => { stepView(); simpleCheck(); };
+  }
+  const k = newMode === 'steps' ? Number($('s-step').value) : 1;
+  $('s-step-list').innerHTML = steps.map((st) => `<li class="${st.step <= k ? 'on' : 'off'}"><b>${esc(st.title)}</b>: ${esc(st.adds)}</li>`).join('');
+  $('s-betas-row').classList.toggle('hidden', k > 1);
 }
 const numbers = (txt) => txt.split(',').map((x) => x.trim()).filter(Boolean).map(Number);
 const GRAPH_KEYS = ['levels', 'width', 'parents', 'skip', 'length', 'lengthGrowth', 'composition', 'targets', 'targetsFrom'];
@@ -1062,7 +1090,8 @@ const graphControls = () => Object.fromEntries(GRAPH_KEYS.map((k) => [k, Number(
 function simpleDesign() {
   return { id: '', question: $('s-question').value.trim(), space: $('s-space').value,
     ...(generated() ? { graph: graphControls(), budget: Number($('s-budget').value), ...($('g-preset').value ? { preset: $('g-preset').value } : {}) } : {}),
-    alphas: numbers($('s-alphas').value), betas: numbers($('s-betas').value), seeds: Number($('s-seeds').value) };
+    alphas: numbers($('s-alphas').value), betas: numbers($('s-betas').value), seeds: Number($('s-seeds').value),
+    ...(newMode === 'steps' ? { step: Number($('s-step').value) } : {}) };
 }
 let previewTimer = null;
 function graphPreview() {
@@ -1081,8 +1110,11 @@ function applyGraphMode() {
   if (generated()) graphPreview();
   simpleCheck();
 }
+let simpleCheckN = 0;
 async function simpleCheck() {
+  const n = ++simpleCheckN;
   const c = await post('/api/simple/check', { design: simpleDesign() });
+  if (n !== simpleCheckN) return c;   // a newer check has started; drop this answer
   if (c.ok && c.question) $('s-question').placeholder = c.question;
   $('s-summary').innerHTML = c.ok ? `${c.rows} societies × ${$('s-seeds').value} runs = ${c.runs.toLocaleString()} runs · <code>${esc(c.name)}</code>` : `<span class="no">${esc(c.error)}</span>`;
   return c;
@@ -1134,7 +1166,7 @@ function initSimple() {
 async function enterNew() {
   await enterDesign();
   initSimple();
-  showModel(params().get('model') === 'full' || params().get('who') ? 'full' : 'simple');
+  showModel(params().get('model') === 'full' || params().get('who') ? 'full' : params().get('model') === 'steps' ? 'steps' : 'simple');
   if (!newReady) {
     newReady = true;
     await initRace();
