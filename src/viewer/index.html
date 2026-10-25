@@ -693,12 +693,12 @@ async function drawResults() {
   const cards = [...ov.cards].sort((a, b) => order[a.kind] - order[b.kind] || b.date.localeCompare(a.date));
   // At a glance: three comparisons. Every topic (OSO orange, traditional blue), the latest AI test, the AI models alone and with help.
   const topics = ov.fields.sort((a, b) => a.title.localeCompare(b.title));
-  const tW = 560, rowH = 40, tl = 170, tpw = tW - tl - 60;
+  const tW = 560, rowH = 40, tl = 190, tpw = tW - tl - 60;
   let tsvg = `<svg viewBox="0 0 ${tW} ${44 + topics.length * rowH}" role="img" aria-label="Hardest level reached, by preset" style="width:100%;height:auto"><text x="12" y="20" font-size="14" font-weight="700" fill="var(--ink)">Hardest level reached, by preset</text>
     <rect x="12" y="28" width="12" height="10" rx="2" fill="var(--s2)"/><text x="29" y="37" font-size="12" font-weight="700" fill="var(--s2)">OSO</text><rect x="70" y="28" width="12" height="10" rx="2" fill="var(--s1)"/><text x="87" y="37" font-size="12" font-weight="700" fill="var(--s1)">Traditional</text>`;
   topics.forEach((h, i) => {
     const y = 48 + i * rowH, bw = (v) => Math.max(2, (v / h.maxLevel) * tpw);
-    tsvg += `<text x="${tl - 8}" y="${y + 15}" text-anchor="end" font-size="12" fill="var(--ink)">${esc(h.title.replace(/^(An?|The) /, ''))}</text>
+    tsvg += `<text x="${tl - 8}" y="${y + 15}" text-anchor="end" font-size="12" fill="var(--ink)">${esc(h.title.replace(/^Example: /, '').replace(/ \(.*\)$/, '').replace(/^(An?|The) /, ''))}</text>
       <rect x="${tl}" y="${y + 2}" width="${bw(h.oso.frontier)}" height="14" rx="3" fill="var(--s2)"><title>OSO ${h.oso.frontier.toFixed(1)} of ${h.maxLevel}</title></rect><text x="${tl + bw(h.oso.frontier) + 5}" y="${y + 13}" font-size="11" font-weight="700" fill="var(--s2)">${h.oso.frontier.toFixed(1)}</text>
       <rect x="${tl}" y="${y + 18}" width="${bw(h.traditional.frontier)}" height="14" rx="3" fill="var(--s1)"><title>Traditional ${h.traditional.frontier.toFixed(1)} of ${h.maxLevel}</title></rect><text x="${tl + bw(h.traditional.frontier) + 5}" y="${y + 29}" font-size="11" font-weight="700" fill="var(--s1)">${h.traditional.frontier.toFixed(1)}</text>`;
   });
@@ -710,11 +710,17 @@ async function drawResults() {
     models ? `<a class="res" href="#/doc/${esc(models.page)}"><img src="/files/${esc(models.chart)}" alt="${esc(models.title)}" style="width:100%"><div class="meta">${esc(models.title)}</div></a>` : '',
   ].join('');
   // Cards in groups: the main results first; quick tries made in the app, and results that are not valid, folded away.
-  const mine = (c) => c.kind === 'simulation' && /^(exp-|my-experiment$)/.test(c.id);
+  const mine = (c) => c.kind === 'simulation' && /^(exp-|my-experiment$)/.test(c.id) && !c.superseded;
+  const sim = (c) => c.kind === 'simulation' && !mine(c) && !c.superseded && !c.invalid;
+  const MODEL = (await api('/api/model')).version;
+  const version = (c) => (c.modelVersion ? ` · <span${c.modelVersion < MODEL ? ' class="no" title="Ran on an older model; rerun to update"' : ''}>model v${c.modelVersion}${c.modelVersion < MODEL ? ', older' : ''}</span>` : '');
   const groups = [
     { title: 'AI models', note: 'Real models proving theorems; Lean checks every proof.', cards: cards.filter((c) => (c.kind === 'race' || c.kind === 'model pilot') && !c.invalid) },
     { title: 'Example presets', note: 'One full report per example setting of the idea graph (full model). Examples, not measured from real fields.', cards: cards.filter((c) => c.kind === 'field report' && !c.superseded) },
-    { title: 'Questions answered by simulation', note: 'Each one changes one thing and compares.', cards: cards.filter((c) => c.kind === 'simulation' && !mine(c)) },
+    { title: 'Scaling', note: 'How much money each society needs as the budget, the difficulty or the graph changes.', cards: cards.filter((c) => sim(c) && (/^scaling-across/.test(c.id) || /budget-scaling/.test(c.id))) },
+    { title: 'Scaling sweeps', note: 'The budget sweeps behind the scaling cards above, one per graph.', cards: cards.filter((c) => sim(c) && /scaling|one at a time/.test((c.tags ?? []).join(' ') + ' ' + c.title.toLowerCase()) && !/^scaling-across/.test(c.id) && !/budget-scaling/.test(c.id)), fold: true },
+    { title: 'Simple model: α × β', note: 'Only α and β change between societies; one graph per card.', cards: cards.filter((c) => sim(c) && !/scaling|one at a time/.test((c.tags ?? []).join(' ') + ' ' + c.title.toLowerCase()) && /^simple-/.test(c.id)) },
+    { title: 'Full model', note: 'Every mechanism, with agents of different kinds; agents choose what to share.', cards: cards.filter((c) => sim(c) && !/scaling|one at a time/.test((c.tags ?? []).join(' ') + ' ' + c.title.toLowerCase()) && !/^simple-/.test(c.id)) },
     { title: 'Your quick tests', note: 'Made on the New page.', cards: cards.filter(mine), fold: true },
     { title: 'Not valid', note: 'Kept for the record; do not use.', cards: cards.filter((c) => c.invalid), fold: true },
     { title: 'Earlier versions', note: 'Replaced by newer results; kept for the record.', cards: cards.filter((c) => c.superseded), fold: true },
@@ -724,7 +730,7 @@ async function drawResults() {
       <h3>${esc(c.title.replace(/^(Real agents, OSO vs traditional|Lean pilot): /, ''))}</h3>
       <p class="q">${esc(c.design.question)}</p>
       <p class="a">${esc(c.invalid ? 'Not valid: ' + c.invalid : c.answer)}</p>${c.superseded ? `<p class="q">${esc(c.superseded)}</p>` : ''}
-      <div class="meta">${esc(c.date)} · ${esc(c.design.runs)}${c.cost ? ' · ' + esc(c.cost) : ''}</div><div class="meta"><code>${esc(c.id)}</code>${watchable(c) ? ` · <span class="watch" role="link" tabindex="0" data-watch="${esc(watchable(c))}">Watch ▶</span>` : ''}</div></a>`;
+      <div class="meta">${esc(c.date)} · ${esc(c.design.runs)}${c.cost ? ' · ' + esc(c.cost) : ''}${version(c)}</div><div class="meta"><code>${esc(c.id)}</code>${watchable(c) ? ` · <span class="watch" role="link" tabindex="0" data-watch="${esc(watchable(c))}">Watch ▶</span>` : ''}</div></a>`;
   // A card's replay in Live: a saved simulation by its rows, a topic report by its rule settings.
   const section = (g) => {
     const body = `<div class="fields">${g.cards.map(card).join('')}</div>`;
