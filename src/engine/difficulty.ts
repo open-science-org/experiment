@@ -69,6 +69,17 @@ export function frontier(v: KnowledgeView, i: number): number[] {
   return out;
 }
 
+/**
+ * Knowledge in a set of ideas, in bits. On a graph with bits: the distinct bits across the ideas, so a bit
+ * shared with a parent counts once. Without bits (the Lean problem set): each idea counts log2(1/p).
+ */
+export function knowledgeOf(world: World, ideas: Iterable<number>): number {
+  if (!world.bits) { let k = 0; for (const x of ideas) k += Math.log2(1 / world.p[x]); return k; }
+  const seen = new Set<number>();
+  for (const x of ideas) for (const b of world.bits[x]) seen.add(b);
+  return seen.size;
+}
+
 /** Chance an attempt by agent i at idea x works, before the agent's skill. */
 export function chanceOf(v: KnowledgeView, i: number, x: number): number {
   return v.world.bits ? 2 ** -unresolvedBits(v, i, x) : v.world.p[x];

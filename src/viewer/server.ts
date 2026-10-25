@@ -112,13 +112,13 @@ function resultData(id: string) {
   const label = (labels: Record<string, unknown>) => keys.map((k) => (typeof labels[k] === 'number' ? `${k.split(',')[0]} ${labels[k]}` : String(labels[k]).replace(/^OSO \(immediate\)$/, 'OSO'))).join(', ') || 'all';
   const runs = jsonl(join(RESULTS_DIR, id, 'runs.jsonl'));
   const groups = rows.map((r) => runs.filter((x) => keys.every((k) => x[k] === r.labels[k])));
-  const measures = [...OUTCOMES.map((m) => m.id), 'sharing', 'reachTarget', 'speed', 'duplicates', 'credit'].filter((m) => VALUES[m]);
+  const measures = [...OUTCOMES.map((m) => m.id), 'knowledgePublished', 'sharing', 'reachTarget', 'speed', 'duplicates', 'credit'].filter((m) => VALUES[m]);
   const better = Object.fromEntries(OUTCOMES.map((m) => [m.id, m.better]));
   const stat = (xs: number[]) => { const n = xs.length, m = xs.reduce((a, b) => a + b, 0) / Math.max(1, n); return { mean: m, sd: Math.sqrt(xs.reduce((a, b) => a + (b - m) ** 2, 0) / Math.max(1, n - 1)), n }; };
   return {
     ok: true, title: spec.title,
     measures: measures.map((m) => ({ id: m, name: MEASURE_NAMES[m] ?? m, better: better[m] ?? (['speed', 'duplicates', 'cost', 'waste'].includes(m) ? 'lower' : 'higher') })),
-    progress: PROGRESS.map((v) => ({ id: v, name: { level: 'hardest level published', value: 'bounty value found', published: 'ideas published', targets: 'targets solved' }[v] })),
+    progress: PROGRESS.map((v) => ({ id: v, name: { level: 'hardest level published', value: 'bounty value found', published: 'ideas published', targets: 'targets solved', knowledge: 'knowledge found (bits)', knowledgePublished: 'knowledge published (bits)' }[v] })),
     rows: rows.map((r, i) => {
       const g = groups[i];
       // RunResult fields are named differently from column ids; VALUES maps a stored run to each measure.

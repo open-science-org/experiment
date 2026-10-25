@@ -6,7 +6,7 @@ import type { Scenario } from './config.ts';
 import { deciders, type Choice, type Decider } from './deciders.ts';
 import { measure, type RunResult } from './measures.ts';
 import { oracles, type Oracle } from './oracles.ts';
-import { chanceOf, frontier, gatedFrontier } from './difficulty.ts';
+import { chanceOf, frontier, gatedFrontier, knowledgeOf } from './difficulty.ts';
 import { Rng } from './rng.ts';
 import { allocations, visibilities, type Visibility } from './rules.ts';
 import { ledgerWeights, shares, worlds, type World } from './world.ts';
@@ -356,15 +356,19 @@ export function run(sc: Scenario, seed: number, record?: { events: TraceEvent[];
       s.earnings[i] += s.roundEarnings[i];
       s.roundEarnings[i] = 0;
     }
-    // Progress after this round: hardest level, bounty value found, ideas published, targets solved.
+    // Progress after this round: hardest level, bounty value found, ideas published, targets solved, and
+    // knowledge in bits (all solved ideas, and published ones).
     let level = 0, value = 0, published = 0, targets = 0;
+    const solved: number[] = [], shared: number[] = [];
+    for (let r = 0; r < world.n; r++) { if (s.firstProver[r] >= 0 || s.author[r] >= 0) solved.push(r); if (s.author[r] >= 0) shared.push(r); }
+    const knowledge = knowledgeOf(world, solved), knowledgePublished = knowledgeOf(world, shared);
     for (let r = 0; r < world.n; r++) {
       if (s.author[r] < 0) continue;
       published++;
       if (world.level[r] > level) level = world.level[r];
       if (world.isTarget[r]) { targets++; value += world.bounty[r]; }
     }
-    curve.push({ round: t, spend: s.spend, level, value, published, targets });
+    curve.push({ round: t, spend: s.spend, level, value, published, targets, knowledge, knowledgePublished });
     s.trace?.push({ r: t, k: 'round', spend: s.spend, level, earnings: Array.from(s.earnings), compute });
     if (speed === null && level >= sc.measures.targetLevel) {
       speed = t;

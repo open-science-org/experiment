@@ -392,3 +392,13 @@ test('scaling across difficulty: budget to reach a share, and the log-log slope'
   // value = budget²: a slope of 2 on log-log axes.
   assert.ok(Math.abs(slopeOf([100, 200, 400, 800, 1600].map((x) => ({ budget: x, value: x * x / 1000 })).concat([{ budget: 3200, value: 1e9 }]))! - 2) < 1e-9);
 });
+
+test('knowledge counts distinct bits of solved ideas, a shared bit once', async () => {
+  const { knowledgeOf } = await import('../src/engine/difficulty.ts');
+  const w = { bits: [[0, 1, 2], [0, 1, 2, 3, 4, 5], [6, 7]], p: [0.5, 0.5, 0.5] } as unknown as Parameters<typeof knowledgeOf>[0];
+  assert.equal(knowledgeOf(w, [0, 1]), 6);
+  assert.equal(knowledgeOf(w, [0, 1, 2]), 8);
+  const r = run(loadScenario(null, { 'rules.visibility': { kind: 'immediate' } }), 5);
+  assert.ok(r.knowledge >= r.knowledgePublished && r.knowledgePublished > 0);
+  assert.ok(Math.abs(r.knowledgePerMoney - r.knowledge / r.spend) < 1e-9);
+});

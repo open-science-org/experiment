@@ -4,7 +4,7 @@ import type { State } from './model.ts';
 
 export interface RunResult {
   /** Hardest level published after each round, with cumulative spend. */
-  curve: { round: number; spend: number; level: number; value: number; published: number; targets: number }[];
+  curve: { round: number; spend: number; level: number; value: number; published: number; targets: number; knowledge: number; knowledgePublished: number }[];
   spend: number;
   frontier: number;
   /** Deepest level proved by anyone, published or not. */
@@ -29,6 +29,12 @@ export interface RunResult {
   value: number;
   /** Return on the money: value gained per unit spent. */
   roi: number;
+  /** Knowledge found, in bits: distinct bits of every idea anyone solved, published or not. */
+  knowledge: number;
+  /** Knowledge in published ideas, in bits. */
+  knowledgePublished: number;
+  /** Knowledge found per unit of money. */
+  knowledgePerMoney: number;
   /** Targets rejected because they rested on a wrong result, and wrong results retracted. */
   rejectedTargets: number;
   retracted: number;
@@ -97,6 +103,9 @@ export function measure(s: State, curve: RunResult['curve'], speed: number | nul
     targetsSolved: world.targets.filter((t) => s.author[t] >= 0).length,
     value: world.targets.filter((t) => s.author[t] >= 0).reduce((a, t) => a + world.bounty[t], 0),
     roi: world.targets.filter((t) => s.author[t] >= 0).reduce((a, t) => a + world.bounty[t], 0) / spend,
+    knowledge: curve.at(-1)?.knowledge ?? 0,
+    knowledgePublished: curve.at(-1)?.knowledgePublished ?? 0,
+    knowledgePerMoney: (curve.at(-1)?.knowledge ?? 0) / spend,
     rejectedTargets: s.rejectedTargets,
     retracted: s.retracted,
     absorbShare: s.spendAbsorb / spend,
@@ -131,6 +140,7 @@ const reached = (rs: RunResult[]) => rs.filter((r) => r.speed !== null);
 export const MEASURE_NAMES: Record<string, string> = {
   frontier: 'hardest level published', targetsSolved: 'targets solved', cost: 'money to reach the main level', speed: 'rounds to reach the main level',
   value: 'bounty value', roi: 'ROI', duplicates: 'duplicated proofs',
+  knowledge: 'knowledge found (bits)', knowledgePublished: 'knowledge published (bits)', knowledgePerMoney: 'knowledge per unit of money',
   sharing: 'share of ideas published at once', reachTarget: 'share of runs reaching the main level', waste: 'wasted money', credit: 'credit accuracy',
 };
 
@@ -141,6 +151,7 @@ export const VALUES: Record<string, (r: RunResult) => number | null> = {
   breadth: (r) => r.breadth, waste: (r) => r.waste, credit: (r) => r.creditAccuracy, sharing: (r) => r.sharingRate,
   hoarded: (r) => r.hoarded, reuse: (r) => r.reuse, duplicates: (r) => r.duplicates, targetsSolved: (r) => r.targetsSolved,
   value: (r) => r.value, roi: (r) => r.roi,
+  knowledge: (r) => r.knowledge, knowledgePublished: (r) => r.knowledgePublished, knowledgePerMoney: (r) => r.knowledgePerMoney,
   gamerShare: (r) => r.earningsByArchetype.gamer ?? null, trivialSpend: (r) => r.wasteParts.trivial,
   rejected: (r) => r.rejectedTargets, retracted: (r) => r.retracted, absorbSpend: (r) => r.absorbShare,
 };
@@ -163,6 +174,9 @@ export const COLUMNS: Record<string, Column> = {
   targetsSolved: { header: () => 'targets solved', value: (rs) => msd(rs.map((r) => r.targetsSolved), 1) },
   value: { header: () => 'value gained', value: (rs) => msd(rs.map((r) => r.value), 0) },
   roi: { header: () => 'ROI (value per spend)', value: (rs) => msd(rs.map((r) => r.roi), 2) },
+  knowledge: { header: () => 'knowledge (bits)', value: (rs) => msd(rs.map((r) => r.knowledge), 0) },
+  knowledgePublished: { header: () => 'knowledge published (bits)', value: (rs) => msd(rs.map((r) => r.knowledgePublished), 0) },
+  knowledgePerMoney: { header: () => 'bits per money', value: (rs) => msd(rs.map((r) => r.knowledgePerMoney), 3) },
   gamerShare: {
     header: () => 'gamer share of pay',
     value: (rs) => {

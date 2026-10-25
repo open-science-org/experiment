@@ -110,7 +110,7 @@ export function expand(spec: ExperimentSpec): Row[] {
 
 /** How progress is kept per run: 21 evenly spaced points of the budget (0, 5%, …, 100%). */
 export const PROGRESS_POINTS = 21;
-export const PROGRESS = ['level', 'value', 'published', 'targets'] as const;
+export const PROGRESS = ['level', 'value', 'published', 'targets', 'knowledge', 'knowledgePublished'] as const;
 
 /**
  * A run record without the full curve. Progress (hardest level, bounty value, ideas published, targets
@@ -162,6 +162,8 @@ export const OUTCOMES: { id: string; name: string; better: 'higher' | 'lower' }[
   { id: 'targetsSolved', name: 'targets solved', better: 'higher' },
   { id: 'value', name: 'bounty value', better: 'higher' },
   { id: 'roi', name: 'ROI', better: 'higher' },
+  { id: 'knowledge', name: 'knowledge found (bits)', better: 'higher' },
+  { id: 'knowledgePerMoney', name: 'knowledge per unit of money', better: 'higher' },
   { id: 'cost', name: 'money to the main level', better: 'lower' },
   { id: 'waste', name: 'waste', better: 'lower' },
 ];
@@ -169,7 +171,7 @@ export const OUTCOMES: { id: string; name: string; better: 'higher' | 'lower' }[
 /** The columns, with ROI added when missing. */
 export const withRoi = (cols: string[]) => (cols.includes('roi') ? cols : [...cols, 'roi']);
 
-export const DEFAULT_COLUMNS = ['frontier', 'reachTarget', 'speed', 'cost', 'roi', 'spend', 'productivity', 'breadth', 'waste', 'credit', 'sharing', 'hoarded'];
+export const DEFAULT_COLUMNS = ['frontier', 'reachTarget', 'speed', 'cost', 'roi', 'knowledge', 'knowledgePerMoney', 'spend', 'productivity', 'breadth', 'waste', 'credit', 'sharing', 'hoarded'];
 
 export function runExperiment(spec: ExperimentSpec, seeds = spec.seeds, onRow?: (done: number, of: number) => void): Output {
   const rows = expand(spec);

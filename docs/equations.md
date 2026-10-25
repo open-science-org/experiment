@@ -379,6 +379,14 @@ $$\text{value} = \sum_{x \text{ found}} B_x \qquad \text{ROI} = \frac{\text{valu
 
 *Example:* finding $x$ for 40 units of money gives value 16 and ROI 0.4.
 
+**Knowledge found, in bits:** all the ideas anyone solved count, with or without a bounty. Each idea is a sequence of coin tosses; every distinct toss across the solved ideas is one bit of knowledge, so a toss an idea took from its parent counts once. Finding $n$ new bits takes about $2^n$ attempts.
+
+$$K = \Big|igcup_{x 	ext{ solved}} 	ext{bits}(x)\Big| \qquad K_{	ext{published}} = \Big|igcup_{x 	ext{ published}} 	ext{bits}(x)\Big| \qquad 	ext{knowledge per money} = rac{K}{	ext{money spent}}$$
+
+Unlike ROI, it does not depend on the bounty sizes, so it can be compared across idea graphs. The gap between $K$ and $K_{	ext{published}}$ is the knowledge kept private. On the Lean problem set (no bits) each idea counts $\log_2(1/p_x)$.
+
+*Example:* solving HHT and then HHTHHH gives $K = 6$, not 9: the second idea adds 3 new bits.
+
 **Sharing:** the share of proved ideas without a bounty published in the round they were proved. **Waste:** the share of money spent on **repeated work** (attempts at an idea someone else had already proved, whether or not they published it), on dead ends, and on trivial ideas.
 
 **Credit accuracy:** how well bounty pay matches true contribution. Contribution splits each bounty won over the ideas in its proof by $1/p$:
