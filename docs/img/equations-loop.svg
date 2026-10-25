@@ -35,7 +35,7 @@
 
   <!-- formulas -->
   <g font-size="14.5" font-style="italic" font-family="Georgia, 'Times New Roman', serif" fill="#2b2b2b">
-    <text x="46" y="88">bᵢ = Budget/R · [ (1−ρ)/N + ρ Ēᵢ/ΣĒ ]</text>
+    <text x="46" y="88">bᵢ = Budget/R · [ (1−f)/N + f Ēᵢ/ΣĒ ]</text>
     <text x="341" y="88">pick the x with the best Uᵢ,ₓ</text>
     <text x="636" y="88">πᵢ,ₓ = min(1, sᵢ pₓ)</text>
     <text x="636" y="398">share if gain ≥ scoop risk</text>
@@ -47,7 +47,7 @@
   <g font-size="12" fill="#4a4a4a">
     <text x="46" y="116">Budget, R: total money, rounds</text>
     <text x="46" y="134">N: agents · Ēᵢ: recent earnings</text>
-    <text x="46" y="152"><tspan font-weight="700" fill="#2b2b2b">ρ</tspan>: how far money follows earnings</text>
+    <text x="46" y="152"><tspan font-weight="700" fill="#2b2b2b">f</tspan>: how far money follows earnings</text>
     <text x="46" y="170">0 equal · 0.5 default · 1 all by earnings</text>
 
     <text x="341" y="116">Vᵢ,ₓ: worth = mint + bounty + flow-back</text>
@@ -99,7 +99,7 @@
   <!-- outer loop: earnings buy next round's money, through rho -->
   <path d="M155 338 L155 194" stroke="#2b2b2b" stroke-width="3" fill="none" marker-end="url(#arrInk)"/>
   <g fill="#2b2b2b">
-    <text x="170" y="258" font-size="22" font-style="italic" font-family="Georgia, 'Times New Roman', serif" font-weight="700">ρ</text>
+    <text x="170" y="258" font-size="22" font-style="italic" font-family="Georgia, 'Times New Roman', serif" font-weight="700">f</text>
     <text x="190" y="256" font-size="12">round t → t+1:</text>
     <text x="170" y="274" font-size="12">earnings buy money</text>
   </g>
@@ -118,8 +118,8 @@
 
   <!-- caption -->
   <g font-size="12.5" fill="#4a4a4a">
-    <text x="30" y="552">Solid: one round, steps 1 to 6. The thick arrow closes the loop: <tspan font-weight="700" fill="#2b2b2b">ρ</tspan> sets how much of next round's money follows earnings.</text>
+    <text x="30" y="552">Solid: one round, steps 1 to 6. The thick arrow closes the loop: <tspan font-weight="700" fill="#2b2b2b">f</tspan> sets how much of next round's money follows earnings.</text>
     <text x="30" y="572">Dashed: <tspan font-weight="700" fill="#2b2b2b">α</tspan> and <tspan font-weight="700" fill="#2b2b2b">c</tspan> send credit back to earlier ideas, which changes what agents expect to earn, so what they attempt and share.</text>
-    <text x="30" y="592">α, the absorption rate, decides who earns; ρ decides how much those earnings buy.</text>
+    <text x="30" y="592">α, the absorption rate, decides who earns; f decides how much those earnings buy.</text>
   </g>
 </svg>

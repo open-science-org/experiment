@@ -19,7 +19,7 @@ Every rule of the experiment as a formula, in the order a run uses them. Each fo
 
 A run is $R$ rounds (120 by default). A **round** is one pass through steps 1 to 6: that round's money $\text{Budget}/R$ is split among the agents, each makes the attempts it can afford, new ideas are shared or kept, rewards are paid and recent earnings are updated. The **next round** starts again at step 1, with the money split by those updated earnings. Each step's box names its section and symbols. Two loops feed back:
 
-- **Money follows earnings ($\rho$).** Earnings in step 6 set next round's money in step 1. This happens under both rules.
+- **Money follows earnings ($f$, for funding).** Earnings in step 6 set next round's money in step 1. This happens under both rules.
 - **Credit flows back (absorption rate $\alpha$, and $c$).** Rewards in step 5 reach earlier ideas, so agents expect more from building and sharing (steps 2 and 4). This is where traditional ($\alpha = 1$, $c = 0$) and OSO ($\alpha = 0.8$, $c = 0.15$) differ.
 
 ## Symbols
@@ -69,7 +69,7 @@ Grouped by what they belong to, in the order of the sections below. A hat marks 
 | --- | --- | --- |
 | $\text{Budget},\ R,\ N$ | total money, number of rounds, number of agents | 1200, 120, 12 |
 | $k_i$ | cost of one attempt | 1 (explorer 0.3) |
-| $\rho$ | how far money follows past earnings | 0.5 |
+| $f$ | funding: how far money follows past earnings | 0.5 |
 | $b_i,\ \bar E_i$ | agent $i$'s money this round, its recent earnings | |
 
 **The mint** ([section 6](#6-the-mint))
@@ -246,7 +246,7 @@ $$\pi_{i,x} = \min\!\Big(\text{cap},\ s_i \, p_x \big(1 + \text{gain}\,(n^{\text
 
 Each round releases $\text{Budget}/R$. Agent $i$ gets part of it equally (out of $N$ agents) and part by its recent earnings $\bar E_i$:
 
-$$b_i = \frac{\text{Budget}}{R}\left[\frac{1-\rho}{N} + \rho\,\frac{\bar E_i}{\sum_{i'} \bar E_{i'}}\right] \qquad \bar E_i \leftarrow 0.7\,\bar E_i + 0.3 \times \text{this round's earnings}$$
+$$b_i = \frac{\text{Budget}}{R}\left[\frac{1-f}{N} + f\,\frac{\bar E_i}{\sum_{i'} \bar E_{i'}}\right] \qquad \bar E_i \leftarrow 0.7\,\bar E_i + 0.3 \times \text{this round's earnings}$$
 
 It makes $\lfloor b_i / k_i \rfloor$ attempts and keeps the rest for the next round. The run stops when the money is spent or every bounty is won.
 

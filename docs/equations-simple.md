@@ -17,7 +17,7 @@ The same as in the full model ([sections 1 to 3](equations.md#1-an-idea)): ideas
 | | Value |
 | --- | --- |
 | Agents | 12 identical agents (skill 1, exact judgement, cost 1 per attempt, full reuse, no gaming) |
-| Money | the budget split equally: every agent gets $\text{Budget}/(R\,N)$ each round, whatever it earned ($\rho = 0$) |
+| Money | the budget split equally: every agent gets $\text{Budget}/(R\,N)$ each round, whatever it earned ($f = 0$) |
 | Mint | off: $m = 0$, so bounties are the only value |
 | Validation | off: $\theta = 0$. No agent games, so nothing trivial is ever submitted |
 | Ideas and bounties | a generated idea graph (every run draws its own; presets: abstract field, drug discovery, battery) or the Lean problem set's |
@@ -43,4 +43,4 @@ The same as the full model ([section 11](equations.md#11-measures)): the hardest
 
 ## What to expect
 
-With money split equally and every agent the same, $\alpha$ changes who is paid, and only slightly what agents choose to attempt, so $\beta$ decides how far a society gets. $\alpha$ matters again once money follows earnings ($\rho > 0$), or when agents choose whether to publish ([full model, section 9](equations.md#9-choosing-whether-to-share-where-β-comes-from)), where $\beta$ comes out of $\alpha$.
+With money split equally and every agent the same, $\alpha$ changes who is paid, and only slightly what agents choose to attempt, so $\beta$ decides how far a society gets. $\alpha$ matters again once money follows earnings ($f > 0$), or when agents choose whether to publish ([full model, section 9](equations.md#9-choosing-whether-to-share-where-β-comes-from)), where $\beta$ comes out of $\alpha$.

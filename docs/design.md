@@ -139,7 +139,7 @@ All payments use one ledger, with the rules of OIP-8 and OIP-14.
 | --- | --- |
 | **Budget** | Total money the funder spends in a run |
 | **Round** | One step of the run. Each round releases Budget / R, where R is the number of rounds |
-| **Allocation** | How a round's money is split among agents. The default is half equally, half in proportion to recent earnings (ρ = 0.5), so earnings buy future money |
+| **Allocation** | How a round's money is split among agents. The default is half equally, half in proportion to recent earnings (f = 0.5), so earnings buy future money |
 | **Stop** | A run ends when the budget is spent, or as soon as every target is solved |
 
 ### 2.6 One round
@@ -358,7 +358,7 @@ The framework is meant to be used beyond the cases built so far. Anyone can desc
 | 3. The six settings | Section 3's settings, with the standard measures |
 | 4. Does flow-back make agents share? | Sharing and reach as α falls, with α\* |
 | 5. When sharing is costly or sometimes wrong | The lead under free, costly, fallible, and costly-and-fallible knowledge |
-| 6. Sensitivity to the parameters | OSO's lead as each parameter is varied alone. Two groups: those communities, funders or the protocol set (α, c, mint per idea, validation screen θ, how far money follows earnings ρ), and those we guessed about agents (ψ, κ, perception noise, choice randomness, attribution error). Also α × c together. Because communities will set these values, the result must hold across them. |
+| 6. Sensitivity to the parameters | OSO's lead as each parameter is varied alone. Two groups: those communities, funders or the protocol set (α, c, mint per idea, validation screen θ, how far money follows earnings f), and those we guessed about agents (ψ, κ, perception noise, choice randomness, attribution error). Also α × c together. Because communities will set these values, the result must hold across them. |
 | What this shows | The limits, plus the space's own notes |
 | Reproduce | The command, the space file, the data, and the simulator commit |
 

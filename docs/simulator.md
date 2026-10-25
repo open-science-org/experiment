@@ -186,9 +186,9 @@ The budget is 1,200 over R = 120 rounds, so 10 per round.
 
 1. **Budgets.** Agent i gets:
 
-   b_i = 10 · [ (1 − ρ)/12 + ρ · Ē_i / Σ Ē ]
+   b_i = 10 · [ (1 − f)/12 + f · Ē_i / Σ Ē ]
 
-   with ρ = 0.5. Ē_i is its smoothed recent earnings: Ē ← 0.7·Ē + 0.3·(this round's earnings). Before anyone earns, the split is equal. An agent makes floor(b_i / k_i) attempts and carries the remainder to the next round. All attempts in a round are shuffled, so agents interleave and race.
+   with f = 0.5. Ē_i is its smoothed recent earnings: Ē ← 0.7·Ē + 0.3·(this round's earnings). Before anyone earns, the split is equal. An agent makes floor(b_i / k_i) attempts and carries the remainder to the next round. All attempts in a round are shuffled, so agents interleave and race.
 2. **Delayed publications** due this round are made.
 3. **Rivals.** For each idea, count how many agents could attempt it now. This is the race estimate used in scoring.
 4. **Attempts,** one at a time:
@@ -292,7 +292,7 @@ A **scenario** is one complete setup: the world, the agents, the rules, the budg
 | `agents` | Archetypes and their traits, the mix, specialist boost and penalty | 12 agents of six archetypes (section 2.2) |
 | `rules` | α, c, mint, validation screen θ, visibility rule, publishing failures | Traditional: α = 1, c = 0, finished-only, θ = 0.5, failures private |
 | `knowledge` | Cost to take up a published idea; chance a proof is wrong | 0 and 0: free and correct |
-| `budget` | Total money (`X`), rounds (or attempts per agent per round), stopping, allocation rule | 1,200 over 120 rounds; earnings share with ρ = 0.5 |
+| `budget` | Total money (`X`), rounds (or attempts per agent per round), stopping, allocation rule | 1,200 over 120 rounds; earnings share with f = 0.5 |
 | `behaviour` | Choice policy, perception noise, κ, ψ, rounds per level | softmax τ = 0.3, ε = 0.05; κ = 1, ψ = 0.5 |
 | `measures` | Level L\* for speed and cost | 7 |
 
@@ -428,8 +428,8 @@ The full grid over scoop risk ψ and cited share c is in [results/alpha-psi](../
 
 | Variant | Traditional frontier | OSO frontier | Gap | Gamer share of pay (traditional) |
 | --- | --- | --- | --- | --- |
-| Default (ρ = 0.5, θ = 0.5) | 5.7 | 7.9 | 2.2 | 0.96 |
-| No funding loop (ρ = 0) | 4.6 | 8.0 | 3.4 | 0.36 |
+| Default (f = 0.5, θ = 0.5) | 5.7 | 7.9 | 2.2 | 0.96 |
+| No funding loop (f = 0) | 4.6 | 8.0 | 3.4 | 0.36 |
 | Strong screen (θ = 0.9) | 5.7 | 8.0 | 2.3 | 0.83 |
 | No gamer | 7.0 | 8.0 | 1.0 | – |
 
@@ -471,7 +471,7 @@ The full grid over scoop risk ψ and cited share c is in [results/alpha-psi](../
 3. **The cited mint share c barely matters,** because the mint (1) is small next to the bounties (16 to 512).
 4. **Flow-back makes credit more accurate when work is shared:** 0.57 with flow-back vs. 0.47 without, both with immediate visibility. The traditional setting's 0.95 is the trivial case of one agent proving a whole chain alone.
 5. **Under traditional rules, the gaming agent captures the money.** Intermediate ideas stay private, so nobody else earns anything until they win a target. Meanwhile the gamer's trivial ideas earn mint from the first round, so the funding loop hands it the largest budget. It then wins most targets too, and ends with a median of 100% of all pay. Without the gamer, traditional reaches level 7.0 instead of 5.7, and the gap to OSO shrinks from 2.2 levels to 1.0. **So a large part of the default gap comes from one spammer combined with earnings-driven funding,** a real-world pattern, but an assumption here. Present the gap together with this decomposition.
-6. **Without the funding loop (ρ = 0), the gap grows** (4.6 vs. 8.0), because traditional agents can no longer concentrate money on whoever is ahead.
+6. **Without the funding loop (f = 0), the gap grows** (4.6 vs. 8.0), because traditional agents can no longer concentrate money on whoever is ahead.
 7. **The real tree shape favours OSO more.** On the Lean reference tree, OSO solves all 8 targets in every run, at 41% of traditional's cost to level 5. With agent's choice, agents share more than on random trees (0.42 vs. 0.22 at α = 0.8): the real tree has many shallow ideas with little scoop risk.
 8. **Public failures help a sharing community most.** Learning from everyone's failures cuts OSO's cost to level 7 by 41% (485 to 284), and traditional's by 15% (957 to 810).
 9. **Costly, fallible sharing narrows OSO's lead.** With both an uptake cost of 1 and a 15% error rate, OSO still reaches deeper (6.6 vs. 4.5), but solves barely more targets (3.4 vs. 3.0). Errors cause more retractions under OSO (21 vs. 10 at a 15% error rate), because wrong ideas spread to more agents. This is an argument for checking every idea, as Lean does, before others build on it.
@@ -492,7 +492,7 @@ What the tests still use a stand-in or a guess for, in both kinds of test, is li
 
 What it is good for:
 - checking the mechanics (flow-back matches the ledger, and the one-chain check matches the mathematics);
-- finding which parameters matter (ψ, α, ρ and the gamer, while c barely matters);
+- finding which parameters matter (ψ, α, f and the gamer, while c barely matters);
 - finding failure modes (spam capturing money);
 - choosing the settings, budget and number of runs for the experiment with LLM agents on real problems, which addresses gaps 1, 3 and 4.
 

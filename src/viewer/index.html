@@ -380,7 +380,7 @@
         <input type="range" id="sim-scrub" min="0" max="0" value="0" aria-label="Round">
         <span class="clock" id="sim-clock">Round 0</span>
       </div>
-      <p class="muted" style="margin:0 0 8px">A round is one step of the run: that round's money is handed out, each agent makes the attempts it can afford, new ideas are shared or kept, and rewards are paid. What each agent earned in recent rounds sets its share of the next round's money (ρ). Step through the rounds with the buttons above.</p>
+      <p class="muted" style="margin:0 0 8px">A round is one step of the run: that round's money is handed out, each agent makes the attempts it can afford, new ideas are shared or kept, and rewards are paid. What each agent earned in recent rounds sets its share of the next round's money (f). Step through the rounds with the buttons above.</p>
       <div class="legend" id="sim-legend"></div>
       <div class="panes"><div class="pane" id="pane-left"></div><div class="pane" id="pane-right"></div></div>
       <div class="pane" style="margin-top:12px"><div id="sim-chart"></div></div>
@@ -685,8 +685,8 @@ let historyQuery = '', historyTimer = null;
 async function drawHistory() {
   clearTimeout(historyTimer);
   const rows = await api('/api/history');
-  const GREEK = { α: 'alpha', β: 'beta', ρ: 'rho', θ: 'theta' };
-  const hay = (r) => { const t = [r.id, r.kind, r.title, r.question, r.answer, ...(r.tags ?? [])].join(' ').toLowerCase(); return t + t.replace(/[αβρθ]/g, (g) => ` ${GREEK[g]} `); };
+  const GREEK = { α: 'alpha', β: 'beta', f: 'rho', θ: 'theta' };
+  const hay = (r) => { const t = [r.id, r.kind, r.title, r.question, r.answer, ...(r.tags ?? [])].join(' ').toLowerCase(); return t + t.replace(/[αβfθ]/g, (g) => ` ${GREEK[g]} `); };
   const words = historyQuery.toLowerCase().split(/\s+/).filter(Boolean);
   const shown = rows.filter((r) => words.every((w) => hay(r).includes(w)));
   const when = (t) => { const d = new Date(t), z = (n) => String(n).padStart(2, '0'); return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())} <span class="muted">${z(d.getHours())}:${z(d.getMinutes())}</span>`; };
@@ -754,8 +754,8 @@ async function drawResults() {
   const q = resultsQuery.trim().toLowerCase();
   const words = q.split(/\s+/).filter(Boolean);
   // Greek letters match their names too: "alpha" finds α.
-  const GREEK = { α: 'alpha', β: 'beta', ρ: 'rho', θ: 'theta', ψ: 'psi', κ: 'kappa', η: 'eta', τ: 'tau' };
-  const hay = (c) => { const t = [c.id, c.title, c.kind, KINDWORD[c.kind] ?? '', c.date, c.design.question, c.design.compare, c.design.fixed, c.answer, ...(c.tags ?? [])].join(' ').toLowerCase(); return t + ' ' + t.replace(/[αβρθψκητ]/g, (g) => ` ${GREEK[g]} `); };
+  const GREEK = { α: 'alpha', β: 'beta', f: 'rho', θ: 'theta', ψ: 'psi', κ: 'kappa', η: 'eta', τ: 'tau' };
+  const hay = (c) => { const t = [c.id, c.title, c.kind, KINDWORD[c.kind] ?? '', c.date, c.design.question, c.design.compare, c.design.fixed, c.answer, ...(c.tags ?? [])].join(' ').toLowerCase(); return t + ' ' + t.replace(/[αβfθψκητ]/g, (g) => ` ${GREEK[g]} `); };
   const found = words.length ? cards.filter((c) => words.every((w) => hay(c).includes(w))) : null;
   $('view-overview').innerHTML = `
     <div class="row search"><input id="r-search" type="search" placeholder="Search results: name, topic, model, α, β, a question…" value="${esc(resultsQuery)}" style="width:420px"><span class="muted">${found ? `${found.length} found` : `${cards.length} results`}</span></div>
@@ -1446,7 +1446,7 @@ const EXPLAIN = {
     const e = [0, 10, 30], tot = 40, per = 30;
     const c = e.map((x) => per * ((1 - rho) / 3 + rho * x / tot));
     return { svg: bars([['agent 1 (earned 0)', c[0]], ['agent 2 (earned 10)', c[1]], ['agent 3 (earned 30)', c[2]]], ' money'),
-      cap: `30 money to give out this round, to three agents who recently earned 0, 10 and 30. At ρ = ${rho}, ${Math.round((1 - rho) * 100)}% is split equally and ${Math.round(rho * 100)}% by earnings. High ρ funds whoever is winning, like a few big agents; under traditional rules that concentrates hidden work in few hands.` };
+      cap: `30 money to give out this round, to three agents who recently earned 0, 10 and 30. At f = ${rho}, ${Math.round((1 - rho) * 100)}% is split equally and ${Math.round(rho * 100)}% by earnings. High f funds whoever is winning, like a few big agents; under traditional rules that concentrates hidden work in few hands.` };
   },
   'budget.X': (X) => ({ svg: exampleTree({ notes: { T: 'target' } }), cap: `${X} money for the whole run. Each attempt at an idea costs the agent its cost per attempt (1 for most). The field's own budget, ${D.field['budget.X']}, is the smallest at which OSO solves about 90% of its targets; less makes the race tighter for both communities, more lets both finish.` }),
   'behaviour.psi': (psi) => decision(val('behaviour.kappa'), psi),

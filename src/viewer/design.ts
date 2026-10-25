@@ -52,9 +52,9 @@ export const PARAMETERS: Parameter[] = [
   { path: 'rules.screen', label: 'θ, validation screen', group: 'market', min: 0, max: 1, step: 0.05, values: [0, 0.5, 0.9],
     short: 'chance validators reject a trivial idea',
     explain: 'A trivial idea adds nothing; it is submitted only to collect the mint. Validators reject it with chance θ. At low θ gaming pays, and under rules where money follows earnings a gaming agent can capture much of the budget.' },
-  { path: 'budget.allocation.rho', label: 'ρ, money follows earnings', group: 'market', min: 0, max: 1, step: 0.05, values: [0, 0.5, 1],
+  { path: 'budget.allocation.rho', label: 'f, funding: money follows earnings', group: 'market', min: 0, max: 1, step: 0.05, values: [0, 0.5, 1],
     short: 'share of each round\'s money given by recent earnings',
-    explain: 'A round is one step of the run: that round\'s money is handed out, each agent makes the attempts it can afford, new ideas are shared or kept, and rewards are paid. Each round, funders split that round\'s money: 1 − ρ equally among agents, ρ in proportion to what each earned in recent rounds. So what an agent earns this round raises its share next round. High ρ concentrates money on whoever is winning, like funding a few big agents; ρ = 0 shares it equally.' },
+    explain: 'A round is one step of the run: that round\'s money is handed out, each agent makes the attempts it can afford, new ideas are shared or kept, and rewards are paid. Each round, funders split that round\'s money: 1 − f equally among agents, f in proportion to what each earned in recent rounds. So what an agent earns this round raises its share next round. High f concentrates money on whoever is winning, like funding a few big agents; f = 0 shares it equally.' },
   { path: 'budget.X', label: 'total budget', group: 'market', min: 10, max: 100000, step: 10, integer: true, values: [],
     short: 'all the money the community gets for the whole run',
     explain: 'Each attempt costs the agent its cost per attempt (1 for most agents, less for cheap explorers). Every field\'s budget is set so OSO solves about 90% of its targets; less makes the race tighter, more lets both communities finish.' },
@@ -542,7 +542,7 @@ export { parse as parseYaml };
 
 /**
  * The simple model: only α (absorption rate) and β (chance an intermediate idea is published at once) vary.
- * Everything else is held fixed: 12 identical agents, equal money every round (ρ = 0), no mint (m = 0, so
+ * Everything else is held fixed: 12 identical agents, equal money every round (f = 0), no mint (m = 0, so
  * bounties are the only value), no validation (θ = 0; no agent games, so nothing trivial is submitted),
  * and the topic's own idea graph and bounties.
  */
@@ -618,7 +618,7 @@ export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
   return {
     id: d.id,
     title: d.title || d.question || `Simple model on ${space.spec.title}: α × β`,
-    description: `The simple model on the field "${space.spec.title}" (spaces/${d.space}.yaml): only α and β vary. Held fixed: ${SIMPLE_AGENTS} identical agents, equal money every round (ρ = 0), no mint (m = 0), no validation (θ = 0), the field's idea graph and bounties.`,
+    description: `The simple model on the field "${space.spec.title}" (spaces/${d.space}.yaml): only α and β vary. Held fixed: ${SIMPLE_AGENTS} identical agents, equal money every round (f = 0), no mint (m = 0), no validation (θ = 0), the field's idea graph and bounties.`,
     seeds: d.seeds,
     ...(space.spec.scenarioFile ? { scenario: space.spec.scenarioFile } : {}),
     set: merge(merge(expandPaths(space.spec.scenario ?? {}), expandPaths(SIMPLE_FIXED)), { agents: { mix } }) as Record<string, unknown>,
@@ -645,7 +645,7 @@ function simpleOnGraph(d: SimpleDesign, g: GraphControls): ExperimentSpec {
   return {
     id: d.id,
     title: d.title || d.question || `Simple model on a generated idea graph: α × β`,
-    description: `The simple model on a generated idea graph (${graphText(g)}); each run draws its own graph. Only α and β vary. Held fixed: ${SIMPLE_AGENTS} identical agents, a budget of ${budget} split equally every round (ρ = 0), no mint, no validation.`,
+    description: `The simple model on a generated idea graph (${graphText(g)}); each run draws its own graph. Only α and β vary. Held fixed: ${SIMPLE_AGENTS} identical agents, a budget of ${budget} split equally every round (f = 0), no mint, no validation.`,
     seeds: d.seeds,
     set: merge(expandPaths({ world: { kind: 'ideas', ...g }, 'budget.X': budget, 'measures.targetLevel': g.levels, ...SIMPLE_FIXED }), { agents: { mix } }) as Record<string, unknown>,
     factors: [{ name: 'society', levels: societies(d) }],

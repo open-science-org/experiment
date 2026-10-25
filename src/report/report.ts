@@ -227,7 +227,7 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
   })));
   const gridTable = GRID.alpha.map((a) => ({ 'α \\ c': a, ...Object.fromEntries(GRID.c.map((c) => { const g = gridCell(a, c); return [cFmt(c), `${pct(g.sharing)} · ${f1(g.frontier)}`]; })) }));
   const gamerNote = mostSensitive.p.id === 'rho' && (scenario.agents.mix.gamer ?? 0) > 0
-    ? ' Why ρ matters so much here: under traditional rules, when money follows earnings, the first agent to earn takes the money. In this community that is the gaming agent, which earns early from trivial ideas and then, holding all the money, does the research too. Without a gaming agent the effect disappears (see the funding-rule-gamer experiment).'
+    ? ' Why f matters so much here: under traditional rules, when money follows earnings, the first agent to earn takes the money. In this community that is the gaming agent, which earns early from trivial ideas and then, holding all the money, does the research too. Without a gaming agent the effect disappears (see the funding-rule-gamer experiment).'
     : '';
   const sensitivityLine = `Across the tested values of the parameters a market or community sets, OSO's lead (agents choosing what to share) runs from **${marketMin.min >= 0 ? '+' : ''}${f1(marketMin.min)}** to **+${f1(Math.max(...market.map((x) => x.max)))}** levels. The smallest lead, at ${marketMin.p.label} = ${worst.value}, is ${worstText}. The lead is most sensitive to **${mostSensitive.p.label}**.${gamerNote}`;
 
