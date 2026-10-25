@@ -1,8 +1,8 @@
 # Suite 2026-10-24: full model
-id: full-drug-discovery-6-settings-20261023
-title: full-drug-discovery-6-settings-20261023
+id: full-example-narrow-stages-6-settings-20261023
+title: full-example-narrow-stages-6-settings-20261023
 description: 'Designed in the app on the field "Early-stage drug discovery"
-  (spaces/drug-discovery.yaml): Traditional vs OSO (immediate) vs OSO (choice) vs Flow-back,
+  (spaces/example-narrow-stages.yaml): Traditional vs OSO (immediate) vs OSO (choice) vs Flow-back,
   finished-only vs No flow-back, immediate vs No flow-back, choice. α and c apply to the OSO
   (flow-back) settings only.'
 seeds: 100
@@ -57,7 +57,7 @@ fixed: the field "Early-stage drug discovery"
 tags:
   - simulation
   - full model
-  - drug-discovery
+  - example-narrow-stages
   - Early-stage drug discovery
   - Traditional
   - OSO (immediate)

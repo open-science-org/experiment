@@ -1,0 +1,38 @@
+id: example-tightly-linked
+title: "Example: small and tightly linked (battery story)"
+summary: "An example setting of the idea graph generator, told as a battery but not measured from
+  it: 20 ideas, each leaning heavily on several earlier ones; two bounties."
+description: "Building a solid-state lithium battery. Three lines of work run in parallel: the solid
+  electrolyte (finding a conducting material, making it stable and making it thin), the interfaces
+  (stopping dendrites and keeping contact as the cell breathes), and manufacturing (making layers at
+  scale). A working laboratory cell needs ideas from all three; a cell that survives a thousand
+  cycles needs more. Some promising lines (a polymer electrolyte, a coating that never scales) lead
+  nowhere."
+glossary:
+  idea: a demonstrated material property or process step
+  target: a cell that meets a performance milestone
+  attempt: one round of synthesis and testing
+  agent: a lab or startup
+scenario:
+  world:
+    kind: ideas
+    levels: 5
+    width: 4
+    parents: 2.5
+    skip: 0.3
+    length: 3
+    lengthGrowth: 2
+    composition: 0.8
+    targets: 2
+    bountyBase: 25
+    bountyGrowth: 2
+  measures:
+    targetLevel: 5
+  budget:
+    X: 260
+    rounds: 22
+    perAgentPerRound: null
+notes: A preset of the idea graph generator. A small field where ideas lean heavily on what came
+  before (composition 0.8) and each one needs several earlier results (2.5 parents). The numbers are
+  illustrative, not measured from the field.
+source: written by hand as an example of a space listed idea by idea (the graph world)

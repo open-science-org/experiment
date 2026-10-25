@@ -235,7 +235,7 @@ test('the Lean reference tree loads as a world', () => {
 test('problem spaces load, and a bad space is rejected with a usable message', async () => {
   const { loadSpace, parseSpace, spaceIds } = await import('../src/spaces/spaces.ts');
   for (const id of spaceIds()) assert.equal(loadSpace(id).spec.id, id);
-  const good = loadSpace('drug-discovery').spec;
+  const good = loadSpace('example-narrow-stages').spec;
   assert.throws(() => parseSpace({ ...good, id: 'Not Kebab' }), /kebab-case/);
   assert.throws(() => parseSpace({ ...good, glossary: { idea: 'x', target: '', attempt: 'y' } }), /glossary.target/);
   assert.throws(() => parseSpace({ ...good, scenario: { 'world.targets': [] } }), /no targets/);
@@ -253,7 +253,7 @@ test('an inline graph world builds, with levels from prerequisites', () => {
 
 test('generating a space sends errors back to the model until the file is valid', async () => {
   const { generateSpace } = await import('../src/spaces/new-space.ts');
-  const valid = readFileSync(new URL('../spaces/drug-discovery.yaml', import.meta.url), 'utf8').replace('id: drug-discovery', 'id: test-space');
+  const valid = readFileSync(new URL('../spaces/example-narrow-stages.yaml', import.meta.url), 'utf8').replace('id: example-narrow-stages', 'id: test-space');
   const replies = ['```yaml\nid: test-space\ntitle: T\n```', '```yaml\n' + valid + '\n```'];
   const seen: string[] = [];
   const space = await generateSpace('a test field', async (_system, messages) => {
@@ -270,7 +270,7 @@ test('the canonical report has the same sections for every space', async () => {
   const { buildReport } = await import('../src/report/report.ts');
   const REPORTS_DIR = mkdtempSync(join(tmpdir(), 'oso-reports-'));
   const { loadSpace } = await import('../src/spaces/spaces.ts');
-  const space = loadSpace('drug-discovery');
+  const space = loadSpace('example-narrow-stages');
   const spec = { ...space.spec, id: 'test-report' };
   const h = buildReport({ spec, scenario: space.scenario }, 4, () => {}, REPORTS_DIR);
   const md = readFileSync(join(REPORTS_DIR, 'test-report', 'report.md'), 'utf8');
@@ -296,7 +296,7 @@ test('a traced run is the same run, and its events account for what was publishe
 
 test('the designer turns a design into a valid experiment and rejects bad designs', async () => {
   const design = await import('../src/viewer/design.ts');
-  const d = { id: 'designer-test', title: 'T', space: 'solid-state-battery', settings: ['traditional', 'oso'], vary: [{ path: 'rules.screen', values: [0, 0.9] }], columns: ['frontier'], seeds: 3 };
+  const d = { id: 'designer-test', title: 'T', space: 'example-tightly-linked', settings: ['traditional', 'oso'], vary: [{ path: 'rules.screen', values: [0, 0.9] }], columns: ['frontier'], seeds: 3 };
   const c = design.checkExperiment(d);
   assert.ok(c.ok, c.error ?? '');
   assert.equal(c.rows, 4);

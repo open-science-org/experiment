@@ -1,6 +1,6 @@
 {
- "ranAt": "2026-10-25T03:30:52.281Z",
- "id": "abstract-field",
+ "ranAt": "2026-10-25T03:38:38.106Z",
+ "id": "example-deep-field",
  "kind": "field report",
  "date": "2026-10-25",
  "title": "Example: a deep, wide field",
@@ -33,6 +33,6 @@
   "A simulation with guessed parameters: it shows how the rules play out if the field works as described.",
   "OSO's lead as the market-set parameters vary: 0.5 to 5.9 levels."
  ],
- "page": "reports/abstract-field/card.md",
- "chart": "reports/abstract-field/figures/frontier.svg"
+ "page": "reports/example-deep-field/card.md",
+ "chart": "reports/example-deep-field/figures/frontier.svg"
 }

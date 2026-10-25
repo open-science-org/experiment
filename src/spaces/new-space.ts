@@ -96,10 +96,10 @@ ${read('config/scenarios/default.yaml')}
 
 Two example problem spaces:
 \`\`\`yaml
-${read('spaces/drug-discovery.yaml')}
+${read('spaces/example-narrow-stages.yaml')}
 \`\`\`
 \`\`\`yaml
-${read('spaces/abstract-field.yaml')}
+${read('spaces/example-deep-field.yaml')}
 \`\`\``;
 }
 

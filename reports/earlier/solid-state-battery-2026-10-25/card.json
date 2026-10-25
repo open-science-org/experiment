@@ -1,0 +1,40 @@
+{
+  "ranAt": "2026-10-25T03:30:52.280Z",
+  "id": "solid-state-battery",
+  "kind": "field report",
+  "date": "2026-10-25",
+  "title": "Example: small and tightly linked (battery story)",
+  "design": {
+    "question": "For the same money, does OSO get further than traditional research in Example: small and tightly linked (battery story)?",
+    "compare": "the six rule settings, an α sweep, the parameters one by one, costly and fallible sharing",
+    "fixed": "the field, 12 agents and a budget of 260",
+    "measure": "hardest level reached",
+    "better": "higher",
+    "runs": "100 runs per setting"
+  },
+  "answer": "OSO ahead: level 5.0 against 1.6 of 5; targets 1.9 against 0.4 of 2; ROI 5.36 against 0.74.",
+  "table": [
+    {
+      "rules": "Traditional",
+      "hardest level": "1.6 of 5",
+      "targets solved": "0.4 of 2",
+      "cost to level 5": 188,
+      "ROI": "0.74 (172 for 251)"
+    },
+    {
+      "rules": "OSO",
+      "hardest level": "5.0 of 5",
+      "targets solved": "1.9 of 2",
+      "cost to level 5": 120,
+      "ROI": "5.36 (772 for 165)"
+    }
+  ],
+  "caveats": [
+    "A simulation with guessed parameters: it shows how the rules play out if the field works as described.",
+    "OSO's lead as the market-set parameters vary: 0.4 to 3.2 levels.",
+    "A preset of the idea graph generator. A small field where ideas lean heavily on what came before (composition 0.8) and each one needs several earlier results (2.5 parents). The numbers are illustrative, not measured from the field."
+  ],
+  "page": "reports/earlier/solid-state-battery-2026-10-25/card.md",
+  "chart": "reports/earlier/solid-state-battery-2026-10-25/figures/frontier.svg",
+  "superseded": "Renamed on 2026-10-25: this preset is now \"example-tightly-linked\", an example rather than a real field. Same settings and results; see its current report (reports/example-tightly-linked)."
+}

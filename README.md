@@ -10,7 +10,7 @@ Traditional research is a special case of OSO's rules (α = 1, c = 0, finished w
 
 ## Results
 
-Every field gets the same canonical report. The [reports index](reports/README.md) lists them all; for example, [early-stage drug discovery](reports/drug-discovery/report.md).
+Every field gets the same canonical report. The [reports index](reports/README.md) lists them all; for example, [the narrow-stages example](reports/example-narrow-stages/report.md).
 
 These are simulations with guessed parameters. They show how the incentive rules play out if a field works as described, not that it does. Each report says what it does and does not show.
 
@@ -22,12 +22,12 @@ Requires Node.js 22.18 or later (it runs TypeScript directly, with no build step
 npm install
 npm run sim -- spaces                                # the problem spaces so far
 npm run sim -- new "protein design: from folds to binders to enzymes" --report
-npm run sim -- report drug-discovery                 # the canonical report for one space
+npm run sim -- report example-narrow-stages                 # the canonical report for one space
 npm run sim -- report all                            # every space, plus the index
 npm run sim -- check my-space.yaml                   # validate a hand-written space
 ```
 
-- **A problem space** ([spaces/](spaces/)) is one YAML file: a title, a plain-language description, a glossary (what an idea, a target and an attempt mean in this field), and the scenario settings that differ from the defaults. Copy [drug-discovery.yaml](spaces/drug-discovery.yaml) to write one by hand; a small field with a known structure can list its ideas one by one, like [solid-state-battery.yaml](spaces/solid-state-battery.yaml).
+- **A problem space** ([spaces/](spaces/)) is one YAML file: a title, a plain-language description, a glossary (what an idea, a target and an attempt mean in this field), and the scenario settings that differ from the defaults. Copy [example-narrow-stages.yaml](spaces/example-narrow-stages.yaml) to write one by hand; a small field with a known structure can list its ideas one by one, like [example-tightly-linked.yaml](spaces/example-tightly-linked.yaml).
 - **`new`** asks Claude (`claude-opus-5-5`) to write the space from your description. The file is validated and test-run, and any errors go back to the model to fix, up to three times. It needs `ANTHROPIC_API_KEY`. If the model declines, the API retries on a fallback model (server-side fallbacks, on by default).
 - **The budget is calibrated** for every space that does not set one: it is the smallest budget at which the OSO community solves about 90% of the targets. Every field is then hard but not hopeless, and the question is what the same money buys traditional research.
 - **`report`** runs the same experiments on every space ([battery.ts](src/report/battery.ts)) and writes `reports/<id>/report.md` with the same sections, always:

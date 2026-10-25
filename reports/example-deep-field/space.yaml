@@ -1,0 +1,31 @@
+id: example-deep-field
+title: "Example: a deep, wide field"
+summary: "An example setting of the idea graph generator, not a real field: 80 ideas in 8 levels,
+  about two parents each, four bounties at the top."
+description: "A research field with no particular subject. Ideas build on ideas in eight levels of
+  rising difficulty, each idea taking most of its content from about two earlier ones. Four ideas at
+  the top carry bounties. Twelve agents of six kinds work in it: patient foundation builders, target
+  racers, cheap explorers, specialists, a free rider and a gamer who farms trivial ideas."
+glossary:
+  idea: a finding that later findings can build on
+  target: a bounty-carrying finding announced in advance
+  attempt: one attempt at proving a finding, which succeeds or fails
+scenario:
+  world:
+    kind: ideas
+    levels: 8
+    width: 10
+    parents: 2
+    skip: 0.25
+    length: 2
+    lengthGrowth: 1.5
+    composition: 0.7
+    targets: 4
+    bountyBase: 4
+    bountyGrowth: 2
+  measures:
+    targetLevel: 8
+  budget:
+    X: 800
+    rounds: 67
+    perAgentPerRound: null

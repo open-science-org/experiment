@@ -1736,7 +1736,7 @@ async function initReplay() {
   const [spaces, settings, exps] = await Promise.all([api('/api/spaces'), api('/api/settings'), api('/api/sim/experiments')]);
   simSettings = settings;
   $('sim-space').innerHTML = spaces.map((s) => `<option value="${s.id}">${esc(s.title)}</option>`).join('');
-  if (spaces.some((s) => s.id === 'drug-discovery')) $('sim-space').value = 'drug-discovery';
+  if (spaces.some((s) => s.id === 'example-narrow-stages')) $('sim-space').value = 'example-narrow-stages';
   $('sim-exp').innerHTML = exps.map((x) => `<option value="${esc(x.id)}">${esc(x.title)} · ${esc(x.id)}</option>`).join('');
   const h = params();
   if (h.get('experiment')) { $('sim-source').value = 'result'; $('sim-exp').value = h.get('experiment'); }

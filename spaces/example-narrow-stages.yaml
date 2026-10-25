@@ -1,4 +1,4 @@
-id: drug-discovery
+id: example-narrow-stages
 title: "Example: narrow stages (drug discovery story)"
 summary: "An example setting of the idea graph generator, told as drug discovery but not measured from it: six stages, each reusing only part of the evidence before it; three bounties."
 description: >-

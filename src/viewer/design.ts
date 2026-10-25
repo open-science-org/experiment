@@ -622,8 +622,8 @@ export function runSimpleJob(d: SimpleDesign, overwrite = false): Job {
 /* ------------------------------------------------------------------------------------------- Names */
 
 // Canonical names: what an experiment is, then the date, so names sort, read and search well.
-//   simple-<topic>-<what varies>-<yyyymmdd>            e.g. simple-abstract-field-alpha-beta-20261023
-//   full-<topic>-<settings>[-by-<parameter>]-<yyyymmdd> e.g. full-drug-discovery-traditional-vs-oso-by-alpha-20261023
+//   simple-<topic>-<what varies>-<yyyymmdd>            e.g. simple-example-deep-field-alpha-beta-20261023
+//   full-<topic>-<settings>[-by-<parameter>]-<yyyymmdd> e.g. full-example-narrow-stages-traditional-vs-oso-by-alpha-20261023
 //   ai-<model>-x<agents>-<rules>-<yyyymmdd>            e.g. ai-deepseek-v4-1-flash-x4-traditional-vs-oso-20261023
 // A name already taken gets -2, -3, …
 

@@ -339,7 +339,7 @@ const server = createServer(async (req, res) => {
     if (url.pathname === '/api/sim/rows') return send(200, experimentRows(url.searchParams.get('experiment') ?? ''));
     if (url.pathname === '/api/sim/experiments') return send(200, allCards().filter((c) => c.kind === 'simulation' && existsSync(join(ROOT, 'config', 'experiments', `${c.id}.yaml`))).map((c) => ({ id: c.id, title: c.title, date: c.date })));
     if (url.pathname === '/api/sim' && url.searchParams.get('experiment')) return send(200, simExperiment(url.searchParams.get('experiment')!, Number(url.searchParams.get('row') ?? 0), Number(url.searchParams.get('seed') ?? 1)));
-    if (url.pathname === '/api/sim') return send(200, sim(url.searchParams.get('space') ?? 'abstract-field', url.searchParams.get('setting') ?? 'oso', Number(url.searchParams.get('seed') ?? 1)));
+    if (url.pathname === '/api/sim') return send(200, sim(url.searchParams.get('space') ?? 'example-deep-field', url.searchParams.get('setting') ?? 'oso', Number(url.searchParams.get('seed') ?? 1)));
     if (url.pathname === '/api/pilot/runs') return send(200, leanAvailable() ? pilotRuns() : []);
     if (url.pathname === '/api/community/runs') return send(200, leanAvailable() ? communityRuns() : []);
     if (url.pathname === '/api/community/run') return send(200, communityRun(url.searchParams.get('id') ?? ''));

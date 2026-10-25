@@ -1,0 +1,38 @@
+id: example-narrow-stages
+title: "Example: narrow stages (drug discovery story)"
+summary: "An example setting of the idea graph generator, told as drug discovery but not measured
+  from it: six stages, each reusing only part of the evidence before it; three bounties."
+description: Early-stage drug discovery. Validated biology (a disease mechanism) supports target
+  identification; targets support screening assays; assays find hits; hits are optimized into leads;
+  and a lead with enough evidence becomes a development candidate. Each stage is much harder than
+  the one before, and many hits and leads go nowhere. Three disease areas (oncology, immunology,
+  neuroscience) share some early biology. Labs either publish each step as they go or keep it until
+  they have a candidate.
+glossary:
+  idea: a validated piece of evidence (mechanism, target, assay, hit or lead)
+  target: a development candidate, worth a large bounty
+  attempt: one experimental campaign
+  agent: a lab
+scenario:
+  world:
+    kind: ideas
+    levels: 6
+    width: 9
+    parents: 1.5
+    skip: 0.1
+    length: 2
+    lengthGrowth: 2
+    composition: 0.5
+    targets: 3
+    bountyBase: 2
+    bountyGrowth: 3
+  measures:
+    targetLevel: 6
+  budget:
+    X: 1350
+    rounds: 113
+    perAgentPerRound: null
+notes: A preset of the idea graph generator. Each stage reuses only part of the evidence before it
+  (composition 0.5), many hits and leads go nowhere, and the stages get much harder. The numbers are
+  illustrative, not measured from the field.
+source: written by hand as an example of a new problem space
