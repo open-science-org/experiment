@@ -2,11 +2,11 @@
  "id": "scaling-across-difficulty-one-at-a-time-2026-10-24-parents",
  "kind": "simulation",
  "date": "2026-10-25",
- "ranAt": "2026-10-25T01:47:02.626Z",
+ "ranAt": "2026-10-25T02:42:55.006Z",
  "title": "Scaling as parents changes",
  "design": {
   "question": "As parents changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?",
-  "compare": "3 societies on 4 difficulties (parents 1, parents 2, parents 3, parents 4)",
+  "compare": "4 societies on 4 difficulties (parents 1, parents 2, parents 3, parents 4)",
   "fixed": "the simple model: 12 identical agents, equal money each round, no mint, no validation",
   "measure": "money needed to solve half the targets",
   "better": "lower",
@@ -18,6 +18,7 @@
    "difficulty": "parents 1",
    "Traditional (α = 1, β = 0)": "1,029",
    "OSO (α = 0.8, β = 1)": "235",
+   "OSO (α = 0.2, β = 1)": "260",
    "α = 0.8, β = 0.5": "400",
    "traditional ÷ OSO": "4.4×"
   },
@@ -25,6 +26,7 @@
    "difficulty": "parents 2",
    "Traditional (α = 1, β = 0)": "2,046",
    "OSO (α = 0.8, β = 1)": "323",
+   "OSO (α = 0.2, β = 1)": "292",
    "α = 0.8, β = 0.5": "538",
    "traditional ÷ OSO": "6.3×"
   },
@@ -32,6 +34,7 @@
    "difficulty": "parents 3",
    "Traditional (α = 1, β = 0)": "2,288",
    "OSO (α = 0.8, β = 1)": "332",
+   "OSO (α = 0.2, β = 1)": "308",
    "α = 0.8, β = 0.5": "579",
    "traditional ÷ OSO": "6.9×"
   },
@@ -39,6 +42,7 @@
    "difficulty": "parents 4",
    "Traditional (α = 1, β = 0)": "2,363",
    "OSO (α = 0.8, β = 1)": "362",
+   "OSO (α = 0.2, β = 1)": "303",
    "α = 0.8, β = 0.5": "592",
    "traditional ÷ OSO": "6.5×"
   }

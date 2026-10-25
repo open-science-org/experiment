@@ -2,11 +2,11 @@
  "chart": "results/simple-ideas-4x6-p1-5-len2g1-comp0-7-scaling-ladder-20261024/figures/compare.svg",
  "id": "simple-ideas-4x6-p1-5-len2g1-comp0-7-scaling-ladder-20261024",
  "kind": "simulation",
- "date": "2026-10-24",
+ "date": "2026-10-25",
  "title": "Scaling: Easy graph (4 × 6)",
  "design": {
   "question": "On a easy idea graph, how does what each society achieves grow with its budget (25 to 3200)?",
-  "compare": "four societies × budgets 25, 50, 100, 200, 400, 800, 1600, 3200",
+  "compare": "five societies × budgets 25, 50, 100, 200, 400, 800, 1600, 3200",
   "fixed": "a generated idea graph (4 levels × 6 ideas, 1.5 parents each, sequences of 2 bits growing by 1 per level, composition 0.7), 12 identical agents, budget 25 split equally, no mint, no validation",
   "measure": "all of hardest level, targets solved, bounty value, ROI, money to the main level, waste",
   "better": "higher",
@@ -183,6 +183,86 @@
    "ROI (value per spend)": "1.67 ± 0.68",
    "cost": "30 ± 10",
    "waste": "0.39 ± 0.15"
+  },
+  {
+   "society": "OSO (α = 0.2, β = 1)",
+   "budget": 25,
+   "frontier": "3.3 ± 1.0",
+   "targets solved": "0.8 ± 0.8",
+   "value gained": "25 ± 25",
+   "ROI (value per spend)": "1.02 ± 1.03",
+   "cost": "19 ± 6",
+   "waste": "0.24 ± 0.13"
+  },
+  {
+   "society": "OSO (α = 0.2, β = 1)",
+   "budget": 50,
+   "frontier": "3.8 ± 0.7",
+   "targets solved": "1.6 ± 0.7",
+   "value gained": "52 ± 23",
+   "ROI (value per spend)": "1.49 ± 0.83",
+   "cost": "25 ± 10",
+   "waste": "0.31 ± 0.13"
+  },
+  {
+   "society": "OSO (α = 0.2, β = 1)",
+   "budget": 100,
+   "frontier": "4.0 ± 0.0",
+   "targets solved": "2.0 ± 0.0",
+   "value gained": "64 ± 0",
+   "ROI (value per spend)": "1.66 ± 0.59",
+   "cost": "30 ± 16",
+   "waste": "0.33 ± 0.12"
+  },
+  {
+   "society": "OSO (α = 0.2, β = 1)",
+   "budget": 200,
+   "frontier": "4.0 ± 0.0",
+   "targets solved": "2.0 ± 0.0",
+   "value gained": "64 ± 0",
+   "ROI (value per spend)": "1.66 ± 0.59",
+   "cost": "30 ± 16",
+   "waste": "0.33 ± 0.12"
+  },
+  {
+   "society": "OSO (α = 0.2, β = 1)",
+   "budget": 400,
+   "frontier": "4.0 ± 0.0",
+   "targets solved": "2.0 ± 0.0",
+   "value gained": "64 ± 0",
+   "ROI (value per spend)": "1.66 ± 0.59",
+   "cost": "30 ± 16",
+   "waste": "0.33 ± 0.12"
+  },
+  {
+   "society": "OSO (α = 0.2, β = 1)",
+   "budget": 800,
+   "frontier": "4.0 ± 0.0",
+   "targets solved": "2.0 ± 0.0",
+   "value gained": "64 ± 0",
+   "ROI (value per spend)": "1.66 ± 0.59",
+   "cost": "30 ± 16",
+   "waste": "0.33 ± 0.12"
+  },
+  {
+   "society": "OSO (α = 0.2, β = 1)",
+   "budget": 1600,
+   "frontier": "4.0 ± 0.0",
+   "targets solved": "2.0 ± 0.0",
+   "value gained": "64 ± 0",
+   "ROI (value per spend)": "1.66 ± 0.59",
+   "cost": "30 ± 16",
+   "waste": "0.33 ± 0.12"
+  },
+  {
+   "society": "OSO (α = 0.2, β = 1)",
+   "budget": 3200,
+   "frontier": "4.0 ± 0.0",
+   "targets solved": "2.0 ± 0.0",
+   "value gained": "64 ± 0",
+   "ROI (value per spend)": "1.52 ± 0.61",
+   "cost": "31 ± 14",
+   "waste": "0.43 ± 0.13"
   },
   {
    "society": "α = 0.8, β = 0.5",
@@ -363,5 +443,5 @@
   "scaling ladder 2026-10-24",
   "difficulty easy"
  ],
- "ranAt": "2026-10-24T19:14:43.979Z"
+ "ranAt": "2026-10-25T02:24:16.055Z"
 }

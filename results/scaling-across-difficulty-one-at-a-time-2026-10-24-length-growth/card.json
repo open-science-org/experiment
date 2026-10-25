@@ -2,11 +2,11 @@
  "id": "scaling-across-difficulty-one-at-a-time-2026-10-24-length-growth",
  "kind": "simulation",
  "date": "2026-10-25",
- "ranAt": "2026-10-25T01:47:02.156Z",
+ "ranAt": "2026-10-25T02:42:54.555Z",
  "title": "Scaling as length growth changes",
  "design": {
   "question": "As length growth changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?",
-  "compare": "3 societies on 4 difficulties (length growth 1, length growth 2, length growth 3, length growth 4)",
+  "compare": "4 societies on 4 difficulties (length growth 1, length growth 2, length growth 3, length growth 4)",
   "fixed": "the simple model: 12 identical agents, equal money each round, no mint, no validation",
   "measure": "money needed to solve half the targets",
   "better": "lower",
@@ -18,6 +18,7 @@
    "difficulty": "length growth 1",
    "Traditional (α = 1, β = 0)": "768",
    "OSO (α = 0.8, β = 1)": "131",
+   "OSO (α = 0.2, β = 1)": "129",
    "α = 0.8, β = 0.5": "227",
    "traditional ÷ OSO": "5.9×"
   },
@@ -25,6 +26,7 @@
    "difficulty": "length growth 2",
    "Traditional (α = 1, β = 0)": "2,046",
    "OSO (α = 0.8, β = 1)": "323",
+   "OSO (α = 0.2, β = 1)": "292",
    "α = 0.8, β = 0.5": "538",
    "traditional ÷ OSO": "6.3×"
   },
@@ -32,6 +34,7 @@
    "difficulty": "length growth 3",
    "Traditional (α = 1, β = 0)": "4,202",
    "OSO (α = 0.8, β = 1)": "673",
+   "OSO (α = 0.2, β = 1)": "622",
    "α = 0.8, β = 0.5": "1,131",
    "traditional ÷ OSO": "6.2×"
   },
@@ -39,6 +42,7 @@
    "difficulty": "length growth 4",
    "Traditional (α = 1, β = 0)": "9,830",
    "OSO (α = 0.8, β = 1)": "1,950",
+   "OSO (α = 0.2, β = 1)": "1,838",
    "α = 0.8, β = 0.5": "2,410",
    "traditional ÷ OSO": "5.0×"
   }

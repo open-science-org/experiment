@@ -2,11 +2,11 @@
 
 **Question:** With composition 0.95 and everything else as the default graph, how does what each society achieves grow with its budget?
 
-**Answer:** At budgets 50–100: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level; no clear difference on targets solved, bounty value, ROI and waste. At budget 200: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI and waste. At budget 400: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI and waste; no clear difference on money to the main level. At budget 800: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, money to the main level and waste. At budgets 1600–102400: best OSO (α = 0.8, β = 1). Against traditional, clearly better on ROI, money to the main level and waste; no clear difference on hardest level, targets solved and bounty value. (Compared at each budget; 6 measures, a clear difference is more than 2.6 standard errors.)
+**Answer:** At budget 50: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level; no clear difference on targets solved, bounty value, ROI and waste. At budget 100: best OSO (α = 0.2, β = 1). Against traditional, clearly better on hardest level; no clear difference on targets solved, bounty value, ROI and waste. At budget 200: best OSO (α = 0.2, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI and waste. At budget 400: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI and waste; no clear difference on money to the main level. At budget 800: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, money to the main level and waste. At budgets 1600–102400: best OSO (α = 0.8, β = 1). Against traditional, clearly better on ROI, money to the main level and waste; no clear difference on hardest level, targets solved and bounty value. (Compared at each budget; 6 measures, a clear difference is more than 2.6 standard errors.)
 
 - Budget 50: hardest level: 2.20 against traditional 0.00, clearly better. targets solved: 0.05 against traditional 0.00, no clear difference.
-- Budget 100: hardest level: 3.95 against traditional 0.00, clearly better. targets solved: 0.20 against traditional 0.00, no clear difference.
-- Budget 200: hardest level: 5.90 against traditional 0.00, clearly better. targets solved: 1.20 against traditional 0.00, clearly better.
+- Budget 100: hardest level: 4.10 against traditional 0.00, clearly better. targets solved: 0.05 against traditional 0.00, no clear difference.
+- Budget 200: hardest level: 5.95 against traditional 0.00, clearly better. targets solved: 1.50 against traditional 0.00, clearly better.
 - Budget 400: hardest level: 6.00 against traditional 0.30, clearly better. targets solved: 2.00 against traditional 0.05, clearly better.
 - Budget 800: hardest level: 6.00 against traditional 1.80, clearly better. targets solved: 2.00 against traditional 0.40, clearly better.
 - Budget 1600: hardest level: 6.00 against traditional 5.70, no clear difference. targets solved: 2.00 against traditional 1.70, no clear difference.
@@ -45,6 +45,18 @@
 | OSO (α = 0.8, β = 1) | 25600 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 1.01 ± 0.26 | 210 ± 28 | 0.42 ± 0.12 |
 | OSO (α = 0.8, β = 1) | 51200 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 0.79 ± 0.16 | 335 ± 62 | 0.50 ± 0.09 |
 | OSO (α = 0.8, β = 1) | 102400 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 0.87 ± 0.26 | 316 ± 84 | 0.49 ± 0.11 |
+| OSO (α = 0.2, β = 1) | 50 | 2.4 ± 1.0 | 0.0 ± 0.0 | 0 ± 0 | 0.00 ± 0.00 | – | 0.20 ± 0.07 |
+| OSO (α = 0.2, β = 1) | 100 | 4.1 ± 1.2 | 0.1 ± 0.2 | 6 ± 29 | 0.07 ± 0.30 | 96 ± 0 | 0.22 ± 0.07 |
+| OSO (α = 0.2, β = 1) | 200 | 6.0 ± 0.2 | 1.5 ± 0.6 | 192 ± 78 | 1.19 ± 0.60 | 142 ± 27 | 0.26 ± 0.07 |
+| OSO (α = 0.2, β = 1) | 400 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 1.40 ± 0.38 | 146 ± 31 | 0.28 ± 0.06 |
+| OSO (α = 0.2, β = 1) | 800 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 1.40 ± 0.38 | 146 ± 31 | 0.28 ± 0.06 |
+| OSO (α = 0.2, β = 1) | 1600 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 1.39 ± 0.28 | 142 ± 26 | 0.27 ± 0.07 |
+| OSO (α = 0.2, β = 1) | 3200 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 1.29 ± 0.34 | 152 ± 49 | 0.30 ± 0.06 |
+| OSO (α = 0.2, β = 1) | 6400 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 1.17 ± 0.27 | 161 ± 50 | 0.34 ± 0.08 |
+| OSO (α = 0.2, β = 1) | 12800 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 1.06 ± 0.23 | 177 ± 59 | 0.43 ± 0.10 |
+| OSO (α = 0.2, β = 1) | 25600 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 1.03 ± 0.26 | 212 ± 35 | 0.47 ± 0.11 |
+| OSO (α = 0.2, β = 1) | 51200 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 0.81 ± 0.17 | 325 ± 62 | 0.53 ± 0.11 |
+| OSO (α = 0.2, β = 1) | 102400 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 0.88 ± 0.15 | 301 ± 58 | 0.50 ± 0.11 |
 | α = 0.8, β = 0.5 | 50 | 0.9 ± 1.2 | 0.0 ± 0.0 | 0 ± 0 | 0.00 ± 0.00 | – | 0.16 ± 0.08 |
 | α = 0.8, β = 0.5 | 100 | 2.4 ± 1.9 | 0.0 ± 0.0 | 0 ± 0 | 0.00 ± 0.00 | 84 ± 0 | 0.23 ± 0.09 |
 | α = 0.8, β = 0.5 | 200 | 4.1 ± 1.8 | 0.3 ± 0.4 | 32 ± 57 | 0.17 ± 0.30 | 144 ± 41 | 0.35 ± 0.08 |
@@ -58,7 +70,7 @@
 | α = 0.8, β = 0.5 | 51200 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 0.57 ± 0.09 | 429 ± 42 | 0.59 ± 0.10 |
 | α = 0.8, β = 0.5 | 102400 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 0.47 ± 0.10 | 574 ± 121 | 0.68 ± 0.07 |
 
-**Design** (fixed before the run): compared three societies × budgets 50 to 102400 · held the same: a generated idea graph (6 levels × 8 ideas, 2 parents each, sequences of 3 bits growing by 2 per level, composition 0.95), 12 identical agents, budget 50 split equally, no mint, no validation · measure: all of hardest level, targets solved, bounty value, ROI, money to the main level, waste · 20 runs per row.
+**Design** (fixed before the run): compared four societies × budgets 50 to 102400 · held the same: a generated idea graph (6 levels × 8 ideas, 2 parents each, sequences of 3 bits growing by 2 per level, composition 0.95), 12 identical agents, budget 50 split equally, no mint, no validation · measure: all of hardest level, targets solved, bounty value, ROI, money to the main level, waste · 20 runs per row.
 
 **Caveats:**
 - A simulation with guessed parameters: it shows how the rules play out, not that they work.
@@ -95,6 +107,18 @@ Values are mean ± standard deviation over runs.
 | OSO (α = 0.8, β = 1) | 25600 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 1.01 ± 0.26 | 210 ± 28 | 0.42 ± 0.12 | 1.00 ± 0.00 | 1.00 |
 | OSO (α = 0.8, β = 1) | 51200 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 0.79 ± 0.16 | 335 ± 62 | 0.50 ± 0.09 | 1.00 ± 0.00 | 1.00 |
 | OSO (α = 0.8, β = 1) | 102400 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 0.87 ± 0.26 | 316 ± 84 | 0.49 ± 0.11 | 1.00 ± 0.00 | 1.00 |
+| OSO (α = 0.2, β = 1) | 50 | 2.4 ± 1.0 | 0.0 ± 0.0 | 0 ± 0 | 0.00 ± 0.00 | – | 0.20 ± 0.07 | 1.00 ± 0.00 | 0.00 |
+| OSO (α = 0.2, β = 1) | 100 | 4.1 ± 1.2 | 0.1 ± 0.2 | 6 ± 29 | 0.07 ± 0.30 | 96 ± 0 | 0.22 ± 0.07 | 1.00 ± 0.00 | 0.10 |
+| OSO (α = 0.2, β = 1) | 200 | 6.0 ± 0.2 | 1.5 ± 0.6 | 192 ± 78 | 1.19 ± 0.60 | 142 ± 27 | 0.26 ± 0.07 | 1.00 ± 0.00 | 0.95 |
+| OSO (α = 0.2, β = 1) | 400 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 1.40 ± 0.38 | 146 ± 31 | 0.28 ± 0.06 | 1.00 ± 0.00 | 1.00 |
+| OSO (α = 0.2, β = 1) | 800 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 1.40 ± 0.38 | 146 ± 31 | 0.28 ± 0.06 | 1.00 ± 0.00 | 1.00 |
+| OSO (α = 0.2, β = 1) | 1600 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 1.39 ± 0.28 | 142 ± 26 | 0.27 ± 0.07 | 1.00 ± 0.00 | 1.00 |
+| OSO (α = 0.2, β = 1) | 3200 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 1.29 ± 0.34 | 152 ± 49 | 0.30 ± 0.06 | 1.00 ± 0.00 | 1.00 |
+| OSO (α = 0.2, β = 1) | 6400 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 1.17 ± 0.27 | 161 ± 50 | 0.34 ± 0.08 | 1.00 ± 0.00 | 1.00 |
+| OSO (α = 0.2, β = 1) | 12800 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 1.06 ± 0.23 | 177 ± 59 | 0.43 ± 0.10 | 1.00 ± 0.00 | 1.00 |
+| OSO (α = 0.2, β = 1) | 25600 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 1.03 ± 0.26 | 212 ± 35 | 0.47 ± 0.11 | 1.00 ± 0.00 | 1.00 |
+| OSO (α = 0.2, β = 1) | 51200 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 0.81 ± 0.17 | 325 ± 62 | 0.53 ± 0.11 | 1.00 ± 0.00 | 1.00 |
+| OSO (α = 0.2, β = 1) | 102400 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 0.88 ± 0.15 | 301 ± 58 | 0.50 ± 0.11 | 1.00 ± 0.00 | 1.00 |
 | α = 0.8, β = 0.5 | 50 | 0.9 ± 1.2 | 0.0 ± 0.0 | 0 ± 0 | 0.00 ± 0.00 | – | 0.16 ± 0.08 | 0.24 ± 0.33 | 0.00 |
 | α = 0.8, β = 0.5 | 100 | 2.4 ± 1.9 | 0.0 ± 0.0 | 0 ± 0 | 0.00 ± 0.00 | 84 ± 0 | 0.23 ± 0.09 | 0.42 ± 0.28 | 0.05 |
 | α = 0.8, β = 0.5 | 200 | 4.1 ± 1.8 | 0.3 ± 0.4 | 32 ± 57 | 0.17 ± 0.30 | 144 ± 41 | 0.35 ± 0.08 | 0.47 ± 0.20 | 0.25 |
@@ -108,6 +132,6 @@ Values are mean ± standard deviation over runs.
 | α = 0.8, β = 0.5 | 51200 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 0.57 ± 0.09 | 429 ± 42 | 0.59 ± 0.10 | 0.92 ± 0.04 | 1.00 |
 | α = 0.8, β = 0.5 | 102400 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 0.47 ± 0.10 | 574 ± 121 | 0.68 ± 0.07 | 1.00 ± 0.00 | 1.00 |
 
-Code: commit `58c633e` (with uncommitted changes). Experiment: [config/experiments/simple-ideas-6x8-p2-len3g2-comp0-95-one-at-a-time-composition-20261024.yaml](../../config/experiments/simple-ideas-6x8-p2-len3g2-comp0-95-one-at-a-time-composition-20261024.yaml). Command: `npm run sim -- simple-ideas-6x8-p2-len3g2-comp0-95-one-at-a-time-composition-20261024 --seeds 20 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `9a11c8a` (with uncommitted changes). Experiment: [config/experiments/simple-ideas-6x8-p2-len3g2-comp0-95-one-at-a-time-composition-20261024.yaml](../../config/experiments/simple-ideas-6x8-p2-len3g2-comp0-95-one-at-a-time-composition-20261024.yaml). Command: `npm run sim -- simple-ideas-6x8-p2-len3g2-comp0-95-one-at-a-time-composition-20261024 --seeds 20 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

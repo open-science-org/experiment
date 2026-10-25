@@ -52,6 +52,12 @@ factors:
           rules.visibility:
             kind: chance
             beta: 1
+      - label: OSO (α = 0.2, β = 1)
+        set:
+          rules.alpha: 0.2
+          rules.visibility:
+            kind: chance
+            beta: 1
       - label: α = 0.8, β = 0.5
         set:
           rules.alpha: 0.8
@@ -84,7 +90,7 @@ columns:
   - reachTarget
 question: With length growth 3 and everything else as the default graph, how does what each society
   achieves grow with its budget?
-compare: three societies × budgets 50 to 102400
+compare: four societies × budgets 50 to 102400
 fixed: a generated idea graph (6 levels × 8 ideas, 2 parents each, sequences of 3 bits growing by 3
   per level, composition 0.7), 12 identical agents, budget 50 split equally, no mint, no validation
 tags:

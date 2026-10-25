@@ -1,0 +1,51 @@
+{
+ "id": "scaling-across-difficulty-f-1",
+ "kind": "simulation",
+ "date": "2026-10-25",
+ "ranAt": "2026-10-25T02:43:16.172Z",
+ "title": "Scaling across difficulty, with f = 1",
+ "design": {
+  "question": "As difficulty, with f = 1 changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?",
+  "compare": "6 societies on 2 difficulties (default, hard)",
+  "fixed": "the simple model: 12 identical agents, equal money each round, no mint, no validation",
+  "measure": "money needed to solve half the targets",
+  "better": "lower",
+  "runs": "from the sweeps tagged \"f 1\""
+ },
+ "answer": "To solve half the targets, traditional needs 1.8× to 6.3× the money OSO needs. By difficulty: default 6.3×, hard 1.8×.",
+ "table": [
+  {
+   "difficulty": "default",
+   "Traditional (α = 1, β = 0)": "1,798",
+   "OSO (α = 0.8, β = 1)": "286",
+   "OSO (α = 0.2, β = 1)": "272",
+   "OSO (α = 0, β = 1)": "525",
+   "α = 0.8, β = 0.5": "482",
+   "α = 1, β = 1": "331",
+   "traditional ÷ OSO": "6.3×"
+  },
+  {
+   "difficulty": "hard",
+   "Traditional (α = 1, β = 0)": "13,432",
+   "OSO (α = 0.8, β = 1)": "7,478",
+   "OSO (α = 0.2, β = 1)": "6,662",
+   "OSO (α = 0, β = 1)": "13,162",
+   "α = 0.8, β = 0.5": "7,645",
+   "α = 1, β = 1": "7,156",
+   "traditional ÷ OSO": "1.8×"
+  }
+ ],
+ "caveats": [
+  "Read off between the two budgets that bracket half the targets, in log budget.",
+  "Each difficulty has its own budget range; \"> x\" means not reached within it."
+ ],
+ "page": "results/scaling-across-difficulty-f-1/summary.md",
+ "chart": "results/scaling-across-difficulty-f-1/figures/compare.svg",
+ "tags": [
+  "scaling",
+  "scaling law",
+  "difficulty",
+  "f 1",
+  "analysis"
+ ]
+}

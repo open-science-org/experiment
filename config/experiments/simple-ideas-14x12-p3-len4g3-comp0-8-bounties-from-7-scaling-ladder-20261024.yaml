@@ -52,6 +52,12 @@ factors:
           rules.visibility:
             kind: chance
             beta: 1
+      - label: OSO (α = 0.2, β = 1)
+        set:
+          rules.alpha: 0.2
+          rules.visibility:
+            kind: chance
+            beta: 1
       - label: α = 0.8, β = 0.5
         set:
           rules.alpha: 0.8
@@ -86,7 +92,7 @@ columns:
   - reachTarget
 question: On a very hard idea graph, how does what each society achieves grow with its budget (1250
   to 160000)?
-compare: four societies × budgets 1250, 2500, 5000, 10000, 20000, 40000, 80000, 160000
+compare: five societies × budgets 1250, 2500, 5000, 10000, 20000, 40000, 80000, 160000
 fixed: a generated idea graph (14 levels × 12 ideas, 3 parents each, sequences of 4 bits growing by
   3 per level, composition 0.8), 12 identical agents, budget 1250 split equally, no mint, no
   validation

@@ -2,22 +2,22 @@
  "chart": "results/simple-ideas-14x12-p3-len4g3-comp0-8-bounties-from-7-scaling-ladder-20261024/figures/compare.svg",
  "id": "simple-ideas-14x12-p3-len4g3-comp0-8-bounties-from-7-scaling-ladder-20261024",
  "kind": "simulation",
- "date": "2026-10-24",
+ "date": "2026-10-25",
  "title": "Scaling: Very hard graph (14 × 12)",
  "design": {
   "question": "On a very hard idea graph, how does what each society achieves grow with its budget (1250 to 160000)?",
-  "compare": "four societies × budgets 1250, 2500, 5000, 10000, 20000, 40000, 80000, 160000",
+  "compare": "five societies × budgets 1250, 2500, 5000, 10000, 20000, 40000, 80000, 160000",
   "fixed": "a generated idea graph (14 levels × 12 ideas, 3 parents each, sequences of 4 bits growing by 3 per level, composition 0.8), 12 identical agents, budget 1250 split equally, no mint, no validation",
   "measure": "all of hardest level, targets solved, bounty value, ROI, money to the main level, waste",
   "better": "higher",
   "runs": "30 runs per row"
  },
- "answer": "At budget 1250: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved and waste; no clear difference on bounty value and ROI. At budget 2500: best α = 1, β = 1. Against traditional, clearly better on hardest level, targets solved, bounty value, ROI and waste. At budgets 5000–10000: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI and waste. At budget 20000: best α = 1, β = 1. Against traditional, clearly better on hardest level, targets solved, bounty value, ROI and waste. At budget 40000: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI and waste. At budget 80000: best α = 1, β = 1. Against traditional, clearly better on hardest level, targets solved, bounty value, ROI and waste; no clear difference on money to the main level. At budget 160000: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, money to the main level and waste. (Compared at each budget; 6 measures, a clear difference is more than 2.6 standard errors.)",
+ "answer": "At budget 1250: best OSO (α = 0.2, β = 1). Against traditional, clearly better on hardest level and waste; no clear difference on targets solved, bounty value and ROI. At budget 2500: best α = 1, β = 1. Against traditional, clearly better on hardest level, targets solved, bounty value, ROI and waste. At budgets 5000–10000: best OSO (α = 0.2, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI and waste. At budget 20000: best α = 1, β = 1. Against traditional, clearly better on hardest level, targets solved, bounty value, ROI and waste. At budget 40000: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI and waste. At budget 80000: best α = 1, β = 1. Against traditional, clearly better on hardest level, targets solved, bounty value, ROI and waste; no clear difference on money to the main level. At budget 160000: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, money to the main level and waste. (Compared at each budget; 6 measures, a clear difference is more than 2.6 standard errors.)",
  "answers": [
-  "Budget 1250: hardest level: 6.80 against traditional 0.00, clearly better. targets solved: 0.20 against traditional 0.00, clearly better.",
+  "Budget 1250: hardest level: 7.03 against traditional 0.00, clearly better. targets solved: 0.17 against traditional 0.00, no clear difference.",
   "Budget 2500: hardest level: 8.57 against traditional 0.00, clearly better. targets solved: 1.27 against traditional 0.00, clearly better.",
   "Budget 5000: hardest level: 10 against traditional 0.00, clearly better. targets solved: 3.23 against traditional 0.00, clearly better.",
-  "Budget 10000: hardest level: 11 against traditional 1.97, clearly better. targets solved: 5.70 against traditional 0.40, clearly better.",
+  "Budget 10000: hardest level: 12 against traditional 1.97, clearly better. targets solved: 5.87 against traditional 0.40, clearly better.",
   "Budget 20000: hardest level: 13 against traditional 7.13, clearly better. targets solved: 9.30 against traditional 2.23, clearly better.",
   "Budget 40000: hardest level: 14 against traditional 9.73, clearly better. targets solved: 12 against traditional 5.67, clearly better.",
   "Budget 80000: hardest level: 14 against traditional 11, clearly better. targets solved: 15 against traditional 8.53, clearly better.",
@@ -183,6 +183,86 @@
    "ROI (value per spend)": "1.35 ± 0.76",
    "cost": "39682 ± 23201",
    "waste": "0.24 ± 0.04"
+  },
+  {
+   "society": "OSO (α = 0.2, β = 1)",
+   "budget": 1250,
+   "frontier": "7.0 ± 0.9",
+   "targets solved": "0.2 ± 0.4",
+   "value gained": "51 ± 124",
+   "ROI (value per spend)": "0.04 ± 0.10",
+   "cost": "–",
+   "waste": "0.04 ± 0.01"
+  },
+  {
+   "society": "OSO (α = 0.2, β = 1)",
+   "budget": 2500,
+   "frontier": "8.5 ± 0.8",
+   "targets solved": "1.4 ± 1.1",
+   "value gained": "572 ± 536",
+   "ROI (value per spend)": "0.23 ± 0.21",
+   "cost": "–",
+   "waste": "0.05 ± 0.02"
+  },
+  {
+   "society": "OSO (α = 0.2, β = 1)",
+   "budget": 5000,
+   "frontier": "10.3 ± 0.8",
+   "targets solved": "3.2 ± 1.6",
+   "value gained": "2116 ± 1923",
+   "ROI (value per spend)": "0.42 ± 0.39",
+   "cost": "–",
+   "waste": "0.08 ± 0.02"
+  },
+  {
+   "society": "OSO (α = 0.2, β = 1)",
+   "budget": 10000,
+   "frontier": "11.7 ± 0.7",
+   "targets solved": "5.9 ± 1.5",
+   "value gained": "7450 ± 6277",
+   "ROI (value per spend)": "0.75 ± 0.63",
+   "cost": "–",
+   "waste": "0.11 ± 0.03"
+  },
+  {
+   "society": "OSO (α = 0.2, β = 1)",
+   "budget": 20000,
+   "frontier": "13.0 ± 0.6",
+   "targets solved": "9.4 ± 1.5",
+   "value gained": "24892 ± 16001",
+   "ROI (value per spend)": "1.25 ± 0.80",
+   "cost": "16116 ± 2408",
+   "waste": "0.15 ± 0.04"
+  },
+  {
+   "society": "OSO (α = 0.2, β = 1)",
+   "budget": 40000,
+   "frontier": "13.6 ± 0.5",
+   "targets solved": "12.5 ± 1.5",
+   "value gained": "67311 ± 29008",
+   "ROI (value per spend)": "1.68 ± 0.73",
+   "cost": "26275 ± 6633",
+   "waste": "0.20 ± 0.03"
+  },
+  {
+   "society": "OSO (α = 0.2, β = 1)",
+   "budget": 80000,
+   "frontier": "14.0 ± 0.2",
+   "targets solved": "14.8 ± 1.4",
+   "value gained": "103731 ± 28410",
+   "ROI (value per spend)": "1.57 ± 0.77",
+   "cost": "35234 ± 13239",
+   "waste": "0.24 ± 0.05"
+  },
+  {
+   "society": "OSO (α = 0.2, β = 1)",
+   "budget": 160000,
+   "frontier": "14.0 ± 0.0",
+   "targets solved": "15.5 ± 0.8",
+   "value gained": "118750 ± 21008",
+   "ROI (value per spend)": "1.32 ± 0.70",
+   "cost": "34127 ± 16218",
+   "waste": "0.23 ± 0.04"
   },
   {
    "society": "α = 0.8, β = 0.5",
@@ -363,5 +443,5 @@
   "scaling ladder 2026-10-24",
   "difficulty very hard"
  ],
- "ranAt": "2026-10-24T19:17:57.417Z"
+ "ranAt": "2026-10-25T02:27:08.736Z"
 }

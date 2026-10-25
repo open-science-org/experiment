@@ -1,0 +1,1192 @@
+{
+  "experiment": "simple-ideas-10x10-p2-5-len4g3-comp0-7-bounties-from-5-f0-5-scaling-20261024",
+  "date": "2026-10-25",
+  "commit": "f922dc5",
+  "dirty": true,
+  "command": "npm run sim -- simple-ideas-10x10-p2-5-len4g3-comp0-7-bounties-from-5-f0-5-scaling-20261024 --seeds 30 --save",
+  "seeds": 30,
+  "overrides": {},
+  "config": {
+    "experiment": {
+      "id": "simple-ideas-10x10-p2-5-len4g3-comp0-7-bounties-from-5-f0-5-scaling-20261024",
+      "title": "Scaling with earnings shaping next round's money (f = 0.5): Hard graph (10 × 10)",
+      "description": "The simple model on a generated idea graph (10 levels × 10 ideas, 2.5 parents each, sequences of 4 bits growing by 3 per level, composition 0.7); each run draws its own graph. Only α and β vary. Held fixed: 12 identical agents, a budget of 750 split equally every round (f = 0), no mint, no validation.",
+      "seeds": 30,
+      "set": {
+        "world": {
+          "kind": "ideas",
+          "levels": 10,
+          "width": 10,
+          "parents": 2.5,
+          "skip": 0.2,
+          "length": 4,
+          "lengthGrowth": 3,
+          "composition": 0.7,
+          "targets": 2,
+          "targetsFrom": 5
+        },
+        "budget": {
+          "X": 750,
+          "allocation": {
+            "rho": 0.5
+          }
+        },
+        "measures": {
+          "targetLevel": 10
+        },
+        "rules": {
+          "c": 0,
+          "mint": 0,
+          "screen": 0
+        },
+        "agents": {
+          "mix": {
+            "foundation": 0,
+            "racer": 0,
+            "explorer": 0,
+            "specialist": 0,
+            "freeRider": 0,
+            "gamer": 0,
+            "plain": 12
+          }
+        }
+      },
+      "factors": [
+        {
+          "name": "society",
+          "levels": [
+            {
+              "label": "Traditional (α = 1, β = 0)",
+              "set": {
+                "rules.alpha": 1,
+                "rules.visibility": {
+                  "kind": "chance",
+                  "beta": 0
+                }
+              }
+            },
+            {
+              "label": "OSO (α = 0.8, β = 1)",
+              "set": {
+                "rules.alpha": 0.8,
+                "rules.visibility": {
+                  "kind": "chance",
+                  "beta": 1
+                }
+              }
+            },
+            {
+              "label": "OSO (α = 0.2, β = 1)",
+              "set": {
+                "rules.alpha": 0.2,
+                "rules.visibility": {
+                  "kind": "chance",
+                  "beta": 1
+                }
+              }
+            },
+            {
+              "label": "OSO (α = 0, β = 1)",
+              "set": {
+                "rules.alpha": 0,
+                "rules.visibility": {
+                  "kind": "chance",
+                  "beta": 1
+                }
+              }
+            },
+            {
+              "label": "α = 0.8, β = 0.5",
+              "set": {
+                "rules.alpha": 0.8,
+                "rules.visibility": {
+                  "kind": "chance",
+                  "beta": 0.5
+                }
+              }
+            },
+            {
+              "label": "α = 1, β = 1",
+              "set": {
+                "rules.alpha": 1,
+                "rules.visibility": {
+                  "kind": "chance",
+                  "beta": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "budget",
+          "path": "budget.X",
+          "values": [
+            750,
+            1500,
+            3000,
+            6000,
+            12000,
+            24000,
+            48000,
+            96000
+          ]
+        }
+      ],
+      "columns": [
+        "frontier",
+        "targetsSolved",
+        "value",
+        "roi",
+        "cost",
+        "waste",
+        "sharing",
+        "reachTarget"
+      ],
+      "question": "When half of next round's research money follows this round's earnings (f = 0.5), does α (flow-back) change how each society scales on the hard graph?",
+      "compare": "six societies (α = 1, 0.8, 0.2, 0 and half-open) × budgets 750 to 96000",
+      "fixed": "a generated idea graph (10 levels × 10 ideas, 2.5 parents each, sequences of 4 bits growing by 3 per level, composition 0.7), 12 identical agents, budget 750 split equally, no mint, no validation",
+      "tags": [
+        "simulation",
+        "simple model",
+        "generated idea graph",
+        "ideas",
+        "levels 10",
+        "parents 2.5",
+        "length 4",
+        "composition 0.7",
+        "alpha",
+        "beta",
+        "earnings shape money 2026-10-24",
+        "f 0.5",
+        "difficulty hard"
+      ]
+    },
+    "base": {
+      "world": {
+        "kind": "ideas",
+        "levels": 10,
+        "width": 10,
+        "parents": 2.5,
+        "skip": 0.2,
+        "length": 4,
+        "lengthGrowth": 3,
+        "composition": 0.7,
+        "targets": 2,
+        "targetsFrom": 5
+      },
+      "success": {
+        "p0": 0.5,
+        "eta": 0.6,
+        "oracle": {
+          "kind": "chance"
+        }
+      },
+      "attribution": {
+        "noise": 0
+      },
+      "agents": {
+        "archetypes": {
+          "plain": {
+            "skill": 1,
+            "conjecture": 1,
+            "cost": 1,
+            "horizon": 1,
+            "risk": 0,
+            "reuse": 1,
+            "sharing": 0,
+            "gaming": 0,
+            "specialist": false
+          },
+          "foundation": {
+            "skill": 1,
+            "conjecture": 0.7,
+            "cost": 1,
+            "horizon": 0.98,
+            "risk": 0.2,
+            "reuse": 0.9,
+            "sharing": 0.5,
+            "gaming": 0,
+            "specialist": false
+          },
+          "racer": {
+            "skill": 1,
+            "conjecture": 0.5,
+            "cost": 1,
+            "horizon": 0.85,
+            "risk": -0.2,
+            "reuse": 0.6,
+            "sharing": 0,
+            "gaming": 0,
+            "specialist": false
+          },
+          "explorer": {
+            "skill": 0.5,
+            "conjecture": 0.3,
+            "cost": 0.3,
+            "horizon": 0.95,
+            "risk": 0,
+            "reuse": 0.8,
+            "sharing": 0.2,
+            "gaming": 0,
+            "specialist": false
+          },
+          "specialist": {
+            "skill": 1,
+            "conjecture": 0.6,
+            "cost": 1,
+            "horizon": 0.95,
+            "risk": 0,
+            "reuse": 0.8,
+            "sharing": 0.2,
+            "gaming": 0,
+            "specialist": true
+          },
+          "freeRider": {
+            "skill": 0.8,
+            "conjecture": 0.5,
+            "cost": 1,
+            "horizon": 0.9,
+            "risk": 0,
+            "reuse": 1,
+            "sharing": -1,
+            "gaming": 0,
+            "specialist": false
+          },
+          "gamer": {
+            "skill": 0.8,
+            "conjecture": 0.3,
+            "cost": 0.5,
+            "horizon": 0.9,
+            "risk": 0,
+            "reuse": 0.8,
+            "sharing": 0,
+            "gaming": 0.6,
+            "specialist": false
+          }
+        },
+        "mix": {
+          "foundation": 0,
+          "racer": 0,
+          "explorer": 0,
+          "specialist": 0,
+          "freeRider": 0,
+          "gamer": 0,
+          "plain": 12
+        },
+        "specialist": {
+          "boost": 1.6,
+          "penalty": 0.4
+        },
+        "deciders": {}
+      },
+      "rules": {
+        "alpha": 1,
+        "c": 0,
+        "mint": 0,
+        "screen": 0,
+        "publishFailures": false,
+        "visibility": {
+          "kind": "finished-only"
+        }
+      },
+      "knowledge": {
+        "absorbCost": 0,
+        "errorRate": 0
+      },
+      "budget": {
+        "X": 750,
+        "rounds": 120,
+        "perAgentPerRound": null,
+        "stopWhenSolved": true,
+        "allocation": {
+          "kind": "earnings-share",
+          "rho": 0.5,
+          "smoothing": 0.7
+        }
+      },
+      "behaviour": {
+        "decider": {
+          "kind": "formula"
+        },
+        "policy": {
+          "kind": "softmax",
+          "tau": 0.3,
+          "epsilon": 0.05
+        },
+        "perceptionNoise": 1,
+        "kappa": 1,
+        "psi": 0.5,
+        "roundsPerLevel": 5
+      },
+      "measures": {
+        "targetLevel": 10
+      }
+    },
+    "rows": [
+      {
+        "labels": {
+          "society": "Traditional (α = 1, β = 0)",
+          "budget": 750
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "chance",
+              "beta": 0
+            }
+          },
+          "budget": {
+            "X": 750
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "Traditional (α = 1, β = 0)",
+          "budget": 1500
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "chance",
+              "beta": 0
+            }
+          },
+          "budget": {
+            "X": 1500
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "Traditional (α = 1, β = 0)",
+          "budget": 3000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "chance",
+              "beta": 0
+            }
+          },
+          "budget": {
+            "X": 3000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "Traditional (α = 1, β = 0)",
+          "budget": 6000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "chance",
+              "beta": 0
+            }
+          },
+          "budget": {
+            "X": 6000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "Traditional (α = 1, β = 0)",
+          "budget": 12000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "chance",
+              "beta": 0
+            }
+          },
+          "budget": {
+            "X": 12000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "Traditional (α = 1, β = 0)",
+          "budget": 24000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "chance",
+              "beta": 0
+            }
+          },
+          "budget": {
+            "X": 24000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "Traditional (α = 1, β = 0)",
+          "budget": 48000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "chance",
+              "beta": 0
+            }
+          },
+          "budget": {
+            "X": 48000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "Traditional (α = 1, β = 0)",
+          "budget": 96000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "chance",
+              "beta": 0
+            }
+          },
+          "budget": {
+            "X": 96000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.8, β = 1)",
+          "budget": 750
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 750
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.8, β = 1)",
+          "budget": 1500
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 1500
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.8, β = 1)",
+          "budget": 3000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 3000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.8, β = 1)",
+          "budget": 6000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 6000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.8, β = 1)",
+          "budget": 12000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 12000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.8, β = 1)",
+          "budget": 24000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 24000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.8, β = 1)",
+          "budget": 48000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 48000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.8, β = 1)",
+          "budget": 96000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 96000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.2, β = 1)",
+          "budget": 750
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 750
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.2, β = 1)",
+          "budget": 1500
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 1500
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.2, β = 1)",
+          "budget": 3000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 3000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.2, β = 1)",
+          "budget": 6000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 6000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.2, β = 1)",
+          "budget": 12000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 12000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.2, β = 1)",
+          "budget": 24000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 24000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.2, β = 1)",
+          "budget": 48000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 48000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.2, β = 1)",
+          "budget": 96000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 96000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0, β = 1)",
+          "budget": 750
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 750
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0, β = 1)",
+          "budget": 1500
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 1500
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0, β = 1)",
+          "budget": 3000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 3000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0, β = 1)",
+          "budget": 6000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 6000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0, β = 1)",
+          "budget": 12000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 12000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0, β = 1)",
+          "budget": 24000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 24000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0, β = 1)",
+          "budget": 48000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 48000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0, β = 1)",
+          "budget": 96000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 96000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "α = 0.8, β = 0.5",
+          "budget": 750
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "chance",
+              "beta": 0.5
+            }
+          },
+          "budget": {
+            "X": 750
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "α = 0.8, β = 0.5",
+          "budget": 1500
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "chance",
+              "beta": 0.5
+            }
+          },
+          "budget": {
+            "X": 1500
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "α = 0.8, β = 0.5",
+          "budget": 3000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "chance",
+              "beta": 0.5
+            }
+          },
+          "budget": {
+            "X": 3000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "α = 0.8, β = 0.5",
+          "budget": 6000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "chance",
+              "beta": 0.5
+            }
+          },
+          "budget": {
+            "X": 6000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "α = 0.8, β = 0.5",
+          "budget": 12000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "chance",
+              "beta": 0.5
+            }
+          },
+          "budget": {
+            "X": 12000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "α = 0.8, β = 0.5",
+          "budget": 24000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "chance",
+              "beta": 0.5
+            }
+          },
+          "budget": {
+            "X": 24000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "α = 0.8, β = 0.5",
+          "budget": 48000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "chance",
+              "beta": 0.5
+            }
+          },
+          "budget": {
+            "X": 48000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "α = 0.8, β = 0.5",
+          "budget": 96000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "chance",
+              "beta": 0.5
+            }
+          },
+          "budget": {
+            "X": 96000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "α = 1, β = 1",
+          "budget": 750
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 750
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "α = 1, β = 1",
+          "budget": 1500
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 1500
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "α = 1, β = 1",
+          "budget": 3000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 3000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "α = 1, β = 1",
+          "budget": 6000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 6000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "α = 1, β = 1",
+          "budget": 12000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 12000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "α = 1, β = 1",
+          "budget": 24000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 24000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "α = 1, β = 1",
+          "budget": 48000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 48000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "α = 1, β = 1",
+          "budget": 96000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 96000
+          }
+        }
+      }
+    ]
+  }
+}

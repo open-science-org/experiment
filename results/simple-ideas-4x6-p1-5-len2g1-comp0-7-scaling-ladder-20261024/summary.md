@@ -33,6 +33,14 @@
 | OSO (α = 0.8, β = 1) | 800 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.72 ± 0.83 | 26 ± 15 | 0.28 ± 0.11 |
 | OSO (α = 0.8, β = 1) | 1600 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.72 ± 0.83 | 26 ± 15 | 0.28 ± 0.11 |
 | OSO (α = 0.8, β = 1) | 3200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.67 ± 0.68 | 30 ± 10 | 0.39 ± 0.15 |
+| OSO (α = 0.2, β = 1) | 25 | 3.3 ± 1.0 | 0.8 ± 0.8 | 25 ± 25 | 1.02 ± 1.03 | 19 ± 6 | 0.24 ± 0.13 |
+| OSO (α = 0.2, β = 1) | 50 | 3.8 ± 0.7 | 1.6 ± 0.7 | 52 ± 23 | 1.49 ± 0.83 | 25 ± 10 | 0.31 ± 0.13 |
+| OSO (α = 0.2, β = 1) | 100 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.66 ± 0.59 | 30 ± 16 | 0.33 ± 0.12 |
+| OSO (α = 0.2, β = 1) | 200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.66 ± 0.59 | 30 ± 16 | 0.33 ± 0.12 |
+| OSO (α = 0.2, β = 1) | 400 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.66 ± 0.59 | 30 ± 16 | 0.33 ± 0.12 |
+| OSO (α = 0.2, β = 1) | 800 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.66 ± 0.59 | 30 ± 16 | 0.33 ± 0.12 |
+| OSO (α = 0.2, β = 1) | 1600 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.66 ± 0.59 | 30 ± 16 | 0.33 ± 0.12 |
+| OSO (α = 0.2, β = 1) | 3200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.52 ± 0.61 | 31 ± 14 | 0.43 ± 0.13 |
 | α = 0.8, β = 0.5 | 25 | 3.0 ± 1.1 | 0.5 ± 0.6 | 16 ± 18 | 0.67 ± 0.76 | 18 ± 6 | 0.32 ± 0.13 |
 | α = 0.8, β = 0.5 | 50 | 3.7 ± 0.9 | 1.4 ± 0.7 | 45 ± 23 | 1.04 ± 0.63 | 29 ± 13 | 0.41 ± 0.10 |
 | α = 0.8, β = 0.5 | 100 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.25 ± 0.41 | 33 ± 18 | 0.45 ± 0.09 |
@@ -50,7 +58,7 @@
 | α = 1, β = 1 | 1600 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.77 ± 0.89 | 27 ± 14 | 0.28 ± 0.11 |
 | α = 1, β = 1 | 3200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.69 ± 0.66 | 29 ± 10 | 0.38 ± 0.13 |
 
-**Design** (fixed before the run): compared four societies × budgets 25, 50, 100, 200, 400, 800, 1600, 3200 · held the same: a generated idea graph (4 levels × 6 ideas, 1.5 parents each, sequences of 2 bits growing by 1 per level, composition 0.7), 12 identical agents, budget 25 split equally, no mint, no validation · measure: all of hardest level, targets solved, bounty value, ROI, money to the main level, waste · 30 runs per row.
+**Design** (fixed before the run): compared five societies × budgets 25, 50, 100, 200, 400, 800, 1600, 3200 · held the same: a generated idea graph (4 levels × 6 ideas, 1.5 parents each, sequences of 2 bits growing by 1 per level, composition 0.7), 12 identical agents, budget 25 split equally, no mint, no validation · measure: all of hardest level, targets solved, bounty value, ROI, money to the main level, waste · 30 runs per row.
 
 **Caveats:**
 - A simulation with guessed parameters: it shows how the rules play out, not that they work.
@@ -79,6 +87,14 @@ Values are mean ± standard deviation over runs.
 | OSO (α = 0.8, β = 1) | 800 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.72 ± 0.83 | 26 ± 15 | 0.28 ± 0.11 | 1.00 ± 0.00 | 1.00 |
 | OSO (α = 0.8, β = 1) | 1600 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.72 ± 0.83 | 26 ± 15 | 0.28 ± 0.11 | 1.00 ± 0.00 | 1.00 |
 | OSO (α = 0.8, β = 1) | 3200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.67 ± 0.68 | 30 ± 10 | 0.39 ± 0.15 | 1.00 ± 0.00 | 1.00 |
+| OSO (α = 0.2, β = 1) | 25 | 3.3 ± 1.0 | 0.8 ± 0.8 | 25 ± 25 | 1.02 ± 1.03 | 19 ± 6 | 0.24 ± 0.13 | 1.00 ± 0.00 | 0.60 |
+| OSO (α = 0.2, β = 1) | 50 | 3.8 ± 0.7 | 1.6 ± 0.7 | 52 ± 23 | 1.49 ± 0.83 | 25 ± 10 | 0.31 ± 0.13 | 1.00 ± 0.00 | 0.87 |
+| OSO (α = 0.2, β = 1) | 100 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.66 ± 0.59 | 30 ± 16 | 0.33 ± 0.12 | 1.00 ± 0.00 | 1.00 |
+| OSO (α = 0.2, β = 1) | 200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.66 ± 0.59 | 30 ± 16 | 0.33 ± 0.12 | 1.00 ± 0.00 | 1.00 |
+| OSO (α = 0.2, β = 1) | 400 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.66 ± 0.59 | 30 ± 16 | 0.33 ± 0.12 | 1.00 ± 0.00 | 1.00 |
+| OSO (α = 0.2, β = 1) | 800 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.66 ± 0.59 | 30 ± 16 | 0.33 ± 0.12 | 1.00 ± 0.00 | 1.00 |
+| OSO (α = 0.2, β = 1) | 1600 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.66 ± 0.59 | 30 ± 16 | 0.33 ± 0.12 | 1.00 ± 0.00 | 1.00 |
+| OSO (α = 0.2, β = 1) | 3200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.52 ± 0.61 | 31 ± 14 | 0.43 ± 0.13 | 1.00 ± 0.00 | 1.00 |
 | α = 0.8, β = 0.5 | 25 | 3.0 ± 1.1 | 0.5 ± 0.6 | 16 ± 18 | 0.67 ± 0.76 | 18 ± 6 | 0.32 ± 0.13 | 0.54 ± 0.26 | 0.50 |
 | α = 0.8, β = 0.5 | 50 | 3.7 ± 0.9 | 1.4 ± 0.7 | 45 ± 23 | 1.04 ± 0.63 | 29 ± 13 | 0.41 ± 0.10 | 0.56 ± 0.22 | 0.90 |
 | α = 0.8, β = 0.5 | 100 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.25 ± 0.41 | 33 ± 18 | 0.45 ± 0.09 | 0.58 ± 0.18 | 1.00 |
@@ -96,6 +112,6 @@ Values are mean ± standard deviation over runs.
 | α = 1, β = 1 | 1600 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.77 ± 0.89 | 27 ± 14 | 0.28 ± 0.11 | 1.00 ± 0.00 | 1.00 |
 | α = 1, β = 1 | 3200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 1.69 ± 0.66 | 29 ± 10 | 0.38 ± 0.13 | 1.00 ± 0.00 | 1.00 |
 
-Code: commit `a919c05` (with uncommitted changes). Experiment: [config/experiments/simple-ideas-4x6-p1-5-len2g1-comp0-7-scaling-ladder-20261024.yaml](../../config/experiments/simple-ideas-4x6-p1-5-len2g1-comp0-7-scaling-ladder-20261024.yaml). Command: `npm run sim -- simple-ideas-4x6-p1-5-len2g1-comp0-7-scaling-ladder-20261024 --seeds 30 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `9a11c8a` (with uncommitted changes). Experiment: [config/experiments/simple-ideas-4x6-p1-5-len2g1-comp0-7-scaling-ladder-20261024.yaml](../../config/experiments/simple-ideas-4x6-p1-5-len2g1-comp0-7-scaling-ladder-20261024.yaml). Command: `npm run sim -- simple-ideas-4x6-p1-5-len2g1-comp0-7-scaling-ladder-20261024 --seeds 30 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

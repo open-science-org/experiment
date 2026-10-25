@@ -1,7 +1,7 @@
 {
   "experiment": "simple-ideas-10x10-p2-5-len4g3-comp0-7-bounties-from-5-scaling-ladder-20261024",
-  "date": "2026-10-24",
-  "commit": "a919c05",
+  "date": "2026-10-25",
+  "commit": "9a11c8a",
   "dirty": true,
   "command": "npm run sim -- simple-ideas-10x10-p2-5-len4g3-comp0-7-bounties-from-5-scaling-ladder-20261024 --seeds 30 --save",
   "seeds": 30,
@@ -76,6 +76,16 @@
               }
             },
             {
+              "label": "OSO (α = 0.2, β = 1)",
+              "set": {
+                "rules.alpha": 0.2,
+                "rules.visibility": {
+                  "kind": "chance",
+                  "beta": 1
+                }
+              }
+            },
+            {
               "label": "α = 0.8, β = 0.5",
               "set": {
                 "rules.alpha": 0.8,
@@ -123,7 +133,7 @@
         "reachTarget"
       ],
       "question": "On a hard idea graph, how does what each society achieves grow with its budget (750 to 96000)?",
-      "compare": "four societies × budgets 750, 1500, 3000, 6000, 12000, 24000, 48000, 96000",
+      "compare": "five societies × budgets 750, 1500, 3000, 6000, 12000, 24000, 48000, 96000",
       "fixed": "a generated idea graph (10 levels × 10 ideas, 2.5 parents each, sequences of 4 bits growing by 3 per level, composition 0.7), 12 identical agents, budget 750 split equally, no mint, no validation",
       "tags": [
         "simulation",
@@ -580,6 +590,150 @@
         "overrides": {
           "rules": {
             "alpha": 0.8,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 96000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.2, β = 1)",
+          "budget": 750
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 750
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.2, β = 1)",
+          "budget": 1500
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 1500
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.2, β = 1)",
+          "budget": 3000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 3000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.2, β = 1)",
+          "budget": 6000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 6000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.2, β = 1)",
+          "budget": 12000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 12000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.2, β = 1)",
+          "budget": 24000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 24000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.2, β = 1)",
+          "budget": 48000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "chance",
+              "beta": 1
+            }
+          },
+          "budget": {
+            "X": 48000
+          }
+        }
+      },
+      {
+        "labels": {
+          "society": "OSO (α = 0.2, β = 1)",
+          "budget": 96000
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
             "visibility": {
               "kind": "chance",
               "beta": 1

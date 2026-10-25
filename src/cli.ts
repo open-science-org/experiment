@@ -69,7 +69,7 @@ if (target === 'ladder') {
   if (!second) throw new Error('usage: npm run sim -- ladder "<tag of the sweeps>"');
   const { writeLadder } = await import('./report/ladder.ts');
   const what = args[args.indexOf('--what') + 1] && args.includes('--what') ? args[args.indexOf('--what') + 1] : 'difficulty';
-  console.log(`${writeLadder(second, what === 'difficulty' ? ['easy', 'default', 'medium', 'hard', 'very hard'] : [], what)}/summary.md`);
+  console.log(`${writeLadder(second, ['easy', 'default', 'medium', 'hard', 'very hard'], what)}/summary.md`);
   process.exit(0);
 }
 
