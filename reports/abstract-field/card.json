@@ -1,11 +1,11 @@
 {
- "ranAt": "2026-10-25T03:23:13.511Z",
+ "ranAt": "2026-10-25T03:30:52.281Z",
  "id": "abstract-field",
  "kind": "field report",
  "date": "2026-10-25",
- "title": "An abstract research field",
+ "title": "Example: a deep, wide field",
  "design": {
-  "question": "For the same money, does OSO get further than traditional research in an abstract research field?",
+  "question": "For the same money, does OSO get further than traditional research in Example: a deep, wide field?",
   "compare": "the six rule settings, an α sweep, the parameters one by one, costly and fallible sharing",
   "fixed": "the field, 12 agents and a budget of 800",
   "measure": "hardest level reached",

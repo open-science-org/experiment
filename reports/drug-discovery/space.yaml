@@ -1,7 +1,7 @@
 id: drug-discovery
-title: Early-stage drug discovery
-summary: Six stages from biology to a development candidate; each stage reuses only part of the
-  evidence before it, and three candidates carry bounties.
+title: "Example: narrow stages (drug discovery story)"
+summary: "An example setting of the idea graph generator, told as drug discovery but not measured
+  from it: six stages, each reusing only part of the evidence before it; three bounties."
 description: Early-stage drug discovery. Validated biology (a disease mechanism) supports target
   identification; targets support screening assays; assays find hits; hits are optimized into leads;
   and a lead with enough evidence becomes a development candidate. Each stage is much harder than

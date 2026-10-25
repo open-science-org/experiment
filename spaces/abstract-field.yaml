@@ -1,6 +1,6 @@
 id: abstract-field
-title: An abstract research field
-summary: 'A generic field: 80 ideas in 8 levels, about two parents each, four bounties at the top.'
+title: "Example: a deep, wide field"
+summary: "An example setting of the idea graph generator, not a real field: 80 ideas in 8 levels, about two parents each, four bounties at the top."
 description: >-
   A research field with no particular subject. Ideas build on ideas in eight levels of rising
   difficulty, each idea taking most of its content from about two earlier ones. Four ideas at the top

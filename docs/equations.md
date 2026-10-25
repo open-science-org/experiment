@@ -187,15 +187,15 @@ $$\phi_{y \to x} = \sum_{b \,\in\, \text{bits}(x) \cap \text{bits}(y)} \frac{1}{
 
 *Example:* $y$ = HHT and $x$ = HHTHHH ($x$ took all 3 of $y$'s bits and added 3). From scratch, $W_x = 2^6 = 64$ attempts; knowing $y$, $W_x = 2^3 = 8$. If $x$ instead has two parents HHTH and THHH that overlap in TH, each resolves 4 of $x$'s 6 bits; the 2 shared bits are split, so each contributes $2 + 1 = 3$: weights 50% each.
 
-**Presets.** Three named settings of the generator, each with its story (description and glossary) and a full report on the Results page:
+**Example presets.** Three named settings of the generator, each told as a story (description and glossary), with a full report on the Results page. They are **examples, not evidence about real fields**: the numbers were chosen by hand to fit each story, not measured. The scaling runs are the systematic test; a preset becomes evidence only once its settings come from a field's data.
 
-| Preset | Levels × width | Parents | Length, growth | Composition | Why |
+| Example | Levels × width | Parents | Length, growth | Composition | What it shows |
 | --- | --- | --- | --- | --- | --- |
-| Abstract research field | 8 × 10 | 2 | 2, +1.5 | 0.7 | a generic, deep and wide field |
-| Early-stage drug discovery | 6 × 9 | 1.5 | 2, +2 | 0.5 | each stage reuses only part of the evidence before it; many dead ends |
-| Solid-state battery | 5 × 4 | 2.5 | 3, +2 | 0.8 | a small field where ideas lean heavily on what came before |
+| A deep, wide field | 8 × 10 | 2 | 2, +1.5 | 0.7 | a generic field with many levels |
+| Narrow stages (drug discovery story) | 6 × 9 | 1.5 | 2, +2 | 0.5 | each stage reuses only part of the evidence before it; many dead ends |
+| Small and tightly linked (battery story) | 5 × 4 | 2.5 | 3, +2 | 0.8 | few ideas, each leaning heavily on several earlier ones |
 
-Their numbers are illustrative, not measured from the fields. Reports made before October 24 used hand-written graphs; they are kept as earlier versions.
+Reports made before October 24 used hand-written graphs; they are kept as earlier versions.
 
 **What the controls do** (12 identical agents, 10 runs; level reached of 6): with the defaults, traditional reaches 1.2 and OSO 6.0. Lower composition (0.2) makes parents help little, and even OSO stalls at 3.9; higher composition (0.95) makes parents do most of the work, and traditional reaches 5.4, because an agent's own private ideas help it too. Longer sequences, more parents or more levels make it harder for traditional much faster than for OSO.
 

@@ -1,8 +1,8 @@
 {
  "headline": {
   "id": "drug-discovery",
-  "title": "Early-stage drug discovery",
-  "summary": "Six stages from biology to a development candidate; each stage reuses only part of the evidence before it, and three candidates carry bounties.",
+  "title": "Example: narrow stages (drug discovery story)",
+  "summary": "An example setting of the idea graph generator, told as drug discovery but not measured from it: six stages, each reusing only part of the evidence before it; three bounties.",
   "verdict": "OSO ahead",
   "maxLevel": 6,
   "targetLevel": 6,
@@ -122,7 +122,7 @@
    }
   ],
   "seeds": 100,
-  "commit": "6c36cb0",
+  "commit": "7ca67c9+",
   "date": "2026-10-25"
  },
  "settings": [

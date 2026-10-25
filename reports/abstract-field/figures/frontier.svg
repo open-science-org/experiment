@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" class="viz" viewBox="0 0 760 420" width="760" height="420" role="img" aria-label="How far each community got for the money: An abstract research field">
+<svg xmlns="http://www.w3.org/2000/svg" class="viz" viewBox="0 0 760 420" width="760" height="420" role="img" aria-label="How far each community got for the money: Example: a deep, wide field">
 <style>
   .viz { --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --grid: #e6e5e1;
          --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --dead: #c9c7c0; }
@@ -20,7 +20,7 @@
   .label { font-size: 12px; font-weight: 700; }
   .t1 { fill: var(--s1); } .t2 { fill: var(--s2); } .t3 { fill: var(--s3); }
 </style><rect class="bg" width="760" height="420" rx="8"/>
-<text class="title" x="64" y="30">How far each community got for the money: An abstract research field</text>
+<text class="title" x="64" y="30">How far each community got for the money: Example: a deep, wide field</text>
 <text class="sub" x="64" y="50">Mean hardest level published, by money spent (100 runs per setting). Higher is better.</text>
 <line class="line c2" x1="64" y1="70" x2="82" y2="70"/><text class="label t2" x="88" y="74">OSO (immediate)</text>
 <line class="line c1" x1="197" y1="70" x2="215" y2="70"/><text class="label t1" x="221" y="74">Traditional</text>

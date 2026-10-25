@@ -1,8 +1,8 @@
 {
  "headline": {
   "id": "abstract-field",
-  "title": "An abstract research field",
-  "summary": "A generic field: 80 ideas in 8 levels, about two parents each, four bounties at the top.",
+  "title": "Example: a deep, wide field",
+  "summary": "An example setting of the idea graph generator, not a real field: 80 ideas in 8 levels, about two parents each, four bounties at the top.",
   "verdict": "OSO ahead",
   "maxLevel": 8,
   "targetLevel": 8,
@@ -122,7 +122,7 @@
    }
   ],
   "seeds": 100,
-  "commit": "3d52dde",
+  "commit": "7ca67c9+",
   "date": "2026-10-25"
  },
  "settings": [

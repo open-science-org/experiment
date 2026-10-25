@@ -1,10 +1,10 @@
-# An abstract research field
+# Example: a deep, wide field
 
-**Question:** For the same money, does OSO get further than traditional research in an abstract research field?
+**Question:** For the same money, does OSO get further than traditional research in Example: a deep, wide field?
 
 **Answer:** OSO ahead: level 8.0 against 1.5 of 8; targets 3.4 against 0.3 of 4; ROI 2.73 against 0.17.
 
-![An abstract research field](figures/frontier.svg)
+![Example: a deep, wide field](figures/frontier.svg)
 
 | rules | hardest level | targets solved | cost to level 8 | ROI |
 | --- | --- | --- | --- | --- |

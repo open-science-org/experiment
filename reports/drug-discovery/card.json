@@ -1,11 +1,11 @@
 {
- "ranAt": "2026-10-25T03:14:09.110Z",
+ "ranAt": "2026-10-25T03:30:52.281Z",
  "id": "drug-discovery",
  "kind": "field report",
  "date": "2026-10-25",
- "title": "Early-stage drug discovery",
+ "title": "Example: narrow stages (drug discovery story)",
  "design": {
-  "question": "For the same money, does OSO get further than traditional research in Early-stage drug discovery?",
+  "question": "For the same money, does OSO get further than traditional research in Example: narrow stages (drug discovery story)?",
   "compare": "the six rule settings, an α sweep, the parameters one by one, costly and fallible sharing",
   "fixed": "the field, 12 agents and a budget of 1350",
   "measure": "hardest level reached",

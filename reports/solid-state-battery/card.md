@@ -1,10 +1,10 @@
-# A solid-state battery
+# Example: small and tightly linked (battery story)
 
-**Question:** For the same money, does OSO get further than traditional research in a solid-state battery?
+**Question:** For the same money, does OSO get further than traditional research in Example: small and tightly linked (battery story)?
 
 **Answer:** OSO ahead: level 5.0 against 1.6 of 5; targets 1.9 against 0.4 of 2; ROI 5.36 against 0.74.
 
-![A solid-state battery](figures/frontier.svg)
+![Example: small and tightly linked (battery story)](figures/frontier.svg)
 
 | rules | hardest level | targets solved | cost to level 5 | ROI |
 | --- | --- | --- | --- | --- |

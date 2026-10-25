@@ -1,10 +1,10 @@
-# Early-stage drug discovery
+# Example: narrow stages (drug discovery story)
 
-**Question:** For the same money, does OSO get further than traditional research in Early-stage drug discovery?
+**Question:** For the same money, does OSO get further than traditional research in Example: narrow stages (drug discovery story)?
 
 **Answer:** OSO ahead: level 6.0 against 2.2 of 6; targets 2.8 against 0.5 of 3; ROI 1.43 against 0.18.
 
-![Early-stage drug discovery](figures/frontier.svg)
+![Example: narrow stages (drug discovery story)](figures/frontier.svg)
 
 | rules | hardest level | targets solved | cost to level 6 | ROI |
 | --- | --- | --- | --- | --- |

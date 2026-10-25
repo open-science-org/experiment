@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" class="viz" viewBox="0 0 830 536" width="830" height="536" role="img" aria-label="The research tree: Early-stage drug discovery">
+<svg xmlns="http://www.w3.org/2000/svg" class="viz" viewBox="0 0 830 536" width="830" height="536" role="img" aria-label="The research tree: Example: narrow stages (drug discovery story)">
 <style>
   .viz { --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --grid: #e6e5e1;
          --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --dead: #c9c7c0; }
@@ -20,7 +20,7 @@
   .label { font-size: 12px; font-weight: 700; }
   .t1 { fill: var(--s1); } .t2 { fill: var(--s2); } .t3 { fill: var(--s3); }
 </style><rect class="bg" width="830" height="536" rx="8"/>
-<text class="title" x="20" y="30">The research tree: Early-stage drug discovery</text>
+<text class="title" x="20" y="30">The research tree: Example: narrow stages (drug discovery story)</text>
 <text class="sub" x="20" y="50">54 ideas · 3 targets · 23 dead ends · columns are levels (deeper to the right); lines join an idea to what it builds on</text>
 <text class="tick" x="70" y="70" text-anchor="middle">level 1</text>
 <text class="tick" x="70" y="84" text-anchor="middle">p ≈ 25.0%</text>

@@ -1,8 +1,8 @@
 {
  "headline": {
   "id": "solid-state-battery",
-  "title": "A solid-state battery",
-  "summary": "A small field of 20 ideas, from electrolyte chemistry to a working cell, where each idea leans heavily on earlier ones; two bounties.",
+  "title": "Example: small and tightly linked (battery story)",
+  "summary": "An example setting of the idea graph generator, told as a battery but not measured from it: 20 ideas, each leaning heavily on several earlier ones; two bounties.",
   "verdict": "OSO ahead",
   "maxLevel": 5,
   "targetLevel": 5,
@@ -122,7 +122,7 @@
    }
   ],
   "seeds": 100,
-  "commit": "6c36cb0",
+  "commit": "7ca67c9+",
   "date": "2026-10-25"
  },
  "settings": [

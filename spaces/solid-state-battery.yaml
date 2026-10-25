@@ -1,6 +1,6 @@
 id: solid-state-battery
-title: A solid-state battery
-summary: A small field of 20 ideas, from electrolyte chemistry to a working cell, where each idea leans heavily on earlier ones; two bounties.
+title: "Example: small and tightly linked (battery story)"
+summary: "An example setting of the idea graph generator, told as a battery but not measured from it: 20 ideas, each leaning heavily on several earlier ones; two bounties."
 description: >-
   Building a solid-state lithium battery. Three lines of work run in parallel: the solid
   electrolyte (finding a conducting material, making it stable and making it thin), the

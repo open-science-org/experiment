@@ -1,11 +1,11 @@
 {
- "ranAt": "2026-10-25T03:14:09.110Z",
+ "ranAt": "2026-10-25T03:30:52.280Z",
  "id": "solid-state-battery",
  "kind": "field report",
  "date": "2026-10-25",
- "title": "A solid-state battery",
+ "title": "Example: small and tightly linked (battery story)",
  "design": {
-  "question": "For the same money, does OSO get further than traditional research in a solid-state battery?",
+  "question": "For the same money, does OSO get further than traditional research in Example: small and tightly linked (battery story)?",
   "compare": "the six rule settings, an α sweep, the parameters one by one, costly and fallible sharing",
   "fixed": "the field, 12 agents and a budget of 260",
   "measure": "hardest level reached",
