@@ -35,10 +35,10 @@ set:
       foundation: 3
       racer: 3
       explorer: 2
-      specialist: 0
+      specialist: 2
       freeRider: 1
       gamer: 0
-      plain: 3
+      plain: 1
 factors:
   - name: society
     levels:

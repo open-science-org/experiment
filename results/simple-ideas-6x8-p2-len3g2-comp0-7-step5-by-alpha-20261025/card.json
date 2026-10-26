@@ -2,7 +2,7 @@
  "chart": "results/simple-ideas-6x8-p2-len3g2-comp0-7-step5-by-alpha-20261025/figures/compare.svg",
  "id": "simple-ideas-6x8-p2-len3g2-comp0-7-step5-by-alpha-20261025",
  "kind": "simulation",
- "date": "2026-10-25",
+ "date": "2026-10-26",
  "title": "Step 5: A gamer, and validation",
  "design": {
   "question": "With agents choose what to share; earnings shape next round's money; different kinds of agents; a gamer, and validation, how far does a society get for the same money, and how much do agents share, by α?",
@@ -14,70 +14,70 @@
  },
  "answer": "Best overall: Agents choose, α = 0. Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, knowledge found (bits), knowledge per unit of money, money to the main level and waste. (8 measures; a clear difference is more than 2.7 standard errors.)",
  "answers": [
-  "hardest level: 6.00 against traditional 1.44, clearly better.",
+  "hardest level: 6.00 against traditional 1.20, clearly better.",
   "targets solved: 1.99 against traditional 0.34, clearly better.",
   "bounty value: 255 against traditional 44, clearly better.",
   "ROI: 0.49 against traditional 0.04, clearly better.",
-  "knowledge found (bits): 126 against traditional 72, clearly better.",
+  "knowledge found (bits): 125 against traditional 70, clearly better.",
   "knowledge per unit of money: 0.24 against traditional 0.06, clearly better.",
-  "money to the main level: 272 against traditional 990, clearly better.",
+  "money to the main level: 280 against traditional 922, clearly better.",
   "waste: 0.56 against traditional 0.72, clearly better."
  ],
  "table": [
   {
    "society": "Traditional (α = 1, finished work only)",
-   "frontier": "1.4 ± 2.6",
+   "frontier": "1.2 ± 2.4",
    "targets solved": "0.3 ± 0.7",
-   "value gained": "44 ± 84",
-   "ROI (value per spend)": "0.04 ± 0.08",
-   "knowledge (bits)": "72 ± 12",
-   "bits per money": "0.062 ± 0.011",
-   "cost": "990 ± 174",
-   "waste": "0.72 ± 0.05"
+   "value gained": "44 ± 91",
+   "ROI (value per spend)": "0.04 ± 0.09",
+   "knowledge (bits)": "70 ± 11",
+   "bits per money": "0.061 ± 0.014",
+   "cost": "922 ± 239",
+   "waste": "0.72 ± 0.04"
   },
   {
    "society": "Agents choose, α = 1",
-   "frontier": "6.0 ± 0.0",
-   "targets solved": "1.9 ± 0.4",
-   "value gained": "242 ± 48",
-   "ROI (value per spend)": "0.36 ± 0.15",
-   "knowledge (bits)": "101 ± 16",
-   "bits per money": "0.144 ± 0.041",
-   "cost": "561 ± 205",
+   "frontier": "6.0 ± 0.1",
+   "targets solved": "1.9 ± 0.3",
+   "value gained": "247 ± 38",
+   "ROI (value per spend)": "0.37 ± 0.15",
+   "knowledge (bits)": "100 ± 18",
+   "bits per money": "0.144 ± 0.046",
+   "cost": "548 ± 215",
    "waste": "0.57 ± 0.07"
   },
   {
    "society": "Agents choose, α = 0.8",
    "frontier": "6.0 ± 0.0",
-   "targets solved": "1.9 ± 0.2",
-   "value gained": "250 ± 28",
+   "targets solved": "2.0 ± 0.2",
+   "value gained": "251 ± 25",
    "ROI (value per spend)": "0.36 ± 0.12",
-   "knowledge (bits)": "105 ± 18",
-   "bits per money": "0.148 ± 0.038",
-   "cost": "532 ± 205",
-   "waste": "0.58 ± 0.07"
+   "knowledge (bits)": "103 ± 19",
+   "bits per money": "0.143 ± 0.038",
+   "cost": "548 ± 199",
+   "waste": "0.59 ± 0.08"
   },
   {
    "society": "Agents choose, α = 0.2",
    "frontier": "6.0 ± 0.0",
    "targets solved": "2.0 ± 0.0",
    "value gained": "256 ± 0",
-   "ROI (value per spend)": "0.55 ± 0.17",
-   "knowledge (bits)": "105 ± 18",
-   "bits per money": "0.219 ± 0.049",
-   "cost": "347 ± 111",
-   "waste": "0.52 ± 0.07"
+   "ROI (value per spend)": "0.56 ± 0.18",
+   "knowledge (bits)": "108 ± 17",
+   "bits per money": "0.230 ± 0.055",
+   "cost": "341 ± 123",
+   "waste": "0.53 ± 0.06"
   },
   {
    "society": "Agents choose, α = 0",
    "frontier": "6.0 ± 0.0",
    "targets solved": "2.0 ± 0.1",
    "value gained": "255 ± 13",
-   "ROI (value per spend)": "0.49 ± 0.17",
-   "knowledge (bits)": "126 ± 15",
-   "bits per money": "0.237 ± 0.069",
-   "cost": "272 ± 107",
-   "waste": "0.56 ± 0.09"
+   "ROI (value per spend)": "0.49 ± 0.14",
+   "knowledge (bits)": "125 ± 14",
+   "bits per money": "0.238 ± 0.055",
+   "cost": "280 ± 119",
+   "waste": "0.56 ± 0.08"
   }
  ],
  "caveats": [
@@ -98,6 +98,6 @@
   "step 5",
   "steps 2026-10-25"
  ],
- "ranAt": "2026-10-25T17:03:16.845Z",
+ "ranAt": "2026-10-26T02:27:42.966Z",
  "modelVersion": 5
 }

@@ -514,8 +514,8 @@ export const STEPS: { step: number; title: string; adds: string; set: Record<str
   { step: 1, title: 'The simple model', adds: 'identical agents, equal money each round, the knowledge reward; α and β are set', set: {} },
   { step: 2, title: 'Agents choose what to share', adds: 'each agent decides whether to publish an idea, weighing its reward against the risk that a rival uses it to win a bounty first; β is no longer set', set: {} },
   { step: 3, title: 'Earnings shape next round\'s money', adds: 'half of each round\'s money goes to agents by what they earned (f = 0.5)', set: { 'budget.allocation.rho': 0.5 } },
-  { step: 4, title: 'Different kinds of agents', adds: 'foundation builders, target racers, cheap explorers and a free rider replace most of the identical agents', set: { agents: { mix: { foundation: 3, racer: 3, explorer: 2, freeRider: 1, plain: 3, specialist: 0, gamer: 0 } } } },
-  { step: 5, title: 'A gamer, and validation', adds: 'one agent spends attempts on trivial ideas; validators reject them half the time (θ = 0.5)', set: { agents: { mix: { foundation: 3, racer: 3, explorer: 2, freeRider: 1, plain: 2, specialist: 0, gamer: 1 } }, 'rules.screen': 0.5 } },
+  { step: 4, title: 'Different kinds of agents', adds: 'foundation builders, target racers, cheap explorers, specialists and a free rider replace all but one of the identical agents', set: { agents: { mix: { foundation: 3, racer: 3, explorer: 2, specialist: 2, freeRider: 1, plain: 1, gamer: 0 } } } },
+  { step: 5, title: 'A gamer, and validation', adds: 'the last identical agent becomes a gamer, who spends attempts on trivial ideas; validators reject them half the time (θ = 0.5). This is the full model\'s set of mechanisms and agents', set: { agents: { mix: { foundation: 3, racer: 3, explorer: 2, specialist: 2, freeRider: 1, plain: 0, gamer: 1 } }, 'rules.screen': 0.5 } },
 ];
 
 /** Applies steps 2 to d.step on top of a simple-model experiment. */
