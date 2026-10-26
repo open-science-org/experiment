@@ -311,7 +311,8 @@ export interface ChainPoint { n: number; shared: number; sharedExact: number; hi
 export function chainFigure(pts: ChainPoint[], attempts?: number): string {
   const W = 640, H = 340, l = 60, rt = 150, tp = 40, bt = 46, pw = W - l - rt, ph = H - tp - bt;
   const nMax = Math.max(2, ...pts.map((p) => p.n));
-  const yMax = Math.max(20, Math.ceil(Math.max(...pts.map((p) => Math.max(p.shared, p.sharedExact, p.hidden, p.hiddenExact))) / 20) * 20);
+  // Four round steps (multiples of 10) up to at least the highest value.
+  const yStep = Math.max(10, Math.ceil(Math.max(...pts.map((p) => Math.max(p.shared, p.sharedExact, p.hidden, p.hiddenExact))) / 40) * 10), yMax = 4 * yStep;
   const sx = (n: number) => l + (Math.log2(n) / Math.log2(nMax)) * pw, sy = (v: number) => tp + ph - (v / yMax) * ph;
   const title = 'Deepest idea reached, by number of agents';
   const out: string[] = [];

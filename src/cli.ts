@@ -73,6 +73,13 @@ if (target === 'ladder') {
   process.exit(0);
 }
 
+if (target === 'summary-figures') {
+  // The README's results plots, from saved results.
+  const { writeSummaryFigures } = await import('./report/summary.ts');
+  for (const f of writeSummaryFigures()) console.log(`Wrote ${f}`);
+  process.exit(0);
+}
+
 if (target === 'report') {
   if (!second) throw new Error('usage: npm run sim -- report <space | all> [--seeds N]');
   const ids = second === 'all' ? spaceIds() : [second];
@@ -116,7 +123,7 @@ if (target === 'plugins') {
 }
 
 if (!target) {
-  console.log('Usage: npm run sim -- <experiment | file.yaml | all> [--seeds N] [--set path=value] [--save]\n       npm run sim -- plugins\n       npm run sim -- spaces | new "<description>" [--report] | check <space> | report <space | all> [--seeds N]\n\nExperiments (config/experiments/):');
+  console.log('Usage: npm run sim -- <experiment | file.yaml | all> [--seeds N] [--set path=value] [--save]\n       npm run sim -- plugins\n       npm run sim -- summary-figures   (the results plots in the README)\n       npm run sim -- spaces | new "<description>" [--report] | check <space> | report <space | all> [--seeds N]\n\nExperiments (config/experiments/):');
   for (const id of experimentIds) {
     const e = loadExperiment(id);
     console.log(`  ${id.padEnd(12)} ${e.title} (${e.seeds} seeds)`);

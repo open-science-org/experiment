@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="viz" viewBox="0 0 620 184" width="620" height="184" role="img" aria-label="Traditional needs this many times the money OSO needs">
+<style>
+  .viz { --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --grid: #e6e5e1;
+         --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --dead: #c9c7c0; }
+  @media (prefers-color-scheme: dark) {
+    .viz { --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --grid: #34332f;
+           --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --dead: #4a4945; }
+  }
+  .bg { fill: var(--surface); }
+  text { fill: var(--ink); font-family: Helvetica, Arial, sans-serif; }
+  .title { font-size: 16px; font-weight: 700; }
+  .sub, .tick, .axis { fill: var(--ink-2); font-size: 12px; }
+  .grid { stroke: var(--grid); stroke-width: 1; }
+  .base { stroke: var(--ink-2); stroke-width: 1; }
+  .line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .c1 { stroke: var(--s1); } .f1 { fill: var(--s1); }
+  .c2 { stroke: var(--s2); } .f2 { fill: var(--s2); }
+  .c3 { stroke: var(--s3); } .f3 { fill: var(--s3); }
+  .dot { stroke: var(--surface); stroke-width: 2; }
+  .label { font-size: 12px; font-weight: 700; }
+  .t1 { fill: var(--s1); } .t2 { fill: var(--s2); } .t3 { fill: var(--s3); }
+</style><rect class="bg" width="620" height="184" rx="8"/>
+<text class="title" x="16" y="26">Traditional needs this many times the money OSO needs</text>
+<text class="tick" x="222" y="55" text-anchor="end">easy</text>
+<rect x="230" y="44" width="196.5" height="16" rx="3" style="fill:var(--s1)"><title>easy: 3.5×</title></rect>
+<text class="label t1" x="432.49122807017545" y="56">3.5×</text>
+<text class="tick" x="222" y="81" text-anchor="end">default</text>
+<rect x="230" y="70" width="320.0" height="16" rx="3" style="fill:var(--s1)"><title>default: 5.7×</title></rect>
+<text class="label t1" x="556" y="82">5.7×</text>
+<text class="tick" x="222" y="107" text-anchor="end">medium</text>
+<rect x="230" y="96" width="275.1" height="16" rx="3" style="fill:var(--s1)"><title>medium: 4.9×</title></rect>
+<text class="label t1" x="511.0877192982456" y="108">4.9×</text>
+<text class="tick" x="222" y="133" text-anchor="end">hard</text>
+<rect x="230" y="122" width="218.9" height="16" rx="3" style="fill:var(--s1)"><title>hard: 3.9×</title></rect>
+<text class="label t1" x="454.9473684210526" y="134">3.9×</text>
+<text class="tick" x="222" y="159" text-anchor="end">very hard</text>
+<rect x="230" y="148" width="258.2" height="16" rx="3" style="fill:var(--s1)"><title>very hard: 4.6×</title></rect>
+<text class="label t1" x="494.2456140350877" y="160">4.6×</text>
+</svg>
