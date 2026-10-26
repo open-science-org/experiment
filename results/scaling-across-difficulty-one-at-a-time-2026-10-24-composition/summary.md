@@ -13,7 +13,7 @@
 | composition 0.85 | 1,158 | 207 | 207 | 286 | 5.6× |
 | composition 0.95 | 1,120 | 176 | 164 | 270 | 6.3× |
 
-**Design** (fixed before the run): compared 4 societies on 4 difficulties (composition 0.5, composition 0.7, composition 0.85, composition 0.95) · held the same: the simple model: 12 identical agents, equal money each round, no mint, no validation · measure: money needed to solve half the targets, lower is better · from the sweeps tagged "one at a time 2026-10-24: composition".
+**Design** (fixed before the run): compared 4 societies on 4 difficulties (composition 0.5, composition 0.7, composition 0.85, composition 0.95) · held the same: the simple model: 12 identical agents, equal money each round, a knowledge reward of 1 per new bit, no validation · measure: money needed to solve half the targets, lower is better · from the sweeps tagged "one at a time 2026-10-24: composition".
 
 **Caveats:**
 - Read off between the two budgets that bracket half the targets, in log budget.

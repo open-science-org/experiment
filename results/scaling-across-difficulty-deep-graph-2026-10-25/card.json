@@ -1,13 +1,13 @@
 {
  "id": "scaling-across-difficulty-deep-graph-2026-10-25",
  "kind": "simulation",
- "date": "2026-10-25",
- "ranAt": "2026-10-25T17:05:31.052Z",
- "title": "Scaling as depth, each step equally hard changes",
+ "date": "2026-10-26",
+ "ranAt": "2026-10-26T01:52:25.837Z",
+ "title": "Scaling across depth, each step equally hard",
  "design": {
-  "question": "As depth, each step equally hard changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?",
+  "question": "Across depth, each step equally hard, how much money does each society need, and does the gap between traditional and OSO grow?",
   "compare": "5 societies on 4 difficulties (depth 10, depth 20, depth 40, depth 80)",
-  "fixed": "the simple model: 12 identical agents, equal money each round, no mint, no validation",
+  "fixed": "the simple model: 12 identical agents, equal money each round, a knowledge reward of 1 per new bit, no validation",
   "measure": "money needed to solve half the targets",
   "better": "lower",
   "runs": "from the sweeps tagged \"deep graph 2026-10-25\""

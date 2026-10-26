@@ -13,7 +13,7 @@
 | depth 8 | 4,786 | 907 | 749 | 1,226 | 5.3× |
 | depth 10 | 12,364 | 2,089 | 1,890 | 3,200 | 5.9× |
 
-**Design** (fixed before the run): compared 4 societies on 4 difficulties (depth 4, depth 6, depth 8, depth 10) · held the same: the simple model: 12 identical agents, equal money each round, no mint, no validation · measure: money needed to solve half the targets, lower is better · from the sweeps tagged "one at a time 2026-10-24: depth".
+**Design** (fixed before the run): compared 4 societies on 4 difficulties (depth 4, depth 6, depth 8, depth 10) · held the same: the simple model: 12 identical agents, equal money each round, a knowledge reward of 1 per new bit, no validation · measure: money needed to solve half the targets, lower is better · from the sweeps tagged "one at a time 2026-10-24: depth".
 
 **Caveats:**
 - Read off between the two budgets that bracket half the targets, in log budget.

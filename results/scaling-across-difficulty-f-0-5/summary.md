@@ -1,6 +1,6 @@
 # Scaling across difficulty, with f = 0.5
 
-**Question:** As difficulty, with f = 0.5 changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?
+**Question:** Across difficulty, with f = 0.5, how much money does each society need, and does the gap between traditional and OSO grow?
 
 **Answer:** To solve half the targets, traditional needs 2.4× to 6.2× the money OSO needs. By difficulty: default 6.2×, hard 2.4×.
 
@@ -11,7 +11,7 @@
 | default | 2,018 | 328 | 343 | 439 | 476 | 340 | 6.2× |
 | hard | 15,487 | 6,382 | 5,852 | 13,723 | 9,663 | 6,882 | 2.4× |
 
-**Design** (fixed before the run): compared 6 societies on 2 difficulties (default, hard) · held the same: the simple model: 12 identical agents, equal money each round, no mint, no validation · measure: money needed to solve half the targets, lower is better · from the sweeps tagged "f 0.5".
+**Design** (fixed before the run): compared 6 societies on 2 difficulties (default, hard) · held the same: the simple model: 12 identical agents, equal money each round, a knowledge reward of 1 per new bit, no validation · measure: money needed to solve half the targets, lower is better · from the sweeps tagged "f 0.5".
 
 **Caveats:**
 - Read off between the two budgets that bracket half the targets, in log budget.

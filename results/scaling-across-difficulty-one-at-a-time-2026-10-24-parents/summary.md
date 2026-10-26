@@ -13,7 +13,7 @@
 | parents 3 | 2,220 | 328 | 334 | 571 | 6.8× |
 | parents 4 | 2,415 | 364 | 346 | 615 | 6.6× |
 
-**Design** (fixed before the run): compared 4 societies on 4 difficulties (parents 1, parents 2, parents 3, parents 4) · held the same: the simple model: 12 identical agents, equal money each round, no mint, no validation · measure: money needed to solve half the targets, lower is better · from the sweeps tagged "one at a time 2026-10-24: parents".
+**Design** (fixed before the run): compared 4 societies on 4 difficulties (parents 1, parents 2, parents 3, parents 4) · held the same: the simple model: 12 identical agents, equal money each round, a knowledge reward of 1 per new bit, no validation · measure: money needed to solve half the targets, lower is better · from the sweeps tagged "one at a time 2026-10-24: parents".
 
 **Caveats:**
 - Read off between the two budgets that bracket half the targets, in log budget.

@@ -1,10 +1,10 @@
-# Scaling as depth, each step equally hard changes
+# Scaling across depth, each step equally hard
 
-**Question:** As depth, each step equally hard changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?
+**Question:** Across depth, each step equally hard, how much money does each society need, and does the gap between traditional and OSO grow?
 
 **Answer:** To solve half the targets, traditional needs 7.6× to 14.9× the money OSO needs. The gap grows with every step in difficulty.
 
-![Scaling as depth, each step equally hard changes](figures/compare.svg)
+![Scaling across depth, each step equally hard](figures/compare.svg)
 
 | difficulty | Traditional (α = 1, β = 0) | OSO (α = 0.8, β = 1) | OSO (α = 0.2, β = 1) | α = 0.8, β = 0.5 | α = 1, β = 1 | traditional ÷ OSO |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -13,7 +13,7 @@
 | depth 40 | 7,550 | 728 | 733 | 1,431 | 742 | 10.4× |
 | depth 80 | 21,796 | 1,466 | 1,448 | 2,896 | 1,466 | 14.9× |
 
-**Design** (fixed before the run): compared 5 societies on 4 difficulties (depth 10, depth 20, depth 40, depth 80) · held the same: the simple model: 12 identical agents, equal money each round, no mint, no validation · measure: money needed to solve half the targets, lower is better · from the sweeps tagged "deep graph 2026-10-25".
+**Design** (fixed before the run): compared 5 societies on 4 difficulties (depth 10, depth 20, depth 40, depth 80) · held the same: the simple model: 12 identical agents, equal money each round, a knowledge reward of 1 per new bit, no validation · measure: money needed to solve half the targets, lower is better · from the sweeps tagged "deep graph 2026-10-25".
 
 **Caveats:**
 - Read off between the two budgets that bracket half the targets, in log budget.

@@ -13,7 +13,7 @@
 | length growth 3 | 4,525 | 721 | 558 | 1,068 | 6.3× |
 | length growth 4 | 10,069 | 1,950 | 2,136 | 2,851 | 5.2× |
 
-**Design** (fixed before the run): compared 4 societies on 4 difficulties (length growth 1, length growth 2, length growth 3, length growth 4) · held the same: the simple model: 12 identical agents, equal money each round, no mint, no validation · measure: money needed to solve half the targets, lower is better · from the sweeps tagged "one at a time 2026-10-24: length growth".
+**Design** (fixed before the run): compared 4 societies on 4 difficulties (length growth 1, length growth 2, length growth 3, length growth 4) · held the same: the simple model: 12 identical agents, equal money each round, a knowledge reward of 1 per new bit, no validation · measure: money needed to solve half the targets, lower is better · from the sweeps tagged "one at a time 2026-10-24: length growth".
 
 **Caveats:**
 - Read off between the two budgets that bracket half the targets, in log budget.

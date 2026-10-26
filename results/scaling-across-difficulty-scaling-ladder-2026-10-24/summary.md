@@ -14,7 +14,7 @@
 | hard | 27,357 | 6,602 | 6,167 | 9,898 | 6,365 | 4.1× |
 | very hard | 63,351 | 13,676 | 13,770 | 20,000 | 13,857 | 4.6× |
 
-**Design** (fixed before the run): compared 5 societies on 5 difficulties (easy, default, medium, hard, very hard) · held the same: the simple model: 12 identical agents, equal money each round, no mint, no validation · measure: money needed to solve half the targets, lower is better · from the sweeps tagged "scaling ladder 2026-10-24".
+**Design** (fixed before the run): compared 5 societies on 5 difficulties (easy, default, medium, hard, very hard) · held the same: the simple model: 12 identical agents, equal money each round, a knowledge reward of 1 per new bit, no validation · measure: money needed to solve half the targets, lower is better · from the sweeps tagged "scaling ladder 2026-10-24".
 
 **Caveats:**
 - Read off between the two budgets that bracket half the targets, in log budget.

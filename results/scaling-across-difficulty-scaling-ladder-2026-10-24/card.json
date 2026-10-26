@@ -1,13 +1,13 @@
 {
  "id": "scaling-across-difficulty-scaling-ladder-2026-10-24",
  "kind": "simulation",
- "date": "2026-10-25",
- "ranAt": "2026-10-25T07:06:05.699Z",
+ "date": "2026-10-26",
+ "ranAt": "2026-10-26T01:52:24.326Z",
  "title": "Scaling across difficulty",
  "design": {
   "question": "As problems get harder, how much more money does each society need, and does the gap between traditional and OSO grow?",
   "compare": "5 societies on 5 difficulties (easy, default, medium, hard, very hard)",
-  "fixed": "the simple model: 12 identical agents, equal money each round, no mint, no validation",
+  "fixed": "the simple model: 12 identical agents, equal money each round, a knowledge reward of 1 per new bit, no validation",
   "measure": "money needed to solve half the targets",
   "better": "lower",
   "runs": "from the sweeps tagged \"scaling ladder 2026-10-24\""

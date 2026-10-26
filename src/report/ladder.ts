@@ -70,7 +70,11 @@ export function writeLadder(tag: string, order: string[] = [], what = 'difficult
   table.forEach((t, i) => { svg += `<text x="${sx(i)}" y="${tp + ph + 18}" text-anchor="middle" font-size="12" fill="#2b2b2b">${t.level}</text>`; });
   svg += `<text x="${l + pw / 2}" y="${H - 4}" text-anchor="middle" font-size="11" fill="#6b6b6b">difficulty (budget on a log scale; a missing point: never got there within the sweep)</text>`;
   let k = 0;
-  societies.forEach((so, j) => {
+  // Grey rows first, so traditional and OSO lines and dots are drawn on top; the legend keeps the original order.
+  const drawOrder = [...societies].sort((a, b) => Number(/^Traditional|^OSO/.test(a)) - Number(/^Traditional|^OSO/.test(b)));
+  const legendRow = new Map(societies.map((so, j) => [so, j]));
+  drawOrder.forEach((so) => {
+    const j = legendRow.get(so)!;
     const c = colour(so), ds = dash(so, k++);
     const pts = table.map((t, i) => [i, t.per[so].b50] as const).filter(([, v]) => v !== null) as [number, number][];
     svg += `<path d="${pts.map(([i, v], n) => `${n ? 'L' : 'M'}${sx(i).toFixed(1)} ${sy(v).toFixed(1)}`).join(' ')}" fill="none" stroke="${c}" stroke-width="2.6"${ds ? ` stroke-dasharray="${ds}"` : ''}/>`;
@@ -95,8 +99,8 @@ export function writeLadder(tag: string, order: string[] = [], what = 'difficult
   const md = (rs: Record<string, string>[]) => [`| ${Object.keys(rs[0]).join(' | ')} |`, `| ${Object.keys(rs[0]).map(() => '---').join(' | ')} |`, ...rs.map((r) => `| ${Object.values(r).join(' | ')} |`)].join('\n');
   writeCard(dir, {
     id, kind: 'simulation', date: new Date().toISOString().slice(0, 10), ranAt: new Date().toISOString(),
-    title: what === 'difficulty' ? 'Scaling across difficulty' : what.startsWith('difficulty') ? `Scaling across ${what}` : `Scaling as ${what} changes`,
-    design: { question: what === 'difficulty' ? 'As problems get harder, how much more money does each society need, and does the gap between traditional and OSO grow?' : `As ${what} changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?`, compare: `${societies.length} societies on ${table.length} difficulties (${table.map((t) => t.level).join(', ')})`, fixed: 'the simple model: 12 identical agents, equal money each round, no mint, no validation', measure: 'money needed to solve half the targets', better: 'lower', runs: `from the sweeps tagged "${tag}"` },
+    title: what === 'difficulty' ? 'Scaling across difficulty' : what.startsWith('difficulty') ? `Scaling across ${what}` : what.includes(',') ? `Scaling across ${what}` : `Scaling as ${what} changes`,
+    design: { question: what === 'difficulty' ? 'As problems get harder, how much more money does each society need, and does the gap between traditional and OSO grow?' : what.includes(',') ? `Across ${what}, how much money does each society need, and does the gap between traditional and OSO grow?` : `As ${what} changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?`, compare: `${societies.length} societies on ${table.length} difficulties (${table.map((t) => t.level).join(', ')})`, fixed: 'the simple model: 12 identical agents, equal money each round, a knowledge reward of 1 per new bit, no validation', measure: 'money needed to solve half the targets', better: 'lower', runs: `from the sweeps tagged "${tag}"` },
     answer, table: rows, caveats: ['Read off between the two budgets that bracket half the targets, in log budget.', 'Each difficulty has its own budget range; "> x" means not reached within it.'],
     page: `results/${id}/summary.md`, chart: `results/${id}/figures/compare.svg`, tags: ['scaling', 'scaling law', 'difficulty', tag, 'analysis'],
   }, `**Log–log slope of bounty value against budget** (where value is above 0 and below 90% of its most; a slope of 1 means value grows in proportion to money):\n\n${md(slopes)}\n\nFrom: ${sweeps.map((s) => `[${s.title}](../${s.id}/summary.md)`).join(', ')}.`);

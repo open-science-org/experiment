@@ -1,13 +1,13 @@
 {
  "id": "scaling-across-difficulty-one-at-a-time-2026-10-24-depth",
  "kind": "simulation",
- "date": "2026-10-25",
- "ranAt": "2026-10-25T07:06:06.112Z",
+ "date": "2026-10-26",
+ "ranAt": "2026-10-26T01:52:24.781Z",
  "title": "Scaling as depth changes",
  "design": {
   "question": "As depth changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?",
   "compare": "4 societies on 4 difficulties (depth 4, depth 6, depth 8, depth 10)",
-  "fixed": "the simple model: 12 identical agents, equal money each round, no mint, no validation",
+  "fixed": "the simple model: 12 identical agents, equal money each round, a knowledge reward of 1 per new bit, no validation",
   "measure": "money needed to solve half the targets",
   "better": "lower",
   "runs": "from the sweeps tagged \"one at a time 2026-10-24: depth\""
