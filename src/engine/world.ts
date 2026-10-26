@@ -298,6 +298,10 @@ export interface IdeasParams extends Record<string, unknown> {
   /** Attribution: the share of an idea's length made of pieces of its parents' sequences (0: none, 1: all
    *  it can). The rest are its own new bits. */
   composition: number;
+  /** Optional: how strictly an idea's difficulty follows its level, 0 to 1 (1 = strictly, the default). Each idea
+   *  follows its own level with this chance; otherwise it takes the difficulty of a level drawn at random, so the
+   *  mix of easy and hard ideas stays the same and only where they sit changes. No effect with newBits. */
+  levelTie?: number;
   /** Optional: new bits per idea (0 = off). An idea then inherits all but this many bits from its parents, so each
    *  step is equally hard at any depth, instead of composition setting the share inherited. */
   newBits?: number;
@@ -320,12 +324,18 @@ export function ideasWorld(params: IdeasParams, rng: Rng): World {
   const { levels, width } = params;
   if (!(levels >= 1 && width >= 1)) throw new Error('ideas: levels and width must be at least 1');
   if (!(params.composition >= 0 && params.composition <= 1)) throw new Error('ideas: composition must be between 0 and 1');
+  const tie = params.levelTie ?? 1;
+  if (!(tie >= 0 && tie <= 1)) throw new Error('ideas: levelTie must be between 0 and 1');
+  // Difficulty by level: an idea's sequence length, and how many of its bits are new (all of them on level 1).
+  const lengthAt = (l: number) => Math.max(1, Math.round(params.length + params.lengthGrowth * (l - 1)));
+  const newAt = (l: number) => (l === 1 ? lengthAt(1) : Math.max(1, lengthAt(l) - Math.min(lengthAt(l) - 1, Math.round(params.composition * lengthAt(l)))));
+  // Which level's difficulty each idea takes; drawn only when levelTie < 1, so the default graph is unchanged.
+  const tieRng = tie < 1 ? rng.fork(71) : null;
   const level: number[] = [], prereqs: number[][] = [], bits: number[][] = [];
   const byLevel: number[][] = [];
   let nextBit = 0;
   for (let l = 1; l <= levels; l++) {
     byLevel[l] = [];
-    const length = Math.max(1, Math.round(params.length + params.lengthGrowth * (l - 1)));
     for (let k = 0; k < width; k++) {
       const x = level.length;
       const ps = new Set<number>();
@@ -338,6 +348,10 @@ export function ideasWorld(params: IdeasParams, rng: Rng): World {
         }
       }
       const parents = [...ps].sort((u, v) => u - v);
+      // The level whose difficulty this idea takes: its own, or (with chance 1 − levelTie) one drawn at random.
+      // An idea with no parents has only new bits, so it takes that level's number of new bits.
+      const lx = !tieRng || tieRng.chance(tie) ? l : 1 + tieRng.int(levels);
+      const length = parents.length ? lengthAt(lx) : newAt(lx);
       // Inherited: composition × length bits, taken as one contiguous piece from each parent, in equal shares.
       // With newBits set, an idea inherits all but that many bits, so every step adds the same work at any depth.
       const want = !parents.length ? 0 : (params.newBits ?? 0) > 0 ? Math.max(0, length - params.newBits!) : Math.min(length - 1, Math.round(params.composition * length));
@@ -384,6 +398,6 @@ export function ideasWorld(params: IdeasParams, rng: Rng): World {
 
 worlds.register<IdeasParams>('ideas', {
   description: 'A general idea graph: ideas are bit sequences, part pieces of their parents\' sequences (composition), part new; set structure (levels, width, parents, skip), difficulty (length, lengthGrowth) and attribution (composition) separately',
-  defaults: { levels: 6, width: 8, parents: 2, skip: 0.2, length: 3, lengthGrowth: 2, composition: 0.7, newBits: 0, targets: 2, targetsFrom: 0, bountyBase: 4, bountyGrowth: 2, attemptLimit: 24 },
+  defaults: { levels: 6, width: 8, parents: 2, skip: 0.2, length: 3, lengthGrowth: 2, composition: 0.7, levelTie: 1, newBits: 0, targets: 2, targetsFrom: 0, bountyBase: 4, bountyGrowth: 2, attemptLimit: 24 },
   create: (params) => (_success, rng) => ideasWorld(params, rng),
 });

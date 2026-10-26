@@ -499,9 +499,9 @@ export { parse as parseYaml };
  * chosen idea graph and bounties.
  */
 /** The generator's controls (world kind 'ideas'): structure, difficulty and attribution. */
-export interface GraphControls { levels: number; width: number; parents: number; skip: number; length: number; lengthGrowth: number; composition: number; targets: number; targetsFrom: number }
-export const GRAPH_DEFAULTS: GraphControls = { levels: 6, width: 8, parents: 2, skip: 0.2, length: 3, lengthGrowth: 2, composition: 0.7, targets: 2, targetsFrom: 0 };
-const GRAPH_RANGES: Record<keyof GraphControls, [number, number]> = { levels: [1, 15], width: [1, 30], parents: [1, 6], skip: [0, 1], length: [1, 12], lengthGrowth: [0, 6], composition: [0, 1], targets: [1, 10], targetsFrom: [0, 15] };
+export interface GraphControls { levels: number; width: number; parents: number; skip: number; length: number; lengthGrowth: number; levelTie: number; composition: number; targets: number; targetsFrom: number }
+export const GRAPH_DEFAULTS: GraphControls = { levels: 6, width: 8, parents: 2, skip: 0.2, length: 3, lengthGrowth: 2, levelTie: 1, composition: 0.7, targets: 2, targetsFrom: 0 };
+const GRAPH_RANGES: Record<keyof GraphControls, [number, number]> = { levels: [1, 15], width: [1, 30], parents: [1, 6], skip: [0, 1], length: [1, 12], lengthGrowth: [0, 6], levelTie: [0, 1], composition: [0, 1], targets: [1, 10], targetsFrom: [0, 15] };
 
 /** The simple model's design: a topic, or a generated idea graph (graph), and the α and β values. */
 export interface SimpleDesign { id: string; title?: string; question?: string; space: string; graph?: GraphControls; preset?: string; budget?: number; alphas: number[]; betas: number[]; seeds: number; measure?: string; step?: number }
@@ -597,7 +597,7 @@ const andList = (xs: string[]) => (xs.length < 2 ? xs.join('') : `${xs.slice(0, 
 
 function checkGraph(g: GraphControls) {
   for (const [k, [lo, hi]] of Object.entries(GRAPH_RANGES)) {
-    const v = Number(g[k as keyof GraphControls]);
+    const v = Number(g[k as keyof GraphControls] ?? GRAPH_DEFAULTS[k as keyof GraphControls]);
     if (!Number.isFinite(v) || v < lo || v > hi) throw new Error(`idea graph: ${k} must be between ${lo} and ${hi}`);
   }
 }
@@ -672,7 +672,7 @@ export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
 }
 
 const societies = (d: SimpleDesign): Level[] => d.alphas.flatMap((a) => d.betas.map((b) => ({ label: societyLabel(a, b), set: { 'rules.alpha': a, 'rules.visibility': { kind: 'chance', beta: b } } })));
-const graphText = (g: GraphControls) => `${g.levels} levels × ${g.width} ideas, ${g.parents} parents each, sequences of ${g.length} bits growing by ${g.lengthGrowth} per level, composition ${g.composition}`;
+const graphText = (g: GraphControls) => `${g.levels} levels × ${g.width} ideas, ${g.parents} parents each, sequences of ${g.length} bits growing by ${g.lengthGrowth} per level${(g.levelTie ?? 1) < 1 ? ` (difficulty follows level ${g.levelTie})` : ''}, composition ${g.composition}`;
 
 const presetTitle = (id?: string) => (id ? graphPresets().find((p) => p.id === id)?.title.replace(/^(An?|The) /, '').toLowerCase() : undefined);
 
@@ -758,7 +758,7 @@ export function simpleName(d: Pick<SimpleDesign, 'space' | 'alphas' | 'betas' | 
   const a = d.alphas.length > 1, b = d.betas.length > 1;
   const varies = what ?? (a && b ? 'alpha-beta' : a ? `alpha-at-beta-${num(d.betas[0] ?? 0)}` : b ? `beta-at-alpha-${num(d.alphas[0] ?? 1)}` : `alpha-${num(d.alphas[0] ?? 1)}-beta-${num(d.betas[0] ?? 0)}`);
   // A generated graph is named by its controls: levels × width, parents, length + growth, composition.
-  const where = d.graph ? `ideas-${d.graph.levels}x${d.graph.width}-p${num(d.graph.parents)}-len${num(d.graph.length)}g${num(d.graph.lengthGrowth)}-comp${num(d.graph.composition)}${d.graph.targetsFrom ? `-bounties-from-${d.graph.targetsFrom}` : ''}` : slug(d.space);
+  const where = d.graph ? `ideas-${d.graph.levels}x${d.graph.width}-p${num(d.graph.parents)}-len${num(d.graph.length)}g${num(d.graph.lengthGrowth)}-comp${num(d.graph.composition)}${(d.graph.levelTie ?? 1) < 1 ? `-tie${num(d.graph.levelTie)}` : ''}${d.graph.targetsFrom ? `-bounties-from-${d.graph.targetsFrom}` : ''}` : slug(d.space);
   return unique(`simple-${where}-${varies}`, experimentTaken);
 }
 

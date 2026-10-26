@@ -486,3 +486,24 @@ test('rivals are counted from published work: hidden agents do not see who holds
   assert.ok(mean(closed, 'public') >= mean(closed, 'all'));
   assert.throws(() => { const c = structuredClone(closed); (c.behaviour as { rivals: string }).rivals = 'nope'; run(c, 1); });
 });
+
+test('levelTie sets how strictly difficulty follows level, keeping the mix of easy and hard ideas', async () => {
+  const { ideasWorld } = await import('../src/engine/world.ts');
+  const { Rng } = await import('../src/engine/rng.ts');
+  const base = { levels: 6, width: 30, parents: 2, skip: 0.2, length: 3, lengthGrowth: 2, composition: 0.7, targets: 2, targetsFrom: 0, bountyBase: 4, bountyGrowth: 2, attemptLimit: 24 };
+  // New bits per idea, and the correlation of new bits with level.
+  const stats = (levelTie: number) => {
+    const w = ideasWorld({ ...base, levelTie }, new Rng(5));
+    const own = w.bits!.map((b, x) => { const from = new Set(w.prereqs[x].flatMap((y) => w.bits![y])); return b.filter((bit) => !from.has(bit)).length; });
+    const n = own.length, ml = w.level.reduce((a, b) => a + b, 0) / n, mo = own.reduce((a, b) => a + b, 0) / n;
+    const cov = own.reduce((a, o, x) => a + (o - mo) * (w.level[x] - ml), 0);
+    const sd = (xs: number[], m: number) => Math.sqrt(xs.reduce((a, v) => a + (v - m) ** 2, 0));
+    return { corr: cov / (sd(own, mo) * sd(w.level, ml)), mean: mo };
+  };
+  const strict = stats(1), medium = stats(0.8), none = stats(0);
+  assert.ok(strict.corr > 0.6, `strict: ${strict.corr}`);
+  assert.ok(medium.corr < strict.corr && medium.corr > none.corr, `medium: ${medium.corr}`);
+  assert.ok(Math.abs(none.corr) < 0.2, `none: ${none.corr}`);
+  assert.ok(Math.abs(none.mean - strict.mean) / strict.mean < 0.25, `mix kept: ${none.mean} vs ${strict.mean}`);
+  assert.throws(() => ideasWorld({ ...base, levelTie: 1.5 }, new Rng(1)));
+});

@@ -11,6 +11,7 @@ world:
   skip: 0.2
   length: 3              # difficulty: new bits at level 1, and added per level
   lengthGrowth: 2
+  levelTie: 1            # how strictly difficulty follows level: 1 strictly, 0.8 mostly (1 idea in 5 not), 0 not at all
   composition: 0.7       # attribution: share of an idea's bits taken from its parents
   newBits: 0             # optional: new bits per idea; it inherits the rest (0 = off, composition decides)
   targets: 2             # bounties per level, on levels targetsFrom to the top (0: the top only)
