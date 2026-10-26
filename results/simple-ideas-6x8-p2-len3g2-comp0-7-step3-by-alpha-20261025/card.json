@@ -3,7 +3,7 @@
  "id": "simple-ideas-6x8-p2-len3g2-comp0-7-step3-by-alpha-20261025",
  "kind": "simulation",
  "date": "2026-10-26",
- "title": "Step 3: Earnings shape next round's money",
+ "title": "Step 3. Half the money follows earnings",
  "design": {
   "question": "On a generated idea graph, at step 3 of the model, how far does a society get for the same money, and how much do agents share, by α?",
   "compare": "traditional against agents choosing what to share, at α in {1, 0.8, 0.2, 0}",
@@ -98,6 +98,6 @@
   "step 3",
   "steps 2026-10-25"
  ],
- "ranAt": "2026-10-26T03:57:29.775Z",
+ "ranAt": "2026-10-26T04:22:50.766Z",
  "modelVersion": 5
 }

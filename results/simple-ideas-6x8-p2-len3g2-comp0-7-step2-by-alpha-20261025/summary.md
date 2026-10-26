@@ -1,4 +1,4 @@
-# Step 2: Agents choose what to share
+# Step 2. Agents choose what to share, so β comes out of their choices
 
 **Question:** On a generated idea graph, at step 2 of the model, how far does a society get for the same money, and how much do agents share, by α?
 
@@ -13,7 +13,7 @@
 - money to the main level: 323 against traditional 932, clearly better.
 - waste: 0.54 against traditional 0.72, clearly better.
 
-![Step 2: Agents choose what to share](figures/compare.svg)
+![Step 2. Agents choose what to share, so β comes out of their choices](figures/compare.svg)
 
 | society | frontier | targets solved | value gained | ROI (value per spend) | knowledge (bits) | bits per money | cost | waste |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -42,6 +42,6 @@ Values are mean ± standard deviation over runs.
 | Agents choose, α = 0.2 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 0.45 ± 0.13 | 107 ± 16 | 107 ± 17 | 0.182 ± 0.037 | 439 ± 138 | 0.54 ± 0.06 | 0.71 ± 0.09 | 1.00 |
 | Agents choose, α = 0 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 0.47 ± 0.14 | 126 ± 13 | 126 ± 13 | 0.223 ± 0.050 | 323 ± 117 | 0.54 ± 0.09 | 1.00 ± 0.00 | 1.00 |
 
-Code: commit `0fa52d9`. Experiment: [config/experiments/simple-ideas-6x8-p2-len3g2-comp0-7-step2-by-alpha-20261025.yaml](../../config/experiments/simple-ideas-6x8-p2-len3g2-comp0-7-step2-by-alpha-20261025.yaml). Command: `npm run sim -- simple-ideas-6x8-p2-len3g2-comp0-7-step2-by-alpha-20261025 --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `3e57a41`. Experiment: [config/experiments/simple-ideas-6x8-p2-len3g2-comp0-7-step2-by-alpha-20261025.yaml](../../config/experiments/simple-ideas-6x8-p2-len3g2-comp0-7-step2-by-alpha-20261025.yaml). Command: `npm run sim -- simple-ideas-6x8-p2-len3g2-comp0-7-step2-by-alpha-20261025 --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

@@ -3,7 +3,7 @@
  "id": "simple-ideas-6x8-p2-len3g2-comp0-7-step2-by-alpha-20261025",
  "kind": "simulation",
  "date": "2026-10-26",
- "title": "Step 2: Agents choose what to share",
+ "title": "Step 2. Agents choose what to share, so β comes out of their choices",
  "design": {
   "question": "On a generated idea graph, at step 2 of the model, how far does a society get for the same money, and how much do agents share, by α?",
   "compare": "traditional against agents choosing what to share, at α in {1, 0.8, 0.2, 0}",
@@ -98,6 +98,6 @@
   "step 2",
   "steps 2026-10-25"
  ],
- "ranAt": "2026-10-26T03:57:24.206Z",
+ "ranAt": "2026-10-26T04:22:45.500Z",
  "modelVersion": 5
 }

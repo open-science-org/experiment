@@ -1,7 +1,7 @@
 {
   "experiment": "simple-ideas-6x8-p2-len3g2-comp0-7-step5-by-alpha-20261025",
   "date": "2026-10-26",
-  "commit": "0fa52d9",
+  "commit": "3e57a41",
   "dirty": false,
   "command": "npm run sim -- simple-ideas-6x8-p2-len3g2-comp0-7-step5-by-alpha-20261025 --seeds 100 --save",
   "seeds": 100,
@@ -9,7 +9,7 @@
   "config": {
     "experiment": {
       "id": "simple-ideas-6x8-p2-len3g2-comp0-7-step5-by-alpha-20261025",
-      "title": "Step 5: A gamer, and validation",
+      "title": "Step 5. Adds a gamer and validation; same as the full model",
       "description": "Step 5 of the model step by step (the simple model plus agents choosing what to share, money following earnings, different kinds of agents and a gamer with validation) on a generated idea graph (6 levels × 8 ideas, 2 parents each, sequences of 3 bits growing by 2 per level, composition 0.7); each run draws its own graph. Only α varies: agents choose what to publish, so β is an outcome. Traditional (α = 1, finished work only) is the reference. Held fixed: 12 agents of different kinds (3 foundation builders, 3 target racers, 2 cheap explorers, 2 specialists, a free rider, a gamer), half of each round's money by what agents earned (f = 0.5), no flat mint, a knowledge reward of 1 per new bit flowing back with α, validation rejecting trivial ideas half the time (θ = 0.5), a budget of 1200.",
       "seeds": 100,
       "set": {

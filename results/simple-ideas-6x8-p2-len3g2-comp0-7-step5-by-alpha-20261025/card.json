@@ -3,7 +3,7 @@
  "id": "simple-ideas-6x8-p2-len3g2-comp0-7-step5-by-alpha-20261025",
  "kind": "simulation",
  "date": "2026-10-26",
- "title": "Step 5: A gamer, and validation",
+ "title": "Step 5. Adds a gamer and validation; same as the full model",
  "design": {
   "question": "On a generated idea graph, at step 5 of the model, how far does a society get for the same money, and how much do agents share, by α?",
   "compare": "traditional against agents choosing what to share, at α in {1, 0.8, 0.2, 0}",
@@ -98,6 +98,6 @@
   "step 5",
   "steps 2026-10-25"
  ],
- "ranAt": "2026-10-26T03:57:39.444Z",
+ "ranAt": "2026-10-26T04:23:00.572Z",
  "modelVersion": 5
 }

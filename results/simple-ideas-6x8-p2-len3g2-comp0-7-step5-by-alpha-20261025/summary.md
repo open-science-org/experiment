@@ -1,4 +1,4 @@
-# Step 5: A gamer, and validation
+# Step 5. Adds a gamer and validation; same as the full model
 
 **Question:** On a generated idea graph, at step 5 of the model, how far does a society get for the same money, and how much do agents share, by α?
 
@@ -13,7 +13,7 @@
 - money to the main level: 280 against traditional 922, clearly better.
 - waste: 0.56 against traditional 0.72, clearly better.
 
-![Step 5: A gamer, and validation](figures/compare.svg)
+![Step 5. Adds a gamer and validation; same as the full model](figures/compare.svg)
 
 | society | frontier | targets solved | value gained | ROI (value per spend) | knowledge (bits) | bits per money | cost | waste |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -42,6 +42,6 @@ Values are mean ± standard deviation over runs.
 | Agents choose, α = 0.2 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 0.56 ± 0.18 | 108 ± 17 | 107 ± 18 | 0.230 ± 0.055 | 341 ± 123 | 0.53 ± 0.06 | 0.68 ± 0.10 | 1.00 |
 | Agents choose, α = 0 | 6.0 ± 0.0 | 2.0 ± 0.1 | 255 ± 13 | 0.49 ± 0.14 | 125 ± 14 | 125 ± 14 | 0.238 ± 0.055 | 280 ± 119 | 0.56 ± 0.08 | 1.00 ± 0.00 | 1.00 |
 
-Code: commit `0fa52d9`. Experiment: [config/experiments/simple-ideas-6x8-p2-len3g2-comp0-7-step5-by-alpha-20261025.yaml](../../config/experiments/simple-ideas-6x8-p2-len3g2-comp0-7-step5-by-alpha-20261025.yaml). Command: `npm run sim -- simple-ideas-6x8-p2-len3g2-comp0-7-step5-by-alpha-20261025 --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `3e57a41`. Experiment: [config/experiments/simple-ideas-6x8-p2-len3g2-comp0-7-step5-by-alpha-20261025.yaml](../../config/experiments/simple-ideas-6x8-p2-len3g2-comp0-7-step5-by-alpha-20261025.yaml). Command: `npm run sim -- simple-ideas-6x8-p2-len3g2-comp0-7-step5-by-alpha-20261025 --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

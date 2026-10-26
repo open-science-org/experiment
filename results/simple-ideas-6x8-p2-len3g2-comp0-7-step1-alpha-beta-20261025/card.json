@@ -3,7 +3,7 @@
  "id": "simple-ideas-6x8-p2-len3g2-comp0-7-step1-alpha-beta-20261025",
  "kind": "simulation",
  "date": "2026-10-26",
- "title": "Step 1: The simple model",
+ "title": "Step 1. The simple model: identical agents, α and β set",
  "design": {
   "question": "On a generated idea graph, at step 1 of the model, how far does a society get for the same money, by α and β?",
   "compare": "α in {1, 0.8, 0.2} × β in {0, 1}",
@@ -110,6 +110,6 @@
   "step 1",
   "steps 2026-10-25"
  ],
- "ranAt": "2026-10-26T03:57:18.781Z",
+ "ranAt": "2026-10-26T04:22:40.120Z",
  "modelVersion": 5
 }
