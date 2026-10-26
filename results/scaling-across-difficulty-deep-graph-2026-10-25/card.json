@@ -2,7 +2,7 @@
  "id": "scaling-across-difficulty-deep-graph-2026-10-25",
  "kind": "simulation",
  "date": "2026-10-26",
- "ranAt": "2026-10-26T01:52:25.837Z",
+ "ranAt": "2026-10-26T02:02:27.973Z",
  "title": "Scaling across depth, each step equally hard",
  "design": {
   "question": "Across depth, each step equally hard, how much money does each society need, and does the gap between traditional and OSO grow?",
@@ -62,7 +62,25 @@
   "scaling law",
   "difficulty",
   "deep graph 2026-10-25",
-  "analysis"
+  "meta-analysis"
+ ],
+ "basedOn": [
+  {
+   "id": "simple-ideas-10x4-p2-len3g2-new2-deep-scaling-20261025",
+   "title": "Deep graph: 10 levels, each step equally hard"
+  },
+  {
+   "id": "simple-ideas-20x4-p2-len3g2-new2-deep-scaling-20261025",
+   "title": "Deep graph: 20 levels, each step equally hard"
+  },
+  {
+   "id": "simple-ideas-40x4-p2-len3g2-new2-deep-scaling-20261025",
+   "title": "Deep graph: 40 levels, each step equally hard"
+  },
+  {
+   "id": "simple-ideas-80x4-p2-len3g2-new2-deep-scaling-20261025",
+   "title": "Deep graph: 80 levels, each step equally hard"
+  }
  ],
  "modelVersion": 5
 }

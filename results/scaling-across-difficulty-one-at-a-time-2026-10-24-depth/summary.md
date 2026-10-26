@@ -1,5 +1,7 @@
 # Scaling as depth changes
 
+**Meta-analysis:** runs nothing itself; it combines the results of 4 experiments: [Scaling, depth 4 (else default)](../simple-ideas-4x8-p2-len3g2-comp0-7-one-at-a-time-depth-20261024/summary.md), [Scaling, depth 6 (else default)](../simple-ideas-6x8-p2-len3g2-comp0-7-one-at-a-time-depth-20261024/summary.md), [Scaling, depth 8 (else default)](../simple-ideas-8x8-p2-len3g2-comp0-7-one-at-a-time-depth-20261024/summary.md), [Scaling, depth 10 (else default)](../simple-ideas-10x8-p2-len3g2-comp0-7-one-at-a-time-depth-20261024/summary.md).
+
 **Question:** As depth changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?
 
 **Answer:** To solve half the targets, traditional needs 5.3× to 7.0× the money OSO needs. By difficulty: depth 4 6.1×, depth 6 7.0×, depth 8 5.3×, depth 10 5.9×.
@@ -29,7 +31,5 @@
 | depth 6 | – | 3.27 | 3.04 | 3.00 |
 | depth 8 | 4.04 | 4.00 | 4.46 | 2.91 |
 | depth 10 | 4.39 | 3.32 | 3.81 | 4.32 |
-
-From: [Scaling, depth 4 (else default)](../simple-ideas-4x8-p2-len3g2-comp0-7-one-at-a-time-depth-20261024/summary.md), [Scaling, depth 6 (else default)](../simple-ideas-6x8-p2-len3g2-comp0-7-one-at-a-time-depth-20261024/summary.md), [Scaling, depth 8 (else default)](../simple-ideas-8x8-p2-len3g2-comp0-7-one-at-a-time-depth-20261024/summary.md), [Scaling, depth 10 (else default)](../simple-ideas-10x8-p2-len3g2-comp0-7-one-at-a-time-depth-20261024/summary.md).
 
 </details>

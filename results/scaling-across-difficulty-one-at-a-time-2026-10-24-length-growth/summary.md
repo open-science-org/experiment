@@ -1,5 +1,7 @@
 # Scaling as length growth changes
 
+**Meta-analysis:** runs nothing itself; it combines the results of 4 experiments: [Scaling, length growth 1 (else default)](../simple-ideas-6x8-p2-len3g1-comp0-7-one-at-a-time-length-growth-20261024/summary.md), [Scaling, length growth 2 (else default)](../simple-ideas-6x8-p2-len3g2-comp0-7-one-at-a-time-length-growth-20261024/summary.md), [Scaling, length growth 3 (else default)](../simple-ideas-6x8-p2-len3g3-comp0-7-one-at-a-time-length-growth-20261024/summary.md), [Scaling, length growth 4 (else default)](../simple-ideas-6x8-p2-len3g4-comp0-7-one-at-a-time-length-growth-20261024/summary.md).
+
 **Question:** As length growth changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?
 
 **Answer:** To solve half the targets, traditional needs 5.2× to 7.1× the money OSO needs. By difficulty: length growth 1 7.1×, length growth 2 7.0×, length growth 3 6.3×, length growth 4 5.2×.
@@ -29,7 +31,5 @@
 | length growth 2 | – | 3.27 | 3.04 | 3.00 |
 | length growth 3 | 1.78 | 2.94 | 2.54 | 1.77 |
 | length growth 4 | 2.43 | 1.16 | 1.88 | 2.20 |
-
-From: [Scaling, length growth 1 (else default)](../simple-ideas-6x8-p2-len3g1-comp0-7-one-at-a-time-length-growth-20261024/summary.md), [Scaling, length growth 2 (else default)](../simple-ideas-6x8-p2-len3g2-comp0-7-one-at-a-time-length-growth-20261024/summary.md), [Scaling, length growth 3 (else default)](../simple-ideas-6x8-p2-len3g3-comp0-7-one-at-a-time-length-growth-20261024/summary.md), [Scaling, length growth 4 (else default)](../simple-ideas-6x8-p2-len3g4-comp0-7-one-at-a-time-length-growth-20261024/summary.md).
 
 </details>

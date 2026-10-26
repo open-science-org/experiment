@@ -757,7 +757,7 @@ async function drawResults() {
   const groups = [
     { title: 'AI models', note: 'Real models proving theorems; Lean checks every proof.', cards: cards.filter((c) => (c.kind === 'race' || c.kind === 'model pilot') && !c.invalid) },
     { title: 'Example presets', note: 'One full report per example setting of the idea graph (full model). Examples, not measured from real fields.', cards: cards.filter((c) => c.kind === 'field report' && !c.superseded) },
-    { title: 'Scaling', note: 'How much money each society needs as the budget, the difficulty or the graph changes.', cards: cards.filter((c) => sim(c) && (/^scaling-across/.test(c.id) || /budget-scaling/.test(c.id))) },
+    { title: 'Scaling', note: 'How much money each society needs as the budget, the difficulty or the graph changes. Cards marked Meta-analysis combine the sweeps below.', cards: cards.filter((c) => sim(c) && (/^scaling-across/.test(c.id) || /budget-scaling/.test(c.id))) },
     { title: 'Scaling sweeps', note: 'The budget sweeps behind the scaling cards above, one per graph.', cards: cards.filter((c) => sim(c) && /scaling|one at a time/.test((c.tags ?? []).join(' ') + ' ' + c.title.toLowerCase()) && !/^scaling-across/.test(c.id) && !/budget-scaling/.test(c.id)), fold: true },
     { title: 'Simple model: α × β', note: 'Only α and β change between societies; one graph per card.', cards: cards.filter((c) => sim(c) && !/scaling|one at a time/.test((c.tags ?? []).join(' ') + ' ' + c.title.toLowerCase()) && /^simple-/.test(c.id)) },
     { title: 'Full model', note: 'Every mechanism, with agents of different kinds; agents choose what to share.', cards: cards.filter((c) => sim(c) && !/scaling|one at a time/.test((c.tags ?? []).join(' ') + ' ' + c.title.toLowerCase()) && !/^simple-/.test(c.id)) },
@@ -766,7 +766,7 @@ async function drawResults() {
     { title: 'Earlier versions', note: 'Replaced by newer results; kept for the record.', cards: cards.filter((c) => c.superseded), fold: true },
   ].filter((g) => g.cards.length);
   const card = (c) => `<a class="res field" href="#/doc/${esc(c.page)}">
-      ${c.invalid ? '<span class="chip">Not valid</span>' : ''}
+      ${c.invalid ? '<span class="chip">Not valid</span>' : ''}${c.basedOn?.length ? `<span class="chip" title="Runs nothing itself: combines the results of ${c.basedOn.length} experiments">Meta-analysis · combines ${c.basedOn.length}</span>` : ''}
       <h3>${esc(c.title.replace(/^(Real agents, OSO vs traditional|Lean pilot): /, ''))}</h3>
       <p class="q">${esc(c.design.question)}</p>
       <p class="a">${esc(c.invalid ? 'Not valid: ' + c.invalid : c.answer)}</p>${c.superseded ? `<p class="q">${esc(c.superseded)}</p>` : ''}

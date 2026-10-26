@@ -210,7 +210,7 @@ function history() {
   const KIND: Record<string, string> = { race: 'AI test', 'model pilot': 'AI pilot', 'field report': 'Preset report', simulation: 'Simulation' };
   const rows = allCards().map((c) => {
     const page = join(ROOT, c.page);
-    const model = c.kind !== 'simulation' ? KIND[c.kind] : c.tags?.includes('simple model') ? 'Simple model' : c.tags?.includes('full model') ? 'Full model' : 'Simulation';
+    const model = c.basedOn?.length ? 'Meta-analysis' : c.kind !== 'simulation' ? KIND[c.kind] : c.tags?.includes('simple model') ? 'Simple model' : c.tags?.includes('full model') ? 'Full model' : 'Simulation';
     const watch = c.kind === 'simulation' && existsSync(join(ROOT, 'config', 'experiments', `${c.id}.yaml`)) ? `#/live?tab=sim&experiment=${encodeURIComponent(c.id)}`
       : c.kind === 'field report' && !c.superseded ? `#/live?tab=sim&space=${encodeURIComponent(c.id)}` : c.kind === 'race' && !c.invalid ? '#/live?tab=ai' : null;
     // When the run started; older cards without it: when their result was last written.

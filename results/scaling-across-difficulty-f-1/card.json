@@ -2,7 +2,7 @@
  "id": "scaling-across-difficulty-f-1",
  "kind": "simulation",
  "date": "2026-10-26",
- "ranAt": "2026-10-26T01:52:25.615Z",
+ "ranAt": "2026-10-26T02:02:27.736Z",
  "title": "Scaling across difficulty, with f = 1",
  "design": {
   "question": "Across difficulty, with f = 1, how much money does each society need, and does the gap between traditional and OSO grow?",
@@ -46,7 +46,17 @@
   "scaling law",
   "difficulty",
   "f 1",
-  "analysis"
+  "meta-analysis"
+ ],
+ "basedOn": [
+  {
+   "id": "simple-ideas-6x8-p2-len3g2-comp0-7-f1-scaling-20261024",
+   "title": "Scaling with earnings shaping next round's money (f = 1): Default graph (6 × 8)"
+  },
+  {
+   "id": "simple-ideas-10x10-p2-5-len4g3-comp0-7-bounties-from-5-f1-scaling-20261024",
+   "title": "Scaling with earnings shaping next round's money (f = 1): Hard graph (10 × 10)"
+  }
  ],
  "modelVersion": 5
 }

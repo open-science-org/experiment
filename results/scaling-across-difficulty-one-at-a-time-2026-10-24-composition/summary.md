@@ -1,5 +1,7 @@
 # Scaling as composition changes
 
+**Meta-analysis:** runs nothing itself; it combines the results of 4 experiments: [Scaling, composition 0.5 (else default)](../simple-ideas-6x8-p2-len3g2-comp0-5-one-at-a-time-composition-20261024/summary.md), [Scaling, composition 0.7 (else default)](../simple-ideas-6x8-p2-len3g2-comp0-7-one-at-a-time-composition-20261024/summary.md), [Scaling, composition 0.85 (else default)](../simple-ideas-6x8-p2-len3g2-comp0-85-one-at-a-time-composition-20261024/summary.md), [Scaling, composition 0.95 (else default)](../simple-ideas-6x8-p2-len3g2-comp0-95-one-at-a-time-composition-20261024/summary.md).
+
 **Question:** As composition changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?
 
 **Answer:** To solve half the targets, traditional needs 5.6× to 7.0× the money OSO needs. By difficulty: composition 0.5 6.0×, composition 0.7 7.0×, composition 0.85 5.6×, composition 0.95 6.3×.
@@ -29,7 +31,5 @@
 | composition 0.7 | – | 3.27 | 3.04 | 3.00 |
 | composition 0.85 | 3.09 | 4.25 | 4.25 | 2.46 |
 | composition 0.95 | – | 3.58 | 2.35 | – |
-
-From: [Scaling, composition 0.5 (else default)](../simple-ideas-6x8-p2-len3g2-comp0-5-one-at-a-time-composition-20261024/summary.md), [Scaling, composition 0.7 (else default)](../simple-ideas-6x8-p2-len3g2-comp0-7-one-at-a-time-composition-20261024/summary.md), [Scaling, composition 0.85 (else default)](../simple-ideas-6x8-p2-len3g2-comp0-85-one-at-a-time-composition-20261024/summary.md), [Scaling, composition 0.95 (else default)](../simple-ideas-6x8-p2-len3g2-comp0-95-one-at-a-time-composition-20261024/summary.md).
 
 </details>

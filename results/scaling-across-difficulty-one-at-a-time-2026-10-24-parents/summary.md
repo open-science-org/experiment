@@ -1,5 +1,7 @@
 # Scaling as parents changes
 
+**Meta-analysis:** runs nothing itself; it combines the results of 4 experiments: [Scaling, parents 1 (else default)](../simple-ideas-6x8-p1-len3g2-comp0-7-one-at-a-time-parents-20261024/summary.md), [Scaling, parents 2 (else default)](../simple-ideas-6x8-p2-len3g2-comp0-7-one-at-a-time-parents-20261024/summary.md), [Scaling, parents 3 (else default)](../simple-ideas-6x8-p3-len3g2-comp0-7-one-at-a-time-parents-20261024/summary.md), [Scaling, parents 4 (else default)](../simple-ideas-6x8-p4-len3g2-comp0-7-one-at-a-time-parents-20261024/summary.md).
+
 **Question:** As parents changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?
 
 **Answer:** To solve half the targets, traditional needs 3.7× to 7.0× the money OSO needs. By difficulty: parents 1 3.7×, parents 2 7.0×, parents 3 6.8×, parents 4 6.6×.
@@ -29,7 +31,5 @@
 | parents 2 | – | 3.27 | 3.04 | 3.00 |
 | parents 3 | – | – | – | – |
 | parents 4 | 5.04 | 4.52 | 4.64 | 3.95 |
-
-From: [Scaling, parents 1 (else default)](../simple-ideas-6x8-p1-len3g2-comp0-7-one-at-a-time-parents-20261024/summary.md), [Scaling, parents 2 (else default)](../simple-ideas-6x8-p2-len3g2-comp0-7-one-at-a-time-parents-20261024/summary.md), [Scaling, parents 3 (else default)](../simple-ideas-6x8-p3-len3g2-comp0-7-one-at-a-time-parents-20261024/summary.md), [Scaling, parents 4 (else default)](../simple-ideas-6x8-p4-len3g2-comp0-7-one-at-a-time-parents-20261024/summary.md).
 
 </details>

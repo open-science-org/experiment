@@ -1,5 +1,7 @@
 # Scaling across difficulty, with f = 1
 
+**Meta-analysis:** runs nothing itself; it combines the results of 2 experiments: [Scaling with earnings shaping next round's money (f = 1): Default graph (6 × 8)](../simple-ideas-6x8-p2-len3g2-comp0-7-f1-scaling-20261024/summary.md), [Scaling with earnings shaping next round's money (f = 1): Hard graph (10 × 10)](../simple-ideas-10x10-p2-5-len4g3-comp0-7-bounties-from-5-f1-scaling-20261024/summary.md).
+
 **Question:** Across difficulty, with f = 1, how much money does each society need, and does the gap between traditional and OSO grow?
 
 **Answer:** To solve half the targets, traditional needs 1.8× to 5.4× the money OSO needs. By difficulty: default 5.4×, hard 1.8×.
@@ -25,7 +27,5 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | default | 3.74 | 4.32 | 3.86 | 2.46 | 4.39 | 4.86 |
 | hard | 3.38 | 1.88 | 1.55 | 1.89 | 1.83 | 1.76 |
-
-From: [Scaling with earnings shaping next round's money (f = 1): Default graph (6 × 8)](../simple-ideas-6x8-p2-len3g2-comp0-7-f1-scaling-20261024/summary.md), [Scaling with earnings shaping next round's money (f = 1): Hard graph (10 × 10)](../simple-ideas-10x10-p2-5-len4g3-comp0-7-bounties-from-5-f1-scaling-20261024/summary.md).
 
 </details>

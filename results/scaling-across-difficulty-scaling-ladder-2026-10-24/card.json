@@ -2,7 +2,7 @@
  "id": "scaling-across-difficulty-scaling-ladder-2026-10-24",
  "kind": "simulation",
  "date": "2026-10-26",
- "ranAt": "2026-10-26T01:52:24.326Z",
+ "ranAt": "2026-10-26T02:02:26.254Z",
  "title": "Scaling across difficulty",
  "design": {
   "question": "As problems get harder, how much more money does each society need, and does the gap between traditional and OSO grow?",
@@ -71,7 +71,29 @@
   "scaling law",
   "difficulty",
   "scaling ladder 2026-10-24",
-  "analysis"
+  "meta-analysis"
+ ],
+ "basedOn": [
+  {
+   "id": "simple-ideas-4x6-p1-5-len2g1-comp0-7-scaling-ladder-20261024",
+   "title": "Scaling: Easy graph (4 × 6)"
+  },
+  {
+   "id": "simple-ideas-6x8-p2-len3g2-comp0-7-scaling-ladder-20261024",
+   "title": "Scaling: Default graph (6 × 8)"
+  },
+  {
+   "id": "simple-ideas-8x8-p2-len3g2-comp0-7-bounties-from-5-scaling-ladder-20261024",
+   "title": "Scaling: Medium graph (8 × 8, bounties from level 5)"
+  },
+  {
+   "id": "simple-ideas-10x10-p2-5-len4g3-comp0-7-bounties-from-5-scaling-ladder-20261024",
+   "title": "Scaling: Hard graph (10 × 10)"
+  },
+  {
+   "id": "simple-ideas-14x12-p3-len4g3-comp0-8-bounties-from-7-scaling-ladder-20261024",
+   "title": "Scaling: Very hard graph (14 × 12)"
+  }
  ],
  "modelVersion": 5
 }

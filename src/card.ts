@@ -47,6 +47,8 @@ export interface Card {
   answers?: string[];
   /** The model version a simulation ran on (src/engine/version.ts). */
   modelVersion?: number;
+  /** A meta-analysis: it runs nothing itself and combines the results of these experiments. */
+  basedOn?: { id: string; title: string }[];
 }
 
 const table = (rows: Record<string, string | number>[]) => {
@@ -59,7 +61,7 @@ const table = (rows: Record<string, string | number>[]) => {
 /** The card as Markdown: short on top, details folded away below. */
 export function cardMarkdown(c: Card, details = ''): string {
   return `# ${c.title}
-${c.invalid ? `\n**Not valid:** ${c.invalid} Do not use this result.\n` : ''}
+${c.invalid ? `\n**Not valid:** ${c.invalid} Do not use this result.\n` : ''}${c.basedOn?.length ? `\n**Meta-analysis:** runs nothing itself; it combines the results of ${c.basedOn.length} experiments: ${c.basedOn.map((b) => `[${b.title}](../${b.id}/summary.md)`).join(', ')}.\n` : ''}
 **Question:** ${c.design.question}
 
 **Answer:** ${c.answer}

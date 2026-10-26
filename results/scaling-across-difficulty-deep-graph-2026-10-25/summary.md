@@ -1,5 +1,7 @@
 # Scaling across depth, each step equally hard
 
+**Meta-analysis:** runs nothing itself; it combines the results of 4 experiments: [Deep graph: 10 levels, each step equally hard](../simple-ideas-10x4-p2-len3g2-new2-deep-scaling-20261025/summary.md), [Deep graph: 20 levels, each step equally hard](../simple-ideas-20x4-p2-len3g2-new2-deep-scaling-20261025/summary.md), [Deep graph: 40 levels, each step equally hard](../simple-ideas-40x4-p2-len3g2-new2-deep-scaling-20261025/summary.md), [Deep graph: 80 levels, each step equally hard](../simple-ideas-80x4-p2-len3g2-new2-deep-scaling-20261025/summary.md).
+
 **Question:** Across depth, each step equally hard, how much money does each society need, and does the gap between traditional and OSO grow?
 
 **Answer:** To solve half the targets, traditional needs 7.6× to 14.9× the money OSO needs. The gap grows with every step in difficulty.
@@ -29,7 +31,5 @@
 | depth 20 | – | 4.73 | – | – | – |
 | depth 40 | – | – | – | – | – |
 | depth 80 | – | – | – | – | – |
-
-From: [Deep graph: 10 levels, each step equally hard](../simple-ideas-10x4-p2-len3g2-new2-deep-scaling-20261025/summary.md), [Deep graph: 20 levels, each step equally hard](../simple-ideas-20x4-p2-len3g2-new2-deep-scaling-20261025/summary.md), [Deep graph: 40 levels, each step equally hard](../simple-ideas-40x4-p2-len3g2-new2-deep-scaling-20261025/summary.md), [Deep graph: 80 levels, each step equally hard](../simple-ideas-80x4-p2-len3g2-new2-deep-scaling-20261025/summary.md).
 
 </details>

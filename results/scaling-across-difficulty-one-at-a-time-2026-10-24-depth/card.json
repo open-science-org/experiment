@@ -2,7 +2,7 @@
  "id": "scaling-across-difficulty-one-at-a-time-2026-10-24-depth",
  "kind": "simulation",
  "date": "2026-10-26",
- "ranAt": "2026-10-26T01:52:24.781Z",
+ "ranAt": "2026-10-26T02:02:26.853Z",
  "title": "Scaling as depth changes",
  "design": {
   "question": "As depth changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?",
@@ -58,7 +58,25 @@
   "scaling law",
   "difficulty",
   "one at a time 2026-10-24: depth",
-  "analysis"
+  "meta-analysis"
+ ],
+ "basedOn": [
+  {
+   "id": "simple-ideas-4x8-p2-len3g2-comp0-7-one-at-a-time-depth-20261024",
+   "title": "Scaling, depth 4 (else default)"
+  },
+  {
+   "id": "simple-ideas-6x8-p2-len3g2-comp0-7-one-at-a-time-depth-20261024",
+   "title": "Scaling, depth 6 (else default)"
+  },
+  {
+   "id": "simple-ideas-8x8-p2-len3g2-comp0-7-one-at-a-time-depth-20261024",
+   "title": "Scaling, depth 8 (else default)"
+  },
+  {
+   "id": "simple-ideas-10x8-p2-len3g2-comp0-7-one-at-a-time-depth-20261024",
+   "title": "Scaling, depth 10 (else default)"
+  }
  ],
  "modelVersion": 5
 }

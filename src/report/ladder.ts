@@ -102,7 +102,8 @@ export function writeLadder(tag: string, order: string[] = [], what = 'difficult
     title: what === 'difficulty' ? 'Scaling across difficulty' : what.startsWith('difficulty') ? `Scaling across ${what}` : what.includes(',') ? `Scaling across ${what}` : `Scaling as ${what} changes`,
     design: { question: what === 'difficulty' ? 'As problems get harder, how much more money does each society need, and does the gap between traditional and OSO grow?' : what.includes(',') ? `Across ${what}, how much money does each society need, and does the gap between traditional and OSO grow?` : `As ${what} changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?`, compare: `${societies.length} societies on ${table.length} difficulties (${table.map((t) => t.level).join(', ')})`, fixed: 'the simple model: 12 identical agents, equal money each round, a knowledge reward of 1 per new bit, no validation', measure: 'money needed to solve half the targets', better: 'lower', runs: `from the sweeps tagged "${tag}"` },
     answer, table: rows, caveats: ['Read off between the two budgets that bracket half the targets, in log budget.', 'Each difficulty has its own budget range; "> x" means not reached within it.'],
-    page: `results/${id}/summary.md`, chart: `results/${id}/figures/compare.svg`, tags: ['scaling', 'scaling law', 'difficulty', tag, 'analysis'],
-  }, `**Log–log slope of bounty value against budget** (where value is above 0 and below 90% of its most; a slope of 1 means value grows in proportion to money):\n\n${md(slopes)}\n\nFrom: ${sweeps.map((s) => `[${s.title}](../${s.id}/summary.md)`).join(', ')}.`);
+    page: `results/${id}/summary.md`, chart: `results/${id}/figures/compare.svg`, tags: ['scaling', 'scaling law', 'difficulty', tag, 'meta-analysis'],
+    basedOn: sweeps.map((s) => ({ id: s.id, title: s.title })),
+  }, `**Log–log slope of bounty value against budget** (where value is above 0 and below 90% of its most; a slope of 1 means value grows in proportion to money):\n\n${md(slopes)}`);
   return dir;
 }
