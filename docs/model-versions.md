@@ -4,6 +4,7 @@ The model's version goes up whenever a change alters what runs produce. New opti
 
 | Version | Date | What changed |
 | --- | --- | --- |
+| 6 | 2026-10-26 | **Rivals counted from published work.** Agents weigh their chance of being first by the number of rivals, and now count rivals only for ideas whose parents are all published. Before, hidden agents also counted rivals who held those parents privately, which they could not know; it sent them off the main path and inflated the gap on deep graphs. Runs where everything is published at once are unchanged. The old count is kept as `behaviour.rivals: all`. |
 | 5 | 2026-10-25 | **No flat mint.** The flat mint per idea is off in every model; the knowledge reward (1 per new bit, flowing back with $\alpha_0 = \alpha$) replaces it, in the full model too. The model can now be built up **step by step** (simple model, then agents choosing what to share, then earnings shaping money, then different agents, then a gamer). |
 | 4 | 2026-10-25 | **Knowledge reward.** A published idea earns $m_{\text{bit}}$ per new bit (bits in no published idea yet), flowing back with its own absorption rate $\alpha_0$ ($= \alpha$ by default). On in the simple model ($m_{\text{bit}} = 1$), off in the full model. New measures (no effect on runs): knowledge found, knowledge published, knowledge per unit of money. |
 | 3 | 2026-10-24 | **Bounty placement.** On each level with bounties, they go at random to ideas among the half resting on the most earlier ideas, instead of fixed positions. |

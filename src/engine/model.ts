@@ -332,6 +332,7 @@ export function run(sc: Scenario, seed: number, record?: { events: TraceEvent[];
   const { X, perAgentPerRound } = sc.budget;
   const T = perAgentPerRound ? Math.round(X / (N * perAgentPerRound)) : sc.budget.rounds;
   if (!T || T < 1) throw new Error('scenario: set budget.rounds or budget.perAgentPerRound');
+  if (!['public', 'all'].includes(sc.behaviour.rivals)) throw new Error(`scenario: behaviour.rivals must be public or all, not ${sc.behaviour.rivals}`);
   const curve: RunResult['curve'] = [];
   const perRound = X / T;
   let speed: number | null = null;
@@ -354,8 +355,12 @@ export function run(sc: Scenario, seed: number, record?: { events: TraceEvent[];
     s.scheduled.delete(t);
     // How many agents can currently attempt each result, to estimate the race for it.
     s.rivalsAt = new Int32Array(world.n);
-    // Rivals are agents that know all of an idea's parents: the ones really racing for it.
-    for (const a of agents) for (const r of gatedFrontier(s, a.id)) s.rivalsAt[r]++;
+    // Rivals are agents that know all of an idea's parents: the ones really racing for it. Agents see only
+    // published work, so by default ('public') an idea counts its rivals only when all its parents are
+    // published; one resting on unpublished work shows none, since nobody can see who holds it privately.
+    // 'all' (models before v6) also counts private holders, which hidden agents could not know.
+    const publicRivals = sc.behaviour.rivals !== 'all';
+    for (const a of agents) for (const r of gatedFrontier(s, a.id)) if (!publicRivals || world.prereqs[r].every((j) => s.author[j] >= 0)) s.rivalsAt[r]++;
     for (const i of turns) attempt(s, i, deciderFor[i]);
     // Uptake of published results by agents who have not yet taken them up (reuse); costly
     // knowledge is absorbed at the start of each round instead.

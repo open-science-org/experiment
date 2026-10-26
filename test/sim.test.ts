@@ -473,3 +473,16 @@ test('the one-chain check says whether the simulator matches, and flags a mismat
   assert.match(bad.answer!, /does not match/);
   assert.ok(EXACT_MATCH_SE > 0);
 });
+
+test('rivals are counted from published work: hidden agents do not see who holds unpublished ideas', async () => {
+  const design = await import('../src/viewer/design.ts');
+  const { expand } = await import('../src/experiments/experiment.ts');
+  const d = { id: 'x', space: '', graph: { ...design.GRAPH_DEFAULTS, levels: 10, width: 4 }, budget: 600, alphas: [1], betas: [0, 1], seeds: 1 };
+  const [closed, open] = expand(design.simpleExperimentFor(d)).map((r) => r.scenario);
+  const mean = (sc: any, rivals: string) => { const c = structuredClone(sc); c.behaviour.rivals = rivals; return Array.from({ length: 20 }, (_, k) => run(c, k + 1).targetsSolved).reduce((a, b) => a + b, 0) / 20; };
+  // When everything is published at once, both counts agree, so runs are the same.
+  assert.equal(mean(open, 'public'), mean(open, 'all'));
+  // When work is hidden, the old count let agents dodge rivals they could not see.
+  assert.ok(mean(closed, 'public') >= mean(closed, 'all'));
+  assert.throws(() => { const c = structuredClone(closed); (c.behaviour as { rivals: string }).rivals = 'nope'; run(c, 1); });
+});

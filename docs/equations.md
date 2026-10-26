@@ -1,7 +1,7 @@
 <!-- math -->
 # Equations
 
-*Model version 5 ([what changed in each version](model-versions.md)).*
+*Model version 6 ([what changed in each version](model-versions.md)).*
 
 Every rule of the experiment as a formula, in the order a run uses them. Each formula has one line saying what it does, and is worked out on the small tree below. The simulation uses all of them; the AI-model tests use the same rules, except where [section 12](#12-ai-model-tests-what-changes) says otherwise. The same ideas in words: [How it works](README.md). Full definitions: [the design](design.md).
 
@@ -97,7 +97,7 @@ Grouped by what they belong to, in the order of the sections below. A hat marks 
 
 | Symbol | Meaning | Default |
 | --- | --- | --- |
-| $\text{rivals}_x,\ \text{win}_x$ | agents that could attempt $x$ now, and the chance of being first | |
+| $\text{rivals}_x,\ \text{win}_x$ | agents that could attempt $x$ now, as far as published work shows, and the chance of being first | |
 | $h_x$ | rounds until value from later ideas arrives | |
 | $B^{\text{after}}_x$ | the largest bounty after $x$ | |
 | $\delta_i$ | patience: how much later payoffs count | 0.85 to 0.98 |
@@ -291,6 +291,8 @@ Each round, an agent looks at its **frontier**: ideas it does not know yet whose
 **Chance of being first** at $x$, when $\text{rivals}_x$ agents (itself included) could attempt it now:
 
 $$\text{win}_x = \frac{1}{\max(1,\ \text{rivals}_x)}$$
+
+Agents see only published work, so $\text{rivals}_x$ counts the agents that know all of $x$'s parents **only when all those parents are published**. An idea resting on unpublished work shows no rivals ($\text{win}_x = 1$): nobody can see who holds it privately.
 
 **Rounds until value from later ideas arrives:** 5 per level between $x$ and the ideas with a bounty after it (1 if there are none).
 

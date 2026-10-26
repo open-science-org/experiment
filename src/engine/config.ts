@@ -94,6 +94,8 @@ export interface Scenario {
     psi: number;
     /** Expected rounds per level of depth, for discounting value that arrives later. */
     roundsPerLevel: number;
+    /** Who agents count as rivals for an idea: 'public' (only from published work) or 'all' (private holders too; before v6). */
+    rivals: 'public' | 'all';
   };
   measures: {
     /** Level L* for the speed and cost measures. */

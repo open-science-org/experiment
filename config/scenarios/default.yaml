@@ -86,6 +86,7 @@ behaviour:
   kappa: 1               # publish rule: how much publishing raises a lemma's use
   psi: 0.5               # publish rule: scoop risk
   roundsPerLevel: 5      # expected rounds per level of level, for discounting
+  rivals: public         # rivals counted from published work only (all: private holders too, as before v6)
 
 measures:
   targetLevel: 7         # level L* for the speed and cost measures

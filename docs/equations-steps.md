@@ -1,7 +1,7 @@
 <!-- math -->
 # Equations: the model step by step
 
-*Model version 5 ([what changed in each version](model-versions.md)).*
+*Model version 6 ([what changed in each version](model-versions.md)).*
 
 The model is built up one mechanism at a time, so each step's effect can be seen on its own. Step 1 is the [simple model](equations-simple.md). Step 5 has exactly the [full model](equations.md)'s mechanisms and agents; the full model then compares six sharing rules (imposed or chosen, with or without flow-back) where step 5 sweeps α with agents choosing. The full model's optional extras (costly or wrong sharing, learning from failure) stay off in both. Every step uses the same idea graph, bounties and knowledge reward: a published idea earns 1 per new bit, flowing back with $\alpha$.
 
