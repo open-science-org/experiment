@@ -106,7 +106,9 @@
   .doc table { border-collapse: collapse; font-size: 13px; margin: 10px 0; display: block; overflow-x: auto; }
   .doc th, .doc td { border-bottom: 1px solid var(--line); padding: 5px 9px; text-align: left; vertical-align: top; }
   .doc th { color: var(--ink-2); font-weight: 400; }
-  .doc td:nth-child(-n+2), .doc th:nth-child(-n+2) { white-space: nowrap; }
+  /* Short cells (labels, numbers) stay on one line; long text wraps but keeps a readable width. */
+  .doc td.short, .doc th.short { white-space: nowrap; }
+  .doc td.long { min-width: 22em; }
   .doc blockquote { margin: 0; padding: 2px 14px; border-left: 3px solid var(--line); color: var(--ink-2); }
   .doc code { background: var(--bg); padding: 1px 4px; border-radius: 4px; font-size: 12.5px; }
   .doc pre code { padding: 0; background: none; }
@@ -472,6 +474,11 @@ async function openDoc(path) {
     const eqDoc = ['docs/equations.md', 'docs/equations-simple.md', 'docs/equations-steps.md'].includes(d.path);
     $('doc-crumbs').innerHTML = eqDoc ? `<div class="tabs" role="tablist"><a class="btn" role="tab" href="#/equations?m=simple" aria-selected="${d.path.endsWith('simple.md')}">Simple model (α, β)</a><a class="btn" role="tab" href="#/equations?m=steps" aria-selected="${d.path.endsWith('steps.md')}">Step by step</a><a class="btn" role="tab" href="#/equations?m=full" aria-selected="${d.path === 'docs/equations.md'}">Full model</a></div>` : howDoc ? (d.path === 'docs/README.md' ? '' : '<a href="#/how">← How it works</a>') : `<a href="#/runs/results">← Results</a>${fieldId ? ` · <a href="#/doc/reports/${fieldId}/report.md">Full report</a> · <a href="#/live?tab=sim&space=${fieldId}">Watch a simulation</a>` : ''}`;
     $('doc-body').innerHTML = d.html;
+    for (const c of $('doc-body').querySelectorAll('td, th')) {
+      const n = c.textContent.trim().length;
+      c.classList.toggle('short', n <= 30);
+      c.classList.toggle('long', n > 80);
+    }
     // A saved simulation: interactive charts in place of its fixed comparison chart.
     const rid = /^results\/([^/]+)\/summary\.md$/.exec(d.path)?.[1];
     if (rid) explore(rid);
