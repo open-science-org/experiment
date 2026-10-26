@@ -422,6 +422,22 @@
 <script>
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+/** Round tick values from lo up to at least hi, about n steps of 1, 2, 2.5 or 5 × a power of ten. The last tick is the axis top. */
+function niceTicks(lo, hi, n = 4) {
+  const raw = (hi - lo || Math.abs(hi) || 1) / n, e = 10 ** Math.floor(Math.log10(raw));
+  const step = [1, 2, 2.5, 5, 10].map((k) => k * e).find((x) => x >= raw - 1e-12);
+  const out = [];
+  for (let k = Math.floor(lo / step + 1e-9); ; k++) { const v = +(k * step).toPrecision(12); out.push(v); if (v >= hi - 1e-9) break; }
+  const m = step / 10 ** Math.floor(Math.log10(step) + 1e-9);
+  const digits = Math.max(0, Math.min(4, -Math.floor(Math.log10(step) + 1e-9) + (m === 2.5 ? 1 : 0)));
+  return { ticks: out, label: (v) => v.toFixed(digits) };
+}
+/** A label shortened for a chart: bracketed notes without a value go first ("Traditional (α = 1, finished work only)" → "Traditional (α = 1)"), then it is cut at a word. */
+function shortLabel(s, max) {
+  if (s.length <= max) return s;
+  const t = s.replace(/\s*\(([^)]*)\)/g, (_, inner) => { const keep = inner.split(',').map((x) => x.trim()).filter((x) => x.includes('=')); return keep.length ? ` (${keep.join(', ')})` : ''; }).trim();
+  return t.length <= max ? t : t.slice(0, max - 1).replace(/\s+\S*$/, '') + '…';
+}
 const api = (path) => fetch(path).then(async (r) => { const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText); return j; });
 const money = (x) => '$' + (x < 0.1 ? x.toFixed(3) : x.toFixed(2));
 
@@ -589,7 +605,7 @@ async function exploreIn(id, root) {
         svg += `<path d="${ps.map((p, i) => `${i ? 'L' : 'M'}${sx(p.b).toFixed(1)} ${sy(p.m).toFixed(1)}`).join(' ')}" fill="none" stroke="${c}" stroke-width="2.4"${dash ? ` stroke-dasharray="${dash}"` : ''}/>`;
         for (const p of ps) svg += `<line x1="${sx(p.b)}" x2="${sx(p.b)}" y1="${sy(p.m - p.e)}" y2="${sy(p.m + p.e)}" stroke="${c}" stroke-width="2" opacity="0.5"/><circle cx="${sx(p.b)}" cy="${sy(p.m)}" r="4.5" fill="${c}" stroke="var(--surface)" stroke-width="1.2"><title>${esc(so)}, budget ${p.b}: ${lab(p.m)}</title></circle>`;
         const ly = tp + 12 + j * 18;
-        svg += `<line x1="${l + pw + 8}" x2="${l + pw + 30}" y1="${ly - 4}" y2="${ly - 4}" stroke="${c}" stroke-width="2.4"${dash ? ` stroke-dasharray="${dash}"` : ''}/><text x="${l + pw + 36}" y="${ly}" font-size="12" font-weight="700" fill="${c}">${esc(so.slice(0, 28))}</text>`;
+        svg += `<line x1="${l + pw + 8}" x2="${l + pw + 30}" y1="${ly - 4}" y2="${ly - 4}" stroke="${c}" stroke-width="2.4"${dash ? ` stroke-dasharray="${dash}"` : ''}/><text x="${l + pw + 36}" y="${ly}" font-size="12" font-weight="700" fill="${c}">${esc(shortLabel(so, 28))}<title>${esc(so)}</title></text>`;
       });
       $('x-scaling').innerHTML = svg + '</svg>';
     };
@@ -609,7 +625,7 @@ async function exploreIn(id, root) {
     rows.forEach((r, i) => {
       // Only OSO (orange) and traditional (blue) carry colour here; the rest are grey.
       const y = 18 + i * rh, c = /(^|, )Traditional\b|\bOSO\b/.test(r.label) ? seriesColour(r.label, r.k) : 'var(--ink-3)', e = 2 * se(r);
-      svg += `<text x="${lw - 10}" y="${y + 4}" text-anchor="end" font-size="12" fill="var(--ink)">${esc(r.label.slice(0, 40))}</text><line x1="${sx(r.s.mean - e)}" x2="${sx(r.s.mean + e)}" y1="${y}" y2="${y}" stroke="${c}" stroke-width="3" stroke-linecap="round" opacity="0.55"/><circle cx="${sx(r.s.mean)}" cy="${y}" r="6" fill="${c}" stroke="var(--surface)" stroke-width="1.5"><title>${esc(r.label)}: ${f(r.s.mean)} (95% interval ${f(r.s.mean - e)} to ${f(r.s.mean + e)}; ${r.s.n} runs)</title></circle><text x="${sx(r.s.mean + e) + 8}" y="${y + 4}" font-size="11" font-weight="700" fill="${c}">${f(r.s.mean)}</text>`;
+      svg += `<text x="${lw - 10}" y="${y + 4}" text-anchor="end" font-size="12" fill="var(--ink)">${esc(shortLabel(r.label, 40))}<title>${esc(r.label)}</title></text><line x1="${sx(r.s.mean - e)}" x2="${sx(r.s.mean + e)}" y1="${y}" y2="${y}" stroke="${c}" stroke-width="3" stroke-linecap="round" opacity="0.55"/><circle cx="${sx(r.s.mean)}" cy="${y}" r="6" fill="${c}" stroke="var(--surface)" stroke-width="1.5"><title>${esc(r.label)}: ${f(r.s.mean)} (95% interval ${f(r.s.mean - e)} to ${f(r.s.mean + e)}; ${r.s.n} runs)</title></circle><text x="${sx(r.s.mean + e) + 8}" y="${y + 4}" font-size="11" font-weight="700" fill="${c}">${f(r.s.mean)}</text>`;
     });
     $('x-note').textContent = 'dot: mean over runs; line: 95% interval (± 2 standard errors). Lines that do not overlap: a clear difference.';
     return svg + '</svg>';
@@ -643,11 +659,11 @@ async function exploreIn(id, root) {
     const panel = (title, get, lo0, hi0, refLine) => {
       const W = 330, H = 220, l = 46, rr = 14, t = 30, b = 40, pw = W - l - rr, ph = H - t - b;
       const vals = pts.flatMap((p) => { const st = get(p.r); return st?.n ? [st.mean - 2 * se2(st), st.mean + 2 * se2(st)] : []; }).concat(refLine !== null ? [refLine] : []);
-      const nice = (x) => { const e = 10 ** Math.floor(Math.log10(x || 1)); return [1, 2, 2.5, 5, 10].map((k) => k * e).find((v) => v >= x); };
-      const lo = lo0 ?? Math.min(0, ...vals), hi = hi0 ?? (vals.length ? nice(Math.max(...vals)) : 1);
+      const ax = niceTicks(lo0 ?? Math.min(0, ...vals), hi0 ?? (vals.length ? Math.max(...vals) : 1));
+      const lo = ax.ticks[0], hi = ax.ticks.at(-1);
       const sx = (a) => l + (1 - a) * pw, sy = (v) => t + ph - ((v - lo) / (hi - lo || 1)) * ph;
       let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W * 1.3}px;height:auto" role="img" aria-label="${esc(title)} by α"><text x="${l}" y="16" font-size="13" font-weight="700" fill="var(--ink)">${esc(title)}</text>`;
-      for (let k = 0; k <= 4; k++) { const v = lo + ((hi - lo) * k) / 4; svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(v)}" y2="${sy(v)}" stroke="var(--line)"/><text x="${l - 6}" y="${sy(v) + 4}" text-anchor="end" font-size="10" fill="var(--ink-3)">${f(v)}</text>`; }
+      for (const v of ax.ticks) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(v)}" y2="${sy(v)}" stroke="var(--line)"/><text x="${l - 6}" y="${sy(v) + 4}" text-anchor="end" font-size="10" fill="var(--ink-3)">${ax.label(v)}</text>`;
       for (const a of [1, 0.8, 0.6, 0.4, 0.2, 0]) svg += `<text x="${sx(a)}" y="${t + ph + 15}" text-anchor="middle" font-size="10" fill="var(--ink-3)">${a}</text>`;
       svg += `<text x="${l + pw / 2}" y="${H - 6}" text-anchor="middle" font-size="11" fill="var(--ink-3)">α (1: nothing flows back → 0: all flows back)</text>`;
       if (refLine !== null) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(refLine)}" y2="${sy(refLine)}" stroke="var(--s1)" stroke-width="2" stroke-dasharray="6 4"/><text x="${l + pw - 2}" y="${sy(refLine) - 5}" text-anchor="end" font-size="10" font-weight="700" fill="var(--s1)">traditional ${f(refLine)}</text>`;
@@ -677,17 +693,19 @@ async function exploreIn(id, root) {
     const v = $('x-var').value, name = data.progress.find((x) => x.id === v).name;
     const chosen = [...$('x-rows').querySelectorAll('input:checked')].map((i) => Number(i.value)).filter((k) => data.rows[k].progress);
     const W = 800, H = 260, l = 50, rgt = 250, tp = 20, b = 34, pw = W - l - rgt, ph = H - tp - b;
-    const X = Math.max(...chosen.map((k) => data.rows[k].budget), 1), Y = Math.max(1e-9, ...chosen.flatMap((k) => data.rows[k].progress[v]));
+    const X = Math.max(...chosen.map((k) => data.rows[k].budget), 1), yTop = Math.max(1e-9, ...chosen.flatMap((k) => data.rows[k].progress[v]));
+    // A linear y-axis ends on a round tick; a log axis ends at the data.
+    const yAx = niceTicks(0, yTop), xAx = niceTicks(0, X, 5), Y = $('x-log').checked ? yTop : yAx.ticks.at(-1);
     const n = data.rows[0].progress?.[v]?.length ?? 21, log = $('x-log').checked, logx = $('x-logx').checked;
     // Log–log: both axes in powers of ten; points at zero cannot be drawn and are left out.
     const xMin = X / (n - 1), yMin = Math.max(1e-3, Math.min(...chosen.flatMap((k) => data.rows[k].progress[v].filter((y) => y > 0))) || 1);
     const L = Math.log10, sx = logx ? (x) => l + ((L(x) - L(xMin)) / (L(X) - L(xMin) || 1)) * pw : (x) => l + (x / X) * pw;
     const sy = log ? (y) => tp + ph - ((L(y) - L(yMin)) / (L(Y) - L(yMin) || 1)) * ph : (y) => tp + ph - (y / Y) * ph;
     let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="${esc(name)} by money spent">`;
-    const ticks = (a, b, lg) => (lg ? [0, 0.25, 0.5, 0.75, 1].map((t) => 10 ** (L(a) + (L(b) - L(a)) * t)) : [0, 0.25, 0.5, 0.75, 1].map((t) => b * t));
+    const logTicks = (a, b) => [0, 0.25, 0.5, 0.75, 1].map((t) => 10 ** (L(a) + (L(b) - L(a)) * t));
     const lab = (x) => (x < 10 ? x.toFixed(x < 1 ? 2 : 1) : Math.round(x));
-    for (const y of ticks(yMin, Y, log)) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"/><text x="${l - 6}" y="${sy(y) + 4}" text-anchor="end" font-size="11" fill="var(--ink-3)">${lab(y)}</text>`;
-    for (const x of ticks(xMin, X, logx)) svg += `<text x="${sx(x)}" y="${tp + ph + 16}" text-anchor="middle" font-size="11" fill="var(--ink-3)">${lab(x)}</text>`;
+    for (const y of log ? logTicks(yMin, Y) : yAx.ticks) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"/><text x="${l - 6}" y="${sy(y) + 4}" text-anchor="end" font-size="11" fill="var(--ink-3)">${log ? lab(y) : yAx.label(y)}</text>`;
+    for (const x of logx ? logTicks(xMin, X) : xAx.ticks.filter((x) => x <= X)) svg += `<text x="${sx(x)}" y="${tp + ph + 16}" text-anchor="middle" font-size="11" fill="var(--ink-3)">${logx ? lab(x) : xAx.label(x)}</text>`;
     $('x-lognote').textContent = log || logx ? `${[logx && 'x', log && 'y'].filter(Boolean).join(' and ')} on a log scale; points at zero are left out` : 'mean over runs, by money spent';
     svg += `<text x="${l + pw / 2}" y="${H - 2}" text-anchor="middle" font-size="11" fill="var(--ink-3)">money spent</text>`;
     // Lines of the same colour (several OSO rows, say) differ by style: solid, dashed, dotted, dash-dot.
@@ -700,7 +718,7 @@ async function exploreIn(id, root) {
       const pts = ys.map((y, i) => [(r.budget * i) / (n - 1), y]).filter(([x, y]) => (!logx || x > 0) && (!log || y > 0));
       const d = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${sx(x).toFixed(1)} ${sy(y).toFixed(1)}`).join(' ');
       const ly = tp + 12 + j * 18;
-      svg += `<path d="${d}" fill="none" stroke="${c}" stroke-width="2.4"${dash ? ` stroke-dasharray="${dash}"` : ''}/><line x1="${l + pw + 8}" x2="${l + pw + 30}" y1="${ly - 4}" y2="${ly - 4}" stroke="${c}" stroke-width="2.4"${dash ? ` stroke-dasharray="${dash}"` : ''}/><text x="${l + pw + 36}" y="${ly}" font-size="12" font-weight="700" fill="${c}">${esc(r.label.slice(0, 26))}: ${ys.at(-1) < 10 ? ys.at(-1).toFixed(1) : Math.round(ys.at(-1))}</text>`;
+      svg += `<path d="${d}" fill="none" stroke="${c}" stroke-width="2.4"${dash ? ` stroke-dasharray="${dash}"` : ''}/><line x1="${l + pw + 8}" x2="${l + pw + 30}" y1="${ly - 4}" y2="${ly - 4}" stroke="${c}" stroke-width="2.4"${dash ? ` stroke-dasharray="${dash}"` : ''}/><text x="${l + pw + 36}" y="${ly}" font-size="12" font-weight="700" fill="${c}">${esc(shortLabel(r.label, 26))}<title>${esc(r.label)}</title>: ${ys.at(-1) < 10 ? ys.at(-1).toFixed(1) : Math.round(ys.at(-1))}</text>`;
     });
     $('x-lines').innerHTML = svg + '</svg>';
   };
@@ -1724,7 +1742,7 @@ function paneChart(panes, round) {
     const c = colour(p.run.setting.label, k), last = pts[pts.length - 1];
     let d = ''; pts.forEach(([x, y], i) => { d += `${i ? 'L' : 'M'}${sx(x).toFixed(1)} ${sy(i ? pts[i - 1][1] : y).toFixed(1)} L${sx(x).toFixed(1)} ${sy(y).toFixed(1)} `; });
     svg += `<path d="${d}" fill="none" stroke="${c}" stroke-width="2.4"${k && !/^OSO|^Traditional/.test(p.run.setting.label) ? ' stroke-dasharray="5 3"' : ''}/>`;
-    svg += `<circle cx="${sx(last[0])}" cy="${sy(last[1])}" r="4" fill="${c}"/><text x="${l + pw + 10}" y="${tp + 14 + k * 20}" font-size="12" font-weight="700" fill="${c}">${esc(p.run.setting.label.slice(0, 26))}: ${last[1]}</text>`;
+    svg += `<circle cx="${sx(last[0])}" cy="${sy(last[1])}" r="4" fill="${c}"/><text x="${l + pw + 10}" y="${tp + 14 + k * 20}" font-size="12" font-weight="700" fill="${c}">${esc(shortLabel(p.run.setting.label, 26))}<title>${esc(p.run.setting.label)}</title>: ${last[1]}</text>`;
   });
   return svg + '</svg>';
 }
