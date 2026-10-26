@@ -173,7 +173,7 @@ One generator makes idea graphs of any shape, with three groups of controls that
 | **Structure** | levels, ideas per level | how deep and how wide the graph is | 6, 8 |
 | | parents per idea | how many earlier ideas an idea builds on, on average | 2 |
 | | skip | chance a parent comes from an older level instead of the level just below | 0.2 |
-| **Difficulty** | length $L_1$, growth $g$ | an idea at level $\ell$ is a sequence of $L_\ell = L_1 + g\,(\ell - 1)$ bits | 3, 2 |
+| **Difficulty** | length $L_1$, growth $g$ | an idea at level $\ell$ is a sequence of $L_\ell = L_1 + g\,(\ell - 1)$ bits (at least 1); $g > 0$: deeper ideas are harder, $g = 0$: every level equally hard, $g < 0$: deeper ideas are easier | 3, 2 |
 | **Difficulty follows level** | $t$, from 0 to 1 | each idea takes its own level's length with chance $t$; otherwise the length of a level drawn at random (an idea with no parents: that level's number of new bits). $t = 1$: difficulty rises strictly with level; $t = 0.8$: on average, with about 1 idea in 5 off the trend; $t = 0$: no link. The mix of easy and hard ideas is the same at any $t$ | 1 |
 | **Attribution** | composition $\kappa$ | the share of an idea's bits that are pieces of its parents' sequences | 0.7 |
 | | new bits per idea $n$ (optional) | instead of $\kappa$: each idea inherits all but $n$ bits, so every step is equally hard at any depth (used for the deep-graph runs) | off |

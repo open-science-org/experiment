@@ -501,7 +501,7 @@ export { parse as parseYaml };
 /** The generator's controls (world kind 'ideas'): structure, difficulty and attribution. */
 export interface GraphControls { levels: number; width: number; parents: number; skip: number; length: number; lengthGrowth: number; levelTie: number; composition: number; targets: number; targetsFrom: number }
 export const GRAPH_DEFAULTS: GraphControls = { levels: 6, width: 8, parents: 2, skip: 0.2, length: 3, lengthGrowth: 2, levelTie: 1, composition: 0.7, targets: 2, targetsFrom: 0 };
-const GRAPH_RANGES: Record<keyof GraphControls, [number, number]> = { levels: [1, 15], width: [1, 30], parents: [1, 6], skip: [0, 1], length: [1, 12], lengthGrowth: [0, 6], levelTie: [0, 1], composition: [0, 1], targets: [1, 10], targetsFrom: [0, 15] };
+const GRAPH_RANGES: Record<keyof GraphControls, [number, number]> = { levels: [1, 15], width: [1, 30], parents: [1, 6], skip: [0, 1], length: [1, 12], lengthGrowth: [-6, 6], levelTie: [0, 1], composition: [0, 1], targets: [1, 10], targetsFrom: [0, 15] };
 
 /** The simple model's design: a topic, or a generated idea graph (graph), and the α and β values. */
 export interface SimpleDesign { id: string; title?: string; question?: string; space: string; graph?: GraphControls; preset?: string; budget?: number; alphas: number[]; betas: number[]; seeds: number; measure?: string; step?: number }

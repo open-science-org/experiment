@@ -42,8 +42,8 @@ export function writeLadder(tag: string, order: string[] = [], what = 'difficult
     const level = (spec.tags ?? []).find((t) => t.startsWith('difficulty '))?.slice('difficulty '.length) ?? id;
     const runs = readFileSync(join(RESULTS_DIR, id, 'runs.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l));
     return { id, title: spec.title, level, budgets: [...new Set(runs.map((r) => Number(r.budget)))].sort((a, b) => a - b), societies: [...new Set(runs.map((r) => String(r.society)))], runs };
-  // Named difficulties in the given order; numbered steps ("length growth 3") by their number.
-  }).sort((a, b) => (order.includes(a.level) && order.includes(b.level) ? order.indexOf(a.level) - order.indexOf(b.level) : parseFloat(a.level.replace(/^[^\d.]*/, '')) - parseFloat(b.level.replace(/^[^\d.]*/, ''))));
+  // Named difficulties in the given order; numbered steps ("length growth 3", "growth -1") by their number.
+  }).sort((a, b) => (order.includes(a.level) && order.includes(b.level) ? order.indexOf(a.level) - order.indexOf(b.level) : parseFloat(a.level.replace(/^[^\d.-]*/, '')) - parseFloat(b.level.replace(/^[^\d.-]*/, ''))));
   const societies = sweeps[0].societies;
   // Per difficulty and society: share of targets solved and bounty value, by budget.
   const table = sweeps.map((s) => ({

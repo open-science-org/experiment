@@ -272,7 +272,7 @@
           </fieldset>
           <fieldset><legend>Difficulty</legend>
             <label>length at level 1 (bits) <input type="number" id="g-length" min="1" max="12" step="1"></label>
-            <label>more bits per level <input type="number" id="g-lengthGrowth" min="0" max="6" step="0.5"></label>
+            <label>more bits per level <span class="info" title="Positive: deeper ideas are harder. 0: every level equally hard. Negative: deeper ideas are easier (no idea has fewer than 1 bit).">ⓘ</span> <input type="number" id="g-lengthGrowth" min="-6" max="6" step="0.5"></label>
             <label>follows level <span class="info" title="How strictly an idea's difficulty follows its level. 1: every idea as hard as its level says. 0.8: harder on average the deeper, but about 1 idea in 5 is not. 0: difficulty drawn at random, whatever the level. The mix of easy and hard ideas stays the same; only where they sit changes.">ⓘ</span> <input type="number" id="g-levelTie" min="0" max="1" step="0.1"></label>
             <p class="muted">An attempt works with chance 2<sup>−bits left</sup>.</p>
           </fieldset>
