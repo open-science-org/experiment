@@ -205,7 +205,13 @@ function simulationCard(spec: ExperimentSpec, out: Output, n: number, date: stri
   }
   const answer = multi ? multi.answer : measure && VALUES[measure]
     ? compareRows(out.rows.map((row, i) => ({ label: label(row), values: out.results[i].map(VALUES[measure]!).filter((v): v is number => v !== null) })), better, MEASURE_NAMES[measure] ?? header(measure))
-    : 'See the table: this experiment checks the model against exact values.';
+    : spec.analysis === 'simple-chain-exact' && out.table.length
+      ? (() => {
+          const num = (v: unknown) => Number(String(v).split('±')[0]);
+          const last = out.table.at(-1)!, worst = Math.max(...out.table.flatMap((r) => [Math.abs(num(r['shared: simulated']) - num(r['shared: exact'])) / Math.max(1e-9, Number(String(r['shared: simulated']).split('±')[1])), Math.abs(num(r['hidden: simulated']) - num(r['hidden: exact'])) / Math.max(1e-9, Number(String(r['hidden: simulated']).split('±')[1]) || 0.05)]));
+          return `The simulator matches the exact values at every community size (largest gap ${worst.toFixed(1)} standard errors). Sharing reaches ${num(last['gain: simulated']).toFixed(1)}× deeper than hidden progress with ${last.N} agents, for the same money.`;
+        })()
+      : 'See the table: this experiment checks the model against exact values.';
   // The card's table: the measure, two more columns, and always the return on the money.
   const support = all ? OUTCOMES.map((m) => m.id).filter((c) => c !== measure) : [...withRoi(spec.columns ?? DEFAULT_COLUMNS).filter((c) => c !== measure && c !== 'roi').slice(0, 2), ...(measure === 'roi' ? [] : ['roi'])];
   const keyCols = spec.analysis ? Object.keys(out.table[0] ?? {}) : [...Object.keys(out.rows[0]?.labels ?? {}), ...(measure ? [header(measure)] : []), ...support.map(header)];
@@ -227,6 +233,29 @@ function simulationCard(spec: ExperimentSpec, out: Output, n: number, date: stri
       format: (v) => (v < 10 ? v.toFixed(2).replace(/0$/, '') : v.toFixed(0)),
       legend: [{ name: 'OSO', slot: 2 }, { name: 'Traditional', slot: 1 }, { name: 'other', slot: 0 }],
     }));
+    chart = `results/${spec.id}/figures/compare.svg`;
+  }
+  // The one-chain check: depth reached by community size, simulated (dots) against exact (dashed lines).
+  if (spec.analysis === 'simple-chain-exact' && out.table.length) {
+    const num = (v: unknown) => Number(String(v).split('±')[0]);
+    const pts = out.table.map((r) => ({ n: Number(r.N), sh: num(r['shared: simulated']), she: num(r['shared: exact']), hi: num(r['hidden: simulated']), hie: num(r['hidden: exact']) }));
+    const W = 640, H = 340, l = 60, rt = 150, tp = 40, bt = 46, pw = W - l - rt, ph = H - tp - bt;
+    const nMax = Math.max(...pts.map((p) => p.n)), yMax = Math.ceil(Math.max(...pts.map((p) => Math.max(p.sh, p.she))) / 20) * 20;
+    const sx = (n: number) => l + (Math.log2(n) / Math.log2(nMax || 2)) * pw, sy = (v: number) => tp + ph - (v / yMax) * ph;
+    let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" font-family="system-ui, sans-serif"><rect width="${W}" height="${H}" fill="#fff"/><text x="${l}" y="22" font-size="15" font-weight="700" fill="#1f1f1f">Deepest idea reached, by number of agents</text>`;
+    for (let v = 0; v <= yMax; v += yMax / 4) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(v)}" y2="${sy(v)}" stroke="#e6e6e6"/><text x="${l - 8}" y="${sy(v) + 4}" text-anchor="end" font-size="11" fill="#6b6b6b">${v}</text>`;
+    for (const p of pts) svg += `<text x="${sx(p.n)}" y="${tp + ph + 18}" text-anchor="middle" font-size="12" fill="#2b2b2b">${p.n}</text>`;
+    svg += `<text x="${l + pw / 2}" y="${H - 6}" text-anchor="middle" font-size="11" fill="#6b6b6b">agents (log scale); same 640 attempts in total</text>`;
+    for (const [key, ex, c, name] of [['sh', 'she', '#eb6834', 'shared (published at once)'], ['hi', 'hie', '#2a78d6', 'hidden (each climbs alone)']] as const) {
+      svg += `<path d="${pts.map((p, k) => `${k ? 'L' : 'M'}${sx(p.n).toFixed(1)} ${sy(p[ex]).toFixed(1)}`).join(' ')}" fill="none" stroke="${c}" stroke-width="2" stroke-dasharray="6 4"/>`;
+      for (const p of pts) svg += `<circle cx="${sx(p.n)}" cy="${sy(p[key])}" r="5" fill="${c}" stroke="#fff" stroke-width="1.5"/>`;
+    }
+    const ly = (k: number) => tp + 14 + k * 22;
+    svg += `<circle cx="${l + pw + 22}" cy="${ly(0) - 4}" r="5" fill="#eb6834"/><text x="${l + pw + 32}" y="${ly(0)}" font-size="12" font-weight="700" fill="#eb6834">shared</text>`;
+    svg += `<circle cx="${l + pw + 22}" cy="${ly(1) - 4}" r="5" fill="#2a78d6"/><text x="${l + pw + 32}" y="${ly(1)}" font-size="12" font-weight="700" fill="#2a78d6">hidden</text>`;
+    svg += `<text x="${l + pw + 14}" y="${ly(2.4)}" font-size="11" fill="#6b6b6b">dots: simulated</text><line x1="${l + pw + 14}" x2="${l + pw + 40}" y1="${ly(3.2) - 4}" y2="${ly(3.2) - 4}" stroke="#6b6b6b" stroke-width="2" stroke-dasharray="6 4"/><text x="${l + pw + 46}" y="${ly(3.2)}" font-size="11" fill="#6b6b6b">exact</text>`;
+    mkdirSync(join(resultsDir, spec.id, 'figures'), { recursive: true });
+    writeFileSync(join(resultsDir, spec.id, 'figures', 'compare.svg'), svg + '</svg>');
     chart = `results/${spec.id}/figures/compare.svg`;
   }
   return {

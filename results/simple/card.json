@@ -1,7 +1,8 @@
 {
+ "chart": "results/simple/figures/compare.svg",
  "id": "simple",
  "kind": "simulation",
- "date": "2026-10-25",
+ "date": "2026-10-26",
  "title": "The one-chain check: shared vs. hidden progress",
  "design": {
   "question": "Does the simulator match the exact mathematics of shared against hidden progress?",
@@ -11,7 +12,7 @@
   "better": "higher",
   "runs": "1000 runs per row"
  },
- "answer": "See the table: this experiment checks the model against exact values.",
+ "answer": "The simulator matches the exact values at every community size (largest gap 2.0 standard errors). Sharing reaches 10.1× deeper than hidden progress with 16 agents, for the same money.",
  "table": [
   {
    "N": 1,
@@ -63,6 +64,6 @@
   "A simulation with guessed parameters: it shows how the rules play out, not that they work."
  ],
  "page": "results/simple/summary.md",
- "ranAt": "2026-10-25T17:10:42.572Z",
+ "ranAt": "2026-10-26T01:56:46.722Z",
  "modelVersion": 5
 }

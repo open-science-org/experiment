@@ -384,3 +384,5 @@ Runs up to 2026-10-19 were made when the simulator lived in `sim/` of [open-scie
 | 2026-10-25 | [full-example-narrow-stages-6-settings-20261023](full-example-narrow-stages-6-settings-20261023/summary.md) | `cd9fb92` (uncommitted changes) | 100 | `npm run sim -- full-example-narrow-stages-6-settings-20261023 --seeds 100 --save` |
 | 2026-10-25 | [simple-ideas-80x4-p2-len3g2-new2-deep-scaling-20261025](simple-ideas-80x4-p2-len3g2-new2-deep-scaling-20261025/summary.md) | `cd9fb92` (uncommitted changes) | 30 | `npm run sim -- simple-ideas-80x4-p2-len3g2-new2-deep-scaling-20261025 --seeds 30 --save` |
 | 2026-10-25 | [simple](simple/summary.md) | `8d9bed7` | 1000 | `npm run sim -- simple --seeds 1000 --save` |
+| 2026-10-26 | [simple](simple/summary.md) | `81f762c` (uncommitted changes) | 1000 | `npm run sim -- simple --seeds 1000 --save` |
+| 2026-10-26 | [simple](simple/summary.md) | `81f762c` (uncommitted changes) | 1000 | `npm run sim -- simple --seeds 1000 --save` |
