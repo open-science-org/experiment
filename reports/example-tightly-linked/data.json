@@ -12,10 +12,10 @@
    "frontier": 0.3,
    "reach": 0.06,
    "cost": 141.83333333333334,
-   "targetsSolved": 0.08,
-   "value": 32,
+   "targetsSolved": 0.07,
+   "value": 28,
    "spend": 179.44600000000005,
-   "roi": 0.19261952674184127
+   "roi": 0.1703478118197923
   },
   "oso": {
    "frontier": 5,
@@ -27,8 +27,8 @@
    "roi": 6.462151737526953
   },
   "osoChoice": {
-   "frontier": 1.79,
-   "sharing": 0.08202599606276076
+   "frontier": 1.77,
+   "sharing": 0.07836580086580085
   },
   "alphaStar": 0.6,
   "robustness": [
@@ -53,77 +53,77 @@
    {
     "parameter": "α, absorption rate",
     "group": "market",
-    "min": 1,
-    "max": 4.53,
+    "min": 1.07,
+    "max": 4.51,
     "base": 0.8
    },
    {
     "parameter": "c, cited share of the mint",
     "group": "market",
-    "min": 1.49,
-    "max": 1.49,
+    "min": 1.47,
+    "max": 1.47,
     "base": 0.15
    },
    {
     "parameter": "mint per idea",
     "group": "market",
-    "min": 0.75,
-    "max": 1.5899999999999999,
+    "min": 0.6200000000000001,
+    "max": 1.62,
     "base": 0
    },
    {
     "parameter": "θ, validation screen",
     "group": "market",
-    "min": 1.49,
-    "max": 1.49,
+    "min": 1.47,
+    "max": 1.47,
     "base": 0.5
    },
    {
     "parameter": "f, earnings shape next round's money",
     "group": "market",
-    "min": 0.71,
+    "min": 0.73,
     "max": 1.64,
     "base": 0.5
    },
    {
     "parameter": "ψ, scoop risk",
     "group": "guess",
-    "min": 1.1099999999999999,
+    "min": 1.05,
     "max": 4.7,
     "base": 0.5
    },
    {
     "parameter": "κ, value of being used",
     "group": "guess",
-    "min": 0.99,
-    "max": 2.54,
+    "min": 0.9299999999999999,
+    "max": 2.5,
     "base": 1
    },
    {
     "parameter": "σ₀, perception noise",
     "group": "guess",
-    "min": 0.99,
-    "max": 2.15,
+    "min": 0.9200000000000002,
+    "max": 2.1399999999999997,
     "base": 1
    },
    {
     "parameter": "τ, choice randomness",
     "group": "guess",
     "min": 0.75,
-    "max": 2.1,
+    "max": 2.08,
     "base": 0.3
    },
    {
     "parameter": "attribution error",
     "group": "guess",
-    "min": 1.39,
-    "max": 1.49,
+    "min": 1.3599999999999999,
+    "max": 1.47,
     "base": 0
    }
   ],
   "seeds": 100,
-  "commit": "cd9fb92+",
-  "date": "2026-10-25"
+  "commit": "dc540e2",
+  "date": "2026-10-26"
  },
  "settings": [
   {
@@ -137,7 +137,7 @@
    "waste": "0.38 ± 0.10",
    "credit": "0.06 ± 0.24",
    "sharing": "0.00 ± 0.03",
-   "ROI (value per spend)": "0.19 ± 0.84"
+   "ROI (value per spend)": "0.17 ± 0.75"
   },
   {
    "setting": "OSO (immediate)",
@@ -181,36 +181,36 @@
   {
    "setting": "No flow-back, choice",
    "frontier": "1.3 ± 2.0",
-   "reach L5": "0.17",
-   "speed": "11 ± 3",
-   "cost": "135 ± 37",
+   "reach L5": "0.18",
+   "speed": "12 ± 3",
+   "cost": "138 ± 37",
    "spend": "177 ± 10",
    "targets solved": "0.3 ± 0.6",
    "waste": "0.37 ± 0.10",
-   "credit": "0.17 ± 0.38",
-   "sharing": "0.06 ± 0.10",
-   "ROI (value per spend)": "0.69 ± 1.67"
+   "credit": "0.18 ± 0.38",
+   "sharing": "0.05 ± 0.10",
+   "ROI (value per spend)": "0.69 ± 1.64"
   },
   {
    "setting": "OSO (choice)",
    "frontier": "1.8 ± 2.2",
    "reach L5": "0.28",
    "speed": "12 ± 3",
-   "cost": "136 ± 32",
-   "spend": "175 ± 12",
-   "targets solved": "0.4 ± 0.7",
+   "cost": "136 ± 33",
+   "spend": "175 ± 13",
+   "targets solved": "0.4 ± 0.8",
    "waste": "0.37 ± 0.09",
-   "credit": "0.24 ± 0.42",
-   "sharing": "0.08 ± 0.13",
-   "ROI (value per spend)": "1.05 ± 1.97"
+   "credit": "0.24 ± 0.41",
+   "sharing": "0.08 ± 0.12",
+   "ROI (value per spend)": "1.10 ± 2.01"
   }
  ],
  "alpha": [
   {
    "α": 1,
-   "intermediate ideas shared": "6%",
+   "intermediate ideas shared": "5%",
    "frontier": "1.3",
-   "reach level 5": "17%",
+   "reach level 5": "18%",
    "targets solved": "0.3"
   },
   {
@@ -224,40 +224,40 @@
    "α": 0.6,
    "intermediate ideas shared": "28%",
    "frontier": "4.0",
-   "reach level 5": "67%",
+   "reach level 5": "70%",
    "targets solved": "1.0"
   },
   {
    "α": 0.5,
-   "intermediate ideas shared": "40%",
-   "frontier": "4.3",
-   "reach level 5": "73%",
-   "targets solved": "1.1"
+   "intermediate ideas shared": "38%",
+   "frontier": "4.4",
+   "reach level 5": "77%",
+   "targets solved": "1.2"
   },
   {
    "α": 0.4,
-   "intermediate ideas shared": "45%",
-   "frontier": "4.8",
-   "reach level 5": "91%",
-   "targets solved": "1.5"
+   "intermediate ideas shared": "44%",
+   "frontier": "4.7",
+   "reach level 5": "86%",
+   "targets solved": "1.4"
   },
   {
    "α": 0.3,
-   "intermediate ideas shared": "50%",
+   "intermediate ideas shared": "48%",
    "frontier": "4.8",
-   "reach level 5": "91%",
+   "reach level 5": "89%",
    "targets solved": "1.6"
   },
   {
    "α": 0.2,
-   "intermediate ideas shared": "56%",
+   "intermediate ideas shared": "54%",
    "frontier": "4.8",
-   "reach level 5": "86%",
-   "targets solved": "1.5"
+   "reach level 5": "87%",
+   "targets solved": "1.6"
   },
   {
    "α": 0.1,
-   "intermediate ideas shared": "62%",
+   "intermediate ideas shared": "61%",
    "frontier": "4.9",
    "reach level 5": "94%",
    "targets solved": "1.7"
@@ -304,19 +304,19 @@
    "OSO frontier": "4.8",
    "traditional frontier": "0.3",
    "OSO lead": "+4.5",
-   "OSO targets": "1.5",
+   "OSO targets": "1.6",
    "traditional targets": "0.1",
-   "ideas shared": "56%"
+   "ideas shared": "54%"
   },
   {
    "parameter": "α, absorption rate",
    "value": "0.4",
-   "OSO frontier": "4.8",
+   "OSO frontier": "4.7",
    "traditional frontier": "0.3",
-   "OSO lead": "+4.5",
-   "OSO targets": "1.5",
+   "OSO lead": "+4.4",
+   "OSO targets": "1.4",
    "traditional targets": "0.1",
-   "ideas shared": "45%"
+   "ideas shared": "44%"
   },
   {
    "parameter": "α, absorption rate",
@@ -341,9 +341,9 @@
   {
    "parameter": "α, absorption rate",
    "value": "0.95",
-   "OSO frontier": "1.3",
+   "OSO frontier": "1.4",
    "traditional frontier": "0.3",
-   "OSO lead": "+1.0",
+   "OSO lead": "+1.1",
    "OSO targets": "0.3",
    "traditional targets": "0.1",
    "ideas shared": "5%"
@@ -411,19 +411,19 @@
   {
    "parameter": "mint per idea",
    "value": "0.5",
-   "OSO frontier": "1.4",
+   "OSO frontier": "1.3",
    "traditional frontier": "0.7",
-   "OSO lead": "+0.8",
+   "OSO lead": "+0.6",
    "OSO targets": "0.1",
    "traditional targets": "0.2",
-   "ideas shared": "9%"
+   "ideas shared": "8%"
   },
   {
    "parameter": "mint per idea",
    "value": "1",
-   "OSO frontier": "1.5",
+   "OSO frontier": "1.4",
    "traditional frontier": "0.6",
-   "OSO lead": "+0.9",
+   "OSO lead": "+0.8",
    "OSO targets": "0.1",
    "traditional targets": "0.1",
    "ideas shared": "8%"
@@ -431,10 +431,10 @@
   {
    "parameter": "mint per idea",
    "value": "2",
-   "OSO frontier": "1.8",
+   "OSO frontier": "1.7",
    "traditional frontier": "0.6",
-   "OSO lead": "+1.2",
-   "OSO targets": "0.3",
+   "OSO lead": "+1.1",
+   "OSO targets": "0.2",
    "traditional targets": "0.1",
    "ideas shared": "10%"
   },
@@ -446,7 +446,7 @@
    "OSO lead": "+1.6",
    "OSO targets": "0.2",
    "traditional targets": "0.2",
-   "ideas shared": "15%"
+   "ideas shared": "14%"
   },
   {
    "parameter": "θ, validation screen",
@@ -504,7 +504,7 @@
    "OSO frontier": "1.0",
    "traditional frontier": "0.3",
    "OSO lead": "+0.7",
-   "OSO targets": "0.0",
+   "OSO targets": "0.1",
    "traditional targets": "0.1",
    "ideas shared": "6%"
   },
@@ -534,7 +534,7 @@
    "OSO frontier": "1.8",
    "traditional frontier": "0.3",
    "OSO lead": "+1.5",
-   "OSO targets": "0.6",
+   "OSO targets": "0.5",
    "traditional targets": "0.1",
    "ideas shared": "10%"
   },
@@ -564,7 +564,7 @@
    "OSO frontier": "2.6",
    "traditional frontier": "0.3",
    "OSO lead": "+2.3",
-   "OSO targets": "0.5",
+   "OSO targets": "0.6",
    "traditional targets": "0.1",
    "ideas shared": "14%"
   },
@@ -581,12 +581,12 @@
   {
    "parameter": "ψ, scoop risk",
    "value": "0.75",
-   "OSO frontier": "1.5",
+   "OSO frontier": "1.4",
    "traditional frontier": "0.3",
-   "OSO lead": "+1.2",
+   "OSO lead": "+1.1",
    "OSO targets": "0.3",
    "traditional targets": "0.1",
-   "ideas shared": "6%"
+   "ideas shared": "5%"
   },
   {
    "parameter": "ψ, scoop risk",
@@ -601,10 +601,10 @@
   {
    "parameter": "κ, value of being used",
    "value": "0",
-   "OSO frontier": "1.3",
+   "OSO frontier": "1.2",
    "traditional frontier": "0.3",
-   "OSO lead": "+1.0",
-   "OSO targets": "0.2",
+   "OSO lead": "+0.9",
+   "OSO targets": "0.3",
    "traditional targets": "0.1",
    "ideas shared": "5%"
   },
@@ -644,16 +644,16 @@
    "OSO frontier": "2.8",
    "traditional frontier": "0.3",
    "OSO lead": "+2.5",
-   "OSO targets": "0.5",
+   "OSO targets": "0.6",
    "traditional targets": "0.1",
    "ideas shared": "19%"
   },
   {
    "parameter": "σ₀, perception noise",
    "value": "0",
-   "OSO frontier": "1.2",
+   "OSO frontier": "1.1",
    "traditional frontier": "0.2",
-   "OSO lead": "+1.0",
+   "OSO lead": "+0.9",
    "OSO targets": "0.3",
    "traditional targets": "0.0",
    "ideas shared": "5%"
@@ -661,9 +661,9 @@
   {
    "parameter": "σ₀, perception noise",
    "value": "0.5",
-   "OSO frontier": "1.2",
+   "OSO frontier": "1.1",
    "traditional frontier": "0.2",
-   "OSO lead": "+1.0",
+   "OSO lead": "+0.9",
    "OSO targets": "0.3",
    "traditional targets": "0.0",
    "ideas shared": "5%"
@@ -681,12 +681,12 @@
   {
    "parameter": "σ₀, perception noise",
    "value": "2",
-   "OSO frontier": "2.4",
+   "OSO frontier": "2.3",
    "traditional frontier": "0.2",
    "OSO lead": "+2.1",
    "OSO targets": "0.5",
    "traditional targets": "0.1",
-   "ideas shared": "14%"
+   "ideas shared": "13%"
   },
   {
    "parameter": "τ, choice randomness",
@@ -723,7 +723,7 @@
    "value": "0.6",
    "OSO frontier": "2.1",
    "traditional frontier": "0.1",
-   "OSO lead": "+2.0",
+   "OSO lead": "+1.9",
    "OSO targets": "0.5",
    "traditional targets": "0.0",
    "ideas shared": "13%"
@@ -782,11 +782,11 @@
  "flowBackGrid": [
   {
    "α \\ c": 0.95,
-   "0%": "5% · 1.3",
-   "5%": "5% · 1.3",
-   "15%": "5% · 1.3",
-   "30%": "5% · 1.3",
-   "50%": "5% · 1.3"
+   "0%": "5% · 1.4",
+   "5%": "5% · 1.4",
+   "15%": "5% · 1.4",
+   "30%": "5% · 1.4",
+   "50%": "5% · 1.4"
   },
   {
    "α \\ c": 0.8,
@@ -806,19 +806,19 @@
   },
   {
    "α \\ c": 0.4,
-   "0%": "45% · 4.8",
-   "5%": "45% · 4.8",
-   "15%": "45% · 4.8",
-   "30%": "45% · 4.8",
-   "50%": "45% · 4.8"
+   "0%": "44% · 4.7",
+   "5%": "44% · 4.7",
+   "15%": "44% · 4.7",
+   "30%": "44% · 4.7",
+   "50%": "44% · 4.7"
   },
   {
    "α \\ c": 0.2,
-   "0%": "56% · 4.8",
-   "5%": "56% · 4.8",
-   "15%": "56% · 4.8",
-   "30%": "56% · 4.8",
-   "50%": "56% · 4.8"
+   "0%": "54% · 4.8",
+   "5%": "54% · 4.8",
+   "15%": "54% · 4.8",
+   "30%": "54% · 4.8",
+   "50%": "54% · 4.8"
   }
  ],
  "curves": {
@@ -1209,115 +1209,115 @@
    ],
    [
     58.5,
-    0.24
+    0.27
    ],
    [
     63,
-    0.29
-   ],
-   [
-    67.5,
     0.32
    ],
    [
+    67.5,
+    0.35
+   ],
+   [
     72,
-    0.39
+    0.4
    ],
    [
     76.5,
-    0.39
+    0.4
    ],
    [
     81,
-    0.39
+    0.4
    ],
    [
     85.5,
-    0.46
+    0.47
    ],
    [
     90,
-    0.46
+    0.47
    ],
    [
     94.5,
-    0.5
+    0.51
    ],
    [
     99,
-    0.58
+    0.59
    ],
    [
     103.5,
-    0.58
+    0.59
    ],
    [
     108,
-    0.69
+    0.7
    ],
    [
     112.5,
-    0.69
+    0.7
    ],
    [
     117,
-    0.79
+    0.84
    ],
    [
     121.5,
-    0.9
+    0.95
    ],
    [
     126,
-    0.9
+    0.95
    ],
    [
     130.5,
-    0.96
+    0.99
    ],
    [
     135,
-    1.02
+    1.05
    ],
    [
     139.5,
-    1.06
+    1.07
    ],
    [
     144,
-    1.18
-   ],
-   [
-    148.5,
-    1.18
-   ],
-   [
-    153,
     1.2
    ],
    [
+    148.5,
+    1.2
+   ],
+   [
+    153,
+    1.23
+   ],
+   [
     157.5,
-    1.4
+    1.39
    ],
    [
     162,
-    1.4
+    1.39
    ],
    [
     166.5,
-    1.44
+    1.43
    ],
    [
     171,
-    1.55
+    1.51
    ],
    [
     175.5,
-    1.62
+    1.58
    ],
    [
     180,
-    1.79
+    1.77
    ]
   ]
  },

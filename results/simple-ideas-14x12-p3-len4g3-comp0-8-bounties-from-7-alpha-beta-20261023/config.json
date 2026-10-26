@@ -1,7 +1,7 @@
 {
   "experiment": "simple-ideas-14x12-p3-len4g3-comp0-8-bounties-from-7-alpha-beta-20261023",
-  "date": "2026-10-25",
-  "commit": "e0930a2",
+  "date": "2026-10-26",
+  "commit": "dc540e2",
   "dirty": false,
   "command": "npm run sim -- simple-ideas-14x12-p3-len4g3-comp0-8-bounties-from-7-alpha-beta-20261023 --seeds 30 --save",
   "seeds": 30,
@@ -350,6 +350,7 @@
         "length": 4,
         "lengthGrowth": 3,
         "composition": 0.8,
+        "newBits": 0,
         "targets": 2,
         "targetsFrom": 7,
         "bountyBase": 4,
@@ -500,7 +501,8 @@
         "perceptionNoise": 1,
         "kappa": 1,
         "psi": 0.5,
-        "roundsPerLevel": 5
+        "roundsPerLevel": 5,
+        "rivals": "public"
       },
       "measures": {
         "targetLevel": 14

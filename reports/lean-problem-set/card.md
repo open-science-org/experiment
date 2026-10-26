@@ -2,20 +2,20 @@
 
 **Question:** For the same money, does OSO get further than traditional research in the Lean problem set?
 
-**Answer:** OSO ahead: level 7.0 against 5.2 of 7; targets 8.0 against 5.9 of 8; ROI 2.22 against 0.63.
+**Answer:** OSO ahead: level 7.0 against 5.2 of 7; targets 8.0 against 6.1 of 8; ROI 2.22 against 0.65.
 
 ![The Lean problem set](figures/frontier.svg)
 
 | rules | hardest level | targets solved | cost to level 5 | ROI |
 | --- | --- | --- | --- | --- |
-| Traditional | 5.2 of 7 | 5.9 of 8 | 267 | 0.63 (219 for 377) |
+| Traditional | 5.2 of 7 | 6.1 of 8 | 269 | 0.65 (222 for 374) |
 | OSO | 7.0 of 7 | 8.0 of 8 | 116 | 2.22 (460 for 219) |
 
 **Design** (fixed before the run): compared the six rule settings, an α sweep, the parameters one by one, costly and fallible sharing · held the same: the field, 12 agents and a budget of 400 · measure: hardest level reached, higher is better · 100 runs per setting.
 
 **Caveats:**
 - A simulation with guessed parameters: it shows how the rules play out if the field works as described.
-- OSO's lead as the market-set parameters vary: 0.2 to 2.1 levels.
+- OSO's lead as the market-set parameters vary: 0.2 to 2.0 levels.
 - Theorem names are hidden; the tree is the route of our own reference proofs, and agents may find others.
 
 <details><summary>Details</summary>

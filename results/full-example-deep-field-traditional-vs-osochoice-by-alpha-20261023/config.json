@@ -1,8 +1,8 @@
 {
   "experiment": "full-example-deep-field-traditional-vs-osochoice-by-alpha-20261023",
-  "date": "2026-10-25",
-  "commit": "cd9fb92",
-  "dirty": true,
+  "date": "2026-10-26",
+  "commit": "dc540e2",
+  "dirty": false,
   "command": "npm run sim -- full-example-deep-field-traditional-vs-osochoice-by-alpha-20261023 --seeds 100 --save",
   "seeds": 100,
   "overrides": {},
@@ -276,7 +276,8 @@
         "perceptionNoise": 1,
         "kappa": 1,
         "psi": 0.5,
-        "roundsPerLevel": 5
+        "roundsPerLevel": 5,
+        "rivals": "public"
       },
       "measures": {
         "targetLevel": 8

@@ -8,7 +8,7 @@ Every problem space in [spaces/](../spaces/) gets the same canonical report: the
 
 | problem space | verdict | level reached (OSO / traditional) | targets solved (OSO / traditional) | α* | OSO lead across market parameters | runs | date |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [Example: a deep, wide field](example-deep-field/report.md) | OSO ahead | 8.0 / 0.2 of 8 | 3.7 / 0.0 of 4 | 0.3 | 4.1 to 7.7 levels | 100 | 2026-10-25 |
-| [Example: narrow stages (drug discovery story)](example-narrow-stages/report.md) | OSO ahead | 6.0 / 0.7 of 6 | 2.9 / 0.2 of 3 | 0.4 | 2.4 to 5.3 levels | 100 | 2026-10-25 |
-| [Example: small and tightly linked (battery story)](example-tightly-linked/report.md) | OSO ahead | 5.0 / 0.3 of 5 | 1.9 / 0.1 of 2 | 0.6 | 0.7 to 4.5 levels | 100 | 2026-10-25 |
-| [The Lean problem set](lean-problem-set/report.md) | OSO ahead | 7.0 / 5.2 of 7 | 8.0 / 5.9 of 8 | 0.6 | 0.2 to 2.1 levels | 100 | 2026-10-25 |
+| [Example: a deep, wide field](example-deep-field/report.md) | OSO ahead | 8.0 / 0.2 of 8 | 3.7 / 0.0 of 4 | 0.3 | 4.1 to 7.7 levels | 100 | 2026-10-26 |
+| [Example: narrow stages (drug discovery story)](example-narrow-stages/report.md) | OSO ahead | 6.0 / 0.7 of 6 | 2.9 / 0.1 of 3 | 0.4 | 2.1 to 5.3 levels | 100 | 2026-10-26 |
+| [Example: small and tightly linked (battery story)](example-tightly-linked/report.md) | OSO ahead | 5.0 / 0.3 of 5 | 1.9 / 0.1 of 2 | 0.6 | 0.6 to 4.5 levels | 100 | 2026-10-26 |
+| [The Lean problem set](lean-problem-set/report.md) | OSO ahead | 7.0 / 5.2 of 7 | 8.0 / 6.1 of 8 | 0.6 | 0.2 to 2.0 levels | 100 | 2026-10-26 |

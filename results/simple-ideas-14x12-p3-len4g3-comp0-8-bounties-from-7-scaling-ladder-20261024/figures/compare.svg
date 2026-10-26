@@ -33,12 +33,12 @@
 <text class="tick" x="222" y="125" text-anchor="end">OSO (α = 0.2, β = 1), budget 1600…</text>
 <rect x="230" y="114" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.2, β = 1), budget 160000: 14</title></rect>
 <text class="label t2" x="556" y="126">14</text>
-<text class="tick" x="222" y="151" text-anchor="end">α = 0.8, β = 0.5, budget 160000</text>
-<rect x="230" y="140" width="320.0" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.8, β = 0.5, budget 160000: 14</title></rect>
+<text class="tick" x="222" y="151" text-anchor="end">α = 1, β = 1, budget 160000</text>
+<rect x="230" y="140" width="320.0" height="16" rx="3" style="fill:var(--dead)"><title>α = 1, β = 1, budget 160000: 14</title></rect>
 <text class="label " x="556" y="152">14</text>
-<text class="tick" x="222" y="177" text-anchor="end">α = 1, β = 1, budget 160000</text>
-<rect x="230" y="166" width="320.0" height="16" rx="3" style="fill:var(--dead)"><title>α = 1, β = 1, budget 160000: 14</title></rect>
-<text class="label " x="556" y="178">14</text>
+<text class="tick" x="222" y="177" text-anchor="end">α = 0.8, β = 0.5, budget 160000</text>
+<rect x="230" y="166" width="319.2" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.8, β = 0.5, budget 160000: 14</title></rect>
+<text class="label " x="555.2380952380952" y="178">14</text>
 <text class="tick" x="222" y="203" text-anchor="end">α = 1, β = 1, budget 80000</text>
 <rect x="230" y="192" width="319.2" height="16" rx="3" style="fill:var(--dead)"><title>α = 1, β = 1, budget 80000: 14</title></rect>
 <text class="label " x="555.2380952380952" y="204">14</text>
@@ -46,8 +46,8 @@
 <rect x="230" y="218" width="318.5" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.8, β = 1), budget 80000: 14</title></rect>
 <text class="label t2" x="554.4761904761905" y="230">14</text>
 <text class="tick" x="222" y="255" text-anchor="end">α = 0.8, β = 0.5, budget 80000</text>
-<rect x="230" y="244" width="316.2" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.8, β = 0.5, budget 80000: 14</title></rect>
-<text class="label " x="552.1904761904761" y="256">14</text>
+<rect x="230" y="244" width="314.7" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.8, β = 0.5, budget 80000: 14</title></rect>
+<text class="label " x="550.6666666666667" y="256">14</text>
 <text class="tick" x="222" y="281" text-anchor="end">α = 1, β = 1, budget 40000</text>
 <rect x="230" y="270" width="312.4" height="16" rx="3" style="fill:var(--dead)"><title>α = 1, β = 1, budget 40000: 14</title></rect>
 <text class="label " x="548.3809523809523" y="282">14</text>
@@ -55,6 +55,6 @@
 <rect x="230" y="296" width="310.1" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.8, β = 1), budget 40000: 14</title></rect>
 <text class="label t2" x="546.0952380952381" y="308">14</text>
 <text class="tick" x="222" y="333" text-anchor="end">Traditional (α = 1, β = 0), budge…</text>
-<rect x="230" y="322" width="301.0" height="16" rx="3" style="fill:var(--s1)"><title>Traditional (α = 1, β = 0), budget 160000: 13</title></rect>
-<text class="label t1" x="536.952380952381" y="334">13</text>
+<rect x="230" y="322" width="299.4" height="16" rx="3" style="fill:var(--s1)"><title>Traditional (α = 1, β = 0), budget 160000: 13</title></rect>
+<text class="label t1" x="535.4285714285714" y="334">13</text>
 </svg>

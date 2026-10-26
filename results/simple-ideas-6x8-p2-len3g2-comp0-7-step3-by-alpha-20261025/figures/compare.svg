@@ -31,12 +31,12 @@
 <rect x="230" y="88" width="320.0" height="16" rx="3" style="fill:var(--dead)"><title>Agents choose, α = 0: 6.0</title></rect>
 <text class="label " x="556" y="100">6.0</text>
 <text class="tick" x="222" y="125" text-anchor="end">Agents choose, α = 0.8</text>
-<rect x="230" y="114" width="316.3" height="16" rx="3" style="fill:var(--dead)"><title>Agents choose, α = 0.8: 5.93</title></rect>
-<text class="label " x="552.2666666666667" y="126">5.93</text>
+<rect x="230" y="114" width="316.8" height="16" rx="3" style="fill:var(--dead)"><title>Agents choose, α = 0.8: 5.94</title></rect>
+<text class="label " x="552.8" y="126">5.94</text>
 <text class="tick" x="222" y="151" text-anchor="end">Agents choose, α = 1</text>
 <rect x="230" y="140" width="304.0" height="16" rx="3" style="fill:var(--dead)"><title>Agents choose, α = 1: 5.7</title></rect>
 <text class="label " x="540" y="152">5.7</text>
 <text class="tick" x="222" y="177" text-anchor="end">Traditional (α = 1, finished work…</text>
-<rect x="230" y="166" width="25.6" height="16" rx="3" style="fill:var(--s1)"><title>Traditional (α = 1, finished work only): 0.48</title></rect>
-<text class="label t1" x="261.6" y="178">0.48</text>
+<rect x="230" y="166" width="16.0" height="16" rx="3" style="fill:var(--s1)"><title>Traditional (α = 1, finished work only): 0.3</title></rect>
+<text class="label t1" x="252" y="178">0.3</text>
 </svg>

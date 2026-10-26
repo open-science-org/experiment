@@ -2,7 +2,7 @@
  "id": "scaling-across-difficulty-deep-graph-2026-10-25",
  "kind": "simulation",
  "date": "2026-10-26",
- "ranAt": "2026-10-26T02:02:27.973Z",
+ "ranAt": "2026-10-26T21:08:35.535Z",
  "title": "Scaling across depth, each step equally hard",
  "design": {
   "question": "Across depth, each step equally hard, how much money does each society need, and does the gap between traditional and OSO grow?",
@@ -12,43 +12,43 @@
   "better": "lower",
   "runs": "from the sweeps tagged \"deep graph 2026-10-25\""
  },
- "answer": "To solve half the targets, traditional needs 7.6× to 14.9× the money OSO needs. The gap grows with every step in difficulty.",
+ "answer": "To solve half the targets, traditional needs 7.8× to 12.9× the money OSO needs. The gap grows with every step in difficulty.",
  "table": [
   {
    "difficulty": "depth 10",
-   "Traditional (α = 1, β = 0)": "1,403",
+   "Traditional (α = 1, β = 0)": "1,439",
    "OSO (α = 0.8, β = 1)": "185",
    "OSO (α = 0.2, β = 1)": "181",
-   "α = 0.8, β = 0.5": "312",
+   "α = 0.8, β = 0.5": "326",
    "α = 1, β = 1": "182",
-   "traditional ÷ OSO": "7.6×"
-  },
-  {
-   "difficulty": "depth 20",
-   "Traditional (α = 1, β = 0)": "2,934",
-   "OSO (α = 0.8, β = 1)": "375",
-   "OSO (α = 0.2, β = 1)": "367",
-   "α = 0.8, β = 0.5": "690",
-   "α = 1, β = 1": "374",
    "traditional ÷ OSO": "7.8×"
   },
   {
+   "difficulty": "depth 20",
+   "Traditional (α = 1, β = 0)": "2,969",
+   "OSO (α = 0.8, β = 1)": "375",
+   "OSO (α = 0.2, β = 1)": "367",
+   "α = 0.8, β = 0.5": "692",
+   "α = 1, β = 1": "374",
+   "traditional ÷ OSO": "7.9×"
+  },
+  {
    "difficulty": "depth 40",
-   "Traditional (α = 1, β = 0)": "7,550",
+   "Traditional (α = 1, β = 0)": "6,802",
    "OSO (α = 0.8, β = 1)": "728",
    "OSO (α = 0.2, β = 1)": "733",
-   "α = 0.8, β = 0.5": "1,431",
+   "α = 0.8, β = 0.5": "1,413",
    "α = 1, β = 1": "742",
-   "traditional ÷ OSO": "10.4×"
+   "traditional ÷ OSO": "9.3×"
   },
   {
    "difficulty": "depth 80",
-   "Traditional (α = 1, β = 0)": "21,796",
+   "Traditional (α = 1, β = 0)": "18,958",
    "OSO (α = 0.8, β = 1)": "1,466",
    "OSO (α = 0.2, β = 1)": "1,448",
    "α = 0.8, β = 0.5": "2,896",
    "α = 1, β = 1": "1,466",
-   "traditional ÷ OSO": "14.9×"
+   "traditional ÷ OSO": "12.9×"
   }
  ],
  "caveats": [
@@ -82,5 +82,5 @@
    "title": "Deep graph: 80 levels, each step equally hard"
   }
  ],
- "modelVersion": 5
+ "modelVersion": 6
 }

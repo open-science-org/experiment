@@ -33,6 +33,6 @@ Values are mean ± standard error, so they can be compared with the exact values
 | 8 | 128.3 ± 0.3 | 128.0 | 21.3 ± 0.1 | 21.2 | 6.02 | 6.03 |
 | 16 | 128.3 ± 0.3 | 128.0 | 12.7 ± 0.0 | 12.7 | 10.14 | 10.11 |
 
-Code: commit `0fa52d9`. Experiment: [config/experiments/simple.yaml](../../config/experiments/simple.yaml). Command: `npm run sim -- simple --seeds 1000 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `dc540e2`. Experiment: [config/experiments/simple.yaml](../../config/experiments/simple.yaml). Command: `npm run sim -- simple --seeds 1000 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

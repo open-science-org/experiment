@@ -2,7 +2,7 @@
  "id": "scaling-across-difficulty-f-1",
  "kind": "simulation",
  "date": "2026-10-26",
- "ranAt": "2026-10-26T02:02:27.736Z",
+ "ranAt": "2026-10-26T21:08:36.164Z",
  "title": "Scaling across difficulty, with f = 1",
  "design": {
   "question": "Across difficulty, with f = 1, how much money does each society need, and does the gap between traditional and OSO grow?",
@@ -12,27 +12,27 @@
   "better": "lower",
   "runs": "from the sweeps tagged \"f 1\""
  },
- "answer": "To solve half the targets, traditional needs 1.8× to 5.4× the money OSO needs. By difficulty: default 5.4×, hard 1.8×.",
+ "answer": "To solve half the targets, traditional needs 1.7× to 4.9× the money OSO needs. By difficulty: default 4.9×, hard 1.7×.",
  "table": [
   {
    "difficulty": "default",
-   "Traditional (α = 1, β = 0)": "1,990",
+   "Traditional (α = 1, β = 0)": "1,783",
    "OSO (α = 0.8, β = 1)": "366",
    "OSO (α = 0.2, β = 1)": "307",
    "OSO (α = 0, β = 1)": "556",
    "α = 0.8, β = 0.5": "352",
    "α = 1, β = 1": "308",
-   "traditional ÷ OSO": "5.4×"
+   "traditional ÷ OSO": "4.9×"
   },
   {
    "difficulty": "hard",
-   "Traditional (α = 1, β = 0)": "12,786",
+   "Traditional (α = 1, β = 0)": "12,054",
    "OSO (α = 0.8, β = 1)": "6,922",
    "OSO (α = 0.2, β = 1)": "6,078",
    "OSO (α = 0, β = 1)": "14,082",
-   "α = 0.8, β = 0.5": "6,510",
+   "α = 0.8, β = 0.5": "6,563",
    "α = 1, β = 1": "6,404",
-   "traditional ÷ OSO": "1.8×"
+   "traditional ÷ OSO": "1.7×"
   }
  ],
  "caveats": [
@@ -58,5 +58,5 @@
    "title": "Scaling with earnings shaping next round's money (f = 1): Hard graph (10 × 10)"
   }
  ],
- "modelVersion": 5
+ "modelVersion": 6
 }

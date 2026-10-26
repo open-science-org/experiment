@@ -2,13 +2,13 @@
 
 **Question:** With depth 4 and everything else as the default graph, how does what each society achieves grow with its budget?
 
-**Answer:** At budget 50: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level; no clear difference on targets solved, bounty value, ROI, knowledge found (bits), knowledge per unit of money and waste. At budget 100: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, knowledge found (bits) and knowledge per unit of money; no clear difference on waste. At budget 200: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, knowledge found (bits) and knowledge per unit of money; no clear difference on money to the main level and waste. At budget 400: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, knowledge found (bits), knowledge per unit of money and waste; no clear difference on money to the main level. At budget 800: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, knowledge found (bits), knowledge per unit of money, money to the main level and waste. At budgets 1600–25600: best OSO (α = 0.8, β = 1). Against traditional, clearly better on ROI, knowledge per unit of money, money to the main level and waste; no clear difference on hardest level, targets solved, bounty value and knowledge found (bits). At budgets 51200–102400: best OSO (α = 0.8, β = 1). Against traditional, clearly better on ROI, knowledge found (bits), knowledge per unit of money, money to the main level and waste; no clear difference on hardest level, targets solved and bounty value. (Compared at each budget; 8 measures, a clear difference is more than 2.7 standard errors.)
+**Answer:** At budget 50: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level; no clear difference on targets solved, bounty value, ROI, knowledge found (bits), knowledge per unit of money and waste. At budget 100: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, knowledge found (bits) and knowledge per unit of money; no clear difference on waste. At budget 200: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, knowledge found (bits) and knowledge per unit of money; no clear difference on money to the main level and waste. At budgets 400–800: best OSO (α = 0.8, β = 1). Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, knowledge found (bits), knowledge per unit of money, money to the main level and waste. At budgets 1600–25600: best OSO (α = 0.8, β = 1). Against traditional, clearly better on ROI, knowledge per unit of money, money to the main level and waste; no clear difference on hardest level, targets solved, bounty value and knowledge found (bits). At budgets 51200–102400: best OSO (α = 0.8, β = 1). Against traditional, clearly better on ROI, knowledge found (bits), knowledge per unit of money, money to the main level and waste; no clear difference on hardest level, targets solved and bounty value. (Compared at each budget; 8 measures, a clear difference is more than 2.7 standard errors.)
 
 - Budget 50: hardest level: 2.05 against traditional 0.00, clearly better. targets solved: 0.00 against traditional 0.00, no clear difference.
 - Budget 100: hardest level: 3.30 against traditional 0.00, clearly better. targets solved: 0.40 against traditional 0.00, clearly better.
 - Budget 200: hardest level: 4.00 against traditional 0.20, clearly better. targets solved: 1.75 against traditional 0.05, clearly better.
-- Budget 400: hardest level: 4.00 against traditional 0.40, clearly better. targets solved: 2.00 against traditional 0.10, clearly better.
-- Budget 800: hardest level: 4.00 against traditional 2.40, clearly better. targets solved: 2.00 against traditional 0.95, clearly better.
+- Budget 400: hardest level: 4.00 against traditional 0.60, clearly better. targets solved: 2.00 against traditional 0.20, clearly better.
+- Budget 800: hardest level: 4.00 against traditional 2.40, clearly better. targets solved: 2.00 against traditional 1.00, clearly better.
 - Budget 1600: hardest level: 4.00 against traditional 4.00, no clear difference. targets solved: 2.00 against traditional 2.00, no clear difference.
 - Budget 3200: hardest level: 4.00 against traditional 4.00, no clear difference. targets solved: 2.00 against traditional 2.00, no clear difference.
 - Budget 6400: hardest level: 4.00 against traditional 4.00, no clear difference. targets solved: 2.00 against traditional 2.00, no clear difference.
@@ -23,15 +23,15 @@
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Traditional (α = 1, β = 0) | 50 | 0.0 ± 0.0 | 0.0 ± 0.0 | 0 ± 0 | 0.00 ± 0.00 | 7 ± 4 | 0.149 ± 0.091 | – | 0.19 ± 0.09 |
 | Traditional (α = 1, β = 0) | 100 | 0.0 ± 0.0 | 0.0 ± 0.0 | 0 ± 0 | 0.00 ± 0.00 | 12 ± 5 | 0.127 ± 0.056 | – | 0.27 ± 0.10 |
-| Traditional (α = 1, β = 0) | 200 | 0.2 ± 0.9 | 0.1 ± 0.2 | 2 ± 7 | 0.01 ± 0.04 | 24 ± 6 | 0.122 ± 0.029 | 168 ± 0 | 0.41 ± 0.10 |
-| Traditional (α = 1, β = 0) | 400 | 0.4 ± 1.2 | 0.1 ± 0.3 | 3 ± 10 | 0.01 ± 0.02 | 33 ± 5 | 0.084 ± 0.014 | 258 ± 127 | 0.61 ± 0.08 |
-| Traditional (α = 1, β = 0) | 800 | 2.4 ± 2.0 | 0.9 ± 0.9 | 30 ± 28 | 0.05 ± 0.05 | 48 ± 5 | 0.067 ± 0.014 | 578 ± 189 | 0.75 ± 0.05 |
-| Traditional (α = 1, β = 0) | 1600 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.08 ± 0.02 | 57 ± 7 | 0.069 ± 0.012 | 651 ± 158 | 0.76 ± 0.05 |
-| Traditional (α = 1, β = 0) | 3200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.09 ± 0.03 | 57 ± 7 | 0.074 ± 0.015 | 643 ± 246 | 0.76 ± 0.05 |
-| Traditional (α = 1, β = 0) | 6400 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.08 ± 0.02 | 60 ± 9 | 0.071 ± 0.015 | 685 ± 214 | 0.78 ± 0.04 |
-| Traditional (α = 1, β = 0) | 12800 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.08 ± 0.03 | 60 ± 7 | 0.076 ± 0.021 | 613 ± 261 | 0.77 ± 0.06 |
-| Traditional (α = 1, β = 0) | 25600 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.07 ± 0.02 | 64 ± 8 | 0.072 ± 0.012 | 721 ± 200 | 0.80 ± 0.04 |
-| Traditional (α = 1, β = 0) | 51200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.06 ± 0.02 | 66 ± 8 | 0.063 ± 0.012 | 893 ± 189 | 0.83 ± 0.04 |
+| Traditional (α = 1, β = 0) | 200 | 0.2 ± 0.9 | 0.1 ± 0.2 | 2 ± 7 | 0.01 ± 0.04 | 23 ± 6 | 0.122 ± 0.029 | 168 ± 0 | 0.41 ± 0.10 |
+| Traditional (α = 1, β = 0) | 400 | 0.6 ± 1.5 | 0.2 ± 0.5 | 6 ± 17 | 0.02 ± 0.05 | 34 ± 6 | 0.086 ± 0.017 | 288 ± 104 | 0.61 ± 0.08 |
+| Traditional (α = 1, β = 0) | 800 | 2.4 ± 2.0 | 1.0 ± 0.9 | 32 ± 29 | 0.05 ± 0.06 | 47 ± 6 | 0.069 ± 0.017 | 540 ± 190 | 0.73 ± 0.06 |
+| Traditional (α = 1, β = 0) | 1600 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.08 ± 0.03 | 54 ± 9 | 0.066 ± 0.014 | 689 ± 200 | 0.75 ± 0.05 |
+| Traditional (α = 1, β = 0) | 3200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.09 ± 0.03 | 55 ± 7 | 0.078 ± 0.020 | 590 ± 189 | 0.75 ± 0.05 |
+| Traditional (α = 1, β = 0) | 6400 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.08 ± 0.03 | 58 ± 7 | 0.072 ± 0.017 | 703 ± 228 | 0.78 ± 0.05 |
+| Traditional (α = 1, β = 0) | 12800 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.09 ± 0.03 | 59 ± 8 | 0.079 ± 0.021 | 608 ± 271 | 0.76 ± 0.05 |
+| Traditional (α = 1, β = 0) | 25600 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.07 ± 0.01 | 65 ± 7 | 0.072 ± 0.009 | 775 ± 199 | 0.81 ± 0.04 |
+| Traditional (α = 1, β = 0) | 51200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.06 ± 0.01 | 65 ± 7 | 0.064 ± 0.011 | 872 ± 167 | 0.83 ± 0.03 |
 | Traditional (α = 1, β = 0) | 102400 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.07 ± 0.02 | 66 ± 8 | 0.066 ± 0.014 | 937 ± 262 | 0.81 ± 0.05 |
 | OSO (α = 0.8, β = 1) | 50 | 2.0 ± 1.1 | 0.0 ± 0.0 | 0 ± 0 | 0.00 ± 0.00 | 12 ± 8 | 0.245 ± 0.168 | 48 ± 0 | 0.18 ± 0.08 |
 | OSO (α = 0.8, β = 1) | 100 | 3.3 ± 0.7 | 0.4 ± 0.6 | 13 ± 19 | 0.13 ± 0.20 | 31 ± 12 | 0.323 ± 0.121 | 67 ± 12 | 0.24 ± 0.09 |
@@ -58,14 +58,14 @@
 | OSO (α = 0.2, β = 1) | 51200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.31 ± 0.07 | 75 ± 2 | 0.364 ± 0.074 | 216 ± 44 | 0.51 ± 0.06 |
 | OSO (α = 0.2, β = 1) | 102400 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.32 ± 0.07 | 75 ± 2 | 0.376 ± 0.085 | 209 ± 42 | 0.56 ± 0.10 |
 | α = 0.8, β = 0.5 | 50 | 1.6 ± 1.5 | 0.0 ± 0.0 | 0 ± 0 | 0.00 ± 0.00 | 10 ± 7 | 0.206 ± 0.140 | 42 ± 8 | 0.22 ± 0.13 |
-| α = 0.8, β = 0.5 | 100 | 2.9 ± 0.9 | 0.1 ± 0.3 | 3 ± 10 | 0.03 ± 0.10 | 22 ± 10 | 0.224 ± 0.104 | 65 ± 22 | 0.30 ± 0.13 |
-| α = 0.8, β = 0.5 | 200 | 3.6 ± 0.6 | 0.8 ± 0.8 | 26 ± 27 | 0.17 ± 0.19 | 39 ± 9 | 0.227 ± 0.078 | 119 ± 52 | 0.42 ± 0.12 |
-| α = 0.8, β = 0.5 | 400 | 4.0 ± 0.0 | 1.9 ± 0.3 | 61 ± 10 | 0.28 ± 0.13 | 54 ± 10 | 0.233 ± 0.073 | 154 ± 72 | 0.49 ± 0.11 |
-| α = 0.8, β = 0.5 | 800 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.28 ± 0.12 | 56 ± 12 | 0.232 ± 0.074 | 154 ± 72 | 0.48 ± 0.10 |
-| α = 0.8, β = 0.5 | 1600 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.26 ± 0.07 | 57 ± 9 | 0.229 ± 0.056 | 157 ± 75 | 0.50 ± 0.09 |
-| α = 0.8, β = 0.5 | 3200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.28 ± 0.12 | 58 ± 11 | 0.242 ± 0.073 | 166 ± 77 | 0.52 ± 0.09 |
-| α = 0.8, β = 0.5 | 6400 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.29 ± 0.09 | 55 ± 11 | 0.241 ± 0.066 | 178 ± 68 | 0.49 ± 0.12 |
-| α = 0.8, β = 0.5 | 12800 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.23 ± 0.06 | 64 ± 8 | 0.228 ± 0.046 | 182 ± 75 | 0.55 ± 0.09 |
+| α = 0.8, β = 0.5 | 100 | 2.8 ± 1.0 | 0.1 ± 0.3 | 3 ± 10 | 0.03 ± 0.10 | 22 ± 10 | 0.225 ± 0.102 | 65 ± 22 | 0.30 ± 0.13 |
+| α = 0.8, β = 0.5 | 200 | 3.7 ± 0.6 | 0.8 ± 0.8 | 27 ± 26 | 0.17 ± 0.18 | 40 ± 9 | 0.227 ± 0.078 | 122 ± 51 | 0.41 ± 0.13 |
+| α = 0.8, β = 0.5 | 400 | 4.0 ± 0.0 | 1.9 ± 0.2 | 62 ± 7 | 0.28 ± 0.11 | 56 ± 10 | 0.234 ± 0.071 | 151 ± 71 | 0.49 ± 0.12 |
+| α = 0.8, β = 0.5 | 800 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.28 ± 0.11 | 56 ± 10 | 0.234 ± 0.071 | 151 ± 71 | 0.49 ± 0.12 |
+| α = 0.8, β = 0.5 | 1600 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.27 ± 0.09 | 57 ± 11 | 0.235 ± 0.060 | 157 ± 78 | 0.51 ± 0.08 |
+| α = 0.8, β = 0.5 | 3200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.29 ± 0.12 | 57 ± 11 | 0.243 ± 0.072 | 169 ± 81 | 0.52 ± 0.09 |
+| α = 0.8, β = 0.5 | 6400 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.28 ± 0.09 | 56 ± 12 | 0.231 ± 0.055 | 178 ± 68 | 0.49 ± 0.13 |
+| α = 0.8, β = 0.5 | 12800 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.25 ± 0.07 | 62 ± 11 | 0.229 ± 0.048 | 182 ± 75 | 0.53 ± 0.10 |
 | α = 0.8, β = 0.5 | 25600 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.24 ± 0.08 | 64 ± 11 | 0.233 ± 0.060 | 236 ± 79 | 0.59 ± 0.10 |
 | α = 0.8, β = 0.5 | 51200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.17 ± 0.02 | 73 ± 3 | 0.189 ± 0.025 | 391 ± 38 | 0.65 ± 0.09 |
 | α = 0.8, β = 0.5 | 102400 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.17 ± 0.03 | 75 ± 2 | 0.200 ± 0.040 | 396 ± 106 | 0.70 ± 0.06 |
@@ -85,15 +85,15 @@ Values are mean ± standard deviation over runs.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Traditional (α = 1, β = 0) | 50 | 0.0 ± 0.0 | 0.0 ± 0.0 | 0 ± 0 | 0.00 ± 0.00 | 7 ± 4 | 0 ± 0 | 0.149 ± 0.091 | – | 0.19 ± 0.09 | 0.00 ± 0.00 | 0.00 |
 | Traditional (α = 1, β = 0) | 100 | 0.0 ± 0.0 | 0.0 ± 0.0 | 0 ± 0 | 0.00 ± 0.00 | 12 ± 5 | 0 ± 0 | 0.127 ± 0.056 | – | 0.27 ± 0.10 | 0.00 ± 0.00 | 0.00 |
-| Traditional (α = 1, β = 0) | 200 | 0.2 ± 0.9 | 0.1 ± 0.2 | 2 ± 7 | 0.01 ± 0.04 | 24 ± 6 | 1 ± 4 | 0.122 ± 0.029 | 168 ± 0 | 0.41 ± 0.10 | 0.00 ± 0.00 | 0.05 |
-| Traditional (α = 1, β = 0) | 400 | 0.4 ± 1.2 | 0.1 ± 0.3 | 3 ± 10 | 0.01 ± 0.02 | 33 ± 5 | 2 ± 5 | 0.084 ± 0.014 | 258 ± 127 | 0.61 ± 0.08 | 0.00 ± 0.00 | 0.10 |
-| Traditional (α = 1, β = 0) | 800 | 2.4 ± 2.0 | 0.9 ± 0.9 | 30 ± 28 | 0.05 ± 0.05 | 48 ± 5 | 16 ± 15 | 0.067 ± 0.014 | 578 ± 189 | 0.75 ± 0.05 | 0.00 ± 0.00 | 0.60 |
-| Traditional (α = 1, β = 0) | 1600 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.08 ± 0.02 | 57 ± 7 | 34 ± 4 | 0.069 ± 0.012 | 651 ± 158 | 0.76 ± 0.05 | 0.00 ± 0.00 | 1.00 |
-| Traditional (α = 1, β = 0) | 3200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.09 ± 0.03 | 57 ± 7 | 32 ± 5 | 0.074 ± 0.015 | 643 ± 246 | 0.76 ± 0.05 | 0.00 ± 0.00 | 1.00 |
-| Traditional (α = 1, β = 0) | 6400 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.08 ± 0.02 | 60 ± 9 | 32 ± 4 | 0.071 ± 0.015 | 685 ± 214 | 0.78 ± 0.04 | 0.00 ± 0.00 | 1.00 |
-| Traditional (α = 1, β = 0) | 12800 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.08 ± 0.03 | 60 ± 7 | 33 ± 5 | 0.076 ± 0.021 | 613 ± 261 | 0.77 ± 0.06 | 0.02 ± 0.03 | 1.00 |
-| Traditional (α = 1, β = 0) | 25600 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.07 ± 0.02 | 64 ± 8 | 33 ± 6 | 0.072 ± 0.012 | 721 ± 200 | 0.80 ± 0.04 | 0.01 ± 0.03 | 1.00 |
-| Traditional (α = 1, β = 0) | 51200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.06 ± 0.02 | 66 ± 8 | 33 ± 3 | 0.063 ± 0.012 | 893 ± 189 | 0.83 ± 0.04 | 0.03 ± 0.04 | 1.00 |
+| Traditional (α = 1, β = 0) | 200 | 0.2 ± 0.9 | 0.1 ± 0.2 | 2 ± 7 | 0.01 ± 0.04 | 23 ± 6 | 1 ± 4 | 0.122 ± 0.029 | 168 ± 0 | 0.41 ± 0.10 | 0.00 ± 0.00 | 0.05 |
+| Traditional (α = 1, β = 0) | 400 | 0.6 ± 1.5 | 0.2 ± 0.5 | 6 ± 17 | 0.02 ± 0.05 | 34 ± 6 | 3 ± 7 | 0.086 ± 0.017 | 288 ± 104 | 0.61 ± 0.08 | 0.00 ± 0.00 | 0.15 |
+| Traditional (α = 1, β = 0) | 800 | 2.4 ± 2.0 | 1.0 ± 0.9 | 32 ± 29 | 0.05 ± 0.06 | 47 ± 6 | 17 ± 14 | 0.069 ± 0.017 | 540 ± 190 | 0.73 ± 0.06 | 0.00 ± 0.00 | 0.60 |
+| Traditional (α = 1, β = 0) | 1600 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.08 ± 0.03 | 54 ± 9 | 33 ± 5 | 0.066 ± 0.014 | 689 ± 200 | 0.75 ± 0.05 | 0.00 ± 0.00 | 1.00 |
+| Traditional (α = 1, β = 0) | 3200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.09 ± 0.03 | 55 ± 7 | 32 ± 5 | 0.078 ± 0.020 | 590 ± 189 | 0.75 ± 0.05 | 0.00 ± 0.00 | 1.00 |
+| Traditional (α = 1, β = 0) | 6400 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.08 ± 0.03 | 58 ± 7 | 32 ± 5 | 0.072 ± 0.017 | 703 ± 228 | 0.78 ± 0.05 | 0.00 ± 0.00 | 1.00 |
+| Traditional (α = 1, β = 0) | 12800 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.09 ± 0.03 | 59 ± 8 | 33 ± 5 | 0.079 ± 0.021 | 608 ± 271 | 0.76 ± 0.05 | 0.02 ± 0.03 | 1.00 |
+| Traditional (α = 1, β = 0) | 25600 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.07 ± 0.01 | 65 ± 7 | 33 ± 5 | 0.072 ± 0.009 | 775 ± 199 | 0.81 ± 0.04 | 0.00 ± 0.01 | 1.00 |
+| Traditional (α = 1, β = 0) | 51200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.06 ± 0.01 | 65 ± 7 | 33 ± 4 | 0.064 ± 0.011 | 872 ± 167 | 0.83 ± 0.03 | 0.04 ± 0.05 | 1.00 |
 | Traditional (α = 1, β = 0) | 102400 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.07 ± 0.02 | 66 ± 8 | 34 ± 4 | 0.066 ± 0.014 | 937 ± 262 | 0.81 ± 0.05 | 0.37 ± 0.16 | 1.00 |
 | OSO (α = 0.8, β = 1) | 50 | 2.0 ± 1.1 | 0.0 ± 0.0 | 0 ± 0 | 0.00 ± 0.00 | 12 ± 8 | 12 ± 8 | 0.245 ± 0.168 | 48 ± 0 | 0.18 ± 0.08 | 0.90 ± 0.31 | 0.05 |
 | OSO (α = 0.8, β = 1) | 100 | 3.3 ± 0.7 | 0.4 ± 0.6 | 13 ± 19 | 0.13 ± 0.20 | 31 ± 12 | 31 ± 12 | 0.323 ± 0.121 | 67 ± 12 | 0.24 ± 0.09 | 1.00 ± 0.00 | 0.45 |
@@ -120,18 +120,18 @@ Values are mean ± standard deviation over runs.
 | OSO (α = 0.2, β = 1) | 51200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.31 ± 0.07 | 75 ± 2 | 75 ± 2 | 0.364 ± 0.074 | 216 ± 44 | 0.51 ± 0.06 | 1.00 ± 0.00 | 1.00 |
 | OSO (α = 0.2, β = 1) | 102400 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.32 ± 0.07 | 75 ± 2 | 75 ± 2 | 0.376 ± 0.085 | 209 ± 42 | 0.56 ± 0.10 | 1.00 ± 0.00 | 1.00 |
 | α = 0.8, β = 0.5 | 50 | 1.6 ± 1.5 | 0.0 ± 0.0 | 0 ± 0 | 0.00 ± 0.00 | 10 ± 7 | 7 ± 7 | 0.206 ± 0.140 | 42 ± 8 | 0.22 ± 0.13 | 0.43 ± 0.36 | 0.10 |
-| α = 0.8, β = 0.5 | 100 | 2.9 ± 0.9 | 0.1 ± 0.3 | 3 ± 10 | 0.03 ± 0.10 | 22 ± 10 | 17 ± 10 | 0.224 ± 0.104 | 65 ± 22 | 0.30 ± 0.13 | 0.56 ± 0.10 | 0.25 |
-| α = 0.8, β = 0.5 | 200 | 3.6 ± 0.6 | 0.8 ± 0.8 | 26 ± 27 | 0.17 ± 0.19 | 39 ± 9 | 33 ± 10 | 0.227 ± 0.078 | 119 ± 52 | 0.42 ± 0.12 | 0.55 ± 0.09 | 0.70 |
-| α = 0.8, β = 0.5 | 400 | 4.0 ± 0.0 | 1.9 ± 0.3 | 61 ± 10 | 0.28 ± 0.13 | 54 ± 10 | 49 ± 10 | 0.233 ± 0.073 | 154 ± 72 | 0.49 ± 0.11 | 0.56 ± 0.08 | 1.00 |
-| α = 0.8, β = 0.5 | 800 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.28 ± 0.12 | 56 ± 12 | 51 ± 13 | 0.232 ± 0.074 | 154 ± 72 | 0.48 ± 0.10 | 0.56 ± 0.08 | 1.00 |
-| α = 0.8, β = 0.5 | 1600 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.26 ± 0.07 | 57 ± 9 | 53 ± 10 | 0.229 ± 0.056 | 157 ± 75 | 0.50 ± 0.09 | 0.55 ± 0.09 | 1.00 |
-| α = 0.8, β = 0.5 | 3200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.28 ± 0.12 | 58 ± 11 | 51 ± 12 | 0.242 ± 0.073 | 166 ± 77 | 0.52 ± 0.09 | 0.57 ± 0.15 | 1.00 |
-| α = 0.8, β = 0.5 | 6400 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.29 ± 0.09 | 55 ± 11 | 51 ± 11 | 0.241 ± 0.066 | 178 ± 68 | 0.49 ± 0.12 | 0.72 ± 0.12 | 1.00 |
-| α = 0.8, β = 0.5 | 12800 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.23 ± 0.06 | 64 ± 8 | 58 ± 9 | 0.228 ± 0.046 | 182 ± 75 | 0.55 ± 0.09 | 0.81 ± 0.07 | 1.00 |
+| α = 0.8, β = 0.5 | 100 | 2.8 ± 1.0 | 0.1 ± 0.3 | 3 ± 10 | 0.03 ± 0.10 | 22 ± 10 | 17 ± 10 | 0.225 ± 0.102 | 65 ± 22 | 0.30 ± 0.13 | 0.57 ± 0.10 | 0.25 |
+| α = 0.8, β = 0.5 | 200 | 3.7 ± 0.6 | 0.8 ± 0.8 | 27 ± 26 | 0.17 ± 0.18 | 40 ± 9 | 34 ± 10 | 0.227 ± 0.078 | 122 ± 51 | 0.41 ± 0.13 | 0.57 ± 0.10 | 0.75 |
+| α = 0.8, β = 0.5 | 400 | 4.0 ± 0.0 | 1.9 ± 0.2 | 62 ± 7 | 0.28 ± 0.11 | 56 ± 10 | 50 ± 11 | 0.234 ± 0.071 | 151 ± 71 | 0.49 ± 0.12 | 0.57 ± 0.08 | 1.00 |
+| α = 0.8, β = 0.5 | 800 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.28 ± 0.11 | 56 ± 10 | 50 ± 11 | 0.234 ± 0.071 | 151 ± 71 | 0.49 ± 0.12 | 0.57 ± 0.08 | 1.00 |
+| α = 0.8, β = 0.5 | 1600 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.27 ± 0.09 | 57 ± 11 | 52 ± 11 | 0.235 ± 0.060 | 157 ± 78 | 0.51 ± 0.08 | 0.55 ± 0.10 | 1.00 |
+| α = 0.8, β = 0.5 | 3200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.29 ± 0.12 | 57 ± 11 | 52 ± 12 | 0.243 ± 0.072 | 169 ± 81 | 0.52 ± 0.09 | 0.59 ± 0.13 | 1.00 |
+| α = 0.8, β = 0.5 | 6400 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.28 ± 0.09 | 56 ± 12 | 52 ± 12 | 0.231 ± 0.055 | 178 ± 68 | 0.49 ± 0.13 | 0.72 ± 0.13 | 1.00 |
+| α = 0.8, β = 0.5 | 12800 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.25 ± 0.07 | 62 ± 11 | 56 ± 10 | 0.229 ± 0.048 | 182 ± 75 | 0.53 ± 0.10 | 0.81 ± 0.07 | 1.00 |
 | α = 0.8, β = 0.5 | 25600 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.24 ± 0.08 | 64 ± 11 | 61 ± 12 | 0.233 ± 0.060 | 236 ± 79 | 0.59 ± 0.10 | 0.91 ± 0.05 | 1.00 |
 | α = 0.8, β = 0.5 | 51200 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.17 ± 0.02 | 73 ± 3 | 71 ± 4 | 0.189 ± 0.025 | 391 ± 38 | 0.65 ± 0.09 | 0.98 ± 0.03 | 1.00 |
 | α = 0.8, β = 0.5 | 102400 | 4.0 ± 0.0 | 2.0 ± 0.0 | 64 ± 0 | 0.17 ± 0.03 | 75 ± 2 | 75 ± 2 | 0.200 ± 0.040 | 396 ± 106 | 0.70 ± 0.06 | 1.00 ± 0.01 | 1.00 |
 
-Code: commit `94d7303` (with uncommitted changes). Experiment: [config/experiments/simple-ideas-4x8-p2-len3g2-comp0-7-one-at-a-time-depth-20261024.yaml](../../config/experiments/simple-ideas-4x8-p2-len3g2-comp0-7-one-at-a-time-depth-20261024.yaml). Command: `npm run sim -- simple-ideas-4x8-p2-len3g2-comp0-7-one-at-a-time-depth-20261024 --seeds 20 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `dc540e2`. Experiment: [config/experiments/simple-ideas-4x8-p2-len3g2-comp0-7-one-at-a-time-depth-20261024.yaml](../../config/experiments/simple-ideas-4x8-p2-len3g2-comp0-7-one-at-a-time-depth-20261024.yaml). Command: `npm run sim -- simple-ideas-4x8-p2-len3g2-comp0-7-one-at-a-time-depth-20261024 --seeds 20 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

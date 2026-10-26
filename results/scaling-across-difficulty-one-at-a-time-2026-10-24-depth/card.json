@@ -2,7 +2,7 @@
  "id": "scaling-across-difficulty-one-at-a-time-2026-10-24-depth",
  "kind": "simulation",
  "date": "2026-10-26",
- "ranAt": "2026-10-26T02:02:26.853Z",
+ "ranAt": "2026-10-26T21:08:36.798Z",
  "title": "Scaling as depth changes",
  "design": {
   "question": "As depth changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?",
@@ -12,39 +12,39 @@
   "better": "lower",
   "runs": "from the sweeps tagged \"one at a time 2026-10-24: depth\""
  },
- "answer": "To solve half the targets, traditional needs 5.3× to 7.0× the money OSO needs. By difficulty: depth 4 6.1×, depth 6 7.0×, depth 8 5.3×, depth 10 5.9×.",
+ "answer": "To solve half the targets, traditional needs 5.3× to 6.8× the money OSO needs. By difficulty: depth 4 5.9×, depth 6 6.8×, depth 8 5.3×, depth 10 6.5×.",
  "table": [
   {
    "difficulty": "depth 4",
-   "Traditional (α = 1, β = 0)": "827",
+   "Traditional (α = 1, β = 0)": "800",
    "OSO (α = 0.8, β = 1)": "136",
    "OSO (α = 0.2, β = 1)": "140",
-   "α = 0.8, β = 0.5": "227",
-   "traditional ÷ OSO": "6.1×"
+   "α = 0.8, β = 0.5": "220",
+   "traditional ÷ OSO": "5.9×"
   },
   {
    "difficulty": "depth 6",
-   "Traditional (α = 1, β = 0)": "2,193",
+   "Traditional (α = 1, β = 0)": "2,153",
    "OSO (α = 0.8, β = 1)": "315",
    "OSO (α = 0.2, β = 1)": "293",
-   "α = 0.8, β = 0.5": "533",
-   "traditional ÷ OSO": "7.0×"
+   "α = 0.8, β = 0.5": "566",
+   "traditional ÷ OSO": "6.8×"
   },
   {
    "difficulty": "depth 8",
-   "Traditional (α = 1, β = 0)": "4,786",
+   "Traditional (α = 1, β = 0)": "4,850",
    "OSO (α = 0.8, β = 1)": "907",
    "OSO (α = 0.2, β = 1)": "749",
-   "α = 0.8, β = 0.5": "1,226",
+   "α = 0.8, β = 0.5": "1,162",
    "traditional ÷ OSO": "5.3×"
   },
   {
    "difficulty": "depth 10",
-   "Traditional (α = 1, β = 0)": "12,364",
+   "Traditional (α = 1, β = 0)": "13,633",
    "OSO (α = 0.8, β = 1)": "2,089",
    "OSO (α = 0.2, β = 1)": "1,890",
-   "α = 0.8, β = 0.5": "3,200",
-   "traditional ÷ OSO": "5.9×"
+   "α = 0.8, β = 0.5": "2,710",
+   "traditional ÷ OSO": "6.5×"
   }
  ],
  "caveats": [
@@ -78,5 +78,5 @@
    "title": "Scaling, depth 10 (else default)"
   }
  ],
- "modelVersion": 5
+ "modelVersion": 6
 }

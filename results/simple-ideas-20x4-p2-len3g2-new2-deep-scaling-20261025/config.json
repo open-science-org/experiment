@@ -1,7 +1,7 @@
 {
   "experiment": "simple-ideas-20x4-p2-len3g2-new2-deep-scaling-20261025",
-  "date": "2026-10-25",
-  "commit": "99f92ba",
+  "date": "2026-10-26",
+  "commit": "dc540e2",
   "dirty": false,
   "command": "npm run sim -- simple-ideas-20x4-p2-len3g2-new2-deep-scaling-20261025 --seeds 30 --save",
   "seeds": 30,
@@ -313,7 +313,8 @@
         "perceptionNoise": 1,
         "kappa": 1,
         "psi": 0.5,
-        "roundsPerLevel": 5
+        "roundsPerLevel": 5,
+        "rivals": "public"
       },
       "measures": {
         "targetLevel": 20

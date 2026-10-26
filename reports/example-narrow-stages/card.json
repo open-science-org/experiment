@@ -1,8 +1,8 @@
 {
- "ranAt": "2026-10-25T17:05:30.922Z",
+ "ranAt": "2026-10-26T21:04:28.481Z",
  "id": "example-narrow-stages",
  "kind": "field report",
- "date": "2026-10-25",
+ "date": "2026-10-26",
  "title": "Example: narrow stages (drug discovery story)",
  "design": {
   "question": "For the same money, does OSO get further than traditional research in Example: narrow stages (drug discovery story)?",
@@ -12,14 +12,14 @@
   "better": "higher",
   "runs": "100 runs per setting"
  },
- "answer": "OSO ahead: level 6.0 against 0.7 of 6; targets 2.9 against 0.2 of 3; ROI 1.55 against 0.07.",
+ "answer": "OSO ahead: level 6.0 against 0.7 of 6; targets 2.9 against 0.1 of 3; ROI 1.55 against 0.05.",
  "table": [
   {
    "rules": "Traditional",
    "hardest level": "0.7 of 6",
-   "targets solved": "0.2 of 3",
-   "cost to level 6": 971,
-   "ROI": "0.07 (92 for 1412)"
+   "targets solved": "0.1 of 3",
+   "cost to level 6": 1085,
+   "ROI": "0.05 (73 for 1414)"
   },
   {
    "rules": "OSO",
@@ -31,10 +31,10 @@
  ],
  "caveats": [
   "A simulation with guessed parameters: it shows how the rules play out if the field works as described.",
-  "OSO's lead as the market-set parameters vary: 2.4 to 5.3 levels.",
+  "OSO's lead as the market-set parameters vary: 2.1 to 5.3 levels.",
   "A preset of the idea graph generator. Each stage reuses only part of the evidence before it (composition 0.5), many hits and leads go nowhere, and the stages get much harder. The numbers are illustrative, not measured from the field."
  ],
  "page": "reports/example-narrow-stages/card.md",
  "chart": "reports/example-narrow-stages/figures/frontier.svg",
- "modelVersion": 5
+ "modelVersion": 6
 }

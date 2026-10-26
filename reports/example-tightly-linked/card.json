@@ -1,8 +1,8 @@
 {
- "ranAt": "2026-10-25T17:05:30.918Z",
+ "ranAt": "2026-10-26T21:08:04.835Z",
  "id": "example-tightly-linked",
  "kind": "field report",
- "date": "2026-10-25",
+ "date": "2026-10-26",
  "title": "Example: small and tightly linked (battery story)",
  "design": {
   "question": "For the same money, does OSO get further than traditional research in Example: small and tightly linked (battery story)?",
@@ -12,14 +12,14 @@
   "better": "higher",
   "runs": "100 runs per setting"
  },
- "answer": "OSO ahead: level 5.0 against 0.3 of 5; targets 1.9 against 0.1 of 2; ROI 6.46 against 0.19.",
+ "answer": "OSO ahead: level 5.0 against 0.3 of 5; targets 1.9 against 0.1 of 2; ROI 6.46 against 0.17.",
  "table": [
   {
    "rules": "Traditional",
    "hardest level": "0.3 of 5",
    "targets solved": "0.1 of 2",
    "cost to level 5": 142,
-   "ROI": "0.19 (32 for 179)"
+   "ROI": "0.17 (28 for 179)"
   },
   {
    "rules": "OSO",
@@ -31,10 +31,10 @@
  ],
  "caveats": [
   "A simulation with guessed parameters: it shows how the rules play out if the field works as described.",
-  "OSO's lead as the market-set parameters vary: 0.7 to 4.5 levels.",
+  "OSO's lead as the market-set parameters vary: 0.6 to 4.5 levels.",
   "A preset of the idea graph generator. A small field where ideas lean heavily on what came before (composition 0.8) and each one needs several earlier results (2.5 parents). The numbers are illustrative, not measured from the field."
  ],
  "page": "reports/example-tightly-linked/card.md",
  "chart": "reports/example-tightly-linked/figures/frontier.svg",
- "modelVersion": 5
+ "modelVersion": 6
 }

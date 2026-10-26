@@ -2,7 +2,7 @@
  "chart": "results/full-example-narrow-stages-6-settings-20261023/figures/compare.svg",
  "id": "full-example-narrow-stages-6-settings-20261023",
  "kind": "simulation",
- "date": "2026-10-25",
+ "date": "2026-10-26",
  "title": "full-example-narrow-stages-6-settings-20261023",
  "design": {
   "question": "On the narrow-stages example, with every kind of agent and earnings shaping next round's money, which of the six rule settings gets furthest?",
@@ -15,25 +15,25 @@
  "answer": "Best overall: No flow-back, immediate. Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, knowledge found (bits), knowledge per unit of money, money to the main level and waste. (8 measures; a clear difference is more than 2.7 standard errors.)",
  "answers": [
   "hardest level: 6.00 against traditional 0.36, clearly better.",
-  "targets solved: 2.67 against traditional 0.09, clearly better.",
-  "bounty value: 1298 against traditional 44, clearly better.",
-  "ROI: 1.49 against traditional 0.03, clearly better.",
+  "targets solved: 2.67 against traditional 0.07, clearly better.",
+  "bounty value: 1298 against traditional 34, clearly better.",
+  "ROI: 1.49 against traditional 0.02, clearly better.",
   "knowledge found (bits): 157 against traditional 79, clearly better.",
   "knowledge per unit of money: 0.17 against traditional 0.06, clearly better.",
-  "money to the main level: 564 against traditional 1012, clearly better.",
-  "waste: 0.45 against traditional 0.72, clearly better."
+  "money to the main level: 564 against traditional 1014, clearly better.",
+  "waste: 0.45 against traditional 0.73, clearly better."
  ],
  "table": [
   {
    "setting": "Traditional",
    "frontier": "0.4 ± 1.4",
-   "targets solved": "0.1 ± 0.4",
-   "value gained": "44 ± 184",
-   "ROI (value per spend)": "0.03 ± 0.13",
+   "targets solved": "0.1 ± 0.3",
+   "value gained": "34 ± 142",
+   "ROI (value per spend)": "0.02 ± 0.10",
    "knowledge (bits)": "79 ± 12",
-   "bits per money": "0.057 ± 0.008",
-   "cost": "1012 ± 336",
-   "waste": "0.72 ± 0.05"
+   "bits per money": "0.057 ± 0.009",
+   "cost": "1014 ± 299",
+   "waste": "0.73 ± 0.04"
   },
   {
    "setting": "OSO (immediate)",
@@ -48,25 +48,25 @@
   },
   {
    "setting": "OSO (choice)",
-   "frontier": "5.8 ± 0.6",
-   "targets solved": "1.7 ± 1.3",
-   "value gained": "836 ± 630",
-   "ROI (value per spend)": "0.76 ± 0.67",
-   "knowledge (bits)": "134 ± 20",
-   "bits per money": "0.111 ± 0.031",
-   "cost": "875 ± 286",
+   "frontier": "5.7 ± 0.6",
+   "targets solved": "1.8 ± 1.3",
+   "value gained": "855 ± 630",
+   "ROI (value per spend)": "0.75 ± 0.61",
+   "knowledge (bits)": "133 ± 22",
+   "bits per money": "0.108 ± 0.027",
+   "cost": "867 ± 268",
    "waste": "0.62 ± 0.08"
   },
   {
    "setting": "Flow-back, finished-only",
-   "frontier": "0.4 ± 1.4",
+   "frontier": "0.2 ± 1.2",
    "targets solved": "0.1 ± 0.3",
-   "value gained": "39 ± 165",
-   "ROI (value per spend)": "0.03 ± 0.12",
-   "knowledge (bits)": "79 ± 12",
-   "bits per money": "0.057 ± 0.009",
-   "cost": "1106 ± 240",
-   "waste": "0.72 ± 0.05"
+   "value gained": "24 ± 127",
+   "ROI (value per spend)": "0.02 ± 0.09",
+   "knowledge (bits)": "80 ± 11",
+   "bits per money": "0.057 ± 0.008",
+   "cost": "1070 ± 224",
+   "waste": "0.73 ± 0.04"
   },
   {
    "setting": "No flow-back, immediate",
@@ -81,14 +81,14 @@
   },
   {
    "setting": "No flow-back, choice",
-   "frontier": "5.8 ± 0.6",
-   "targets solved": "1.4 ± 1.2",
-   "value gained": "700 ± 599",
-   "ROI (value per spend)": "0.63 ± 0.64",
-   "knowledge (bits)": "130 ± 19",
-   "bits per money": "0.105 ± 0.030",
-   "cost": "851 ± 297",
-   "waste": "0.64 ± 0.08"
+   "frontier": "5.7 ± 0.7",
+   "targets solved": "1.6 ± 1.2",
+   "value gained": "753 ± 588",
+   "ROI (value per spend)": "0.65 ± 0.62",
+   "knowledge (bits)": "131 ± 20",
+   "bits per money": "0.104 ± 0.028",
+   "cost": "883 ± 297",
+   "waste": "0.65 ± 0.07"
   }
  ],
  "caveats": [
@@ -109,6 +109,6 @@
   "suite 2026-10-24",
   "full model"
  ],
- "ranAt": "2026-10-25T17:03:24.613Z",
- "modelVersion": 5
+ "ranAt": "2026-10-26T19:30:31.553Z",
+ "modelVersion": 6
 }

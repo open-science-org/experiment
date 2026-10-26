@@ -5,22 +5,22 @@
 **Answer:** Best overall: Agents choose, α = 0. Against traditional, clearly better on hardest level, targets solved, bounty value, ROI, knowledge found (bits), knowledge per unit of money, money to the main level and waste. (8 measures; a clear difference is more than 2.7 standard errors.)
 
 - hardest level: 6.00 against traditional 1.20, clearly better.
-- targets solved: 1.99 against traditional 0.34, clearly better.
-- bounty value: 255 against traditional 44, clearly better.
+- targets solved: 1.99 against traditional 0.31, clearly better.
+- bounty value: 255 against traditional 40, clearly better.
 - ROI: 0.49 against traditional 0.04, clearly better.
-- knowledge found (bits): 125 against traditional 70, clearly better.
+- knowledge found (bits): 125 against traditional 71, clearly better.
 - knowledge per unit of money: 0.24 against traditional 0.06, clearly better.
-- money to the main level: 280 against traditional 922, clearly better.
+- money to the main level: 280 against traditional 936, clearly better.
 - waste: 0.56 against traditional 0.72, clearly better.
 
 ![Step 5. Adds a gamer and validation; same as the full model](figures/compare.svg)
 
 | society | frontier | targets solved | value gained | ROI (value per spend) | knowledge (bits) | bits per money | cost | waste |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Traditional (α = 1, finished work only) | 1.2 ± 2.4 | 0.3 ± 0.7 | 44 ± 91 | 0.04 ± 0.09 | 70 ± 11 | 0.061 ± 0.014 | 922 ± 239 | 0.72 ± 0.04 |
-| Agents choose, α = 1 | 6.0 ± 0.1 | 1.9 ± 0.3 | 247 ± 38 | 0.37 ± 0.15 | 100 ± 18 | 0.144 ± 0.046 | 548 ± 215 | 0.57 ± 0.07 |
-| Agents choose, α = 0.8 | 6.0 ± 0.0 | 2.0 ± 0.2 | 251 ± 25 | 0.36 ± 0.12 | 103 ± 19 | 0.143 ± 0.038 | 548 ± 199 | 0.59 ± 0.08 |
-| Agents choose, α = 0.2 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 0.56 ± 0.18 | 108 ± 17 | 0.230 ± 0.055 | 341 ± 123 | 0.53 ± 0.06 |
+| Traditional (α = 1, finished work only) | 1.2 ± 2.4 | 0.3 ± 0.7 | 40 ± 85 | 0.04 ± 0.09 | 71 ± 11 | 0.061 ± 0.015 | 936 ± 239 | 0.72 ± 0.04 |
+| Agents choose, α = 1 | 6.0 ± 0.0 | 2.0 ± 0.2 | 252 ± 22 | 0.39 ± 0.16 | 99 ± 18 | 0.145 ± 0.045 | 559 ± 218 | 0.58 ± 0.07 |
+| Agents choose, α = 0.8 | 6.0 ± 0.1 | 1.9 ± 0.3 | 246 ± 43 | 0.36 ± 0.14 | 101 ± 19 | 0.142 ± 0.037 | 525 ± 196 | 0.59 ± 0.07 |
+| Agents choose, α = 0.2 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 0.57 ± 0.24 | 107 ± 19 | 0.226 ± 0.065 | 340 ± 123 | 0.54 ± 0.07 |
 | Agents choose, α = 0 | 6.0 ± 0.0 | 2.0 ± 0.1 | 255 ± 13 | 0.49 ± 0.14 | 125 ± 14 | 0.238 ± 0.055 | 280 ± 119 | 0.56 ± 0.08 |
 
 **Design** (fixed before the run): compared traditional against agents choosing what to share, at α in {1, 0.8, 0.2, 0} · held the same: a generated idea graph (6 levels × 8 ideas, 2 parents each, sequences of 3 bits growing by 2 per level, composition 0.7), 12 agents of different kinds (3 foundation builders, 3 target racers, 2 cheap explorers, 2 specialists, a free rider, a gamer), half of each round's money by what agents earned (f = 0.5), no flat mint, a knowledge reward of 1 per new bit flowing back with α, validation rejecting trivial ideas half the time (θ = 0.5), a budget of 1200 · measure: all of hardest level, targets solved, bounty value, ROI, knowledge found (bits), knowledge per unit of money, money to the main level, waste · 100 runs per row.
@@ -36,12 +36,12 @@ Values are mean ± standard deviation over runs.
 
 | society | frontier | targets solved | value gained | ROI (value per spend) | knowledge (bits) | knowledge published (bits) | bits per money | cost | waste | sharing | reach L6 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Traditional (α = 1, finished work only) | 1.2 ± 2.4 | 0.3 ± 0.7 | 44 ± 91 | 0.04 ± 0.09 | 70 ± 11 | 10 ± 21 | 0.061 ± 0.014 | 922 ± 239 | 0.72 ± 0.04 | 0.00 ± 0.00 | 0.20 |
-| Agents choose, α = 1 | 6.0 ± 0.1 | 1.9 ± 0.3 | 247 ± 38 | 0.37 ± 0.15 | 100 ± 18 | 96 ± 20 | 0.144 ± 0.046 | 548 ± 215 | 0.57 ± 0.07 | 0.35 ± 0.11 | 0.99 |
-| Agents choose, α = 0.8 | 6.0 ± 0.0 | 2.0 ± 0.2 | 251 ± 25 | 0.36 ± 0.12 | 103 ± 19 | 100 ± 21 | 0.143 ± 0.038 | 548 ± 199 | 0.59 ± 0.08 | 0.39 ± 0.12 | 1.00 |
-| Agents choose, α = 0.2 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 0.56 ± 0.18 | 108 ± 17 | 107 ± 18 | 0.230 ± 0.055 | 341 ± 123 | 0.53 ± 0.06 | 0.68 ± 0.10 | 1.00 |
+| Traditional (α = 1, finished work only) | 1.2 ± 2.4 | 0.3 ± 0.7 | 40 ± 85 | 0.04 ± 0.09 | 71 ± 11 | 9 ± 19 | 0.061 ± 0.015 | 936 ± 239 | 0.72 ± 0.04 | 0.00 ± 0.00 | 0.20 |
+| Agents choose, α = 1 | 6.0 ± 0.0 | 2.0 ± 0.2 | 252 ± 22 | 0.39 ± 0.16 | 99 ± 18 | 95 ± 19 | 0.145 ± 0.045 | 559 ± 218 | 0.58 ± 0.07 | 0.33 ± 0.11 | 1.00 |
+| Agents choose, α = 0.8 | 6.0 ± 0.1 | 1.9 ± 0.3 | 246 ± 43 | 0.36 ± 0.14 | 101 ± 19 | 96 ± 21 | 0.142 ± 0.037 | 525 ± 196 | 0.59 ± 0.07 | 0.36 ± 0.10 | 0.99 |
+| Agents choose, α = 0.2 | 6.0 ± 0.0 | 2.0 ± 0.0 | 256 ± 0 | 0.57 ± 0.24 | 107 ± 19 | 106 ± 20 | 0.226 ± 0.065 | 340 ± 123 | 0.54 ± 0.07 | 0.66 ± 0.09 | 1.00 |
 | Agents choose, α = 0 | 6.0 ± 0.0 | 2.0 ± 0.1 | 255 ± 13 | 0.49 ± 0.14 | 125 ± 14 | 125 ± 14 | 0.238 ± 0.055 | 280 ± 119 | 0.56 ± 0.08 | 1.00 ± 0.00 | 1.00 |
 
-Code: commit `3e57a41`. Experiment: [config/experiments/simple-ideas-6x8-p2-len3g2-comp0-7-step5-by-alpha-20261025.yaml](../../config/experiments/simple-ideas-6x8-p2-len3g2-comp0-7-step5-by-alpha-20261025.yaml). Command: `npm run sim -- simple-ideas-6x8-p2-len3g2-comp0-7-step5-by-alpha-20261025 --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
+Code: commit `dc540e2`. Experiment: [config/experiments/simple-ideas-6x8-p2-len3g2-comp0-7-step5-by-alpha-20261025.yaml](../../config/experiments/simple-ideas-6x8-p2-len3g2-comp0-7-step5-by-alpha-20261025.yaml). Command: `npm run sim -- simple-ideas-6x8-p2-len3g2-comp0-7-step5-by-alpha-20261025 --seeds 100 --save`. Every run: `runs.jsonl`; every parameter: `config.json`.
 
 </details>

@@ -1,8 +1,8 @@
 {
- "ranAt": "2026-10-25T17:05:30.919Z",
+ "ranAt": "2026-10-26T21:08:18.356Z",
  "id": "lean-problem-set",
  "kind": "field report",
- "date": "2026-10-25",
+ "date": "2026-10-26",
  "title": "The Lean problem set",
  "design": {
   "question": "For the same money, does OSO get further than traditional research in the Lean problem set?",
@@ -12,14 +12,14 @@
   "better": "higher",
   "runs": "100 runs per setting"
  },
- "answer": "OSO ahead: level 7.0 against 5.2 of 7; targets 8.0 against 5.9 of 8; ROI 2.22 against 0.63.",
+ "answer": "OSO ahead: level 7.0 against 5.2 of 7; targets 8.0 against 6.1 of 8; ROI 2.22 against 0.65.",
  "table": [
   {
    "rules": "Traditional",
    "hardest level": "5.2 of 7",
-   "targets solved": "5.9 of 8",
-   "cost to level 5": 267,
-   "ROI": "0.63 (219 for 377)"
+   "targets solved": "6.1 of 8",
+   "cost to level 5": 269,
+   "ROI": "0.65 (222 for 374)"
   },
   {
    "rules": "OSO",
@@ -31,10 +31,10 @@
  ],
  "caveats": [
   "A simulation with guessed parameters: it shows how the rules play out if the field works as described.",
-  "OSO's lead as the market-set parameters vary: 0.2 to 2.1 levels.",
+  "OSO's lead as the market-set parameters vary: 0.2 to 2.0 levels.",
   "Theorem names are hidden; the tree is the route of our own reference proofs, and agents may find others."
  ],
  "page": "reports/lean-problem-set/card.md",
  "chart": "reports/lean-problem-set/figures/frontier.svg",
- "modelVersion": 5
+ "modelVersion": 6
 }

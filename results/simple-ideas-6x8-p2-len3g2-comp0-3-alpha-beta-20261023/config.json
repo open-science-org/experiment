@@ -1,8 +1,8 @@
 {
   "experiment": "simple-ideas-6x8-p2-len3g2-comp0-3-alpha-beta-20261023",
-  "date": "2026-10-25",
-  "commit": "94d7303",
-  "dirty": true,
+  "date": "2026-10-26",
+  "commit": "dc540e2",
+  "dirty": false,
   "command": "npm run sim -- simple-ideas-6x8-p2-len3g2-comp0-3-alpha-beta-20261023 --seeds 50 --save",
   "seeds": 50,
   "overrides": {},
@@ -350,6 +350,7 @@
         "length": 3,
         "lengthGrowth": 2,
         "composition": 0.3,
+        "newBits": 0,
         "targets": 2,
         "targetsFrom": 0,
         "bountyBase": 4,
@@ -500,7 +501,8 @@
         "perceptionNoise": 1,
         "kappa": 1,
         "psi": 0.5,
-        "roundsPerLevel": 5
+        "roundsPerLevel": 5,
+        "rivals": "public"
       },
       "measures": {
         "targetLevel": 6

@@ -51,7 +51,7 @@
 <text class="tick" x="222" y="281" text-anchor="end">OSO (α = 0, β = 1), budget 96000</text>
 <rect x="230" y="270" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0, β = 1), budget 96000: 10</title></rect>
 <text class="label t2" x="556" y="282">10</text>
-<text class="tick" x="222" y="307" text-anchor="end">α = 0.8, β = 0.5, budget 24000</text>
-<rect x="230" y="296" width="320.0" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.8, β = 0.5, budget 24000: 10</title></rect>
+<text class="tick" x="222" y="307" text-anchor="end">α = 0.8, β = 0.5, budget 96000</text>
+<rect x="230" y="296" width="320.0" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.8, β = 0.5, budget 96000: 10</title></rect>
 <text class="label " x="556" y="308">10</text>
 </svg>

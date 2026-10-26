@@ -33,13 +33,13 @@
 <text class="tick" x="222" y="125" text-anchor="end">OSO (α = 0.2, β = 1)</text>
 <rect x="230" y="114" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.2, β = 1): 6.0</title></rect>
 <text class="label t2" x="556" y="126">6.0</text>
-<text class="tick" x="222" y="151" text-anchor="end">α = 0.2, β = 0</text>
-<rect x="230" y="140" width="28.8" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.2, β = 0: 0.54</title></rect>
-<text class="label " x="264.8" y="152">0.54</text>
-<text class="tick" x="222" y="177" text-anchor="end">α = 0.8, β = 0</text>
-<rect x="230" y="166" width="16.0" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.8, β = 0: 0.3</title></rect>
-<text class="label " x="252" y="178">0.3</text>
-<text class="tick" x="222" y="203" text-anchor="end">Traditional (α = 1, β = 0)</text>
-<rect x="230" y="192" width="12.8" height="16" rx="3" style="fill:var(--s1)"><title>Traditional (α = 1, β = 0): 0.24</title></rect>
-<text class="label t1" x="248.8" y="204">0.24</text>
+<text class="tick" x="222" y="151" text-anchor="end">Traditional (α = 1, β = 0)</text>
+<rect x="230" y="140" width="19.2" height="16" rx="3" style="fill:var(--s1)"><title>Traditional (α = 1, β = 0): 0.36</title></rect>
+<text class="label t1" x="255.2" y="152">0.36</text>
+<text class="tick" x="222" y="177" text-anchor="end">α = 0.2, β = 0</text>
+<rect x="230" y="166" width="19.2" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.2, β = 0: 0.36</title></rect>
+<text class="label " x="255.2" y="178">0.36</text>
+<text class="tick" x="222" y="203" text-anchor="end">α = 0.8, β = 0</text>
+<rect x="230" y="192" width="16.0" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.8, β = 0: 0.3</title></rect>
+<text class="label " x="252" y="204">0.3</text>
 </svg>

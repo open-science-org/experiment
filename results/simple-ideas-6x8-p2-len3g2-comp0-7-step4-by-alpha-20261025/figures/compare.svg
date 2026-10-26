@@ -37,6 +37,6 @@
 <rect x="230" y="140" width="319.5" height="16" rx="3" style="fill:var(--dead)"><title>Agents choose, α = 1: 5.99</title></rect>
 <text class="label " x="555.4666666666667" y="152">5.99</text>
 <text class="tick" x="222" y="177" text-anchor="end">Traditional (α = 1, finished work…</text>
-<rect x="230" y="166" width="67.2" height="16" rx="3" style="fill:var(--s1)"><title>Traditional (α = 1, finished work only): 1.26</title></rect>
-<text class="label t1" x="303.2" y="178">1.26</text>
+<rect x="230" y="166" width="48.0" height="16" rx="3" style="fill:var(--s1)"><title>Traditional (α = 1, finished work only): 0.9</title></rect>
+<text class="label t1" x="284" y="178">0.9</text>
 </svg>

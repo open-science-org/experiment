@@ -55,6 +55,6 @@
 <rect x="230" y="296" width="320.0" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.5, β = 0.5: 6.0</title></rect>
 <text class="label " x="556" y="308">6.0</text>
 <text class="tick" x="222" y="333" text-anchor="end">Traditional (α = 1, β = 0)</text>
-<rect x="230" y="322" width="281.6" height="16" rx="3" style="fill:var(--s1)"><title>Traditional (α = 1, β = 0): 5.28</title></rect>
-<text class="label t1" x="517.6" y="334">5.28</text>
+<rect x="230" y="322" width="307.2" height="16" rx="3" style="fill:var(--s1)"><title>Traditional (α = 1, β = 0): 5.76</title></rect>
+<text class="label t1" x="543.2" y="334">5.76</text>
 </svg>

@@ -55,6 +55,6 @@
 <rect x="230" y="296" width="320.0" height="16" rx="3" style="fill:var(--dead)"><title>α = 1, β = 1, budget 96000: 10</title></rect>
 <text class="label " x="556" y="308">10</text>
 <text class="tick" x="222" y="333" text-anchor="end">Traditional (α = 1, β = 0), budge…</text>
-<rect x="230" y="322" width="315.7" height="16" rx="3" style="fill:var(--s1)"><title>Traditional (α = 1, β = 0), budget 96000: 9.87</title></rect>
-<text class="label t1" x="551.7333333333333" y="334">9.87</text>
+<rect x="230" y="322" width="318.9" height="16" rx="3" style="fill:var(--s1)"><title>Traditional (α = 1, β = 0), budget 96000: 9.97</title></rect>
+<text class="label t1" x="554.9333333333334" y="334">9.97</text>
 </svg>

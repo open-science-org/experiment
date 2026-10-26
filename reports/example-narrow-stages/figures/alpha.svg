@@ -42,24 +42,24 @@
 <text class="tick" x="513.7777777777778" y="382" text-anchor="middle">0.2</text>
 <text class="axis" x="317" y="408" text-anchor="middle">Absorption rate α (share of value an idea absorbs)</text>
 <text class="axis" transform="translate(16 228) rotate(-90)" text-anchor="middle">Share</text>
-<path class="line c1" d="M64.0 245.1 L176.4 242.4 L288.9 223.3 L345.1 201.0 L401.3 173.6 L457.6 154.3 L513.8 140.8 L570.0 126.6"/>
-<circle class="dot f1" cx="64.0" cy="245.1" r="4.5"><title>Ideas shared: 44% at absorption rate α (share of value an idea absorbs) 1</title></circle>
-<circle class="dot f1" cx="176.4" cy="242.4" r="4.5"><title>Ideas shared: 45% at absorption rate α (share of value an idea absorbs) 0.8</title></circle>
-<circle class="dot f1" cx="288.9" cy="223.3" r="4.5"><title>Ideas shared: 52% at absorption rate α (share of value an idea absorbs) 0.6</title></circle>
-<circle class="dot f1" cx="345.1" cy="201.0" r="4.5"><title>Ideas shared: 60% at absorption rate α (share of value an idea absorbs) 0.5</title></circle>
-<circle class="dot f1" cx="401.3" cy="173.6" r="4.5"><title>Ideas shared: 70% at absorption rate α (share of value an idea absorbs) 0.4</title></circle>
-<circle class="dot f1" cx="457.6" cy="154.3" r="4.5"><title>Ideas shared: 77% at absorption rate α (share of value an idea absorbs) 0.3</title></circle>
-<circle class="dot f1" cx="513.8" cy="140.8" r="4.5"><title>Ideas shared: 82% at absorption rate α (share of value an idea absorbs) 0.2</title></circle>
-<circle class="dot f1" cx="570.0" cy="126.6" r="4.5"><title>Ideas shared: 87% at absorption rate α (share of value an idea absorbs) 0.1</title></circle>
-<path class="line c2" d="M64.0 168.2 L176.4 146.4 L288.9 116.5 L345.1 116.5 L401.3 108.3 L457.6 92.0 L513.8 92.0 L570.0 94.7"/>
+<path class="line c1" d="M64.0 248.2 L176.4 245.2 L288.9 228.5 L345.1 207.2 L401.3 180.9 L457.6 159.8 L513.8 143.3 L570.0 126.8"/>
+<circle class="dot f1" cx="64.0" cy="248.2" r="4.5"><title>Ideas shared: 43% at absorption rate α (share of value an idea absorbs) 1</title></circle>
+<circle class="dot f1" cx="176.4" cy="245.2" r="4.5"><title>Ideas shared: 44% at absorption rate α (share of value an idea absorbs) 0.8</title></circle>
+<circle class="dot f1" cx="288.9" cy="228.5" r="4.5"><title>Ideas shared: 50% at absorption rate α (share of value an idea absorbs) 0.6</title></circle>
+<circle class="dot f1" cx="345.1" cy="207.2" r="4.5"><title>Ideas shared: 58% at absorption rate α (share of value an idea absorbs) 0.5</title></circle>
+<circle class="dot f1" cx="401.3" cy="180.9" r="4.5"><title>Ideas shared: 67% at absorption rate α (share of value an idea absorbs) 0.4</title></circle>
+<circle class="dot f1" cx="457.6" cy="159.8" r="4.5"><title>Ideas shared: 75% at absorption rate α (share of value an idea absorbs) 0.3</title></circle>
+<circle class="dot f1" cx="513.8" cy="143.3" r="4.5"><title>Ideas shared: 81% at absorption rate α (share of value an idea absorbs) 0.2</title></circle>
+<circle class="dot f1" cx="570.0" cy="126.8" r="4.5"><title>Ideas shared: 87% at absorption rate α (share of value an idea absorbs) 0.1</title></circle>
+<path class="line c2" d="M64.0 168.2 L176.4 146.4 L288.9 124.6 L345.1 111.0 L401.3 108.3 L457.6 100.2 L513.8 92.0 L570.0 92.0"/>
 <circle class="dot f2" cx="64.0" cy="168.2" r="4.5"><title>Runs reaching level 6: 72% at absorption rate α (share of value an idea absorbs) 1</title></circle>
 <circle class="dot f2" cx="176.4" cy="146.4" r="4.5"><title>Runs reaching level 6: 80% at absorption rate α (share of value an idea absorbs) 0.8</title></circle>
-<circle class="dot f2" cx="288.9" cy="116.5" r="4.5"><title>Runs reaching level 6: 91% at absorption rate α (share of value an idea absorbs) 0.6</title></circle>
-<circle class="dot f2" cx="345.1" cy="116.5" r="4.5"><title>Runs reaching level 6: 91% at absorption rate α (share of value an idea absorbs) 0.5</title></circle>
+<circle class="dot f2" cx="288.9" cy="124.6" r="4.5"><title>Runs reaching level 6: 88% at absorption rate α (share of value an idea absorbs) 0.6</title></circle>
+<circle class="dot f2" cx="345.1" cy="111.0" r="4.5"><title>Runs reaching level 6: 93% at absorption rate α (share of value an idea absorbs) 0.5</title></circle>
 <circle class="dot f2" cx="401.3" cy="108.3" r="4.5"><title>Runs reaching level 6: 94% at absorption rate α (share of value an idea absorbs) 0.4</title></circle>
-<circle class="dot f2" cx="457.6" cy="92.0" r="4.5"><title>Runs reaching level 6: 100% at absorption rate α (share of value an idea absorbs) 0.3</title></circle>
+<circle class="dot f2" cx="457.6" cy="100.2" r="4.5"><title>Runs reaching level 6: 97% at absorption rate α (share of value an idea absorbs) 0.3</title></circle>
 <circle class="dot f2" cx="513.8" cy="92.0" r="4.5"><title>Runs reaching level 6: 100% at absorption rate α (share of value an idea absorbs) 0.2</title></circle>
-<circle class="dot f2" cx="570.0" cy="94.7" r="4.5"><title>Runs reaching level 6: 99% at absorption rate α (share of value an idea absorbs) 0.1</title></circle>
-<text class="label t2" x="582" y="98.72000000000003">Runs reaching level 6: 99%</text>
-<text class="label t1" x="582" y="130.58468783988766">Ideas shared: 87%</text>
+<circle class="dot f2" cx="570.0" cy="92.0" r="4.5"><title>Runs reaching level 6: 100% at absorption rate α (share of value an idea absorbs) 0.1</title></circle>
+<text class="label t2" x="582" y="96">Runs reaching level 6: 100%</text>
+<text class="label t1" x="582" y="130.82991244317168">Ideas shared: 87%</text>
 </svg>

@@ -4,16 +4,16 @@
 
 **Question:** As length growth changes (everything else as the default graph), how much money does each society need, and does the gap between traditional and OSO grow?
 
-**Answer:** To solve half the targets, traditional needs 5.2× to 7.1× the money OSO needs. By difficulty: length growth 1 7.1×, length growth 2 7.0×, length growth 3 6.3×, length growth 4 5.2×.
+**Answer:** To solve half the targets, traditional needs 4.9× to 7.7× the money OSO needs. By difficulty: length growth 1 7.7×, length growth 2 6.8×, length growth 3 6.0×, length growth 4 4.9×.
 
 ![Scaling as length growth changes](figures/compare.svg)
 
 | difficulty | Traditional (α = 1, β = 0) | OSO (α = 0.8, β = 1) | OSO (α = 0.2, β = 1) | α = 0.8, β = 0.5 | traditional ÷ OSO |
 | --- | --- | --- | --- | --- | --- |
-| length growth 1 | 930 | 131 | 148 | 244 | 7.1× |
-| length growth 2 | 2,193 | 315 | 293 | 533 | 7.0× |
-| length growth 3 | 4,525 | 721 | 558 | 1,068 | 6.3× |
-| length growth 4 | 10,069 | 1,950 | 2,136 | 2,851 | 5.2× |
+| length growth 1 | 1,008 | 131 | 148 | 248 | 7.7× |
+| length growth 2 | 2,153 | 315 | 293 | 566 | 6.8× |
+| length growth 3 | 4,334 | 721 | 558 | 1,131 | 6.0× |
+| length growth 4 | 9,510 | 1,950 | 2,136 | 3,072 | 4.9× |
 
 **Design** (fixed before the run): compared 4 societies on 4 difficulties (length growth 1, length growth 2, length growth 3, length growth 4) · held the same: the simple model: 12 identical agents, equal money each round, a knowledge reward of 1 per new bit, no validation · measure: money needed to solve half the targets, lower is better · from the sweeps tagged "one at a time 2026-10-24: length growth".
 
@@ -27,9 +27,9 @@
 
 | difficulty | Traditional (α = 1, β = 0) | OSO (α = 0.8, β = 1) | OSO (α = 0.2, β = 1) | α = 0.8, β = 0.5 |
 | --- | --- | --- | --- | --- |
-| length growth 1 | 0.88 | 3.17 | 4.09 | 1.79 |
-| length growth 2 | – | 3.27 | 3.04 | 3.00 |
-| length growth 3 | 1.78 | 2.94 | 2.54 | 1.77 |
-| length growth 4 | 2.43 | 1.16 | 1.88 | 2.20 |
+| length growth 1 | 0.66 | 3.17 | 4.09 | 1.73 |
+| length growth 2 | – | 3.27 | 3.04 | 2.52 |
+| length growth 3 | – | 2.94 | 2.54 | 2.24 |
+| length growth 4 | 1.86 | 1.16 | 1.88 | 2.39 |
 
 </details>

@@ -37,15 +37,15 @@
 <rect x="230" y="140" width="317.7" height="16" rx="3" style="fill:var(--s2)"><title>costly and fallible, OSO: 6.95</title></rect>
 <text class="label t2" x="553.7142857142858" y="152">6.95</text>
 <text class="tick" x="222" y="177" text-anchor="end">free and correct, OSO (choice)</text>
-<rect x="230" y="166" width="308.6" height="16" rx="3" style="fill:var(--s2)"><title>free and correct, OSO (choice): 6.75</title></rect>
-<text class="label t2" x="544.5714285714286" y="178">6.75</text>
-<text class="tick" x="222" y="203" text-anchor="end">costly and fallible, OSO (choice)</text>
-<rect x="230" y="192" width="298.5" height="16" rx="3" style="fill:var(--s2)"><title>costly and fallible, OSO (choice): 6.53</title></rect>
-<text class="label t2" x="534.5142857142857" y="204">6.53</text>
-<text class="tick" x="222" y="229" text-anchor="end">free and correct, Traditional</text>
-<rect x="230" y="218" width="284.3" height="16" rx="3" style="fill:var(--s1)"><title>free and correct, Traditional: 6.22</title></rect>
-<text class="label t1" x="520.3428571428572" y="230">6.22</text>
+<rect x="230" y="166" width="306.7" height="16" rx="3" style="fill:var(--s2)"><title>free and correct, OSO (choice): 6.71</title></rect>
+<text class="label t2" x="542.7428571428571" y="178">6.71</text>
+<text class="tick" x="222" y="203" text-anchor="end">free and correct, Traditional</text>
+<rect x="230" y="192" width="296.7" height="16" rx="3" style="fill:var(--s1)"><title>free and correct, Traditional: 6.49</title></rect>
+<text class="label t1" x="532.6857142857143" y="204">6.49</text>
+<text class="tick" x="222" y="229" text-anchor="end">costly and fallible, OSO (choice)</text>
+<rect x="230" y="218" width="296.2" height="16" rx="3" style="fill:var(--s2)"><title>costly and fallible, OSO (choice): 6.48</title></rect>
+<text class="label t2" x="532.2285714285715" y="230">6.48</text>
 <text class="tick" x="222" y="255" text-anchor="end">costly and fallible, Traditional</text>
-<rect x="230" y="244" width="272.5" height="16" rx="3" style="fill:var(--s1)"><title>costly and fallible, Traditional: 5.96</title></rect>
-<text class="label t1" x="508.45714285714286" y="256">5.96</text>
+<rect x="230" y="244" width="286.2" height="16" rx="3" style="fill:var(--s1)"><title>costly and fallible, Traditional: 6.26</title></rect>
+<text class="label t1" x="522.1714285714286" y="256">6.26</text>
 </svg>

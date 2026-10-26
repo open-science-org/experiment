@@ -45,15 +45,15 @@
 <text class="tick" x="222" y="229" text-anchor="end">α = 1, β = 0.75</text>
 <rect x="230" y="218" width="317.9" height="16" rx="3" style="fill:var(--dead)"><title>α = 1, β = 0.75: 5.96</title></rect>
 <text class="label " x="553.8666666666667" y="230">5.96</text>
-<text class="tick" x="222" y="255" text-anchor="end">α = 0.5, β = 0.75</text>
-<rect x="230" y="244" width="317.9" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.5, β = 0.75: 5.96</title></rect>
-<text class="label " x="553.8666666666667" y="256">5.96</text>
-<text class="tick" x="222" y="281" text-anchor="end">OSO (α = 0, β = 1)</text>
-<rect x="230" y="270" width="316.8" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0, β = 1): 5.94</title></rect>
-<text class="label t2" x="552.8" y="282">5.94</text>
+<text class="tick" x="222" y="255" text-anchor="end">OSO (α = 0, β = 1)</text>
+<rect x="230" y="244" width="316.8" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0, β = 1): 5.94</title></rect>
+<text class="label t2" x="552.8" y="256">5.94</text>
+<text class="tick" x="222" y="281" text-anchor="end">α = 0.5, β = 0.75</text>
+<rect x="230" y="270" width="314.7" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.5, β = 0.75: 5.9</title></rect>
+<text class="label " x="550.6666666666667" y="282">5.9</text>
 <text class="tick" x="222" y="307" text-anchor="end">α = 0.2, β = 0.5</text>
-<rect x="230" y="296" width="314.7" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.2, β = 0.5: 5.9</title></rect>
-<text class="label " x="550.6666666666667" y="308">5.9</text>
+<rect x="230" y="296" width="312.5" height="16" rx="3" style="fill:var(--dead)"><title>α = 0.2, β = 0.5: 5.86</title></rect>
+<text class="label " x="548.5333333333333" y="308">5.86</text>
 <text class="tick" x="222" y="333" text-anchor="end">Traditional (α = 1, β = 0)</text>
 <rect x="230" y="322" width="2.0" height="16" rx="3" style="fill:var(--s1)"><title>Traditional (α = 1, β = 0): 0.0</title></rect>
 <text class="label t1" x="238" y="334">0.0</text>
