@@ -1,8 +1,8 @@
 {
   "experiment": "simple-ideas-6x8-p2-len3g2-comp0-7-step1-alpha-beta-20261025",
-  "date": "2026-10-25",
-  "commit": "cd9fb92",
-  "dirty": true,
+  "date": "2026-10-26",
+  "commit": "0fa52d9",
+  "dirty": false,
   "command": "npm run sim -- simple-ideas-6x8-p2-len3g2-comp0-7-step1-alpha-beta-20261025 --seeds 100 --save",
   "seeds": 100,
   "overrides": {},
@@ -10,7 +10,7 @@
     "experiment": {
       "id": "simple-ideas-6x8-p2-len3g2-comp0-7-step1-alpha-beta-20261025",
       "title": "Step 1: The simple model",
-      "description": "The simple model on a generated idea graph (6 levels × 8 ideas, 2 parents each, sequences of 3 bits growing by 2 per level, composition 0.7); each run draws its own graph. Only α and β vary. Held fixed: 12 identical agents, a budget of 1200 split equally every round (f = 0), no flat mint, a knowledge reward of 1 per new bit flowing back with α, no validation.",
+      "description": "Step 1 of the model step by step (the simple model) on a generated idea graph (6 levels × 8 ideas, 2 parents each, sequences of 3 bits growing by 2 per level, composition 0.7); each run draws its own graph. Only α and β vary. Held fixed: 12 identical agents, equal money each round (f = 0), no flat mint, a knowledge reward of 1 per new bit flowing back with α, no validation (θ = 0), a budget of 1200.",
       "seeds": 100,
       "set": {
         "world": {
@@ -132,9 +132,9 @@
         "sharing",
         "reachTarget"
       ],
-      "question": "On a generated idea graph, how far does a society get for the same money, by α and β?",
+      "question": "On a generated idea graph, at step 1 of the model, how far does a society get for the same money, by α and β?",
       "compare": "α in {1, 0.8, 0.2} × β in {0, 1}",
-      "fixed": "a generated idea graph (6 levels × 8 ideas, 2 parents each, sequences of 3 bits growing by 2 per level, composition 0.7), 12 identical agents, budget 1200 split equally, no flat mint, knowledge reward 1 per new bit, no validation",
+      "fixed": "a generated idea graph (6 levels × 8 ideas, 2 parents each, sequences of 3 bits growing by 2 per level, composition 0.7), 12 identical agents, equal money each round (f = 0), no flat mint, a knowledge reward of 1 per new bit flowing back with α, no validation (θ = 0), a budget of 1200",
       "tags": [
         "simulation",
         "simple model",
@@ -146,6 +146,8 @@
         "composition 0.7",
         "alpha",
         "beta",
+        "step by step",
+        "step 1",
         "steps 2026-10-25"
       ]
     },

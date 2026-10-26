@@ -1,8 +1,8 @@
 {
   "experiment": "simple",
   "date": "2026-10-26",
-  "commit": "81f762c",
-  "dirty": true,
+  "commit": "0fa52d9",
+  "dirty": false,
   "command": "npm run sim -- simple --seeds 1000 --save",
   "seeds": 1000,
   "overrides": {},

@@ -2,12 +2,12 @@
  "chart": "results/simple-ideas-6x8-p2-len3g2-comp0-7-step3-by-alpha-20261025/figures/compare.svg",
  "id": "simple-ideas-6x8-p2-len3g2-comp0-7-step3-by-alpha-20261025",
  "kind": "simulation",
- "date": "2026-10-25",
+ "date": "2026-10-26",
  "title": "Step 3: Earnings shape next round's money",
  "design": {
-  "question": "With agents choose what to share; earnings shape next round's money, how far does a society get for the same money, and how much do agents share, by α?",
+  "question": "On a generated idea graph, at step 3 of the model, how far does a society get for the same money, and how much do agents share, by α?",
   "compare": "traditional against agents choosing what to share, at α in {1, 0.8, 0.2, 0}",
-  "fixed": "a generated idea graph (6 levels × 8 ideas, 2 parents each, sequences of 3 bits growing by 2 per level, composition 0.7), 12 identical agents, budget 1200 split equally, no flat mint, knowledge reward 1 per new bit, no validation; plus agents choose what to share; earnings shape next round's money",
+  "fixed": "a generated idea graph (6 levels × 8 ideas, 2 parents each, sequences of 3 bits growing by 2 per level, composition 0.7), 12 identical agents, half of each round's money by what agents earned (f = 0.5), no flat mint, a knowledge reward of 1 per new bit flowing back with α, no validation (θ = 0), a budget of 1200",
   "measure": "all of hardest level, targets solved, bounty value, ROI, knowledge found (bits), knowledge per unit of money, money to the main level, waste",
   "better": "higher",
   "runs": "100 runs per row"
@@ -98,6 +98,6 @@
   "step 3",
   "steps 2026-10-25"
  ],
- "ranAt": "2026-10-25T17:03:16.860Z",
+ "ranAt": "2026-10-26T03:57:29.775Z",
  "modelVersion": 5
 }
