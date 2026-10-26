@@ -93,6 +93,11 @@ visibilities.register<{ every: number }>('batched', {
 
 A Lean-checker oracle and an LLM decider would be two more plugins, once the loop is made asynchronous.
 
+Two more extension points, one entry each:
+
+- **A step of the model** (`STEPS` in `src/viewer/design.ts`): its settings, what it now holds fixed (agents, money, reward, validation), and, if it changes them, the societies it compares. The app's step picker, the experiment text, the question and the name follow from the entry.
+- **An analysis** (`analyses` in `src/experiments/experiment.ts`, used with `analysis: <name>`): it returns its table and, optionally, its own answer, chart and note. The result card uses them as given.
+
 ## Code and tests
 
 | Path | Contents |

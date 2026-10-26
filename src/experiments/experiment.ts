@@ -2,7 +2,8 @@
 // (docs/simulator.md, "Configuration"). Analyses that build their own table are plugins.
 import { hiddenDepth, sharedDepth } from './analytic.ts';
 import { expandPaths, getPath, loadScenario, merge, readConfigFile, type Scenario } from '../engine/config.ts';
-import { COLUMNS, fmt, mean, mse, type RunResult } from '../engine/measures.ts';
+import { COLUMNS, fmt, mean, mse, sd, type RunResult } from '../engine/measures.ts';
+import { chainFigure, type ChainPoint } from '../report/figures.ts';
 import { run } from '../engine/model.ts';
 
 /** A level of a factor: a label, and overrides (inline, or a preset from config/presets.yaml). */
@@ -59,6 +60,8 @@ export interface Output {
   /** The expanded rows and every run's full result, for reports (not written by --save). */
   rows: Row[];
   results: RunResult[][];
+  /** For an experiment with its own analysis: its answer, chart and note. */
+  analysis?: AnalysisResult;
 }
 
 const SPEC_KEYS = ['id', 'title', 'description', 'seeds', 'firstSeed', 'scenario', 'set', 'factors', 'patches', 'exclude', 'columns', 'analysis', 'question', 'compare', 'fixed', 'measure', 'better', 'caveats', 'tags'];
@@ -125,7 +128,21 @@ function record(r: RunResult, extra: Record<string, unknown>, budget: number) {
   return { ...extra, ...rest, progress, frontierAtSpend: Array.from({ length: 11 }, (_, k) => at((budget * k) / 10)?.level ?? 0) };
 }
 
-type Analysis = (spec: ExperimentSpec, rows: Row[], results: RunResult[][]) => Output['table'];
+/**
+ * An analysis replaces the default table. It also owns how its result is read: its answer (one or two plain
+ * sentences), an optional chart (an SVG) and a note on how to read the table. A new analysis is added here and
+ * used from an experiment file with `analysis: <name>`; the CLI and the app need no change.
+ */
+export interface AnalysisResult {
+  table: Output['table'];
+  answer?: string;
+  svg?: string;
+  note?: string;
+}
+type Analysis = (spec: ExperimentSpec, rows: Row[], results: RunResult[][]) => AnalysisResult;
+
+/** How many standard errors a simulated mean may sit from an exact value and still count as a match. */
+export const EXACT_MATCH_SE = 3;
 
 /** Analyses that replace the default table. */
 export const analyses: Record<string, Analysis> = {
@@ -139,20 +156,46 @@ export const analyses: Record<string, Analysis> = {
       entry[String(row.labels.progress) as 'shared' | 'hidden'] = results[k].map((r) => r.deepestProved);
       byN.set(N, entry);
     });
+    // The gap between simulated and exact, in standard errors (from the raw runs, not the rounded table).
+    const gap = (xs: number[], exact: number) => {
+      const se = sd(xs) / Math.sqrt(Math.max(1, xs.length));
+      return se > 0 ? Math.abs(mean(xs) - exact) / se : mean(xs) === exact ? 0 : Infinity;
+    };
+    const pts: ChainPoint[] = [];
+    const misses: string[] = [];
+    let worst = 0;
     for (const [N, e] of byN) {
       const exactS = sharedDepth(e.X, e.p).mean;
       const exactH = hiddenDepth(e.X, e.p, N).mean;
+      const sh = e.shared ?? [], hi = e.hidden ?? [];
+      for (const [name, xs, ex] of [['shared', sh, exactS], ['hidden', hi, exactH]] as const) {
+        if (!xs.length) continue;
+        const g = gap(xs, ex);
+        worst = Math.max(worst, g);
+        if (g > EXACT_MATCH_SE) misses.push(`${name} with ${N} agents (${fmt(g, 1)} standard errors)`);
+      }
+      pts.push({ n: N, shared: mean(sh), sharedExact: exactS, hidden: mean(hi), hiddenExact: exactH });
       table.push({
         N,
-        'shared: simulated': mse(e.shared ?? [], 1),
+        'shared: simulated': mse(sh, 1),
         'shared: exact': fmt(exactS, 1),
-        'hidden: simulated': mse(e.hidden ?? [], 1),
+        'hidden: simulated': mse(hi, 1),
         'hidden: exact': fmt(exactH, 1),
-        'gain: simulated': fmt(mean(e.shared ?? []) / mean(e.hidden ?? [])),
+        'gain: simulated': fmt(mean(sh) / mean(hi)),
         'gain: exact': fmt(exactS / exactH),
       });
     }
-    return table;
+    if (!pts.length) return { table };
+    const last = pts.at(-1)!;
+    const verdict = misses.length
+      ? `The simulator does not match the exact values: ${misses.join('; ')} is more than ${EXACT_MATCH_SE} standard errors off. Check the model before using these results.`
+      : `The simulator matches the exact values at every community size (largest gap ${fmt(worst, 1)} standard errors).`;
+    return {
+      table,
+      answer: `${verdict} Sharing reaches ${fmt(last.shared / last.hidden, 1)}× deeper than hidden progress with ${last.n} agents, for the same money.`,
+      svg: chainFigure(pts, rows[0]?.scenario.budget.X),
+      note: 'Values are mean ± standard error, so they can be compared with the exact values.',
+    };
   },
 };
 
@@ -179,10 +222,12 @@ export function runExperiment(spec: ExperimentSpec, seeds = spec.seeds, onRow?: 
   const results = rows.map((row, i) => { const rs = Array.from({ length: seeds }, (_, k) => run(row.scenario, first + k)); onRow?.(i + 1, rows.length); return rs; });
   const runs = rows.flatMap((row, i) => results[i].map((r, k) => record(r, { ...row.labels, seed: first + k }, row.scenario.budget.X)));
   let table: Output['table'];
+  let analysis: AnalysisResult | undefined;
   if (spec.analysis) {
     const a = analyses[spec.analysis];
     if (!a) throw new Error(`unknown analysis "${spec.analysis}" (known: ${Object.keys(analyses).join(', ')})`);
-    table = a(spec, rows, results);
+    analysis = a(spec, rows, results);
+    table = analysis.table;
   } else {
     // Every result reports its return on the money (ROI), whatever else it lists.
     const cols = withRoi(spec.columns ?? DEFAULT_COLUMNS);
@@ -193,5 +238,5 @@ export function runExperiment(spec: ExperimentSpec, seeds = spec.seeds, onRow?: 
     }));
   }
   const base = loadScenario(spec.scenario ?? null, spec.set ?? {});
-  return { config: { experiment: spec, base, rows: rows.map((r) => ({ labels: r.labels, overrides: r.patch })) }, table, runs, rows, results };
+  return { config: { experiment: spec, base, rows: rows.map((r) => ({ labels: r.labels, overrides: r.patch })) }, table, runs, rows, results, ...(analysis ? { analysis } : {}) };
 }

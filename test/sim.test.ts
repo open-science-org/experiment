@@ -437,3 +437,39 @@ test('the model step by step: each step adds its mechanism, and agents choose fr
   assert.equal(sc.rules.screen, 0.5);
   assert.equal(Object.values(sc.agents.mix).reduce((a, b) => a + b, 0), 12);
 });
+
+test('each step describes only what it runs: no step contradicts the steps it adds', async () => {
+  const design = await import('../src/viewer/design.ts');
+  const d = { id: 'x', space: '', graph: design.GRAPH_DEFAULTS, budget: 300, alphas: [1, 0.2], betas: [0, 1], seeds: 2 };
+  for (const st of design.STEPS) {
+    const spec = design.simpleExperimentFor({ ...d, step: st.step });
+    const text = `${spec.description} ${spec.fixed}`;
+    if (st.step >= 3) assert.ok(!/equal money each round/.test(text), `step ${st.step}: ${text}`);
+    if (st.step >= 4) assert.ok(!/identical agents/.test(text), `step ${st.step}: ${text}`);
+    if (st.step >= 5) assert.ok(!/no validation/.test(text) && /θ = 0\.5/.test(text), `step ${st.step}: ${text}`);
+    if (st.step >= 2) assert.ok(!/Only α and β vary/.test(text), `step ${st.step}: ${text}`);
+  }
+  assert.throws(() => design.simpleExperimentFor({ ...d, step: design.STEPS.length + 1 }));
+  assert.throws(() => design.simpleExperimentFor({ ...d, step: 0 }));
+});
+
+test('the one-chain check says whether the simulator matches, and flags a mismatch', async () => {
+  const { analyses, EXACT_MATCH_SE } = await import('../src/experiments/experiment.ts');
+  const { sharedDepth, hiddenDepth } = await import('../src/experiments/analytic.ts');
+  const X = 640, p = 0.5;
+  const fake = (shift: number) => {
+    const rows: any[] = [], results: any[] = [];
+    for (const N of [1, 4]) for (const progress of ['shared', 'hidden']) {
+      const exact = progress === 'shared' ? sharedDepth(X, p).mean : hiddenDepth(X, p, N).mean;
+      rows.push({ labels: { N, progress }, scenario: { budget: { X }, success: { p0: p } } });
+      results.push(Array.from({ length: 50 }, (_, k) => ({ deepestProved: exact + shift + (k % 2 ? 0.5 : -0.5) })));
+    }
+    return analyses['simple-chain-exact']({} as any, rows, results);
+  };
+  const ok = fake(0);
+  assert.match(ok.answer!, /matches the exact values/);
+  assert.ok(ok.svg?.startsWith('<svg'));
+  const bad = fake(5);
+  assert.match(bad.answer!, /does not match/);
+  assert.ok(EXACT_MATCH_SE > 0);
+});

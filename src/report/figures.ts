@@ -304,3 +304,30 @@ export function barChart(c: { title: string; bars: Bar[]; max?: number; format?:
   out.push('</svg>');
   return out.join('\n');
 }
+
+export interface ChainPoint { n: number; shared: number; sharedExact: number; hidden: number; hiddenExact: number }
+
+/** The one-chain check: depth reached by number of agents, simulated (dots) against exact (dashed lines). */
+export function chainFigure(pts: ChainPoint[], attempts?: number): string {
+  const W = 640, H = 340, l = 60, rt = 150, tp = 40, bt = 46, pw = W - l - rt, ph = H - tp - bt;
+  const nMax = Math.max(2, ...pts.map((p) => p.n));
+  const yMax = Math.max(20, Math.ceil(Math.max(...pts.map((p) => Math.max(p.shared, p.sharedExact, p.hidden, p.hiddenExact))) / 20) * 20);
+  const sx = (n: number) => l + (Math.log2(n) / Math.log2(nMax)) * pw, sy = (v: number) => tp + ph - (v / yMax) * ph;
+  const title = 'Deepest idea reached, by number of agents';
+  const out: string[] = [];
+  out.push(`<svg xmlns="http://www.w3.org/2000/svg" class="viz" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${esc(title)}">`);
+  out.push(`<style>${STYLE}</style><rect class="bg" width="${W}" height="${H}" rx="8"/><text class="title" x="${l}" y="24">${esc(title)}</text>`);
+  for (let k = 0; k <= 4; k++) { const v = (yMax * k) / 4; out.push(`<line class="grid" x1="${l}" x2="${l + pw}" y1="${sy(v)}" y2="${sy(v)}"/><text class="tick" x="${l - 8}" y="${sy(v) + 4}" text-anchor="end">${v}</text>`); }
+  for (const p of pts) out.push(`<text class="tick" x="${sx(p.n)}" y="${tp + ph + 18}" text-anchor="middle">${p.n}</text>`);
+  out.push(`<text class="axis" x="${l + pw / 2}" y="${H - 6}" text-anchor="middle">agents (log scale)${attempts ? `; same ${attempts} attempts in total` : ''}</text>`);
+  // OSO orange (slot 2) for shared progress, traditional blue (slot 1) for hidden.
+  for (const [sim, exact, slot, name] of [['shared', 'sharedExact', 2, 'shared'], ['hidden', 'hiddenExact', 1, 'hidden']] as const) {
+    out.push(`<path class="line c${slot}" stroke-dasharray="6 4" d="${pts.map((p, k) => `${k ? 'L' : 'M'}${sx(p.n).toFixed(1)} ${sy(p[exact]).toFixed(1)}`).join(' ')}"/>`);
+    for (const p of pts) out.push(`<circle class="dot f${slot}" cx="${sx(p.n).toFixed(1)}" cy="${sy(p[sim]).toFixed(1)}" r="5"><title>${name}, ${p.n} agents: simulated ${p[sim].toFixed(1)}, exact ${p[exact].toFixed(1)}</title></circle>`);
+  }
+  const ly = (k: number) => tp + 14 + k * 22, lx = l + pw + 14;
+  out.push(`<circle class="f2" cx="${lx + 8}" cy="${ly(0) - 4}" r="5"/><text class="label t2" x="${lx + 18}" y="${ly(0)}">shared</text>`);
+  out.push(`<circle class="f1" cx="${lx + 8}" cy="${ly(1) - 4}" r="5"/><text class="label t1" x="${lx + 18}" y="${ly(1)}">hidden</text>`);
+  out.push(`<text class="sub" x="${lx}" y="${ly(2.4)}">dots: simulated</text><line class="base" stroke-width="2" stroke-dasharray="6 4" x1="${lx}" x2="${lx + 26}" y1="${ly(3.2) - 4}" y2="${ly(3.2) - 4}"/><text class="sub" x="${lx + 32}" y="${ly(3.2)}">exact</text>`);
+  return out.join('') + '</svg>';
+}

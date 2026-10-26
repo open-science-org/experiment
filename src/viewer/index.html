@@ -637,7 +637,7 @@ async function exploreIn(id, root) {
       const W = 330, H = 220, l = 46, rr = 14, t = 30, b = 40, pw = W - l - rr, ph = H - t - b;
       const vals = pts.flatMap((p) => { const st = get(p.r); return st?.n ? [st.mean - 2 * se2(st), st.mean + 2 * se2(st)] : []; }).concat(refLine !== null ? [refLine] : []);
       const nice = (x) => { const e = 10 ** Math.floor(Math.log10(x || 1)); return [1, 2, 2.5, 5, 10].map((k) => k * e).find((v) => v >= x); };
-      const lo = lo0 ?? Math.min(0, ...vals), hi = hi0 ?? nice(Math.max(...vals));
+      const lo = lo0 ?? Math.min(0, ...vals), hi = hi0 ?? (vals.length ? nice(Math.max(...vals)) : 1);
       const sx = (a) => l + (1 - a) * pw, sy = (v) => t + ph - ((v - lo) / (hi - lo || 1)) * ph;
       let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W * 1.3}px;height:auto" role="img" aria-label="${esc(title)} by α"><text x="${l}" y="16" font-size="13" font-weight="700" fill="var(--ink)">${esc(title)}</text>`;
       for (let k = 0; k <= 4; k++) { const v = lo + ((hi - lo) * k) / 4; svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(v)}" y2="${sy(v)}" stroke="var(--line)"/><text x="${l - 6}" y="${sy(v) + 4}" text-anchor="end" font-size="10" fill="var(--ink-3)">${f(v)}</text>`; }
@@ -658,7 +658,7 @@ async function exploreIn(id, root) {
     const m = data.measures.find((x) => x.id === $('x-measure').value);
     $('x-bars').innerHTML = $('x-kind').value === 'heat' && grid ? heat(m) : $('x-kind').value === 'alpha' && byAlpha ? alphaView(m) : dots(m);
   };
-  if (byAlpha) $('x-measure').value = 'targetsSolved';
+  if (byAlpha && data.measures.some((m) => m.id === 'targetsSolved')) $('x-measure').value = 'targetsSolved';
   $('x-kind').onchange = bars;
   $('x-measure').onchange = bars; bars();
   if (!hasProgress) return;
@@ -1100,7 +1100,7 @@ function showModel(m) {
   if (simpleReady && (m === 'simple' || m === 'steps')) simpleCheck();
   $('n-full').classList.toggle('hidden', m !== 'full');
 }
-/** The step picker: what each step adds, the chosen one and those before it marked; β only at step 1. */
+/** The step picker: what each step adds, the chosen one and those before it marked; β only where the step uses it. */
 function stepView() {
   const steps = D.opts?.steps;
   if (!steps || !$('s-step')) return;
@@ -1111,7 +1111,7 @@ function stepView() {
   }
   const k = newMode === 'steps' ? Number($('s-step').value) : 1;
   $('s-step-list').innerHTML = steps.map((st) => `<li class="${st.step <= k ? 'on' : 'off'}"><b>${esc(st.title)}</b>: ${esc(st.adds)}</li>`).join('');
-  $('s-betas-row').classList.toggle('hidden', k > 1);
+  $('s-betas-row').classList.toggle('hidden', steps.find((st) => st.step === k)?.usesBeta === false);
 }
 const numbers = (txt) => txt.split(',').map((x) => x.trim()).filter(Boolean).map(Number);
 const GRAPH_KEYS = ['levels', 'width', 'parents', 'skip', 'length', 'lengthGrowth', 'composition', 'targets', 'targetsFrom'];
