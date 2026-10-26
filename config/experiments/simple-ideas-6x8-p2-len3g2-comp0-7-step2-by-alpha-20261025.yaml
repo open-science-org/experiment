@@ -1,6 +1,6 @@
 # Step by step 2026-10-25: step 2
 id: simple-ideas-6x8-p2-len3g2-comp0-7-step2-by-alpha-20261025
-title: "Step 2: Agents choose what to share"
+title: Step 2. Agents choose what to share, so β comes out of their choices
 description: "Step 2 of the model step by step (the simple model plus agents choosing what to share)
   on a generated idea graph (6 levels × 8 ideas, 2 parents each, sequences of 3 bits growing by 2
   per level, composition 0.7); each run draws its own graph. Only α varies: agents choose what to

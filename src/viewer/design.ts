@@ -568,16 +568,16 @@ const MIX4 = { foundation: 3, racer: 3, explorer: 2, specialist: 2, freeRider: 1
  * societies it compares. The app, the experiment text and the names follow from the entry.
  */
 export const STEPS: Step[] = [
-  { step: 1, title: 'The simple model', adds: 'identical agents, equal money each round, the knowledge reward; α and β are set', phrase: '', set: {},
+  { step: 1, title: 'The simple model: identical agents, α and β set', adds: 'identical agents, equal money each round, the knowledge reward; α and β are set', phrase: '', set: {},
     held: { agents: `${SIMPLE_AGENTS} identical agents`, money: 'equal money each round (f = 0)', reward: 'no flat mint, a knowledge reward of 1 per new bit flowing back with α', validation: 'no validation (θ = 0)' },
     comparison: BY_ALPHA_BETA },
-  { step: 2, title: 'Agents choose what to share', adds: 'each agent decides whether to publish an idea, weighing its reward against the risk that a rival uses it to win a bounty first; β is no longer set', phrase: 'agents choosing what to share', set: {},
+  { step: 2, title: 'Agents choose what to share, so β comes out of their choices', adds: 'each agent decides whether to publish an idea, weighing its reward against the risk that a rival uses it to win a bounty first; β is no longer set', phrase: 'agents choosing what to share', set: {},
     held: {}, comparison: CHOOSING_BY_ALPHA },
-  { step: 3, title: 'Earnings shape next round\'s money', adds: 'half of each round\'s money goes to agents by what they earned (f = 0.5)', phrase: 'money following earnings', set: { 'budget.allocation.rho': 0.5 },
+  { step: 3, title: 'Half the money follows earnings', adds: 'half of each round\'s money goes to agents by what they earned (f = 0.5)', phrase: 'money following earnings', set: { 'budget.allocation.rho': 0.5 },
     held: { money: 'half of each round\'s money by what agents earned (f = 0.5)' } },
   { step: 4, title: 'Different kinds of agents', adds: 'foundation builders, target racers, cheap explorers, specialists and a free rider replace all but one of the identical agents', phrase: 'different kinds of agents', set: { agents: { mix: MIX4 } },
     held: { agents: '12 agents of different kinds (3 foundation builders, 3 target racers, 2 cheap explorers, 2 specialists, a free rider, 1 plain)' } },
-  { step: 5, title: 'A gamer, and validation', adds: 'the last identical agent becomes a gamer, who spends attempts on trivial ideas; validators reject them half the time (θ = 0.5). This is the full model\'s set of mechanisms and agents', phrase: 'a gamer with validation', set: { agents: { mix: { ...MIX4, plain: 0, gamer: 1 } }, 'rules.screen': 0.5 },
+  { step: 5, title: 'Adds a gamer and validation; same as the full model', adds: 'the last identical agent becomes a gamer, who spends attempts on trivial ideas; validators reject them half the time (θ = 0.5). This is the full model\'s set of mechanisms and agents', phrase: 'a gamer with validation', set: { agents: { mix: { ...MIX4, plain: 0, gamer: 1 } }, 'rules.screen': 0.5 },
     held: { agents: '12 agents of different kinds (3 foundation builders, 3 target racers, 2 cheap explorers, 2 specialists, a free rider, a gamer)', validation: 'validation rejecting trivial ideas half the time (θ = 0.5)' } },
 ];
 
@@ -657,7 +657,7 @@ export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
   const c = model.comparison;
   return {
     id: d.id,
-    title: d.title || d.question || (d.step ? `Step ${k}: ${STEPS[k - 1].title}` : `Simple model on ${where.short}: ${c.label}`),
+    title: d.title || d.question || (d.step ? `Step ${k}. ${STEPS[k - 1].title}` : `Simple model on ${where.short}: ${c.label}`),
     description: `${d.step ? `Step ${k} of the model step by step (${k > 1 ? `the simple model plus ${model.added}` : 'the simple model'})` : 'The simple model'} on ${where.text}. ${c.varies} Held fixed: ${model.held}${where.heldExtra ? `, ${where.heldExtra}` : ''}.`,
     seeds: d.seeds,
     ...where.extra,

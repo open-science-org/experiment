@@ -1,6 +1,6 @@
 # Step by step 2026-10-25: step 3
 id: simple-ideas-6x8-p2-len3g2-comp0-7-step3-by-alpha-20261025
-title: "Step 3: Earnings shape next round's money"
+title: Step 3. Half the money follows earnings
 description: "Step 3 of the model step by step (the simple model plus agents choosing what to share
   and money following earnings) on a generated idea graph (6 levels × 8 ideas, 2 parents each,
   sequences of 3 bits growing by 2 per level, composition 0.7); each run draws its own graph. Only α

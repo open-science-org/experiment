@@ -7,11 +7,11 @@ The model is built up one mechanism at a time, so each step's effect can be seen
 
 | Step | Adds | Equations | Setting |
 | --- | --- | --- | --- |
-| 1 | **The simple model.** 12 identical agents, equal money each round. $\alpha$ and $\beta$ are set. | [simple model](equations-simple.md) | — |
-| 2 | **Agents choose what to share.** Each agent publishes an idea when its reward beats the risk a rival uses it to win a bounty first. $\beta$ is no longer set: it comes out of the choices. | [section 9](equations.md#9-choosing-whether-to-share-where-β-comes-from) | visibility: choice |
-| 3 | **Earnings shape next round's money.** Half of each round's money goes to agents by what they earned. | [section 5](equations.md#5-money-each-round) | $f = 0.5$ |
+| 1 | **The simple model: identical agents, α and β set.** 12 identical agents, equal money each round. $\alpha$ and $\beta$ are set. | [simple model](equations-simple.md) | — |
+| 2 | **Agents choose what to share, so β comes out of their choices.** Each agent publishes an idea when its reward beats the risk a rival uses it to win a bounty first. $\beta$ is no longer set: it comes out of the choices. | [section 9](equations.md#9-choosing-whether-to-share-where-β-comes-from) | visibility: choice |
+| 3 | **Half the money follows earnings.** Half of each round's money goes to agents by what they earned. | [section 5](equations.md#5-money-each-round) | $f = 0.5$ |
 | 4 | **Different kinds of agents.** 3 foundation builders, 3 target racers, 2 cheap explorers, 2 specialists, a free rider and 1 plain agent. | [section 8](equations.md#8-choosing-what-to-attempt) | the agent mix |
-| 5 | **A gamer, and validation.** The last plain agent becomes a gamer, who spends some attempts on trivial ideas; validators reject them half the time. A trivial idea adds no new bits, so it earns nothing. | [section 6](equations.md#6-the-mint) | gamer 1, $\theta = 0.5$ |
+| 5 | **Adds a gamer and validation; same as the full model.** The last plain agent becomes a gamer, who spends some attempts on trivial ideas; validators reject them half the time. A trivial idea adds no new bits, so it earns nothing. | [section 6](equations.md#6-the-mint) | gamer 1, $\theta = 0.5$ |
 
 **What is compared.** At step 1, societies by $\alpha$ and $\beta$. From step 2, **traditional** (finished work only, $\alpha = 1$) against **agents choosing** at several $\alpha$, since $\beta$ is now their choice. The **sharing** measure shows the $\beta$ that came out.
 
