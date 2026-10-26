@@ -1,0 +1,86 @@
+{
+ "id": "scaling-across-difficulty-direction-2026-10-26-follows-0",
+ "kind": "simulation",
+ "date": "2026-10-26",
+ "ranAt": "2026-10-26T23:36:56.684Z",
+ "title": "Scaling across direction of difficulty, follows level not at all",
+ "design": {
+  "question": "Across direction of difficulty, follows level not at all, how much money does each society need, and does the gap between traditional and OSO grow?",
+  "compare": "5 societies on 4 difficulties (growth -1, growth 0, growth 2, growth 4)",
+  "fixed": "the simple model: 12 identical agents, equal money each round, a knowledge reward of 1 per new bit, no validation",
+  "measure": "money needed to solve half the targets",
+  "better": "lower",
+  "runs": "from the sweeps tagged \"direction 2026-10-26: follows 0\""
+ },
+ "answer": "To solve half the targets, traditional needs 1.2× to 5.1× the money OSO needs. The gap grows with every step in difficulty.",
+ "table": [
+  {
+   "difficulty": "growth -1",
+   "Traditional (α = 1, β = 0)": "41",
+   "OSO (α = 0.8, β = 1)": "35",
+   "OSO (α = 0.2, β = 1)": "42",
+   "α = 0.8, β = 0.5": "45",
+   "α = 1, β = 1": "32",
+   "traditional ÷ OSO": "1.2×"
+  },
+  {
+   "difficulty": "growth 0",
+   "Traditional (α = 1, β = 0)": "95",
+   "OSO (α = 0.8, β = 1)": "52",
+   "OSO (α = 0.2, β = 1)": "50",
+   "α = 0.8, β = 0.5": "74",
+   "α = 1, β = 1": "52",
+   "traditional ÷ OSO": "1.8×"
+  },
+  {
+   "difficulty": "growth 2",
+   "Traditional (α = 1, β = 0)": "597",
+   "OSO (α = 0.8, β = 1)": "154",
+   "OSO (α = 0.2, β = 1)": "157",
+   "α = 0.8, β = 0.5": "279",
+   "α = 1, β = 1": "176",
+   "traditional ÷ OSO": "3.9×"
+  },
+  {
+   "difficulty": "growth 4",
+   "Traditional (α = 1, β = 0)": "3,511",
+   "OSO (α = 0.8, β = 1)": "689",
+   "OSO (α = 0.2, β = 1)": "948",
+   "α = 0.8, β = 0.5": "1,149",
+   "α = 1, β = 1": "689",
+   "traditional ÷ OSO": "5.1×"
+  }
+ ],
+ "caveats": [
+  "Read off between the two budgets that bracket half the targets, in log budget.",
+  "Each difficulty has its own budget range; \"> x\" means not reached within it."
+ ],
+ "page": "results/scaling-across-difficulty-direction-2026-10-26-follows-0/summary.md",
+ "chart": "results/scaling-across-difficulty-direction-2026-10-26-follows-0/figures/compare.svg",
+ "tags": [
+  "scaling",
+  "scaling law",
+  "difficulty",
+  "direction 2026-10-26: follows 0",
+  "meta-analysis"
+ ],
+ "basedOn": [
+  {
+   "id": "simple-ideas-6x8-p2-len3gm1-comp0-7-tie0-direction-scaling-20261026",
+   "title": "Direction of difficulty: easier by 1 bit per level; follows level not at all"
+  },
+  {
+   "id": "simple-ideas-6x8-p2-len3g0-comp0-7-tie0-direction-scaling-20261026",
+   "title": "Direction of difficulty: every level equally hard; follows level not at all"
+  },
+  {
+   "id": "simple-ideas-6x8-p2-len3g2-comp0-7-tie0-direction-scaling-20261026",
+   "title": "Direction of difficulty: harder by 2 bits per level; follows level not at all"
+  },
+  {
+   "id": "simple-ideas-6x8-p2-len3g4-comp0-7-tie0-direction-scaling-20261026",
+   "title": "Direction of difficulty: harder by 4 bits per level; follows level not at all"
+  }
+ ],
+ "modelVersion": 6
+}
