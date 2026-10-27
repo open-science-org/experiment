@@ -71,6 +71,8 @@ Experiments made in the app (New page) are written in this form, with canonical 
 
 **Reproducibility.** A run depends only on its scenario and seed. Each part (graph, agents, perception, the run) draws from its own random stream, so changing one part does not reshuffle the others. Saved results record every setting and the commit.
 
+**Graph and luck.** A run's seed sets both its idea graph and the luck of its attempts. An experiment's `runsPerGraph: k` (or "Runs per graph" on the New page) gives runs a separate graph seed: k runs share each graph and differ only in their attempts. The card then reports, for the key measures, how much results vary from graph to graph and between runs on one graph. Run k has the same graph in every row, so rows are compared run by run on the same graphs (paired, each graph counted once) whenever both rows have a value for the same runs.
+
 ## Plugins
 
 Each registry is a set of named components; `npm run sim -- plugins` lists them with their parameters. Adding one means registering it once, after which any YAML file can use it:

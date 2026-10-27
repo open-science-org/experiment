@@ -504,7 +504,7 @@ export const GRAPH_DEFAULTS: GraphControls = { levels: 6, width: 8, parents: 2, 
 const GRAPH_RANGES: Record<keyof GraphControls, [number, number]> = { levels: [1, 15], width: [1, 30], parents: [1, 6], skip: [0, 1], length: [1, 12], lengthGrowth: [-6, 6], levelTie: [0, 1], composition: [0, 1], targets: [1, 10], targetsFrom: [0, 15] };
 
 /** The simple model's design: a topic, or a generated idea graph (graph), and the α and β values. */
-export interface SimpleDesign { id: string; title?: string; question?: string; space: string; graph?: GraphControls; preset?: string; budget?: number; alphas: number[]; betas: number[]; seeds: number; measure?: string; step?: number }
+export interface SimpleDesign { id: string; title?: string; question?: string; space: string; graph?: GraphControls; preset?: string; budget?: number; alphas: number[]; betas: number[]; seeds: number; measure?: string; step?: number; runsPerGraph?: number }
 
 // The simple model: no flat mint and no validation; the knowledge reward is on (1 per new bit) and flows back
 // with alpha0 = alpha (rules.alpha0 left null).
@@ -653,6 +653,8 @@ export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
   const levels = model.comparison.levels(d);
   if (levels.length > 60) throw new Error(`at most 60 societies (this design has ${levels.length})`);
   if (!(d.seeds >= 1 && d.seeds <= 1000)) throw new Error('runs per society must be between 1 and 1000');
+  const perGraph = d.runsPerGraph ?? 1;
+  if (!(Number.isInteger(perGraph) && perGraph >= 1 && perGraph <= d.seeds)) throw new Error('runs per graph must be a whole number from 1 to the runs per society');
   const where = d.graph ? graphWhere(d, d.graph) : topicWhere(d);
   const c = model.comparison;
   return {
@@ -660,6 +662,7 @@ export function simpleExperimentFor(d: SimpleDesign): ExperimentSpec {
     title: d.title || d.question || (d.step ? `Step ${k}. ${STEPS[k - 1].title}` : `Simple model on ${where.short}: ${c.label}`),
     description: `${d.step ? `Step ${k} of the model step by step (${k > 1 ? `the simple model plus ${model.added}` : 'the simple model'})` : 'The simple model'} on ${where.text}. ${c.varies} Held fixed: ${model.held}${where.heldExtra ? `, ${where.heldExtra}` : ''}.`,
     seeds: d.seeds,
+    ...(perGraph > 1 ? { runsPerGraph: perGraph } : {}),
     ...where.extra,
     set: merge(where.set, model.set) as Record<string, unknown>,
     factors: [{ name: 'society', levels }],

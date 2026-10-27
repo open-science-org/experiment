@@ -23,6 +23,9 @@ export interface ExperimentSpec {
   description: string;
   seeds: number;
   firstSeed?: number;
+  /** Runs on each idea graph (default 1: every run draws its own graph). With k, runs 1–k share a graph, runs
+   *  k+1–2k the next, and so on: seeds ÷ k graphs, each run k times with different luck in the attempts. */
+  runsPerGraph?: number;
   /** Base scenario: `default`, a name in config/scenarios/, or a path. */
   scenario?: string;
   /** Overrides for every row (dotted paths allowed). */
@@ -60,11 +63,13 @@ export interface Output {
   /** The expanded rows and every run's full result, for reports (not written by --save). */
   rows: Row[];
   results: RunResult[][];
+  /** The graph seed of each run (index k, the same in every row): runs with the same one share a graph. */
+  graphs: number[];
   /** For an experiment with its own analysis: its answer, chart and note. */
   analysis?: AnalysisResult;
 }
 
-const SPEC_KEYS = ['id', 'title', 'description', 'seeds', 'firstSeed', 'scenario', 'set', 'factors', 'patches', 'exclude', 'columns', 'analysis', 'question', 'compare', 'fixed', 'measure', 'better', 'caveats', 'tags'];
+const SPEC_KEYS = ['id', 'title', 'description', 'seeds', 'firstSeed', 'runsPerGraph', 'scenario', 'set', 'factors', 'patches', 'exclude', 'columns', 'analysis', 'question', 'compare', 'fixed', 'measure', 'better', 'caveats', 'tags'];
 
 let presetCache: Record<string, Record<string, unknown>> | null = null;
 export function preset(name: string): Record<string, unknown> {
@@ -219,8 +224,12 @@ export const DEFAULT_COLUMNS = ['frontier', 'reachTarget', 'speed', 'cost', 'roi
 export function runExperiment(spec: ExperimentSpec, seeds = spec.seeds, onRow?: (done: number, of: number) => void): Output {
   const rows = expand(spec);
   const first = spec.firstSeed ?? 1;
-  const results = rows.map((row, i) => { const rs = Array.from({ length: seeds }, (_, k) => run(row.scenario, first + k)); onRow?.(i + 1, rows.length); return rs; });
-  const runs = rows.flatMap((row, i) => results[i].map((r, k) => record(r, { ...row.labels, seed: first + k }, row.scenario.budget.X)));
+  const perGraph = spec.runsPerGraph ?? 1;
+  if (!(Number.isInteger(perGraph) && perGraph >= 1)) throw new Error('runsPerGraph must be a whole number, 1 or more');
+  // Run k draws its graph from graph seed first + ⌊k / runsPerGraph⌋ and its attempts from seed first + k.
+  const graphOf = (k: number) => first + Math.floor(k / perGraph);
+  const results = rows.map((row, i) => { const rs = Array.from({ length: seeds }, (_, k) => run(row.scenario, first + k, undefined, graphOf(k))); onRow?.(i + 1, rows.length); return rs; });
+  const runs = rows.flatMap((row, i) => results[i].map((r, k) => record(r, { ...row.labels, seed: first + k, ...(perGraph > 1 ? { graph: graphOf(k) } : {}) }, row.scenario.budget.X)));
   let table: Output['table'];
   let analysis: AnalysisResult | undefined;
   if (spec.analysis) {
@@ -238,5 +247,5 @@ export function runExperiment(spec: ExperimentSpec, seeds = spec.seeds, onRow?: 
     }));
   }
   const base = loadScenario(spec.scenario ?? null, spec.set ?? {});
-  return { config: { experiment: spec, base, rows: rows.map((r) => ({ labels: r.labels, overrides: r.patch })) }, table, runs, rows, results, ...(analysis ? { analysis } : {}) };
+  return { config: { experiment: spec, base, rows: rows.map((r) => ({ labels: r.labels, overrides: r.patch })) }, table, runs, rows, results, graphs: Array.from({ length: seeds }, (_, k) => graphOf(k)), ...(analysis ? { analysis } : {}) };
 }

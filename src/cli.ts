@@ -173,6 +173,7 @@ function runOne(spec: ExperimentSpec) {
     out.analysis?.note ?? 'Values are mean ± standard deviation over runs.',
     '',
     markdownTable(out.table),
+    ...spreadByGraph(spec, out),
     '',
     `Code: commit \`${commit}\`${dirty ? ' (with uncommitted changes)' : ''}. Experiment: [config/experiments/${spec.id}.yaml](../../config/experiments/${spec.id}.yaml). Command: \`${command}\`. Every run: \`runs.jsonl\`; every parameter: \`config.json\`.`,
   ].join('\n'));
@@ -184,6 +185,29 @@ function runOne(spec: ExperimentSpec) {
   console.log(`Saved to results/${spec.id}/ (commit ${commit}${dirty ? ', uncommitted changes' : ''}).`);
 }
 
+/**
+ * With several runs per graph: how much each key measure varies from graph to graph (the spread of the graph
+ * averages) and between runs on the same graph (luck in the attempts). Empty with one run per graph.
+ */
+function spreadByGraph(spec: ExperimentSpec, out: Output): string[] {
+  if ((spec.runsPerGraph ?? 1) <= 1) return [];
+  const sd = (xs: number[]) => { const m = xs.reduce((a, b) => a + b, 0) / xs.length; return Math.sqrt(xs.reduce((a, b) => a + (b - m) ** 2, 0) / Math.max(1, xs.length - 1)); };
+  const key = OUTCOMES.filter((m) => ['targetsSolved', 'frontier', 'waste'].includes(m.id));
+  const rows = out.rows.map((row, i) => {
+    const cells: Record<string, string> = { row: Object.values(row.labels).join(', ') };
+    for (const m of key) {
+      const byGraph = new Map<number, number[]>();
+      out.results[i].forEach((r, k) => { const v = VALUES[m.id]!(r); if (v !== null) (byGraph.get(out.graphs[k]) ?? byGraph.set(out.graphs[k], []).get(out.graphs[k])!).push(v); });
+      const groups = [...byGraph.values()];
+      const means = groups.map((g) => g.reduce((a, b) => a + b, 0) / g.length);
+      const within = Math.sqrt(groups.reduce((a, g) => a + (g.length > 1 ? sd(g) ** 2 : 0), 0) / Math.max(1, groups.filter((g) => g.length > 1).length));
+      cells[m.name] = `${(means.reduce((a, b) => a + b, 0) / Math.max(1, means.length)).toFixed(2)} (graphs ${sd(means).toFixed(2)}, runs ${within.toFixed(2)})`;
+    }
+    return cells;
+  });
+  return ['', `**Graph or luck?** ${out.graphs.length / (spec.runsPerGraph ?? 1)} graphs, ${spec.runsPerGraph} runs on each. Each cell: the average, then how much it varies from graph to graph (standard deviation of the graph averages) and between runs on one graph (standard deviation within a graph).`, '', markdownTable(rows)];
+}
+
 /** A saved simulation's card: the declared design, and the answer on its measure. */
 function simulationCard(spec: ExperimentSpec, out: Output, n: number, date: string): Card {
   const measure = spec.measure ?? (spec.analysis ? undefined : (spec.columns ?? DEFAULT_COLUMNS)[0]);
@@ -193,14 +217,15 @@ function simulationCard(spec: ExperimentSpec, out: Output, n: number, date: stri
   const better = spec.better ?? (measure && ['cost', 'speed', 'waste', 'duplicates', 'spend', 'gamerShare', 'trivialSpend', 'rejected', 'retracted', 'absorbSpend', 'hoarded'].includes(measure) ? 'lower' : 'higher');
   // No main measure declared: the answer covers every outcome measure (OUTCOMES), with the bar raised.
   const all = !spec.measure && !spec.analysis;
-  const valuesOf = (i: number) => Object.fromEntries(OUTCOMES.map((m) => [m.id, out.results[i].map(VALUES[m.id]!).filter((v): v is number => v !== null)]));
+  // One value per run, in run order (NaN where a run has none), so rows can be compared run by run on the same graphs.
+  const valuesOf = (i: number) => Object.fromEntries(OUTCOMES.map((m) => [m.id, out.results[i].map((r) => VALUES[m.id]!(r) ?? NaN)]));
   // A budget sweep: societies are compared at each budget, never across budgets.
   const budgetKey = (spec.factors ?? []).find((f) => 'path' in f && f.path === 'budget.X')?.name;
-  let multi = all && !budgetKey ? compareAll(out.rows.map((row, i) => ({ label: label(row), values: valuesOf(i) })), OUTCOMES) : null;
+  let multi = all && !budgetKey ? compareAll(out.rows.map((row, i) => ({ label: label(row), values: valuesOf(i) })), OUTCOMES, out.graphs) : null;
   if (all && budgetKey) {
     const budgets = [...new Set(out.rows.map((r) => Number(r.labels[budgetKey])))].sort((x, y) => x - y);
     const without = (row: Output['rows'][number]) => Object.entries(row.labels).filter(([k]) => k !== budgetKey).map(([, v]) => String(v)).join(', ');
-    const per = budgets.map((b) => ({ b, ...compareAll(out.rows.map((row, i) => ({ row, i })).filter(({ row }) => Number(row.labels[budgetKey]) === b).map(({ row, i }) => ({ label: without(row), values: valuesOf(i) })), OUTCOMES) }));
+    const per = budgets.map((b) => ({ b, ...compareAll(out.rows.map((row, i) => ({ row, i })).filter(({ row }) => Number(row.labels[budgetKey]) === b).map(({ row, i }) => ({ label: without(row), values: valuesOf(i) })), OUTCOMES, out.graphs) }));
     // Budgets with the same verdict are reported together.
     const verdict = (a: string) => a.replace(/ \(\d+ measures;.*$/, '');
     const groups: { from: number; to: number; text: string }[] = [];
@@ -211,7 +236,7 @@ function simulationCard(spec: ExperimentSpec, out: Output, n: number, date: stri
     };
   }
   const answer = multi ? multi.answer : measure && VALUES[measure]
-    ? compareRows(out.rows.map((row, i) => ({ label: label(row), values: out.results[i].map(VALUES[measure]!).filter((v): v is number => v !== null) })), better, MEASURE_NAMES[measure] ?? header(measure))
+    ? compareRows(out.rows.map((row, i) => ({ label: label(row), values: out.results[i].map((r) => VALUES[measure]!(r) ?? NaN) })), better, MEASURE_NAMES[measure] ?? header(measure), undefined, out.graphs)
     : out.analysis?.answer ?? 'See the table: this experiment checks the model against exact values.';
   // The card's table: the measure, two more columns, and always the return on the money.
   const support = all ? OUTCOMES.map((m) => m.id).filter((c) => c !== measure) : [...withRoi(spec.columns ?? DEFAULT_COLUMNS).filter((c) => c !== measure && c !== 'roi').slice(0, 2), ...(measure === 'roi' ? [] : ['roi'])];
@@ -251,7 +276,7 @@ function simulationCard(spec: ExperimentSpec, out: Output, n: number, date: stri
       fixed: spec.fixed ?? 'the field, agents and budget',
       measure: all ? `all of ${OUTCOMES.map((m) => m.name).join(', ')}` : measure ? MEASURE_NAMES[measure] ?? header(measure) : 'agreement with the exact values',
       better,
-      runs: `${n} runs per row`,
+      runs: (spec.runsPerGraph ?? 1) > 1 ? `${Math.ceil(n / spec.runsPerGraph!)} graphs × ${spec.runsPerGraph} runs on each, per row` : `${n} runs per row`,
     },
     answer, ...(multi ? { answers: multi.lines } : {}), table: short, caveats: spec.caveats ?? ['A simulation with guessed parameters: it shows how the rules play out, not that they work.'],
     page: `results/${spec.id}/summary.md`,

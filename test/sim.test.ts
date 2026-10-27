@@ -507,3 +507,36 @@ test('levelTie sets how strictly difficulty follows level, keeping the mix of ea
   assert.ok(Math.abs(none.mean - strict.mean) / strict.mean < 0.25, `mix kept: ${none.mean} vs ${strict.mean}`);
   assert.throws(() => ideasWorld({ ...base, levelTie: 1.5 }, new Rng(1)));
 });
+
+test('graph seeds: runs can share a graph and differ only in the luck of their attempts', async () => {
+  const design = await import('../src/viewer/design.ts');
+  const { expand, runExperiment } = await import('../src/experiments/experiment.ts');
+  const spec = design.simpleExperimentFor({ id: 'x', space: '', graph: design.GRAPH_DEFAULTS, budget: 300, alphas: [1], betas: [0, 1], seeds: 6 });
+  const sc = expand(spec)[0].scenario;
+  // Without a graph seed, or with the run's own seed, a run is exactly as before.
+  assert.deepEqual(run(sc, 4), run(sc, 4, undefined, 4));
+  // Same graph seed, different run seeds: the same graph, different attempts.
+  const graphOf = (seed: number, graph: number) => { let w: any; run(sc, seed, { events: [], onStart: (world) => { w = world; } }, graph); return w; };
+  assert.deepEqual(graphOf(10, 3).prereqs, graphOf(11, 3).prereqs);
+  assert.deepEqual(graphOf(10, 3).bits, graphOf(11, 3).bits);
+  assert.notDeepEqual(graphOf(10, 10).bits, graphOf(11, 11).bits);
+  // An experiment with 3 runs per graph: 6 runs on 2 graphs, recorded with each run.
+  const out = runExperiment({ ...spec, runsPerGraph: 3 }, 6);
+  assert.deepEqual(out.graphs, [1, 1, 1, 2, 2, 2]);
+  assert.equal(out.runs[0].graph, 1);
+  assert.equal(runExperiment(spec, 6).runs[0].graph, undefined, 'one run per graph: nothing new recorded');
+});
+
+test('rows are compared run by run on the same graphs, each graph counted once', async () => {
+  const { diffSe } = await import('../src/card.ts');
+  // Two rows that move together from graph to graph: paired, the gap is sharp; unpaired, it is lost in the spread.
+  const base = [1, 5, 9, 3, 7, 2, 8, 4];
+  const a = base.map((x) => x + 1), b = base.map((x, k) => x + (k % 2 ? 0.1 : -0.1));
+  const graphs = base.map((_, k) => k);
+  assert.ok(diffSe(a, b, graphs) < diffSe(a, b) / 5);
+  // Runs sharing a graph count once: two copies of each graph give the same error as one.
+  const twice = (xs: number[]) => xs.flatMap((x) => [x, x]);
+  assert.ok(Math.abs(diffSe(twice(a), twice(b), graphs.flatMap((g) => [g, g])) - diffSe(a, b, graphs)) < 1e-12);
+  // Values missing for different runs in the two rows: unpaired, as before.
+  assert.equal(diffSe([...a, NaN], [...b, 3], [...graphs, 99]), diffSe([...a, NaN], [...b, 3]));
+});

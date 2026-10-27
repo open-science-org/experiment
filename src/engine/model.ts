@@ -273,9 +273,15 @@ export function traceRun(sc: Scenario, seed: number): Traced {
   return { world: world!, agents: agents!, events, result };
 }
 
-export function run(sc: Scenario, seed: number, record?: { events: TraceEvent[]; onStart: (world: World, agents: Agent[]) => void }): RunResult {
+/**
+ * One run. The seed sets everything random in it; graphSeed, when given, sets the idea graph alone, so several
+ * runs can share one graph and differ only in the luck of their attempts. Without it (or equal to seed), the
+ * graph comes from the seed, as before.
+ */
+export function run(sc: Scenario, seed: number, record?: { events: TraceEvent[]; onStart: (world: World, agents: Agent[]) => void }, graphSeed?: number): RunResult {
   const rng = new Rng(seed);
-  const world = worlds.create(sc.world, 'world')(sc.success, rng.fork(1));
+  const worldRng = rng.fork(1); // always drawn, so the other streams are the same whatever the graph seed
+  const world = worlds.create(sc.world, 'world')(sc.success, graphSeed === undefined || graphSeed === seed ? worldRng : new Rng(graphSeed).fork(1));
   const areas = typeof sc.world.areas === 'number' ? sc.world.areas : Math.max(0, ...world.area) + 1;
   const agents = makeAgents(sc.agents, areas, rng.fork(2));
   if (!agents.length) throw new Error('scenario: agents.mix has no agents');

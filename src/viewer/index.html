@@ -285,7 +285,7 @@
         </div>
         <div class="gen-preview"><div id="g-stats" class="muted"></div><div id="g-svg"></div></div>
       </div>
-      <div class="row"><span class="muted" title="The bar for a clear difference is raised for the number of measures, so judging on all of them does not make a false difference more likely.">Judged on every measure: hardest level, targets solved, bounty value, ROI, money to the main level and waste.</span><label>Runs per society <input id="s-seeds" type="number" min="1" max="1000" value="50" style="width:70px"></label></div>
+      <div class="row"><span class="muted" title="The bar for a clear difference is raised for the number of measures, so judging on all of them does not make a false difference more likely.">Judged on every measure: hardest level, targets solved, bounty value, ROI, money to the main level and waste.</span><label>Runs per society <input id="s-seeds" type="number" min="1" max="1000" value="50" style="width:70px"></label><label>Runs per graph <span class="info" title="1: every run draws its own idea graph. More: that many runs share each graph and differ only in the luck of their attempts, so the result says how much comes from the graph and how much from luck. Runs per society ÷ runs per graph = number of graphs.">ⓘ</span> <input id="s-perGraph" type="number" min="1" max="100" value="1" style="width:60px"></label></div>
       <div class="row"><label>α values <input id="s-alphas" value="1, 0.8, 0.5, 0.2" style="width:200px"></label><span class="muted">1 = nothing flows back; lower = more flows back to the ideas it built on</span></div>
       <div id="s-step-box" class="hidden">
         <div class="row"><label><b>Step</b> <select id="s-step"></select></label><span class="muted">Each step adds one mechanism to the one before. <a href="#/equations?m=steps">The steps →</a></span></div>
@@ -1146,7 +1146,7 @@ const graphControls = () => Object.fromEntries(GRAPH_KEYS.map((k) => [k, Number(
 function simpleDesign() {
   return { id: '', question: $('s-question').value.trim(), space: $('s-space').value,
     ...(generated() ? { graph: graphControls(), budget: Number($('s-budget').value), ...($('g-preset').value ? { preset: $('g-preset').value } : {}) } : {}),
-    alphas: numbers($('s-alphas').value), betas: numbers($('s-betas').value), seeds: Number($('s-seeds').value),
+    alphas: numbers($('s-alphas').value), betas: numbers($('s-betas').value), seeds: Number($('s-seeds').value), runsPerGraph: Number($('s-perGraph').value) || 1,
     ...(newMode === 'steps' ? { step: Number($('s-step').value) } : {}) };
 }
 let previewTimer = null;
@@ -1193,7 +1193,7 @@ function initSimple() {
   $('s-budget').addEventListener('input', simpleCheck);
   for (const r of document.querySelectorAll('input[name=s-graph]')) r.onchange = applyGraphMode;
   const fresh = () => simpleCheck();
-  for (const id of ['s-space', 's-seeds', 's-alphas', 's-betas']) $(id).addEventListener('input', simpleCheck);
+  for (const id of ['s-space', 's-seeds', 's-perGraph', 's-alphas', 's-betas']) $(id).addEventListener('input', simpleCheck);
   $('s-run').onclick = async () => {
     const c = await simpleCheck(); if (!c.ok) return;
     const btn = $('s-run');

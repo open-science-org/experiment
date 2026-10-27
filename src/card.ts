@@ -86,14 +86,32 @@ export function barFor(k: number): number {
 }
 
 /**
+ * The standard error of the difference between two rows' means. Rows hold one value per run, in run order
+ * (NaN where a run has none). Every row runs on the same graphs, so the difference is taken run by run (paired),
+ * averaged per graph first so runs that share a graph count once. Without graphs, or when the rows lack values
+ * for different runs, it falls back to unpaired.
+ */
+export function diffSe(a: number[], b: number[], graphs?: number[]): number {
+  const ok = (x: number) => Number.isFinite(x);
+  const se = (xs: number[]) => { const v = xs.filter(ok), n = v.length, m = v.reduce((p, q) => p + q, 0) / Math.max(1, n); return n > 1 ? Math.sqrt(v.reduce((p, q) => p + (q - m) ** 2, 0) / (n - 1) / n) : Infinity; };
+  // Paired only when both rows have a value for exactly the same runs; a measure some runs lack (money to the
+  // main level, say) would otherwise drop the runs that differ most.
+  if (!graphs || a.length !== graphs.length || b.length !== graphs.length || a.some((x, k) => ok(x) !== ok(b[k]))) return Math.hypot(se(a), se(b));
+  const byGraph = new Map<number, number[]>();
+  graphs.forEach((g, k) => { if (ok(a[k]) && ok(b[k])) (byGraph.get(g) ?? byGraph.set(g, []).get(g)!).push(a[k] - b[k]); });
+  return se([...byGraph.values()].map((ds) => ds.reduce((p, q) => p + q, 0) / ds.length));
+}
+
+/**
  * The answer on every measure at once. The bar for a clear difference is raised with the number of
  * measures (barFor), so looking at all of them does not make a false "clear difference" more likely.
  * Returns one summary sentence and one line per measure.
  */
-export function compareAll(rows: { label: string; values: Record<string, number[]> }[], measures: { id: string; name: string; better: 'higher' | 'lower'; fmt?: (x: number) => string }[]): { answer: string; lines: string[] } {
+export function compareAll(rows: { label: string; values: Record<string, number[]> }[], measures: { id: string; name: string; better: 'higher' | 'lower'; fmt?: (x: number) => string }[], graphs?: number[]): { answer: string; lines: string[] } {
   const z = barFor(measures.length);
   const isTrad = (l: string) => /(^|, )Traditional\b/.test(l);
-  const stat = (xs: number[]) => { const n = xs.length, m = xs.reduce((a, b) => a + b, 0) / Math.max(1, n); const sd = Math.sqrt(xs.reduce((a, b) => a + (b - m) ** 2, 0) / Math.max(1, n - 1)); return { m, se: n > 1 ? sd / Math.sqrt(n) : Infinity, n }; };
+  const stat = (all: number[]) => { const xs = all.filter(Number.isFinite), n = xs.length, m = xs.reduce((a, b) => a + b, 0) / Math.max(1, n); return { m, n, xs: all }; };
+  const gap = (x: { xs: number[] }, y: { xs: number[] }) => diffSe(x.xs, y.xs, graphs);
   const per = measures.map((ms) => {
     const st = rows.map((r) => ({ label: r.label, ...stat(r.values[ms.id] ?? []) })).filter((r) => r.n);
     st.sort((a, b) => (ms.better === 'higher' ? b.m - a.m : a.m - b.m));
@@ -101,7 +119,7 @@ export function compareAll(rows: { label: string; values: Record<string, number[
   }).filter((x) => x.st.length);
   // The best row overall: best (or tied with the best) on the most measures.
   const wins = new Map<string, number>();
-  for (const { st } of per) for (const r of st) if (r === st[0] || Math.abs(r.m - st[0].m) <= z * Math.hypot(r.se, st[0].se)) wins.set(r.label, (wins.get(r.label) ?? 0) + 1);
+  for (const { st } of per) for (const r of st) if (r === st[0] || Math.abs(r.m - st[0].m) <= z * gap(r, st[0])) wins.set(r.label, (wins.get(r.label) ?? 0) + 1);
   const best = [...wins.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
   const trad = rows.find((r) => isTrad(r.label))?.label;
   const fmt = (ms: (typeof measures)[number], x: number) => (ms.fmt ? ms.fmt(x) : x < 10 ? x.toFixed(2) : x.toFixed(0));
@@ -109,7 +127,7 @@ export function compareAll(rows: { label: string; values: Record<string, number[
   const lines = per.map(({ ms, st }) => {
     const b = st.find((r) => r.label === best), t = st.find((r) => r.label === trad);
     if (b && t && best !== trad) {
-      const clear = Math.abs(b.m - t.m) > z * Math.hypot(b.se, t.se);
+      const clear = Math.abs(b.m - t.m) > z * gap(b, t);
       const ahead = ms.better === 'higher' ? b.m > t.m : b.m < t.m;
       (clear ? (ahead ? better : worse) : same).push(ms.name);
       return `${ms.name}: ${fmt(ms, b.m)} against traditional ${fmt(ms, t.m)}${clear ? (ahead ? ', clearly better' : ', clearly worse') : ', no clear difference'}.`;
@@ -132,17 +150,16 @@ export function writeCard(dir: string, c: Card, details = '', file = 'summary.md
 
 /**
  * The answer on one measure: the best row, the rows tied with it, and, when there are traditional rows,
- * the best of them, with whether the gap is clear (more than two standard errors).
+ * the best of them, with whether the gap is clear (more than two standard errors of the difference, paired by graph).
  */
-export function compareRows(rows: { label: string; values: number[] }[], better: 'higher' | 'lower', measure: string, fmt = (x: number) => x.toFixed(1)): string {
-  const stat = rows.filter((r) => r.values.length).map((r) => {
-    const n = r.values.length, m = r.values.reduce((a, b) => a + b, 0) / n;
-    const sd = Math.sqrt(r.values.reduce((a, b) => a + (b - m) ** 2, 0) / Math.max(1, n - 1));
-    return { label: r.label, m, se: n > 1 ? sd / Math.sqrt(n) : Infinity };
-  }).sort((a, b) => (better === 'higher' ? b.m - a.m : a.m - b.m));
+export function compareRows(rows: { label: string; values: number[] }[], better: 'higher' | 'lower', measure: string, fmt = (x: number) => x.toFixed(1), graphs?: number[]): string {
+  const stat = rows.map((r) => {
+    const xs = r.values.filter(Number.isFinite), n = xs.length;
+    return { label: r.label, m: xs.reduce((a, b) => a + b, 0) / Math.max(1, n), n, xs: r.values };
+  }).filter((r) => r.n).sort((a, b) => (better === 'higher' ? b.m - a.m : a.m - b.m));
   if (!stat.length) return 'No data.';
   const best = stat[0];
-  const clear = (x: typeof best, y: typeof best) => Math.abs(x.m - y.m) > 2 * Math.hypot(x.se, y.se);
+  const clear = (x: typeof best, y: typeof best) => Math.abs(x.m - y.m) > 2 * diffSe(x.xs, y.xs, graphs);
   const isTrad = (l: string) => /(^|, )Traditional\b/.test(l);
   const tied = stat.slice(1).filter((r) => !clear(best, r) && !isTrad(r.label)).map((r) => r.label);
   const trad = stat.find((r) => isTrad(r.label));
