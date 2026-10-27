@@ -1,8 +1,8 @@
 {
  "id": "scaling-across-difficulty-direction-2026-10-26-follows-1",
  "kind": "simulation",
- "date": "2026-10-26",
- "ranAt": "2026-10-26T23:36:56.032Z",
+ "date": "2026-10-27",
+ "ranAt": "2026-10-27T18:26:29.242Z",
  "title": "Scaling across direction of difficulty, follows level strictly",
  "design": {
   "question": "Across direction of difficulty, follows level strictly, how much money does each society need, and does the gap between traditional and OSO grow?",
@@ -12,43 +12,43 @@
   "better": "lower",
   "runs": "from the sweeps tagged \"direction 2026-10-26: follows 1\""
  },
- "answer": "To solve half the targets, traditional needs 1.0× to 7.7× the money OSO needs. By difficulty: growth -1 1.0×, growth 0 1.6×, growth 2 7.7×, growth 4 4.3×.",
+ "answer": "To solve half the targets, traditional needs 1.2× to 6.5× the money OSO needs. By difficulty: growth -1 1.2×, growth 0 2.0×, growth 2 6.5×, growth 4 5.5×.",
  "table": [
   {
    "difficulty": "growth -1",
-   "Traditional (α = 1, β = 0)": "32",
-   "OSO (α = 0.8, β = 1)": "32",
-   "OSO (α = 0.2, β = 1)": "41",
-   "α = 0.8, β = 0.5": "33",
-   "α = 1, β = 1": "32",
-   "traditional ÷ OSO": "1.0×"
+   "Traditional (α = 1, β = 0)": "30",
+   "OSO (α = 0.8, β = 1)": "26",
+   "OSO (α = 0.2, β = 1)": "42",
+   "α = 0.8, β = 0.5": "30",
+   "α = 1, β = 1": "23",
+   "traditional ÷ OSO": "1.2×"
   },
   {
    "difficulty": "growth 0",
-   "Traditional (α = 1, β = 0)": "98",
-   "OSO (α = 0.8, β = 1)": "60",
+   "Traditional (α = 1, β = 0)": "101",
+   "OSO (α = 0.8, β = 1)": "50",
    "OSO (α = 0.2, β = 1)": "67",
-   "α = 0.8, β = 0.5": "66",
-   "α = 1, β = 1": "54",
-   "traditional ÷ OSO": "1.6×"
+   "α = 0.8, β = 0.5": "71",
+   "α = 1, β = 1": "51",
+   "traditional ÷ OSO": "2.0×"
   },
   {
    "difficulty": "growth 2",
-   "Traditional (α = 1, β = 0)": "2,497",
-   "OSO (α = 0.8, β = 1)": "325",
-   "OSO (α = 0.2, β = 1)": "333",
-   "α = 0.8, β = 0.5": "595",
-   "α = 1, β = 1": "318",
-   "traditional ÷ OSO": "7.7×"
+   "Traditional (α = 1, β = 0)": "2,214",
+   "OSO (α = 0.8, β = 1)": "342",
+   "OSO (α = 0.2, β = 1)": "330",
+   "α = 0.8, β = 0.5": "549",
+   "α = 1, β = 1": "336",
+   "traditional ÷ OSO": "6.5×"
   },
   {
    "difficulty": "growth 4",
-   "Traditional (α = 1, β = 0)": "9,684",
-   "OSO (α = 0.8, β = 1)": "2,233",
-   "OSO (α = 0.2, β = 1)": "1,996",
-   "α = 0.8, β = 0.5": "3,251",
-   "α = 1, β = 1": "2,340",
-   "traditional ÷ OSO": "4.3×"
+   "Traditional (α = 1, β = 0)": "10,350",
+   "OSO (α = 0.8, β = 1)": "1,872",
+   "OSO (α = 0.2, β = 1)": "1,898",
+   "α = 0.8, β = 0.5": "2,983",
+   "α = 1, β = 1": "1,879",
+   "traditional ÷ OSO": "5.5×"
   }
  ],
  "caveats": [

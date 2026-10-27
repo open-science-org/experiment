@@ -4,16 +4,16 @@
 
 **Question:** Across direction of difficulty, follows level strictly, how much money does each society need, and does the gap between traditional and OSO grow?
 
-**Answer:** To solve half the targets, traditional needs 1.0× to 7.7× the money OSO needs. By difficulty: growth -1 1.0×, growth 0 1.6×, growth 2 7.7×, growth 4 4.3×.
+**Answer:** To solve half the targets, traditional needs 1.2× to 6.5× the money OSO needs. By difficulty: growth -1 1.2×, growth 0 2.0×, growth 2 6.5×, growth 4 5.5×.
 
 ![Scaling across direction of difficulty, follows level strictly](figures/compare.svg)
 
 | difficulty | Traditional (α = 1, β = 0) | OSO (α = 0.8, β = 1) | OSO (α = 0.2, β = 1) | α = 0.8, β = 0.5 | α = 1, β = 1 | traditional ÷ OSO |
 | --- | --- | --- | --- | --- | --- | --- |
-| growth -1 | 32 | 32 | 41 | 33 | 32 | 1.0× |
-| growth 0 | 98 | 60 | 67 | 66 | 54 | 1.6× |
-| growth 2 | 2,497 | 325 | 333 | 595 | 318 | 7.7× |
-| growth 4 | 9,684 | 2,233 | 1,996 | 3,251 | 2,340 | 4.3× |
+| growth -1 | 30 | 26 | 42 | 30 | 23 | 1.2× |
+| growth 0 | 101 | 50 | 67 | 71 | 51 | 2.0× |
+| growth 2 | 2,214 | 342 | 330 | 549 | 336 | 6.5× |
+| growth 4 | 10,350 | 1,872 | 1,898 | 2,983 | 1,879 | 5.5× |
 
 **Design** (fixed before the run): compared 5 societies on 4 difficulties (growth -1, growth 0, growth 2, growth 4) · held the same: the simple model: 12 identical agents, equal money each round, a knowledge reward of 1 per new bit, no validation · measure: money needed to solve half the targets, lower is better · from the sweeps tagged "direction 2026-10-26: follows 1".
 
@@ -27,9 +27,9 @@
 
 | difficulty | Traditional (α = 1, β = 0) | OSO (α = 0.8, β = 1) | OSO (α = 0.2, β = 1) | α = 0.8, β = 0.5 | α = 1, β = 1 |
 | --- | --- | --- | --- | --- | --- |
-| growth -1 | 0.69 | 0.67 | 0.87 | 0.79 | 0.57 |
-| growth 0 | 1.31 | 1.68 | 2.22 | 1.22 | 2.44 |
-| growth 2 | 4.17 | 1.56 | 3.81 | 3.46 | – |
-| growth 4 | 2.85 | 1.34 | 1.86 | 2.12 | 1.85 |
+| growth -1 | 0.69 | 0.70 | 0.87 | 0.75 | 0.90 |
+| growth 0 | 0.84 | 1.35 | 1.62 | 1.08 | 1.31 |
+| growth 2 | 7.03 | 2.74 | 3.66 | 2.45 | 3.24 |
+| growth 4 | 3.52 | 1.98 | 2.15 | 2.61 | 2.17 |
 
 </details>
