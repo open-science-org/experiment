@@ -1,0 +1,70 @@
+{
+ "id": "scaling-across-difficulty-lab-size-2026-10-28",
+ "kind": "simulation",
+ "date": "2026-10-28",
+ "ranAt": "2026-10-28T23:12:40.245Z",
+ "title": "Scaling across difficulty, lab size from 1 to 24",
+ "design": {
+  "question": "Across difficulty, lab size from 1 to 24, how much money does each society need, and does the gap between traditional and OSO grow?",
+  "compare": "10 societies on 2 difficulties (growth 2, growth 4)",
+  "fixed": "the simple model: 12 identical agents, equal money each round, a knowledge reward of 1 per new bit, no validation",
+  "measure": "money needed to solve half the targets",
+  "better": "lower",
+  "runs": "from the sweeps tagged \"lab size 2026-10-28\""
+ },
+ "answer": "To solve half the targets, traditional needs 8.3× to 10.4× the money OSO needs. By difficulty: growth 2 10.4×, growth 4 8.3×.",
+ "table": [
+  {
+   "difficulty": "growth 2",
+   "Traditional (α = 1, β = 0), alone": "3,754",
+   "Labs of 2": "2,269",
+   "Labs of 3": "1,454",
+   "Labs of 4": "1,315",
+   "Labs of 6": "840",
+   "Labs of 8": "696",
+   "Labs of 12": "500",
+   "Labs of 24 (one lab of everyone)": "334",
+   "OSO (α = 0.8, β = 1)": "363",
+   "OSO (α = 0.2, β = 1)": "350",
+   "traditional ÷ OSO": "10.4×"
+  },
+  {
+   "difficulty": "growth 4",
+   "Traditional (α = 1, β = 0), alone": "16,820",
+   "Labs of 2": "10,277",
+   "Labs of 3": "6,875",
+   "Labs of 4": "5,816",
+   "Labs of 6": "4,246",
+   "Labs of 8": "3,425",
+   "Labs of 12": "2,854",
+   "Labs of 24 (one lab of everyone)": "1,681",
+   "OSO (α = 0.8, β = 1)": "2,036",
+   "OSO (α = 0.2, β = 1)": "1,966",
+   "traditional ÷ OSO": "8.3×"
+  }
+ ],
+ "caveats": [
+  "Read off between the two budgets that bracket half the targets, in log budget.",
+  "Each difficulty has its own budget range; \"> x\" means not reached within it."
+ ],
+ "page": "results/scaling-across-difficulty-lab-size-2026-10-28/summary.md",
+ "chart": "results/scaling-across-difficulty-lab-size-2026-10-28/figures/compare.svg",
+ "tags": [
+  "scaling",
+  "scaling law",
+  "difficulty",
+  "lab size 2026-10-28",
+  "meta-analysis"
+ ],
+ "basedOn": [
+  {
+   "id": "simple-ideas-6x8-p2-len3g2-comp0-7-lab-size-24-agents-scaling-20261028",
+   "title": "Lab size, from everyone alone to one lab of everyone, on the default graph (deeper ideas harder by 2 bits per level)"
+  },
+  {
+   "id": "simple-ideas-6x8-p2-len3g4-comp0-7-lab-size-24-agents-scaling-20261028",
+   "title": "Lab size, from everyone alone to one lab of everyone, on a graph where deeper ideas are much harder (4 bits per level)"
+  }
+ ],
+ "modelVersion": 6
+}

@@ -87,5 +87,27 @@ export function writeSummaryFigures(): string[] {
       format: { x: (v) => String(Math.round(2 ** v)), y: (v) => `${Number.isInteger(v) ? v : v.toFixed(1)}×` },
     }));
   }
+  // 5. Lab size: money ÷ field-wide OSO by the number of separate labs (24 agents), on two graphs.
+  const labs = 'scaling-across-difficulty-lab-size-2026-10-28';
+  if (existsSync(join(RESULTS_DIR, labs, 'card.json'))) {
+    const rows = cardOf(labs).table;
+    const series: Series[] = rows.map((r, j) => {
+      const oso = num(r['OSO (α = 0.8, β = 1)']);
+      const points = Object.entries(r).flatMap(([k, v]) => {
+        const size = /^Traditional.*alone$/.test(k) ? 1 : Number(/^Labs of (\d+)/.exec(k)?.[1] ?? NaN);
+        return Number.isFinite(size) ? [[Math.log2(24 / size), num(v) / oso] as [number, number]] : [];
+      }).sort((a, b) => a[0] - b[0]);
+      return { name: r.difficulty === 'growth 2' ? 'Default graph' : 'Deeper much harder', slot: (j === 0 ? 1 : 3) as 1 | 3, points };
+    });
+    series.push({ name: 'Field-wide OSO', slot: 2, points: [[0, 1], [Math.log2(24), 1]] });
+    const ticks = [1, 2, 3, 4, 6, 8, 12, 24];
+    save('money-by-lab-size.svg', lineChart({
+      title: 'The more separate labs, the more money', subtitle: '24 agents in equal labs that share inside only; money to solve half the targets ÷ field-wide OSO',
+      xLabel: 'Number of separate labs (24 ÷ lab size; log scale)', yLabel: 'money ÷ field-wide OSO',
+      series, x: [0, Math.log2(24)], y: [0, 12], markers: true,
+      xTicks: ticks.map((t) => Math.log2(t)), yTicks: [0, 2, 4, 6, 8, 10, 12],
+      format: { x: (v) => String(Math.round(2 ** v)), y: (v) => `${Number.isInteger(v) ? v : v.toFixed(1)}×` },
+    }));
+  }
   return written;
 }
