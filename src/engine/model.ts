@@ -43,6 +43,8 @@ export interface State {
   publicBits: Set<number>;
   w: number[][];
   known: Set<number>[];
+  /** Each agent's lab mates (agents.groups): they learn its proofs at once, privately. */
+  team: number[][];
   /** Bumped whenever an agent's knowledge changes (lets the bits it has resolved be cached). */
   knowVersion: Int32Array;
   proved: Set<number>[];
@@ -182,9 +184,24 @@ function retract(s: State, i: number, x: number) {
 
 /** Publishes x together with every private result of i's that x depends on, oldest first. */
 function publishBundle(s: State, i: number, x: number) {
-  const bundle = [...s.world.ancestors[x], x].filter((r) => s.proved[i].has(r) && s.author[r] < 0);
+  // The agent's own private work behind x, and its lab mates' (each credited to whoever proved it).
+  const lab = [i, ...s.team[i]];
+  const bundle = [...s.world.ancestors[x], x].filter((r) => s.author[r] < 0 && lab.some((a) => s.proved[a].has(r)));
   bundle.sort((a, b) => s.world.level[a] - s.world.level[b] || a - b);
-  for (const r of bundle) if (s.author[r] < 0) publishOne(s, i, r);
+  for (const r of bundle) if (s.author[r] < 0) publishOne(s, s.proved[i].has(r) ? i : lab.find((a) => s.proved[a].has(r))!, r);
+}
+
+/** Lab mates for each agent from the group sizes (agents in order; the rest work alone). */
+function teams(groups: number[], n: number): number[][] {
+  if (!Array.isArray(groups) || groups.some((g) => !Number.isInteger(g) || g < 1)) throw new Error('agents.groups must be a list of whole numbers, 1 or more');
+  if (groups.reduce((a, b) => a + b, 0) > n) throw new Error(`agents.groups adds up to more than the ${n} agents`);
+  const out: number[][] = Array.from({ length: n }, () => []);
+  let start = 0;
+  for (const g of groups) {
+    for (let a = start; a < start + g; a++) for (let b = start; b < start + g; b++) if (a !== b) out[a].push(b);
+    start += g;
+  }
+  return out;
 }
 
 /** The ideas agent i can attempt now (difficulty.ts: all parents known, or any idea when ideas have bits). */
@@ -242,6 +259,8 @@ function attempt(s: State, i: number, decider: Decider) {
   s.proved[i].add(r);
   s.known[i].add(r);
   s.knowVersion[i]++;
+  // Labs: lab mates know a new proof at once; it stays private to the lab.
+  for (const t of s.team[i]) if (!s.known[t].has(r)) takeUp(s, t, r);
   if (s.firstProof[r] < 0) { s.firstProof[r] = s.round; s.firstProver[r] = i; }
   if (s.author[r] >= 0) {
     s.duplicates++;
@@ -296,6 +315,7 @@ export function run(sc: Scenario, seed: number, record?: { events: TraceEvent[];
     visibility: visibilities.create(sc.rules.visibility, 'rules.visibility'),
     oracle: oracles.create(sc.success.oracle, 'success.oracle'),
     known: agents.map(() => new Set()),
+    team: teams(sc.agents.groups ?? [], agents.length),
     knowVersion: new Int32Array(agents.length),
     proved: agents.map(() => new Set()),
     author: new Int32Array(world.n).fill(-1),

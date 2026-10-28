@@ -1,0 +1,150 @@
+# A stronger traditional (labs) 2026-10-28: growth 4
+id: simple-ideas-6x8-p2-len3g4-comp0-7-labs-scaling-20261028
+title: "A stronger traditional: labs that share inside, on a graph where deeper ideas are much
+  harder (4 bits per level)"
+description: "The simple model on a graph where deeper ideas are much harder (4 bits per level), 6
+  levels × 8 ideas, 2 parents each, composition 0.7; each graph run 5 times. Traditional rules (α =
+  1, nothing published before a target), with the 12 agents alone, in 2 labs of 6, in 3 labs of 4,
+  in one lab of 9 with 3 alone, or in one lab of all 12; lab mates share every proof at once,
+  privately. Money is equal per agent, so a bigger lab has more. Against OSO at α = 0.8 and 0.2.
+  Held fixed: 12 identical agents, equal money every round (f = 0), no flat mint, a knowledge reward
+  of 1 per new bit flowing back with α, no validation."
+seeds: 150
+runsPerGraph: 5
+set:
+  world:
+    kind: ideas
+    levels: 6
+    width: 8
+    parents: 2
+    skip: 0.2
+    length: 3
+    lengthGrowth: 4
+    composition: 0.7
+    targets: 2
+    targetsFrom: 0
+    levelTie: 1
+  budget:
+    X: 32
+    allocation:
+      rho: 0
+  measures:
+    targetLevel: 6
+  rules:
+    c: 0
+    mint: 0
+    screen: 0
+    mintPerBit: 1
+  agents:
+    mix:
+      foundation: 0
+      racer: 0
+      explorer: 0
+      specialist: 0
+      freeRider: 0
+      gamer: 0
+      plain: 12
+factors:
+  - name: society
+    levels:
+      - label: Traditional (α = 1, β = 0)
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: chance
+            beta: 0
+          agents.groups: []
+      - label: "Labs: 2 of 6"
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: chance
+            beta: 0
+          agents.groups:
+            - 6
+            - 6
+      - label: "Labs: 3 of 4"
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: chance
+            beta: 0
+          agents.groups:
+            - 4
+            - 4
+            - 4
+      - label: "Labs: one of 9, 3 alone"
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: chance
+            beta: 0
+          agents.groups:
+            - 9
+      - label: "Labs: one of all 12"
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: chance
+            beta: 0
+          agents.groups:
+            - 12
+      - label: OSO (α = 0.8, β = 1)
+        set:
+          rules.alpha: 0.8
+          rules.visibility:
+            kind: chance
+            beta: 1
+      - label: OSO (α = 0.2, β = 1)
+        set:
+          rules.alpha: 0.2
+          rules.visibility:
+            kind: chance
+            beta: 1
+  - name: budget
+    path: budget.X
+    values:
+      - 32
+      - 64
+      - 128
+      - 256
+      - 512
+      - 1024
+      - 2048
+      - 4096
+      - 8192
+      - 16384
+      - 32768
+columns:
+  - frontier
+  - targetsSolved
+  - value
+  - roi
+  - knowledge
+  - knowledgePublished
+  - knowledgePerMoney
+  - cost
+  - waste
+  - sharing
+  - reachTarget
+question: On a graph where deeper ideas are much harder (4 bits per level), how much money do
+  traditional labs that share inside the lab need, against OSO?
+compare: traditional with agents alone or in labs (2 of 6, 3 of 4, one of 9, one of 12) against OSO
+  at α = 0.8 and 0.2, by budget
+fixed: a generated idea graph (6 levels × 8 ideas, 2 parents each, sequences of 3 bits growing by 2
+  per level, composition 0.7), 12 identical agents, budget 75 split equally, no mint, no validation
+tags:
+  - simulation
+  - simple model
+  - generated idea graph
+  - ideas
+  - levels 6
+  - parents 2
+  - composition 0.7
+  - alpha
+  - beta
+  - length growth 4
+  - labs
+  - stronger traditional
+  - labs 2026-10-28
+  - difficulty growth 4

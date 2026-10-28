@@ -44,6 +44,9 @@ export interface Scenario {
     specialist: { boost: number; penalty: number };
     /** Deciders for particular archetypes, overriding behaviour.decider (registry: deciders). */
     deciders: Record<string, Component>;
+    /** Labs: sizes of groups of agents (in agent order) who share every proof with each other at once, privately.
+     *  Agents not in a listed group work alone. Empty (the default): everyone alone. */
+    groups: number[];
   };
   rules: {
     /** Share of incoming value a result keeps; the rest flows to what it built on. */

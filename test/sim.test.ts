@@ -540,3 +540,20 @@ test('rows are compared run by run on the same graphs, each graph counted once',
   // Values missing for different runs in the two rows: unpaired, as before.
   assert.equal(diffSe([...a, NaN], [...b, 3], [...graphs, 99]), diffSe([...a, NaN], [...b, 3]));
 });
+
+test('labs: lab mates share every proof privately; one lab of everyone repeats no work', async () => {
+  const design = await import('../src/viewer/design.ts');
+  const { expand } = await import('../src/experiments/experiment.ts');
+  const [closed] = expand(design.simpleExperimentFor({ id: 'x', space: '', graph: design.GRAPH_DEFAULTS, budget: 600, alphas: [1], betas: [0], seeds: 1 })).map((r) => r.scenario);
+  const withLabs = (groups: number[]) => { const c = structuredClone(closed); c.agents.groups = groups; return c; };
+  const mean = (sc: any, f: (r: any) => number) => Array.from({ length: 20 }, (_, k) => f(run(sc, k + 1))).reduce((a, b) => a + b, 0) / 20;
+  // No groups listed: exactly as before.
+  assert.deepEqual(run(withLabs([]), 3), run(closed, 3));
+  // One lab of all 12: nobody repeats work; three labs repeat less than twelve agents alone.
+  assert.equal(mean(withLabs([12]), (r) => r.wasteParts.duplicate), 0);
+  assert.ok(mean(withLabs([4, 4, 4]), (r) => r.wasteParts.duplicate) < mean(closed, (r) => r.wasteParts.duplicate));
+  // The lab keeps its work private until a target (work published with a target in the same round counts as
+  // shared at once, so a little shows).
+  assert.ok(mean(withLabs([12]), (r) => r.sharingRate) < 0.05);
+  assert.throws(() => run(withLabs([10, 5]), 1));
+});

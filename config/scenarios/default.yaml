@@ -49,6 +49,7 @@ agents:
     boost: 1.6           # skill multiplier in the specialist's area
     penalty: 0.4         # and elsewhere
   deciders: {}           # per-archetype deciders, e.g. { gamer: { kind: random } }; default behaviour.decider
+  groups: []             # labs: sizes of groups (in agent order) who share every proof privately, e.g. [4, 4, 4]; others alone
 
 rules:                   # the only thing that differs between traditional research and OSO
   alpha: 1               # absorption rate: how much of incoming value an idea absorbs (traditional: 1)
