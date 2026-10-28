@@ -2,18 +2,60 @@
  "id": "scaling-across-difficulty-lab-size-2026-10-28",
  "kind": "simulation",
  "date": "2026-10-28",
- "ranAt": "2026-10-28T23:12:40.245Z",
+ "ranAt": "2026-10-28T23:41:55.876Z",
  "title": "Scaling across difficulty, lab size from 1 to 24",
  "design": {
   "question": "Across difficulty, lab size from 1 to 24, how much money does each society need, and does the gap between traditional and OSO grow?",
-  "compare": "10 societies on 2 difficulties (growth 2, growth 4)",
+  "compare": "10 societies on 6 difficulties (growth -1, growth 0, growth 1, growth 2, growth 3, growth 4)",
   "fixed": "the simple model: 12 identical agents, equal money each round, a knowledge reward of 1 per new bit, no validation",
   "measure": "money needed to solve half the targets",
   "better": "lower",
   "runs": "from the sweeps tagged \"lab size 2026-10-28\""
  },
- "answer": "To solve half the targets, traditional needs 8.3× to 10.4× the money OSO needs. By difficulty: growth 2 10.4×, growth 4 8.3×.",
+ "answer": "To solve half the targets, traditional needs 1.0× to 10.4× the money OSO needs. By difficulty: growth -1 1.0×, growth 0 2.3×, growth 1 9.1×, growth 2 10.4×, growth 3 9.2×, growth 4 8.3×.",
  "table": [
+  {
+   "difficulty": "growth -1",
+   "Traditional (α = 1, β = 0), alone": "31",
+   "Labs of 2": "30",
+   "Labs of 3": "30",
+   "Labs of 4": "29",
+   "Labs of 6": "30",
+   "Labs of 8": "29",
+   "Labs of 12": "28",
+   "Labs of 24 (one lab of everyone)": "27",
+   "OSO (α = 0.8, β = 1)": "30",
+   "OSO (α = 0.2, β = 1)": "41",
+   "traditional ÷ OSO": "1.0×"
+  },
+  {
+   "difficulty": "growth 0",
+   "Traditional (α = 1, β = 0), alone": "137",
+   "Labs of 2": "111",
+   "Labs of 3": "95",
+   "Labs of 4": "99",
+   "Labs of 6": "84",
+   "Labs of 8": "81",
+   "Labs of 12": "74",
+   "Labs of 24 (one lab of everyone)": "56",
+   "OSO (α = 0.8, β = 1)": "59",
+   "OSO (α = 0.2, β = 1)": "72",
+   "traditional ÷ OSO": "2.3×"
+  },
+  {
+   "difficulty": "growth 1",
+   "Traditional (α = 1, β = 0), alone": "1,364",
+   "Labs of 2": "797",
+   "Labs of 3": "667",
+   "Labs of 4": "532",
+   "Labs of 6": "368",
+   "Labs of 8": "331",
+   "Labs of 12": "225",
+   "Labs of 24 (one lab of everyone)": "147",
+   "OSO (α = 0.8, β = 1)": "150",
+   "OSO (α = 0.2, β = 1)": "156",
+   "traditional ÷ OSO": "9.1×"
+  },
   {
    "difficulty": "growth 2",
    "Traditional (α = 1, β = 0), alone": "3,754",
@@ -27,6 +69,20 @@
    "OSO (α = 0.8, β = 1)": "363",
    "OSO (α = 0.2, β = 1)": "350",
    "traditional ÷ OSO": "10.4×"
+  },
+  {
+   "difficulty": "growth 3",
+   "Traditional (α = 1, β = 0), alone": "7,564",
+   "Labs of 2": "4,822",
+   "Labs of 3": "3,203",
+   "Labs of 4": "2,717",
+   "Labs of 6": "1,719",
+   "Labs of 8": "1,485",
+   "Labs of 12": "1,142",
+   "Labs of 24 (one lab of everyone)": "697",
+   "OSO (α = 0.8, β = 1)": "823",
+   "OSO (α = 0.2, β = 1)": "723",
+   "traditional ÷ OSO": "9.2×"
   },
   {
    "difficulty": "growth 4",
@@ -58,8 +114,24 @@
  ],
  "basedOn": [
   {
+   "id": "simple-ideas-6x8-p2-len3gm1-comp0-7-lab-size-24-agents-scaling-20261028",
+   "title": "Lab size, from everyone alone to one lab of everyone, on a graph where deeper ideas are easier (1 bit fewer per level)"
+  },
+  {
+   "id": "simple-ideas-6x8-p2-len3g0-comp0-7-lab-size-24-agents-scaling-20261028",
+   "title": "Lab size, from everyone alone to one lab of everyone, on a graph where every level is equally hard"
+  },
+  {
+   "id": "simple-ideas-6x8-p2-len3g1-comp0-7-lab-size-24-agents-scaling-20261028",
+   "title": "Lab size, from everyone alone to one lab of everyone, on a graph where deeper ideas are harder by 1 bit per level"
+  },
+  {
    "id": "simple-ideas-6x8-p2-len3g2-comp0-7-lab-size-24-agents-scaling-20261028",
    "title": "Lab size, from everyone alone to one lab of everyone, on the default graph (deeper ideas harder by 2 bits per level)"
+  },
+  {
+   "id": "simple-ideas-6x8-p2-len3g3-comp0-7-lab-size-24-agents-scaling-20261028",
+   "title": "Lab size, from everyone alone to one lab of everyone, on a graph where deeper ideas are harder by 3 bits per level"
   },
   {
    "id": "simple-ideas-6x8-p2-len3g4-comp0-7-lab-size-24-agents-scaling-20261028",
