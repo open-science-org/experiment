@@ -32,6 +32,8 @@ export interface Series {
   name: string;
   /** Categorical slot 1-3, fixed per entity across all charts. */
   slot: 1 | 2 | 3;
+  /** A colour of its own instead of the slot's, for ordered series (shades of one hue). */
+  colour?: string;
   points: [number, number][];
 }
 
@@ -53,6 +55,7 @@ export interface LineChart {
 }
 
 export function lineChart(c: LineChart): string {
+  const stroke = (s: Series) => (s.colour ? ` style="stroke:${s.colour}"` : ''), fill = (s: Series) => (s.colour ? ` style="fill:${s.colour}"` : '');
   const W = 760, H = 420, left = 64, right = 190, top = 92, bottom = 56;
   const pw = W - left - right, ph = H - top - bottom;
   const fx = c.format?.x ?? ((v: number) => String(v));
@@ -71,7 +74,7 @@ export function lineChart(c: LineChart): string {
   let lx = left;
   for (const s of c.series) {
     // The legend is in each series' colour, like its line.
-    out.push(`<line class="line c${s.slot}" x1="${lx}" y1="70" x2="${lx + 18}" y2="70"/><text class="label t${s.slot}" x="${lx + 24}" y="74">${esc(s.name)}</text>`);
+    out.push(`<line class="line c${s.slot}"${stroke(s)} x1="${lx}" y1="70" x2="${lx + 18}" y2="70"/><text class="label t${s.slot}"${fill(s)} x="${lx + 24}" y="74">${esc(s.name)}</text>`);
     lx += 34 + s.name.length * 6.6;
   }
   for (const t of c.yTicks) {
@@ -89,10 +92,10 @@ export function lineChart(c: LineChart): string {
   for (const s of c.series) {
     if (!s.points.length) continue;
     const d = s.points.map(([x, y], i) => `${i ? 'L' : 'M'}${sx(x).toFixed(1)} ${sy(y).toFixed(1)}`).join(' ');
-    out.push(`<path class="line c${s.slot}" d="${d}"/>`);
+    out.push(`<path class="line c${s.slot}"${stroke(s)} d="${d}"/>`);
     const shown = c.markers ? s.points : [s.points[s.points.length - 1]];
     for (const [x, y] of shown) {
-      out.push(`<circle class="dot f${s.slot}" cx="${sx(x).toFixed(1)}" cy="${sy(y).toFixed(1)}" r="4.5"><title>${esc(`${s.name}: ${fy(y)} at ${c.xLabel.toLowerCase()} ${fx(x)}`)}</title></circle>`);
+      out.push(`<circle class="dot f${s.slot}"${fill(s)} cx="${sx(x).toFixed(1)}" cy="${sy(y).toFixed(1)}" r="4.5"><title>${esc(`${s.name}: ${fy(y)} at ${c.xLabel.toLowerCase()} ${fx(x)}`)}</title></circle>`);
     }
     const last = s.points[s.points.length - 1];
     ends.push({ y: sy(last[1]), s, last });
@@ -102,7 +105,7 @@ export function lineChart(c: LineChart): string {
   for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 16) ends[i].y = ends[i - 1].y + 16;
   const labelX = Math.max(...ends.map((e) => sx(e.last[0]))) + 12;
   for (const e of ends) {
-    out.push(`<text class="label t${e.s.slot}" x="${labelX}" y="${e.y + 4}">${esc(e.s.name)}: ${esc(fy(e.last[1]))}</text>`);
+    out.push(`<text class="label t${e.s.slot}"${fill(e.s)} x="${labelX}" y="${e.y + 4}">${esc(e.s.name)}: ${esc(fy(e.last[1]))}</text>`);
   }
   out.push('</svg>');
   return out.join('\n');

@@ -90,22 +90,25 @@ export function writeSummaryFigures(): string[] {
   // 5. Lab size: money ÷ field-wide OSO by the number of separate labs (24 agents), on two graphs.
   const labs = 'scaling-across-difficulty-lab-size-2026-10-28';
   if (existsSync(join(RESULTS_DIR, labs, 'card.json'))) {
-    const rows = cardOf(labs).table;
-    const series: Series[] = rows.map((r, j) => {
+    // One line per direction of difficulty, shaded light (deeper ideas easier) to dark (deeper ideas much harder).
+    const rows = cardOf(labs).table.map((r) => ({ r, g: num(r.difficulty.replace('growth', '')) })).sort((a, b) => a.g - b.g);
+    const SHADES = ['#a9cbf2', '#7fb0ea', '#5592dc', '#2a78d6', '#1d5aa8', '#103d78'];
+    const series: Series[] = rows.map(({ r, g }, j) => {
       const oso = num(r['OSO (α = 0.8, β = 1)']);
       const points = Object.entries(r).flatMap(([k, v]) => {
         const size = /^Traditional.*alone$/.test(k) ? 1 : Number(/^Labs of (\d+)/.exec(k)?.[1] ?? NaN);
-        return Number.isFinite(size) ? [[Math.log2(24 / size), num(v) / oso] as [number, number]] : [];
+        return Number.isFinite(size) && num(v) > 0 ? [[Math.log2(24 / size), num(v) / oso] as [number, number]] : [];
       }).sort((a, b) => a[0] - b[0]);
-      return { name: r.difficulty === 'growth 2' ? 'Default graph' : 'Deeper much harder', slot: (j === 0 ? 1 : 3) as 1 | 3, points };
+      return { name: g > 0 ? `+${g}` : String(g).replace('-', '−'), slot: 1, colour: SHADES[Math.round((j * (SHADES.length - 1)) / Math.max(1, rows.length - 1))], points };
     });
-    series.push({ name: 'Field-wide OSO', slot: 2, points: [[0, 1], [Math.log2(24), 1]] });
+    series.push({ name: 'OSO', slot: 2, points: [[0, 1], [Math.log2(24), 1]] });
     const ticks = [1, 2, 3, 4, 6, 8, 12, 24];
+    const most = Math.max(...series.flatMap((x) => x.points.map((p) => p[1]))), step = most > 12 ? 4 : 2, top = Math.ceil(most / step) * step;
     save('money-by-lab-size.svg', lineChart({
-      title: 'The more separate labs, the more money', subtitle: '24 agents in equal labs that share inside only; money to solve half the targets ÷ field-wide OSO',
-      xLabel: 'Number of separate labs (24 ÷ lab size; log scale)', yLabel: 'money ÷ field-wide OSO',
-      series, x: [0, Math.log2(24)], y: [0, 12], markers: true,
-      xTicks: ticks.map((t) => Math.log2(t)), yTicks: [0, 2, 4, 6, 8, 10, 12],
+      title: 'The more separate labs, the more money', subtitle: '24 agents in labs that share inside only. Lines: bits added per level (light: deeper easier; dark: much harder)',
+      xLabel: 'Number of separate labs (24 ÷ lab size; log scale)', yLabel: 'money to solve half the targets ÷ OSO',
+      series, x: [0, Math.log2(24)], y: [0, top], markers: true,
+      xTicks: ticks.map((t) => Math.log2(t)), yTicks: Array.from({ length: top / step + 1 }, (_, k) => k * step),
       format: { x: (v) => String(Math.round(2 ** v)), y: (v) => `${Number.isInteger(v) ? v : v.toFixed(1)}×` },
     }));
   }

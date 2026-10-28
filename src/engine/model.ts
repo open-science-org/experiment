@@ -418,7 +418,7 @@ export function run(sc: Scenario, seed: number, record?: { events: TraceEvent[];
       speed = t;
       cost = s.spend;
     }
-    if (sc.budget.stopWhenSolved && world.targets.length && world.targets.every((x) => s.author[x] >= 0)) break;
+    if (sc.budget.stopWhenSolved && world.targets.length && targets >= Math.ceil((sc.budget.stopAtShare ?? 1) * world.targets.length)) break;
   }
   return measure(s, curve, speed, cost);
 }

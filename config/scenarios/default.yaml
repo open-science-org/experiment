@@ -72,6 +72,7 @@ budget:
   rounds: 120
   perAgentPerRound: null # if set, rounds = X / (number of agents × perAgentPerRound)
   stopWhenSolved: true   # a funder stops paying once every target is solved
+  stopAtShare: 1         # ... or once this share of the targets is solved (0.5: half)
   allocation:
     kind: earnings-share # half equal, half by recent earnings when rho = 0.5
     rho: 0.5

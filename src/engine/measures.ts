@@ -11,6 +11,8 @@ export interface RunResult {
   deepestProved: number;
   speed: number | null;
   cost: number | null;
+  /** Money spent when half the targets were solved (null if never). */
+  halfCost: number | null;
   productivity: number;
   breadth: number;
   areasReached: number;
@@ -84,6 +86,7 @@ export function measure(s: State, curve: RunResult['curve'], speed: number | nul
     curve,
     spend: s.spend,
     frontier: curve.at(-1)?.level ?? 0,
+    halfCost: curve.find((c) => world.targets.length && c.targets >= Math.ceil(world.targets.length / 2))?.spend ?? null,
     deepestProved: Math.max(0, ...[...Array(world.n).keys()].filter((r) => s.firstProof[r] >= 0).map((r) => world.level[r])),
     speed,
     cost,
@@ -138,7 +141,7 @@ const reached = (rs: RunResult[]) => rs.filter((r) => r.speed !== null);
 /** Every column an experiment can list under `columns:`. Add a measure by adding an entry. */
 /** Plain names of measures, for answers. */
 export const MEASURE_NAMES: Record<string, string> = {
-  frontier: 'hardest level published', targetsSolved: 'targets solved', cost: 'money to reach the main level', speed: 'rounds to reach the main level',
+  frontier: 'hardest level published', targetsSolved: 'targets solved', cost: 'money to reach the main level', halfCost: 'money to solve half the targets', speed: 'rounds to reach the main level',
   value: 'bounty value', roi: 'ROI', duplicates: 'duplicated proofs',
   knowledge: 'knowledge found (bits)', knowledgePublished: 'knowledge published (bits)', knowledgePerMoney: 'knowledge per unit of money',
   sharing: 'share of ideas published at once', reachTarget: 'share of runs reaching the main level', waste: 'wasted money', credit: 'credit accuracy',
@@ -147,7 +150,7 @@ export const MEASURE_NAMES: Record<string, string> = {
 /** Each column's number for one run (null when a run has none, e.g. cost when the level was not reached). */
 export const VALUES: Record<string, (r: RunResult) => number | null> = {
   frontier: (r) => r.frontier, deepestProved: (r) => r.deepestProved, reachTarget: (r) => (r.speed !== null ? 1 : 0),
-  speed: (r) => r.speed, cost: (r) => r.cost, spend: (r) => r.spend, productivity: (r) => r.productivity * 100,
+  speed: (r) => r.speed, cost: (r) => r.cost, halfCost: (r) => r.halfCost, spend: (r) => r.spend, productivity: (r) => r.productivity * 100,
   breadth: (r) => r.breadth, waste: (r) => r.waste, credit: (r) => r.creditAccuracy, sharing: (r) => r.sharingRate,
   hoarded: (r) => r.hoarded, reuse: (r) => r.reuse, duplicates: (r) => r.duplicates, targetsSolved: (r) => r.targetsSolved,
   value: (r) => r.value, roi: (r) => r.roi,
@@ -162,6 +165,7 @@ export const COLUMNS: Record<string, Column> = {
   reachTarget: { header: (sc) => `reach L${sc.measures.targetLevel}`, value: (rs) => fmt(reached(rs).length / rs.length) },
   speed: { header: () => 'speed', value: (rs) => msd(reached(rs).map((r) => r.speed!), 0) },
   cost: { header: () => 'cost', value: (rs) => msd(reached(rs).map((r) => r.cost!), 0) },
+  halfCost: { header: () => 'money to half the targets', value: (rs) => msd(rs.filter((r) => r.halfCost !== null).map((r) => r.halfCost!), 0) },
   spend: { header: () => 'spend', value: (rs) => msd(rs.map((r) => r.spend), 0) },
   productivity: { header: () => 'ideas per 100', value: (rs) => msd(rs.map((r) => r.productivity * 100), 1) },
   breadth: { header: () => 'breadth', value: (rs) => msd(rs.map((r) => r.breadth)) },

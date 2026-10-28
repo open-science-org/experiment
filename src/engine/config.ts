@@ -82,6 +82,8 @@ export interface Scenario {
     perAgentPerRound: number | null;
     /** End the run once every target is solved. */
     stopWhenSolved: boolean;
+    /** With stopWhenSolved: the share of the targets solved at which the funder stops (1 = all of them). */
+    stopAtShare: number;
     /** How each round's compute is split among agents (registry: allocation). */
     allocation: Component;
   };
