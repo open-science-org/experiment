@@ -1,0 +1,64 @@
+{
+ "id": "scaling-across-difficulty-labs-2026-10-28",
+ "kind": "simulation",
+ "date": "2026-10-28",
+ "ranAt": "2026-10-28T22:56:52.670Z",
+ "title": "Scaling across difficulty, a stronger traditional (labs)",
+ "design": {
+  "question": "Across difficulty, a stronger traditional (labs), how much money does each society need, and does the gap between traditional and OSO grow?",
+  "compare": "7 societies on 2 difficulties (growth 2, growth 4)",
+  "fixed": "the simple model: 12 identical agents, equal money each round, a knowledge reward of 1 per new bit, no validation",
+  "measure": "money needed to solve half the targets",
+  "better": "lower",
+  "runs": "from the sweeps tagged \"labs 2026-10-28\""
+ },
+ "answer": "To solve half the targets, traditional needs 5.5× to 6.5× the money OSO needs. By difficulty: growth 2 6.5×, growth 4 5.5×.",
+ "table": [
+  {
+   "difficulty": "growth 2",
+   "Traditional (α = 1, β = 0)": "2,214",
+   "Labs: 2 of 6": "505",
+   "Labs: 3 of 4": "704",
+   "Labs: one of 9, 3 alone": "386",
+   "Labs: one of all 12": "318",
+   "OSO (α = 0.8, β = 1)": "342",
+   "OSO (α = 0.2, β = 1)": "330",
+   "traditional ÷ OSO": "6.5×"
+  },
+  {
+   "difficulty": "growth 4",
+   "Traditional (α = 1, β = 0)": "10,350",
+   "Labs: 2 of 6": "2,679",
+   "Labs: 3 of 4": "3,362",
+   "Labs: one of 9, 3 alone": "2,276",
+   "Labs: one of all 12": "1,680",
+   "OSO (α = 0.8, β = 1)": "1,872",
+   "OSO (α = 0.2, β = 1)": "1,898",
+   "traditional ÷ OSO": "5.5×"
+  }
+ ],
+ "caveats": [
+  "Read off between the two budgets that bracket half the targets, in log budget.",
+  "Each difficulty has its own budget range; \"> x\" means not reached within it."
+ ],
+ "page": "results/scaling-across-difficulty-labs-2026-10-28/summary.md",
+ "chart": "results/scaling-across-difficulty-labs-2026-10-28/figures/compare.svg",
+ "tags": [
+  "scaling",
+  "scaling law",
+  "difficulty",
+  "labs 2026-10-28",
+  "meta-analysis"
+ ],
+ "basedOn": [
+  {
+   "id": "simple-ideas-6x8-p2-len3g2-comp0-7-labs-scaling-20261028",
+   "title": "A stronger traditional: labs that share inside, on the default graph (deeper ideas harder by 2 bits per level)"
+  },
+  {
+   "id": "simple-ideas-6x8-p2-len3g4-comp0-7-labs-scaling-20261028",
+   "title": "A stronger traditional: labs that share inside, on a graph where deeper ideas are much harder (4 bits per level)"
+  }
+ ],
+ "modelVersion": 6
+}
