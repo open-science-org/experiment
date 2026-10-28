@@ -1,0 +1,341 @@
+# Lab size at scale 2026-10-28: 192 agents, growth -1
+id: simple-ideas-6x64-p2-len3gm1-comp0-7-lab-size-192-agents-20261028
+title: Lab size with 192 agents, deeper ideas easier (1 bit fewer per level)
+description: "The simple model with 192 identical agents on a generated idea graph of 6 levels × 64
+  ideas (2 ideas per agent), 2 parents each, composition 0.7, deeper ideas easier (1 bit fewer per
+  level), 16 targets on the top level; each graph run 3 times. Traditional rules (α = 1, nothing
+  published before a target), with agents in equal labs of 1, 2, 4, 8, 16, 32, 64, 96, 192; lab
+  mates share every proof at once, privately. Against OSO across the whole field at α = 0.8 and 0.2.
+  Each agent makes 1 attempt per round; the funder pays until half the targets are solved, and the
+  measure is the money spent by then. Held fixed: equal money per agent every round, no flat mint, a
+  knowledge reward of 1 per new bit flowing back with α, no validation."
+seeds: 24
+runsPerGraph: 3
+set:
+  world:
+    kind: ideas
+    levels: 6
+    width: 64
+    parents: 2
+    skip: 0.2
+    length: 3
+    lengthGrowth: -1
+    composition: 0.7
+    targets: 16
+    targetsFrom: 0
+    levelTie: 1
+  budget:
+    X: 100000000
+    allocation:
+      rho: 0
+    rounds: null
+    perAgentPerRound: 1
+    stopAtShare: 0.5
+  measures:
+    targetLevel: 6
+  rules:
+    c: 0
+    mint: 0
+    screen: 0
+    mintPerBit: 1
+  agents:
+    mix:
+      foundation: 0
+      racer: 0
+      explorer: 0
+      specialist: 0
+      freeRider: 0
+      gamer: 0
+      plain: 192
+factors:
+  - name: society
+    levels:
+      - label: Traditional (α = 1, β = 0), alone
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: chance
+            beta: 0
+          agents.groups: []
+      - label: Labs of 2
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: chance
+            beta: 0
+          agents.groups:
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+            - 2
+      - label: Labs of 4
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: chance
+            beta: 0
+          agents.groups:
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+            - 4
+      - label: Labs of 8
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: chance
+            beta: 0
+          agents.groups:
+            - 8
+            - 8
+            - 8
+            - 8
+            - 8
+            - 8
+            - 8
+            - 8
+            - 8
+            - 8
+            - 8
+            - 8
+            - 8
+            - 8
+            - 8
+            - 8
+            - 8
+            - 8
+            - 8
+            - 8
+            - 8
+            - 8
+            - 8
+            - 8
+      - label: Labs of 16
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: chance
+            beta: 0
+          agents.groups:
+            - 16
+            - 16
+            - 16
+            - 16
+            - 16
+            - 16
+            - 16
+            - 16
+            - 16
+            - 16
+            - 16
+            - 16
+      - label: Labs of 32
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: chance
+            beta: 0
+          agents.groups:
+            - 32
+            - 32
+            - 32
+            - 32
+            - 32
+            - 32
+      - label: Labs of 64
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: chance
+            beta: 0
+          agents.groups:
+            - 64
+            - 64
+            - 64
+      - label: Labs of 96
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: chance
+            beta: 0
+          agents.groups:
+            - 96
+            - 96
+      - label: Labs of 192 (one lab of everyone)
+        set:
+          rules.alpha: 1
+          rules.visibility:
+            kind: chance
+            beta: 0
+          agents.groups:
+            - 192
+      - label: OSO (α = 0.8, β = 1)
+        set:
+          rules.alpha: 0.8
+          rules.visibility:
+            kind: chance
+            beta: 1
+      - label: OSO (α = 0.2, β = 1)
+        set:
+          rules.alpha: 0.2
+          rules.visibility:
+            kind: chance
+            beta: 1
+columns:
+  - halfCost
+  - targetsSolved
+  - waste
+  - sharing
+question: With 192 agents in labs of 1 to 192 that share inside the lab, how much money does the
+  field need to solve half the targets, against OSO across the whole field?
+compare: labs of 1, 2, 4, 8, 16, 32, 64, 96, 192 against field-wide OSO at α = 0.8 and 0.2
+fixed: a generated idea graph (6 levels × 64 ideas, 2 parents each, deeper ideas easier (1 bit fewer
+  per level), composition 0.7, 16 targets), 192 identical agents, 1 attempt per agent per round,
+  paid until half the targets are solved, no flat mint, knowledge reward 1 per new bit, no
+  validation
+tags:
+  - simulation
+  - simple model
+  - generated idea graph
+  - lab size
+  - 192 agents
+  - lab size at scale 2026-10-28
+  - difficulty growth -1
+measure: halfCost
+better: lower
