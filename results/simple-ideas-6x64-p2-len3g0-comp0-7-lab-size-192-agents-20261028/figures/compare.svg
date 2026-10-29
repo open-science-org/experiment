@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="viz" viewBox="0 0 620 358" width="620" height="358" role="img" aria-label="Money to solve half the targets">
+<style>
+  .viz { --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --grid: #e6e5e1;
+         --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --dead: #c9c7c0; }
+  @media (prefers-color-scheme: dark) {
+    .viz { --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --grid: #34332f;
+           --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --dead: #4a4945; }
+  }
+  .bg { fill: var(--surface); }
+  text { fill: var(--ink); font-family: Helvetica, Arial, sans-serif; }
+  .title { font-size: 16px; font-weight: 700; }
+  .sub, .tick, .axis { fill: var(--ink-2); font-size: 12px; }
+  .grid { stroke: var(--grid); stroke-width: 1; }
+  .base { stroke: var(--ink-2); stroke-width: 1; }
+  .line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .c1 { stroke: var(--s1); } .f1 { fill: var(--s1); }
+  .c2 { stroke: var(--s2); } .f2 { fill: var(--s2); }
+  .c3 { stroke: var(--s3); } .f3 { fill: var(--s3); }
+  .dot { stroke: var(--surface); stroke-width: 2; }
+  .label { font-size: 12px; font-weight: 700; }
+  .t1 { fill: var(--s1); } .t2 { fill: var(--s2); } .t3 { fill: var(--s3); }
+</style><rect class="bg" width="620" height="358" rx="8"/>
+<text class="title" x="16" y="26">Money to solve half the targets</text>
+<rect x="16" y="38" width="12" height="10" rx="2" style="fill:var(--s2)"/><text class="label t2" x="33" y="47">OSO</text>
+<rect x="67" y="38" width="12" height="10" rx="2" style="fill:var(--s1)"/><text class="label t1" x="84" y="47">Traditional</text>
+<rect x="174" y="38" width="12" height="10" rx="2" style="fill:var(--dead)"/><text class="label " x="191" y="47">other</text>
+<text class="tick" x="222" y="73" text-anchor="end">Labs of 192 (one lab of everyone)</text>
+<rect x="230" y="62" width="100.2" height="16" rx="3" style="fill:var(--dead)"><title>Labs of 192 (one lab of everyone): 416</title></rect>
+<text class="label " x="336.2409638554217" y="74">416</text>
+<text class="tick" x="222" y="99" text-anchor="end">OSO (α = 0.8, β = 1)</text>
+<rect x="230" y="88" width="109.9" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.8, β = 1): 456</title></rect>
+<text class="label t2" x="345.87951807228916" y="100">456</text>
+<text class="tick" x="222" y="125" text-anchor="end">OSO (α = 0.2, β = 1)</text>
+<rect x="230" y="114" width="138.8" height="16" rx="3" style="fill:var(--s2)"><title>OSO (α = 0.2, β = 1): 576</title></rect>
+<text class="label t2" x="374.7951807228916" y="126">576</text>
+<text class="tick" x="222" y="151" text-anchor="end">Labs of 96</text>
+<rect x="230" y="140" width="140.7" height="16" rx="3" style="fill:var(--dead)"><title>Labs of 96: 584</title></rect>
+<text class="label " x="376.72289156626505" y="152">584</text>
+<text class="tick" x="222" y="177" text-anchor="end">Labs of 64</text>
+<rect x="230" y="166" width="144.6" height="16" rx="3" style="fill:var(--dead)"><title>Labs of 64: 600</title></rect>
+<text class="label " x="380.5783132530121" y="178">600</text>
+<text class="tick" x="222" y="203" text-anchor="end">Labs of 32</text>
+<rect x="230" y="192" width="188.9" height="16" rx="3" style="fill:var(--dead)"><title>Labs of 32: 784</title></rect>
+<text class="label " x="424.9156626506024" y="204">784</text>
+<text class="tick" x="222" y="229" text-anchor="end">Labs of 16</text>
+<rect x="230" y="218" width="206.3" height="16" rx="3" style="fill:var(--dead)"><title>Labs of 16: 856</title></rect>
+<text class="label " x="442.26506024096386" y="230">856</text>
+<text class="tick" x="222" y="255" text-anchor="end">Labs of 2</text>
+<rect x="230" y="244" width="227.5" height="16" rx="3" style="fill:var(--dead)"><title>Labs of 2: 944</title></rect>
+<text class="label " x="463.4698795180723" y="256">944</text>
+<text class="tick" x="222" y="281" text-anchor="end">Labs of 8</text>
+<rect x="230" y="270" width="229.4" height="16" rx="3" style="fill:var(--dead)"><title>Labs of 8: 952</title></rect>
+<text class="label " x="465.3975903614458" y="282">952</text>
+<text class="tick" x="222" y="307" text-anchor="end">Labs of 4</text>
+<rect x="230" y="296" width="268.0" height="16" rx="3" style="fill:var(--dead)"><title>Labs of 4: 1112</title></rect>
+<text class="label " x="503.95180722891564" y="308">1112</text>
+<text class="tick" x="222" y="333" text-anchor="end">Traditional (α = 1, β = 0), alone</text>
+<rect x="230" y="322" width="320.0" height="16" rx="3" style="fill:var(--s1)"><title>Traditional (α = 1, β = 0), alone: 1328</title></rect>
+<text class="label t1" x="556" y="334">1328</text>
+</svg>

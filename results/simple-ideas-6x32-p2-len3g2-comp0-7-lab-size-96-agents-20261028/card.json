@@ -1,0 +1,103 @@
+{
+ "chart": "results/simple-ideas-6x32-p2-len3g2-comp0-7-lab-size-96-agents-20261028/figures/compare.svg",
+ "id": "simple-ideas-6x32-p2-len3g2-comp0-7-lab-size-96-agents-20261028",
+ "kind": "simulation",
+ "date": "2026-10-29",
+ "title": "Lab size with 96 agents, deeper ideas harder by 2 bits per level",
+ "design": {
+  "question": "With 96 agents in labs of 1 to 96 that share inside the lab, how much money does the field need to solve half the targets, against OSO across the whole field?",
+  "compare": "labs of 1, 2, 4, 8, 16, 32, 48, 96 against field-wide OSO at α = 0.8 and 0.2",
+  "fixed": "a generated idea graph (6 levels × 32 ideas, 2 parents each, deeper ideas harder by 2 bits per level, composition 0.7, 8 targets), 96 identical agents, 1 attempt per agent per round, paid until half the targets are solved, no flat mint, knowledge reward 1 per new bit, no validation",
+  "measure": "money to solve half the targets",
+  "better": "lower",
+  "runs": "20 graphs × 3 runs on each, per row"
+ },
+ "answer": "Best: Labs of 96 (one lab of everyone), 1211.2. Best traditional: Traditional (α = 1, β = 0), alone, 44521.6. Clear difference.",
+ "table": [
+  {
+   "society": "Traditional (α = 1, β = 0), alone",
+   "money to half the targets": "44522 ± 9640",
+   "targets solved": "4.0 ± 0.2",
+   "waste": "0.89 ± 0.02",
+   "ROI (value per spend)": "0.01 ± 0.00"
+  },
+  {
+   "society": "Labs of 2",
+   "money to half the targets": "26942 ± 4966",
+   "targets solved": "4.0 ± 0.1",
+   "waste": "0.87 ± 0.02",
+   "ROI (value per spend)": "0.02 ± 0.00"
+  },
+  {
+   "society": "Labs of 4",
+   "money to half the targets": "15827 ± 2011",
+   "targets solved": "4.0 ± 0.2",
+   "waste": "0.84 ± 0.02",
+   "ROI (value per spend)": "0.03 ± 0.00"
+  },
+  {
+   "society": "Labs of 8",
+   "money to half the targets": "8730 ± 1210",
+   "targets solved": "4.2 ± 0.4",
+   "waste": "0.79 ± 0.02",
+   "ROI (value per spend)": "0.06 ± 0.01"
+  },
+  {
+   "society": "Labs of 16",
+   "money to half the targets": "5133 ± 544",
+   "targets solved": "4.2 ± 0.5",
+   "waste": "0.73 ± 0.02",
+   "ROI (value per spend)": "0.11 ± 0.02"
+  },
+  {
+   "society": "Labs of 32",
+   "money to half the targets": "2922 ± 285",
+   "targets solved": "4.4 ± 0.7",
+   "waste": "0.63 ± 0.03",
+   "ROI (value per spend)": "0.19 ± 0.03"
+  },
+  {
+   "society": "Labs of 48",
+   "money to half the targets": "2112 ± 243",
+   "targets solved": "4.6 ± 0.7",
+   "waste": "0.55 ± 0.03",
+   "ROI (value per spend)": "0.28 ± 0.06"
+  },
+  {
+   "society": "Labs of 96 (one lab of everyone)",
+   "money to half the targets": "1211 ± 153",
+   "targets solved": "4.9 ± 1.0",
+   "waste": "0.34 ± 0.03",
+   "ROI (value per spend)": "0.52 ± 0.09"
+  },
+  {
+   "society": "OSO (α = 0.8, β = 1)",
+   "money to half the targets": "1405 ± 221",
+   "targets solved": "4.3 ± 0.5",
+   "waste": "0.39 ± 0.05",
+   "ROI (value per spend)": "0.40 ± 0.08"
+  },
+  {
+   "society": "OSO (α = 0.2, β = 1)",
+   "money to half the targets": "1427 ± 218",
+   "targets solved": "4.5 ± 0.7",
+   "waste": "0.43 ± 0.06",
+   "ROI (value per spend)": "0.41 ± 0.07"
+  }
+ ],
+ "caveats": [
+  "A simulation with guessed parameters: it shows how the rules play out, not that they work."
+ ],
+ "page": "results/simple-ideas-6x32-p2-len3g2-comp0-7-lab-size-96-agents-20261028/summary.md",
+ "tags": [
+  "simulation",
+  "simple model",
+  "generated idea graph",
+  "lab size",
+  "96 agents",
+  "lab size at scale 2026-10-28",
+  "difficulty growth 2"
+ ],
+ "ranAt": "2026-10-28T23:49:32.140Z",
+ "modelVersion": 6
+}
