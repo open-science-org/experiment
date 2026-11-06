@@ -7,7 +7,7 @@
 //   -> results/bench/<run>/summary.md and records.jsonl; transcripts (private) in bench/runs/<run>/
 import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { chatFor, DEFAULT_MODEL, DEFAULT_MODELS, localPrice, type ModelSettings, type Provider, type Usage } from '../lean/agent.ts';
+import { chatFor, DEFAULT_MODEL, DEFAULT_MODELS, localPrice, OPENROUTER_API, type ModelSettings, type Provider, type Usage } from '../lean/agent.ts';
 import { BENCH_DIR, compile, extractTactics, theoremName } from './check.ts';
 import type { Problem } from './sample.ts';
 
@@ -34,13 +34,14 @@ if (flag('dry-run')) process.exit(0);
 const budget = Number(value('budget', provider === 'local' ? 'Infinity' : '30'));
 if (provider === 'openrouter') {
   // Refuse to start a run the key cannot pay for: running out midway would read as failed problems.
-  const res = await fetch('https://openrouter.ai/api/v1/key', { headers: { Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}` } });
+  const res = await fetch(`${OPENROUTER_API}/key`, { headers: { Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}` } });
   const left = ((await res.json()) as { data?: { limit_remaining: number | null } }).data?.limit_remaining;
   if (left != null && left < budget) { console.error(`The key has $${left.toFixed(2)} left; this run may spend up to $${budget.toFixed(2)} (--budget). Add credit first.`); process.exit(1); }
 }
 
 const runId = value('run', `bench-${provider}-${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}`);
-const out = join(BENCH_DIR, '..', 'results', 'bench', runId), priv = join(BENCH_DIR, 'runs', runId);
+// BENCH_OUT moves both folders elsewhere (the fault tests use a temporary one).
+const out = join(process.env.BENCH_OUT ?? join(BENCH_DIR, '..', 'results', 'bench'), runId), priv = join(process.env.BENCH_OUT ?? join(BENCH_DIR, 'runs'), `${runId}-transcripts`);
 mkdirSync(out, { recursive: true }); mkdirSync(priv, { recursive: true });
 writeFileSync(join(out, 'options.json'), JSON.stringify({ model, attempts, repairs, budget, problems: problems.map((p) => p.id) }, null, 1));
 
@@ -50,11 +51,7 @@ Do not change the statement or add helper lemmas before it (state them with \`ha
 
 const chat = chatFor(model);
 /** Dollars for a call: what the provider charged; a local call is priced as a cheap open model would be served. */
-const dollars = (u: Usage) => {
-  if (provider === 'local') return localPrice(u);
-  if (u.cost === undefined) throw new Error('OpenRouter reported no cost for a call: stopping rather than recording $0');
-  return u.cost;
-};
+const dollars = (u: Usage) => (provider === 'local' ? localPrice(u) : u.cost ?? 0);
 
 interface Rec { id: string; topic: string; k: number; ok: boolean; turns: number; input: number; output: number; dollars: number; seconds: number; failure?: string; t: number }
 const records: Rec[] = [];
@@ -69,11 +66,13 @@ async function one(p: Problem, k: number): Promise<Rec> {
     turns++;
     let reply;
     try { reply = await chat(SYSTEM, messages); } catch (e) {
+      // A failed call says nothing about the model: stop instead of scoring it. Out of credit, every later
+      // call fails too; anything else (a server down, a stuck local model) needs a person to look.
       const msg = (e as Error).message;
-      // Out of credit: every later call fails too, so stop instead of counting the rest as failed.
-      if (/\b402\b|credits/i.test(msg)) stopped = 'out of credit';
-      failure = `call failed: ${msg}`; break;
+      stopped = /\b402\b|credits/i.test(msg) ? 'out of credit' : `a model call failed: ${msg.slice(0, 200)}`;
+      failure = 'call failed'; break;
     }
+    if (provider !== 'local' && reply.usage.cost === undefined) { stopped = 'OpenRouter reported no cost for a call'; failure = 'call failed'; break; }
     input += reply.usage.input + reply.usage.cacheRead; output += reply.usage.output; cost += dollars(reply.usage);
     messages.push({ role: 'assistant', content: reply.content });
     const tactics = extractTactics(reply.text, p);
@@ -95,8 +94,7 @@ await Promise.all(Array.from({ length: Math.max(1, concurrency) }, async () => {
   for (let job = queue.shift(); job && !stopped; job = queue.shift()) {
     if (records.reduce((a, r) => a + r.dollars, 0) >= budget) { stopped = `budget of $${budget} spent`; break; }
     const r = await one(...job);
-    // An attempt cut short by a stop is not a result: leave it out.
-    if (stopped && !r.ok && r.failure?.startsWith('call failed')) break;
+    // An attempt cut short by a failed call is kept for its cost but is not a result (see `scored`).
     records.push(r);
     appendFileSync(join(out, 'records.jsonl'), JSON.stringify(r) + '\n');
     const solved = new Set(records.filter((x) => x.ok).map((x) => x.id)).size;
@@ -105,13 +103,15 @@ await Promise.all(Array.from({ length: Math.max(1, concurrency) }, async () => {
 }));
 
 // Summary: solved by one agent (first attempt) and by independent agents (any of the attempts).
-const solvedBy = (ks: number) => new Set(records.filter((r) => r.ok && r.k < ks).map((r) => r.id));
+// Attempts cut short by a failed call count for their cost only.
+const scored = records.filter((r) => r.failure !== 'call failed');
+const solvedBy = (ks: number) => new Set(scored.filter((r) => r.ok && r.k < ks).map((r) => r.id));
 const total = records.reduce((a, r) => a + r.dollars, 0), tokens = records.reduce((a, r) => a + r.input + r.output, 0);
 const topics = [...new Set(problems.map((p) => p.topic))].sort();
 const any = solvedBy(attempts);
 const fail = new Map<string, number>();
-for (const r of records) if (!r.ok) fail.set(r.failure!, (fail.get(r.failure!) ?? 0) + 1);
-const tried = new Set(records.map((r) => r.id)).size;
+for (const r of scored) if (!r.ok) fail.set(r.failure!, (fail.get(r.failure!) ?? 0) + 1);
+const tried = new Set(scored.map((r) => r.id)).size;
 const lines = [
   `# Phase 0 harness check: ${runId}`, '',
   ...(stopped ? [`**Stopped early (${stopped}):** ${tried} of ${problems.length} problems tried; rates below are of those tried.`, ''] : []),
@@ -134,3 +134,4 @@ const lines = [
 writeFileSync(join(out, 'summary.md'), lines.join('\n'));
 if (stopped) console.log(`\nStopped: ${stopped}.`);
 console.log(`\n${any.size} of ${tried} solved. Summary: results/bench/${runId}/summary.md`);
+process.exitCode = stopped ? 2 : 0;

@@ -5,3 +5,9 @@ name = "oso-bench"
 name = "mathlib"
 git = "https://github.com/leanprover-community/mathlib4"
 rev = "v4.35.0"
+
+# The trusted half of each check: reads a compiled theorem's axioms (Axcheck.lean). Build: lake build axcheck
+[[lean_exe]]
+name = "axcheck"
+root = "Axcheck"
+supportInterpreter = true

@@ -6,3 +6,9 @@ name = "Problems"
 
 [[lean_lib]]
 name = "Reference"
+
+# The trusted half of each check: reads a compiled attempt's axioms (Axcheck.lean). Build: lake build axcheck
+[[lean_exe]]
+name = "axcheck"
+root = "Axcheck"
+supportInterpreter = true

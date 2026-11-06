@@ -20,7 +20,7 @@ import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path';
 import { check, type CheckOptions } from './checker.ts';
 import { definitions, FREE, LEAN_DIR, loadTasks, parseReference, type Task } from './tasks.ts';
-import type { Chat, Usage } from './agent.ts';
+import { OPENROUTER_API, type Chat, type Usage } from './agent.ts';
 import { referenceProof } from './selftest.ts';
 import { lineChart } from '../report/figures.ts';
 import { writeCard } from '../card.ts';
@@ -98,7 +98,7 @@ const TRIVIAL = [':= by rfl', ':= by decide', ':= by simp', ':= by omega', ':= b
 
 /** List prices from OpenRouter, in dollars per token. */
 export async function listPrices(models: string[]): Promise<Record<string, { input: number; output: number }>> {
-  const res = await fetch('https://openrouter.ai/api/v1/models');
+  const res = await fetch(`${OPENROUTER_API}/models`);
   const data = (await res.json()) as { data: { id: string; pricing: { prompt: string; completion: string } }[] };
   const out: Record<string, { input: number; output: number }> = {};
   for (const m of models) {

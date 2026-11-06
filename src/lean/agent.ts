@@ -19,6 +19,9 @@ export interface ModelSettings {
   priceCap?: number;
 }
 
+/** OpenRouter's API; OPENROUTER_URL points it elsewhere (the fault tests use a fake server). */
+export const OPENROUTER_API = process.env.OPENROUTER_URL ?? 'https://openrouter.ai/api/v1';
+
 /** Our calls produce about 4 output tokens per input token (race-cheap: 23M out, 5M in), so output price matters most. */
 const OUTPUT_PER_INPUT = 4;
 
@@ -28,7 +31,7 @@ const OUTPUT_PER_INPUT = 4;
  */
 const ranked = new Map<string, Promise<{ tag: string; name: string; perM: number }[]>>();
 export function companiesFor(model: string, cap: number, maxTokens: number) {
-  if (!ranked.has(model)) ranked.set(model, fetch(`https://openrouter.ai/api/v1/models/${model}/endpoints`).then((r) => r.json()).then((d: { data?: { endpoints: { tag: string; provider_name: string; pricing: { prompt: string; completion: string }; supported_parameters?: string[]; max_completion_tokens?: number | null }[] } }) =>
+  if (!ranked.has(model)) ranked.set(model, fetch(`${OPENROUTER_API}/models/${model}/endpoints`).then((r) => r.json()).then((d: { data?: { endpoints: { tag: string; provider_name: string; pricing: { prompt: string; completion: string }; supported_parameters?: string[]; max_completion_tokens?: number | null }[] } }) =>
     (d.data?.endpoints ?? []).filter((e) => e.supported_parameters?.includes('reasoning') && (e.max_completion_tokens ?? Infinity) >= maxTokens)
       .map((e) => ({ tag: e.tag, name: e.provider_name, perM: (Number(e.pricing.prompt) + OUTPUT_PER_INPUT * Number(e.pricing.completion)) * 1e6 / (1 + OUTPUT_PER_INPUT) }))
       .sort((a, b) => a.perM - b.perM)).catch(() => []));
@@ -64,8 +67,16 @@ let localQueue: Promise<unknown> = Promise.resolve();
 
 export function localChat(settings: ModelSettings): Chat {
   const url = process.env.OLLAMA_URL ?? 'http://localhost:11434';
+  // A local reply can rightly take half an hour, so there is no overall limit; but if no tokens arrive
+  // for LOCAL_IDLE_MS (5 minutes), Ollama is stuck and the call fails instead of waiting forever.
+  const idleMs = Number(process.env.LOCAL_IDLE_MS ?? 5 * 60_000);
   const one: Chat = async (system, messages) => {
+    const stop = new AbortController();
+    let idle = setTimeout(() => stop.abort(), idleMs);
+    const alive = () => { clearTimeout(idle); idle = setTimeout(() => stop.abort(), idleMs); };
+    try {
     const res = await fetch(`${url}/api/chat`, {
+      signal: stop.signal,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -84,6 +95,7 @@ export function localChat(settings: ModelSettings): Chat {
     let raw = '', thinking = '', buf = '', last: { done_reason?: string; prompt_eval_count?: number; eval_count?: number; error?: string } = {};
     const decoder = new TextDecoder();
     for await (const chunk of res.body) {
+      alive();
       buf += decoder.decode(chunk as Uint8Array, { stream: true });
       let nl;
       while ((nl = buf.indexOf('\n')) >= 0) {
@@ -105,6 +117,10 @@ export function localChat(settings: ModelSettings): Chat {
       usage: { input: last.prompt_eval_count ?? 0, output: last.eval_count ?? 0, cacheRead: 0, cacheWrite: 0, cost: 0, provider: 'local' },
       stop: last.done_reason === 'length' ? 'length' : (last.done_reason ?? 'stop'),
     };
+    } catch (e) {
+      if (stop.signal.aborted) throw new Error(`Ollama sent nothing for ${Math.round(idleMs / 1000)} s: stuck`);
+      throw e;
+    } finally { clearTimeout(idle); }
   };
   return (system, messages) => {
     const next = localQueue.then(() => one(system, messages));
@@ -145,7 +161,7 @@ export function openRouterChat(settings: ModelSettings): Chat {
     for (let tryNo = 1; ; tryNo++) {
       let res: Response;
       try {
-        res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        res = await fetch(`${OPENROUTER_API}/chat/completions`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', 'X-Title': 'OSO experiment: Lean pilot' },
           body: JSON.stringify(body),

@@ -16,7 +16,7 @@
 //   community [options]           real-agent communities, traditional and OSO, on the same budget
 //     --agents m1,m2,...  --budget DOLLARS (per agent)  --rounds N (30)  --repairs N (2)
 //     --rules traditional,oso  --effort low|medium|high (medium)  --run ID  --stub  --dry-run
-import { chatFor, DEFAULT_MODEL, DEFAULT_MODELS, defaultProvider, type Provider } from './agent.ts';
+import { chatFor, DEFAULT_MODEL, DEFAULT_MODELS, defaultProvider, OPENROUTER_API, type Provider } from './agent.ts';
 import { estimate, readRun, writeComparison, referenceChat, runPilot, writeMeasuredWorld, writeSummary, type Condition, type PilotOptions } from './pilot.ts';
 import { selftest } from './selftest.ts';
 import { leanAvailable, loadTasks } from './tasks.ts';
@@ -111,7 +111,7 @@ if (cmd === 'community') {
   if (!stub && remote.length) {
     // Refuse to start a test the key cannot pay for: running out midway makes the result useless.
     const most = rules.length * agents.length * base.budget * Number(pick('repeats', '1'));
-    const res = await fetch('https://openrouter.ai/api/v1/key', { headers: { Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}` } });
+    const res = await fetch(`${OPENROUTER_API}/key`, { headers: { Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}` } });
     const left = ((await res.json()) as { data?: { limit_remaining: number | null } }).data?.limit_remaining;
     if (left != null && left < most * 1.1) { console.error(`The key has $${left.toFixed(2)} left; this test can spend up to $${most.toFixed(2)}. Add credit first.`); process.exit(1); }
   }

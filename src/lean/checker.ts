@@ -3,8 +3,8 @@
 // definitions, states the agent's library as axioms (each one is a theorem the reference proofs prove,
 // so this is sound), and then the statement with the agent's proof. `#print axioms` then lists exactly
 // which library theorems the proof used: that is both the soundness check and the attribution.
-import { execFile } from 'node:child_process';
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { execFile, execFileSync } from 'node:child_process';
+import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { asAxiom, LEAN_DIR, type Task } from './tasks.ts';
@@ -38,8 +38,10 @@ export function banned(proof: string, allowGrind = false): string[] {
   const rules: [RegExp, string][] = [
     [/\bsorry\b|\badmit\b/, '`sorry` and `admit` are not allowed'],
     [/\bnative_decide\b|\+native\b|ofReduceBool/, '`native_decide` is not allowed'],
-    [/(^|\n)\s*#|\brun_(cmd|tac|elab|meta)\b|\bby_elab\b/, 'commands (`#…`, `run_cmd`, …) are not allowed'],
-    [/(^|\n)\s*(theorem|lemma|def|abbrev|instance|example|axiom|opaque|structure|inductive|class|namespace|section|end|import|set_option|attribute|macro|macro_rules|syntax|elab|notation|infix|infixl|infixr|prefix|postfix|mutual|noncomputable|private|protected|@\[)\b/, 'the proof must not start new declarations, sections or options'],
+    [/(^|\n)\s*#|#(print|eval|reduce|exit|check|guard)\b|\brun_(cmd|tac|elab|meta)\b|\bby_elab\b/, 'commands (`#…`, `run_cmd`, …) are not allowed'],
+    // Anywhere, not only at a line start: Lean starts a new command mid-line too.
+    [/\b(macro_rules|macro|syntax|elab_rules|elab|declare_syntax_cat|notation|infixl?|infixr|prefix|postfix|binder_predicate|initialize|builtin_initialize|simproc|dsimproc)\b/, 'new syntax and macros are not allowed in a proof'],
+    [/(^|\n|;)\s*(theorem|lemma|def|abbrev|instance|example|axiom|opaque|structure|inductive|class|namespace|section|end|import|set_option|attribute|universe|variable|mutual|noncomputable|private|protected|local|scoped|@\[)\b/, 'the proof must not start new declarations, sections or options'],
     [/\bset_option\b|\bimplemented_by\b|\bextern\b|\bunsafe\b|\bIO\b/, 'options, `unsafe`, `extern` and `IO` are not allowed'],
     [/\b(exact|apply|rw|simp|simp_all|show_term|hint)\?/, 'search tactics (`exact?`, `apply?`, …) are not allowed'],
   ];
@@ -90,34 +92,67 @@ export function parseErrors(output: string, firstProofLine: number, proofLines: 
 
 let counter = 0;
 
-/** Checks one proof with Lean. */
-export function check(task: Pick<Task, 'ns' | 'signature'>, proof: string, opts: CheckOptions): Promise<CheckResult> {
+/** Lean's search path for a project, found once per project (asking `lake env` each time costs seconds). */
+const leanPaths = new Map<string, string>();
+function leanEnv(projectDir: string, buildDir: string) {
+  const PATH = `${join(homedir(), '.elan', 'bin')}:${process.env.PATH}`;
+  if (!leanPaths.has(projectDir)) leanPaths.set(projectDir, execFileSync('lake', ['env', 'printenv', 'LEAN_PATH'], { cwd: projectDir, env: { ...process.env, PATH }, encoding: 'utf8' }).trim());
+  return { ...process.env, PATH, LEAN_PATH: `${buildDir}:${leanPaths.get(projectDir)}` };
+}
+const run = (cmd: string, argv: string[], cwd: string, env: NodeJS.ProcessEnv, timeoutMs: number) => new Promise<{ out: string; timedOut: boolean }>((resolve) =>
+  execFile(cmd, argv, { cwd, env, timeout: timeoutMs, maxBuffer: 8 << 20 }, (err, stdout, stderr) =>
+    resolve({ out: `${stdout}\n${stderr}`, timedOut: !!(err as { killed?: boolean } | null)?.killed })));
+
+export interface Compiled {
+  /** Lean's messages from compiling the file. */
+  out: string;
+  timedOut: boolean;
+  /**
+   * The theorem's axioms, read by `axcheck` from the compiled module (null if the file did not compile,
+   * 'missing' if there is no such theorem after it). `axcheck` is a separate program: nothing in the
+   * agent's text runs there, so a macro that rewrites `#print axioms` in the file cannot fake this.
+   */
+  axioms: string[] | null | 'missing';
+}
+
+/** Compiles `text` as a module in `buildDir` of the Lean project `projectDir`, then reads `theorem`'s axioms. */
+export async function compileAndRead(projectDir: string, buildDir: string, text: string, theorem: string, timeoutMs: number): Promise<Compiled> {
+  const axcheck = join(projectDir, '.lake', 'build', 'bin', 'axcheck');
+  if (!existsSync(axcheck)) throw new Error(`${axcheck} is missing: run \`lake build axcheck\` in ${projectDir}`);
+  mkdirSync(buildDir, { recursive: true });
+  const mod = `Cand_${process.pid}_${++counter}`;
+  const file = join(buildDir, `${mod}.lean`), olean = join(buildDir, `${mod}.olean`);
+  writeFileSync(file, text);
+  const env = leanEnv(projectDir, buildDir), t0 = Date.now();
+  try {
+    const c = await run('lean', ['-o', olean, file], projectDir, env, timeoutMs);
+    if (c.timedOut || !existsSync(olean)) return { ...c, axioms: null };
+    const a = await run(axcheck, [mod, theorem], projectDir, env, Math.max(30_000, timeoutMs - (Date.now() - t0)));
+    const line = /^(THEOREM.*|MISSING|NOT_A_THEOREM)$/m.exec(a.out)?.[1];
+    if (a.timedOut || !line) return { out: `${c.out}\nthe axioms check did not finish: ${a.out.trim().slice(0, 300)}`, timedOut: a.timedOut, axioms: null };
+    return { ...c, axioms: line.startsWith('THEOREM') ? line.split(/\s+/).slice(1).filter(Boolean) : 'missing' };
+  } finally {
+    for (const f of [file, olean, join(buildDir, `${mod}.ilean`)]) rmSync(f, { force: true });
+  }
+}
+
+/** Checks one proof with Lean: the file compiles, then the attempt's axioms are read from the compiled module. */
+export async function check(task: Pick<Task, 'ns' | 'signature'>, proof: string, opts: CheckOptions): Promise<CheckResult> {
   const t0 = Date.now();
   const bad = banned(proof, opts.allowGrind);
-  if (bad.length) return Promise.resolve({ ok: false, errors: bad, uses: [], seconds: 0 });
+  if (bad.length) return { ok: false, errors: bad, uses: [], seconds: 0 };
   const { text, firstProofLine } = checkFile(task, proof, opts.library);
-  const dir = join(LEAN_DIR, '.pilot');
-  mkdirSync(dir, { recursive: true });
-  const file = join(dir, `check-${process.pid}-${++counter}.lean`);
-  writeFileSync(file, text);
-  const env = { ...process.env, PATH: `${join(homedir(), '.elan', 'bin')}:${process.env.PATH}` };
-  return new Promise((resolve) => {
-    execFile('lake', ['env', 'lean', file], { cwd: LEAN_DIR, env, timeout: opts.timeoutMs ?? 120_000, maxBuffer: 8 << 20 }, (err, stdout, stderr) => {
-      rmSync(file, { force: true });
-      const output = `${stdout}\n${stderr}`;
-      const seconds = (Date.now() - t0) / 1000;
-      if (err && (err as NodeJS.ErrnoException & { killed?: boolean }).killed) {
-        return resolve({ ok: false, errors: ['Lean timed out checking the proof'], uses: [], seconds });
-      }
-      const errors = parseErrors(output, firstProofLine, proof.split('\n').length);
-      const axioms = parseAxioms(output);
-      const libraryNames = new Set(opts.library.map((l) => l.name));
-      const uses = (axioms ?? []).filter((a) => libraryNames.has(a));
-      const other = (axioms ?? []).filter((a) => !libraryNames.has(a) && !STANDARD_AXIOMS.includes(a));
-      if (other.length && !errors.length) errors.push(`Lean reported a problem it did not describe (the proof depends on ${other.join(', ')}); full output:\n${output.trim().slice(0, 3000)}`);
-      else if (other.length && !other.every((a) => a === 'sorryAx')) errors.push(`the proof depends on ${other.filter((a) => a !== 'sorryAx').join(', ')}, which is not allowed`);
-      if (!errors.length && axioms === null) errors.push('Lean did not accept the proof');
-      resolve({ ok: errors.length === 0, errors, uses, seconds });
-    });
-  });
+  const c = await compileAndRead(LEAN_DIR, join(LEAN_DIR, '.pilot'), text, `${task.ns}.attempt`, opts.timeoutMs ?? 120_000);
+  const seconds = (Date.now() - t0) / 1000;
+  if (c.timedOut) return { ok: false, errors: ['Lean timed out checking the proof'], uses: [], seconds };
+  const errors = parseErrors(c.out, firstProofLine, proof.split('\n').length);
+  const axioms = c.axioms === 'missing' ? null : c.axioms;
+  if (c.axioms === 'missing' && !errors.length) errors.push('the attempt is not a proved theorem after your proof');
+  const libraryNames = new Set(opts.library.map((l) => l.name));
+  const uses = (axioms ?? []).filter((a) => libraryNames.has(a));
+  const other = (axioms ?? []).filter((a) => !libraryNames.has(a) && !STANDARD_AXIOMS.includes(a));
+  if (other.length && !errors.length) errors.push(other.includes('sorryAx') ? 'the proof is incomplete (Lean reports `sorry`)' : `the proof depends on ${other.join(', ')}, which is not allowed`);
+  else if (other.length && !other.every((a) => a === 'sorryAx')) errors.push(`the proof depends on ${other.filter((a) => a !== 'sorryAx').join(', ')}, which is not allowed`);
+  if (!errors.length && axioms === null) errors.push(`Lean did not accept the proof:\n${c.out.trim().slice(0, 2000)}`);
+  return { ok: errors.length === 0, errors, uses, seconds };
 }
