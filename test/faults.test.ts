@@ -18,7 +18,9 @@ before(async () => {
     let body = '';
     req.on('data', (c) => (body += c));
     req.on('end', () => {
-      if (req.url === '/key') return res.end(JSON.stringify({ data: { limit_remaining: creditLeft } }));
+      if (req.url === '/key') return res.end(JSON.stringify({ data: { limit_remaining: 100 } }));
+      // The account can be emptier than the key's limit: the run must read both.
+      if (req.url === '/credits') return res.end(JSON.stringify({ data: { total_credits: 50, total_usage: 50 - creditLeft } }));
       if (req.url?.startsWith('/models/')) return res.end(JSON.stringify({ data: { endpoints: [] } }));
       calls++;
       if (req.url === '/api/chat') {
@@ -88,7 +90,7 @@ test('an error inside the stream stops the run', async () => {
   assert.match(r.summary, /out of memory/);
 });
 
-test('a key without enough credit refuses to start', async () => {
+test('an account without enough credit refuses to start, though the key has money under its limit', async () => {
   mode = 'ok-noproof'; creditLeft = 1;
   const r = await bench('lowcredit', remote, key);
   creditLeft = 100;
@@ -101,7 +103,7 @@ test('running out of credit midway stops the run', async () => {
   mode = 'or-402';
   const r = await bench('or402', remote, key);
   assert.equal(r.code, 2);
-  assert.match(r.summary, /Stopped early \(out of credit\)/);
+  assert.match(r.summary, /Stopped early \(out of credit \(OpenRouter 402: Insufficient credits/);
   assert.equal(calls, 1);
 });
 

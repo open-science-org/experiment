@@ -22,6 +22,18 @@ export interface ModelSettings {
 /** OpenRouter's API; OPENROUTER_URL points it elsewhere (the fault tests use a fake server). */
 export const OPENROUTER_API = process.env.OPENROUTER_URL ?? 'https://openrouter.ai/api/v1';
 
+/**
+ * Dollars this key can still spend: the smaller of the key's own limit and the account's credit. A key can
+ * show money left under its limit while the account behind it is empty (2026-11-06: $25 on the key, $0.02 in
+ * the account), so both are read. Null if neither is known.
+ */
+export async function creditLeft(key: string): Promise<number | null> {
+  const get = (path: string) => fetch(`${OPENROUTER_API}${path}`, { headers: { Authorization: `Bearer ${key}` } }).then((r) => r.json()).catch(() => ({})) as Promise<{ data?: Record<string, number | null> }>;
+  const [k, c] = await Promise.all([get('/key'), get('/credits')]);
+  const left = [k.data?.limit_remaining, c.data?.total_credits != null && c.data?.total_usage != null ? c.data.total_credits - c.data.total_usage : null].filter((x): x is number => typeof x === 'number');
+  return left.length ? Math.min(...left) : null;
+}
+
 /** Our calls produce about 4 output tokens per input token (race-cheap: 23M out, 5M in), so output price matters most. */
 const OUTPUT_PER_INPUT = 4;
 
