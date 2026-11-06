@@ -12,7 +12,7 @@ export interface Turn { proof: string | null; check: CheckResult | null; usage: 
 export type Chat = (system: string, messages: { role: 'user' | 'assistant'; content: unknown }[]) =>
   Promise<{ text: string; content: unknown; usage: Usage; stop: string }>;
 
-export type Provider = 'anthropic' | 'openrouter';
+export type Provider = 'anthropic' | 'openrouter' | 'local';
 export interface ModelSettings {
   provider: Provider; model: string; effort: 'low' | 'medium' | 'high' | 'max'; maxTokens: number;
   /** OpenRouter only: use only companies that cost at most this many times the cheapest one, for our kind of work. Default 2. */
@@ -34,7 +34,7 @@ export function companiesFor(model: string, cap: number, maxTokens: number) {
       .sort((a, b) => a.perM - b.perM)).catch(() => []));
   return ranked.get(model)!.then((xs) => xs.filter((x) => x.perM <= cap * (xs[0]?.perM ?? 0)));
 }
-export const DEFAULT_MODELS: Record<Provider, string> = { anthropic: 'claude-opus-5-5', openrouter: 'anthropic/claude-opus-5.5' };
+export const DEFAULT_MODELS: Record<Provider, string> = { anthropic: 'claude-opus-5-5', openrouter: 'anthropic/claude-opus-5.5', local: 'hf.co/mradermacher/Goedel-Prover-V2-8B-GGUF:Q4_K_M' };
 export const DEFAULT_MODEL: ModelSettings = { provider: 'anthropic', model: DEFAULT_MODELS.anthropic, effort: 'high', maxTokens: 32_000 };
 
 /** The provider whose key is set: Anthropic first, then OpenRouter. */
@@ -45,7 +45,63 @@ export function defaultProvider(): Provider | null {
 }
 
 export function chatFor(settings: ModelSettings): Chat {
-  return settings.provider === 'openrouter' ? openRouterChat(settings) : claudeChat(settings);
+  return settings.provider === 'openrouter' ? openRouterChat(settings) : settings.provider === 'local' ? localChat(settings) : claudeChat(settings);
+}
+
+/** In a community's agent list, a model on this machine is written `local:<ollama model>`. */
+export const LOCAL_PREFIX = 'local:';
+/** Local calls cost nothing; to give budgets a meaning they are priced as a cheap open model would be served (dollars per million tokens). */
+export const LOCAL_PRICE = { input: 0.1, output: 0.4 };
+export const localPrice = (u: Usage) => ((u.input + u.cacheRead) * LOCAL_PRICE.input + u.output * LOCAL_PRICE.output) / 1e6;
+
+/**
+ * A model on this machine, served by Ollama (for testing at no cost). Streamed, so a long reply
+ * doesn't hit fetch's 5-minute wait for the first byte. Its thinking is dropped from the reply when there is an answer.
+ */
+export function localChat(settings: ModelSettings): Chat {
+  const url = process.env.OLLAMA_URL ?? 'http://localhost:11434';
+  return async (system, messages) => {
+    const res = await fetch(`${url}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: settings.model,
+        stream: true,
+        keep_alive: '30m',
+        // Ollama's default window (4k tokens) is too small for a library and a few repairs.
+        options: { num_ctx: Number(process.env.LOCAL_CONTEXT ?? 32_768), num_predict: settings.maxTokens },
+        messages: [
+          { role: 'system', content: system },
+          ...messages.map((m) => ({ role: m.role, content: m.content && typeof m.content === 'object' ? (m.content as { text: string }).text : String(m.content) })),
+        ],
+      }),
+    }).catch((e) => { throw new Error(`Ollama is not reachable at ${url} (start it with: brew services start ollama): ${e.message}`); });
+    if (!res.ok || !res.body) throw new Error(`Ollama ${res.status}: ${await res.text()}`);
+    let raw = '', thinking = '', buf = '', last: { done_reason?: string; prompt_eval_count?: number; eval_count?: number; error?: string } = {};
+    const decoder = new TextDecoder();
+    for await (const chunk of res.body) {
+      buf += decoder.decode(chunk as Uint8Array, { stream: true });
+      let nl;
+      while ((nl = buf.indexOf('\n')) >= 0) {
+        const line = buf.slice(0, nl).trim(); buf = buf.slice(nl + 1);
+        if (!line) continue;
+        const j = JSON.parse(line);
+        if (j.error) throw new Error(`Ollama: ${j.error}`);
+        raw += j.message?.content ?? '';
+        thinking += j.message?.thinking ?? '';
+        if (j.done) last = j;
+      }
+    }
+    // Ollama splits a reply into thinking and answer; Goedel-Prover often never closes its thinking,
+    // so the whole reply, proof included, lands in `thinking`. Then the thinking is the reply.
+    const text = raw.replace(/<think>[\s\S]*?(<\/think>|$)/g, '').trim() || thinking.trim();
+    return {
+      text,
+      content: { text },
+      usage: { input: last.prompt_eval_count ?? 0, output: last.eval_count ?? 0, cacheRead: 0, cacheWrite: 0, cost: 0, provider: 'local' },
+      stop: last.done_reason === 'length' ? 'length' : (last.done_reason ?? 'stop'),
+    };
+  };
 }
 
 /**

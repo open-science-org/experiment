@@ -53,7 +53,9 @@ if (cmd === 'calibrate') {
     only: value('only', '').split(',').filter(Boolean),
     model: (() => {
       const provider = value('provider', defaultProvider() ?? 'anthropic') as Provider;
-      return { ...DEFAULT_MODEL, provider, model: value('model', DEFAULT_MODELS[provider]), effort: value('effort', DEFAULT_MODEL.effort) as PilotOptions['model']['effort'] };
+      // A local model writes about 25 tokens a second: 32k-token replies would take over 20 minutes each.
+      return { ...DEFAULT_MODEL, provider, model: value('model', DEFAULT_MODELS[provider]), effort: value('effort', DEFAULT_MODEL.effort) as PilotOptions['model']['effort'],
+        maxTokens: Number(value('max-tokens', provider === 'local' ? '8000' : String(DEFAULT_MODEL.maxTokens))) };
     })(),
   };
   const e = estimate(opts);
@@ -61,7 +63,7 @@ if (cmd === 'calibrate') {
   if (flag('dry-run')) process.exit(0);
   const stub = flag('stub');
   const keyVar = opts.model.provider === 'openrouter' ? 'OPENROUTER_API_KEY' : 'ANTHROPIC_API_KEY';
-  if (!stub && !process.env[keyVar]) {
+  if (!stub && opts.model.provider !== 'local' && !process.env[keyVar]) {
     console.error(`Set ${keyVar} in .env to run with ${opts.model.provider} (or use --dry-run or --stub).`);
     process.exit(1);
   }
@@ -75,7 +77,7 @@ if (cmd === 'calibrate') {
 
 if (cmd === 'community') {
   const { runCommunity, referenceAgent, listPrices, writeCommunityComparison } = await import('./community.ts');
-  const { openRouterChat } = await import('./agent.ts');
+  const { openRouterChat, localChat, localPrice, LOCAL_PREFIX } = await import('./agent.ts');
   const stub = flag('stub');
   // A race designed in the app comes as a config file; flags set the rest.
   const cfg = flag('config') ? JSON.parse((await import('node:fs')).readFileSync(value('config', ''), 'utf8')) as Record<string, unknown> : {};
@@ -96,11 +98,14 @@ if (cmd === 'community') {
   const rules = pick('rules', 'traditional,oso').split(',') as ('traditional' | 'oso')[];
   console.log(`${rules.length} communities × ${agents.length} labs × $${base.budget} = $${(rules.length * agents.length * base.budget).toFixed(2)} at most; up to ${base.rounds} rounds.`);
   if (flag('dry-run')) process.exit(0);
-  if (!stub && !process.env.OPENROUTER_API_KEY) { console.error('Set OPENROUTER_API_KEY in .env (or use --stub).'); process.exit(1); }
-  const prices = stub ? null : await listPrices([...new Set(agents)]);
+  // Models on this machine (`local:<ollama model>`) need no key and cost nothing; see LOCAL_PRICE.
+  const isLocal = (m: string) => m.startsWith(LOCAL_PREFIX);
+  const remote = [...new Set(agents.filter((m) => !isLocal(m)))];
+  if (!stub && remote.length && !process.env.OPENROUTER_API_KEY) { console.error('Set OPENROUTER_API_KEY in .env (or use --stub, or local: models).'); process.exit(1); }
+  const prices = stub ? null : remote.length ? await listPrices(remote) : {};
   // Budgets count what OpenRouter charged; list prices understate it (about 5x in October 2026), so they are only a fallback.
-  const price = (m: string, u: { input: number; output: number; cacheRead: number; cost?: number }) => (!prices ? 0.01 : u.cost ?? (u.input + u.cacheRead) * prices[m].input + u.output * prices[m].output);
-  if (!stub) {
+  const price = (m: string, u: { input: number; output: number; cacheRead: number; cacheWrite: number; cost?: number }) => (!prices ? 0.01 : isLocal(m) ? localPrice(u) : u.cost ?? (u.input + u.cacheRead) * prices[m].input + u.output * prices[m].output);
+  if (!stub && remote.length) {
     // Refuse to start a test the key cannot pay for: running out midway makes the result useless.
     const most = rules.length * agents.length * base.budget * Number(pick('repeats', '1'));
     const res = await fetch('https://openrouter.ai/api/v1/key', { headers: { Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}` } });
@@ -109,7 +114,9 @@ if (cmd === 'community') {
   }
   const id = pick('run', `${stub ? 'stub-' : ''}community-${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}`);
   const repeats = Number(pick('repeats', '1'));
-  const chat = (com: import('./community.ts').Community, i: number) => (stub ? referenceAgent(com, i) : openRouterChat({ provider: 'openrouter', model: agents[i], effort: base.effortByLab?.[i] ?? base.effort, maxTokens: 32_000 }));
+  const chat = (com: import('./community.ts').Community, i: number) => (stub ? referenceAgent(com, i)
+    : isLocal(agents[i]) ? localChat({ provider: 'local', model: agents[i].slice(LOCAL_PREFIX.length), effort: base.effort, maxTokens: 8000 })
+    : openRouterChat({ provider: 'openrouter', model: agents[i], effort: base.effortByLab?.[i] ?? base.effort, maxTokens: 32_000 }));
   if (repeats > 1) {
     // A series: both communities, run after run, then one summary on the measure fixed in advance.
     const { writeRaceSeries } = await import('./community.ts');

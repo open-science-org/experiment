@@ -16,3 +16,7 @@ results/pilot/stub-*/
 results/community/stub-*/
 # Single races that are part of a series: the series card covers them.
 results/community/*-r[0-9]*/
+# Phase 0 benchmark: Mathlib build files and checked attempts.
+bench/.lake/
+bench/.check/
+bench/runs/

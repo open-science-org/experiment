@@ -1,0 +1,7 @@
+name = "oso-bench"
+
+# Public benchmark problems (Phase 0 harness check) need Mathlib; the main problem set (../lean) stays core-only.
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "v4.35.0"
