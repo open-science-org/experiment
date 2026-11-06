@@ -96,6 +96,9 @@ if (cmd === 'community') {
     counted: (cfg.counted as string[] | undefined) ?? (value('counted', '') ? value('counted', '').split(',') : []),
   };
   const rules = pick('rules', 'traditional,oso').split(',') as ('traditional' | 'oso')[];
+  // The next experiment: several societies with the same agents and total money (src/lean/societies.ts).
+  const societies = pick('societies', '').split(',').filter(Boolean);
+  if (societies.length) rules.splice(0, rules.length, ...(societies as never[]));
   console.log(`${rules.length} communities × ${agents.length} labs × $${base.budget} = $${(rules.length * agents.length * base.budget).toFixed(2)} at most; up to ${base.rounds} rounds.`);
   if (flag('dry-run')) process.exit(0);
   // Models on this machine (`local:<ollama model>`) need no key and cost nothing; see LOCAL_PRICE.
@@ -114,9 +117,29 @@ if (cmd === 'community') {
   }
   const id = pick('run', `${stub ? 'stub-' : ''}community-${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}`);
   const repeats = Number(pick('repeats', '1'));
-  const chat = (com: import('./community.ts').Community, i: number) => (stub ? referenceAgent(com, i)
-    : isLocal(agents[i]) ? localChat({ provider: 'local', model: agents[i].slice(LOCAL_PREFIX.length), effort: base.effort, maxTokens: 8000 })
-    : openRouterChat({ provider: 'openrouter', model: agents[i], effort: base.effortByLab?.[i] ?? base.effort, maxTokens: 32_000 }));
+  const chat = (com: import('./community.ts').Community, i: number) => {
+    const m = com.opts.agents[i];
+    return stub ? referenceAgent(com, i)
+      : isLocal(m) ? localChat({ provider: 'local', model: m.slice(LOCAL_PREFIX.length), effort: base.effort, maxTokens: 8000 })
+      : openRouterChat({ provider: 'openrouter', model: m, effort: com.opts.effortByLab?.[i] ?? base.effort, maxTokens: 32_000 });
+  };
+  if (societies.length) {
+    // Paired runs: run k of every society before run k + 1 of any, so a stop midway leaves complete pairs.
+    const { societyOptions, writeSocieties } = await import('./societies.ts');
+    const k = Number(pick('k', '2'));
+    const opts = { ...base, rules: 'oso' as const, allowGrind: stub };
+    const done = [];
+    for (let rep = 1; rep <= repeats; rep++) {
+      for (const key of societies) {
+        console.log(`\nRun ${rep} of ${repeats}, ${key}:`);
+        const runId = `${id}-r${rep}-${key}`;
+        done.push({ key, rep, runId, result: await runCommunity(societyOptions(key, opts), chat, price, runId) });
+      }
+      writeSocieties(id, done, k, stub ? 'This is a pipeline test: the labs play from the reference proofs.' : String(cfg.design ?? value('design', '')));
+    }
+    console.log(`\nSummary: results/community/${id}/summary.md`);
+    process.exit(0);
+  }
   if (repeats > 1) {
     // A series: both communities, run after run, then one summary on the measure fixed in advance.
     const { writeRaceSeries } = await import('./community.ts');

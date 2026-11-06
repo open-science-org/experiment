@@ -8,6 +8,10 @@
 //                lemmas it rests on are published together, and the author takes the bounty.
 //   oso:         every result is published as soon as Lean accepts it; a new result's mint and a
 //                target's bounty flow back to the results it used (α, c).
+//   shared:      every result is published at once, as under OSO, but nothing flows back: an author
+//                keeps its own mint and bounty. The gap to OSO is what value flow adds on its own.
+//   independent: nothing is shared; each lab sees only its own results. A target counts when any lab
+//                proves it ("best of N"). With one lab and the whole budget, it is the single agent.
 // Transcripts contain proofs, so they stay in lean/runs/ (private); summaries use anonymous ids.
 import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -19,7 +23,9 @@ import { lineChart } from '../report/figures.ts';
 import { writeCard } from '../card.ts';
 import { RESULTS_DIR } from '../paths.ts';
 
-export type Rules = 'traditional' | 'oso';
+export type Rules = 'traditional' | 'oso' | 'shared' | 'independent';
+/** Rules under which a result is public as soon as Lean accepts it. */
+export const atOnce = (r: Rules) => r === 'oso' || r === 'shared';
 
 export interface CommunityOptions {
   rules: Rules;
@@ -148,7 +154,7 @@ export class Community {
   provedConjecture(cid: string) { return this.library.find((e) => e.conjecture === cid); }
   /** What agent i can see and cite: everything published, and its own private results. */
   visible(i: number) {
-    const reuse = this.opts.reuseByLab?.[i] ?? true;
+    const reuse = this.opts.rules !== 'independent' && (this.opts.reuseByLab?.[i] ?? true);
     return this.library.filter((e) => e.author === i || (e.public && reuse));
   }
   checkLibrary(i: number): CheckOptions['library'] {
@@ -204,7 +210,17 @@ export class Community {
 
   systemPrompt(i: number): string {
     const o = this.opts;
-    const rules = o.rules === 'traditional'
+    const rules = o.rules === 'independent'
+      ? o.agents.length === 1
+        ? `How this works: you work alone, with the whole budget. Each result you prove goes into your own library and earns a mint of ${o.mint}; each target you prove earns its bounty.`
+        : `How this community works (independent labs):
+- Labs work separately: you see only your own results, and no lab sees yours.
+- Each result you prove earns you a mint of ${o.mint}; each target you prove earns you its bounty.`
+      : o.rules === 'shared'
+      ? `How this community works (shared library):
+- Every result you prove is published at once, and every lab can build on it immediately.
+- Each new result earns its author a mint of ${o.mint}, and a target's bounty goes to the lab that proves it. Nothing is passed on to the results it builds on.`
+      : o.rules === 'traditional'
       ? `How this community works (traditional rules):
 - Lemmas you prove stay private to you; other labs cannot see or use them, and you cannot see theirs.
 - When you prove a posted target, it is published together with every lemma it rests on, and you receive the whole bounty.
@@ -237,7 +253,7 @@ ${this.conjectures.length ? `- To prove a posted conjecture, start your reply wi
     const fmt = (e: Entry) => `theorem ${e.ns === 'OSO' ? '' : e.ns.replace(/^OSO\./, '') + '.'}${e.name} ${e.signature}${e.public ? (e.author === i ? '   -- yours, published' : `   -- lab ${e.author + 1}`) : '   -- yours, private'}`;
     const targets = this.targets.map((t) => {
       const s = this.solved(t.publicId);
-      const status = s ? (s.public || s.author === i ? `solved by lab ${s.author + 1}` : 'open') : 'open';
+      const status = s ? ((s.public && this.opts.rules !== 'independent') || s.author === i ? `solved by lab ${s.author + 1}` : 'open') : 'open';
       return `${t.publicId} (bounty ${this.bounty(t)}, ${status}): theorem attempt ${norm(t.signature)}${t.ns === 'OSO.M2' ? '   -- stated inside namespace M2' : ''}`;
     });
     const conj = this.conjectures.map((k) => {
@@ -295,7 +311,7 @@ Take one action.`;
               if (hidden) reason = `duplicate of lab ${hidden.author + 1}'s private result`;
               const e: Entry = { name: this.uniqueName(`conj_${k.cid}`), ns: k.ns, signature: k.signature, author: i, conjecture: k.cid, public: false, round, uses: r.uses.filter((u) => !FREE.includes(u)) };
               this.library.push(e);
-              if (this.opts.rules === 'oso') this.publish(e, round);
+              if (atOnce(this.opts.rules)) this.publish(e, round);
             }
           }
         }
@@ -312,8 +328,8 @@ Take one action.`;
             const already = this.solved(t.publicId);
             this.library.push(e);
             if (already) reason = 'already solved by another lab: duplicate';
-            else if (this.opts.rules === 'oso') this.publish(e, round);
-            else this.publishBundle(e, round);
+            else if (this.opts.rules === 'traditional') this.publishBundle(e, round);
+            else this.publish(e, round);
           }
         }
       } else {
@@ -337,7 +353,7 @@ Take one action.`;
               if (hidden) reason = `duplicate of lab ${hidden.author + 1}'s private result`;
               const e: Entry = { name: this.uniqueName(lemma.name), ns: 'OSO', signature: lemma.signature, author: i, public: false, round, uses: r.uses.filter((u) => !FREE.includes(u)), ...(trivial ? { trivial } : {}) };
               this.library.push(e);
-              if (this.opts.rules === 'oso') this.publish(e, round);
+              if (atOnce(this.opts.rules)) this.publish(e, round);
             }
           }
         }
@@ -550,6 +566,7 @@ Runs: ${runs.map((x) => x.runId).join(', ')}. Transcripts (with proofs) are priv
 /* ------------------------------------------------------------------------- A series of repeated races */
 
 export interface Pair { rep: number; traditional: CommunityResult; oso: CommunityResult }
+type Side = keyof Omit<Pair, 'rep'>;
 
 /**
  * Several races with the same design, summarized on the measure fixed in advance: counted targets
@@ -558,7 +575,7 @@ export interface Pair { rep: number; traditional: CommunityResult; oso: Communit
 export interface RaceDesign { /** Set when the result must not be used, with the reason. */ invalid?: string; title?: string; question?: string; compare?: string; fixed?: string; caveats?: string[]; prose?: string; primary?: { kind: 'spendTo'; k: number } }
 
 /** Spend at which a run first had k counted targets solved (null if never). */
-function spendTo(r: CommunityResult, k: number): number | null {
+export function spendTo(r: CommunityResult, k: number): number | null {
   const p = progress(r).find(([, y]) => y >= k);
   return p ? p[0] : null;
 }
@@ -570,7 +587,7 @@ export function writeRaceSeries(id: string, pairs: Pair[], designIn: string | Ra
   mkdirSync(join(dir, 'figures'), { recursive: true });
   const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length);
   const sd = (xs: number[]) => { const m = mean(xs); return Math.sqrt(xs.reduce((a, b) => a + (b - m) ** 2, 0) / Math.max(1, xs.length - 1)); };
-  const side = (k: Rules) => pairs.map((p) => stats(p[k]));
+  const side = (k: Side) => pairs.map((p) => stats(p[k]));
   const T = side('traditional'), O = side('oso');
   const counted = countedOf(pairs[0].oso);
   const priced = pairs.every((p) => charged(p.oso) && charged(p.traditional)) ? 'as charged' : 'at list prices';
@@ -585,8 +602,8 @@ export function writeRaceSeries(id: string, pairs: Pair[], designIn: string | Ra
   // Main measure, when declared: money spent to solve k targets that count (a run that never does counts as its whole budget).
   const primaryK = dsg.primary?.kind === 'spendTo' ? dsg.primary.k : null;
   const budgetOf = (r: CommunityResult) => r.opts.budget * r.opts.agents.length;
-  const spendK = (side: Rules) => pairs.map((p) => spendTo(p[side], primaryK ?? 1) ?? budgetOf(p[side]));
-  const reachedK = (side: Rules) => pairs.filter((p) => spendTo(p[side], primaryK ?? 1) !== null).length;
+  const spendK = (side: Side) => pairs.map((p) => spendTo(p[side], primaryK ?? 1) ?? budgetOf(p[side]));
+  const reachedK = (side: Side) => pairs.filter((p) => spendTo(p[side], primaryK ?? 1) !== null).length;
   const tS = spendK('traditional'), oS = spendK('oso');
   if (primaryK !== null && pairs.length > 1) {
     const d = mean(tS) - mean(oS), mg = 2 * Math.hypot(se(oS), se(tS));
@@ -604,7 +621,7 @@ export function writeRaceSeries(id: string, pairs: Pair[], designIn: string | Ra
   for (let y = 0; y <= Y; y++) svg += `<line class="g" x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}"/><text class="s" x="${l - 8}" y="${sy(y) + 4}" text-anchor="end">${y}</text>`;
   for (const k of [0, 0.25, 0.5, 0.75, 1]) svg += `<text class="s" x="${sx(budget * k)}" y="${tp + ph + 18}" text-anchor="middle">$${(budget * k).toFixed(2)}</text>`;
   svg += `<text class="s" x="${l + pw / 2}" y="${H - 10}" text-anchor="middle">Dollars spent by the community (list prices)</text>`;
-  for (const p of pairs) for (const k of ['traditional', 'oso'] as Rules[]) {
+  for (const p of pairs) for (const k of ['traditional', 'oso'] as Side[]) {
     const pts = progress(p[k]);
     let d = ''; pts.forEach(([x, y], i) => { d += i ? ` H${sx(x).toFixed(1)} V${sy(y).toFixed(1)}` : `M${sx(x).toFixed(1)} ${sy(y).toFixed(1)}`; });
     svg += `<path d="${d}" fill="none" class="${k === 'oso' ? 'o' : 't'}" stroke-width="1.8" stroke-opacity="0.6"><title>${k === 'oso' ? 'OSO' : 'Traditional'}, run ${p.rep}: ${pts.at(-1)![1]} for $${pts.at(-1)![0].toFixed(2)}</title></path>`;
@@ -659,7 +676,7 @@ Transcripts, with every proof, are private.
   // Exploratory measures, computed the same way for every series and labelled as such.
   const ks = Array.from({ length: counted.length }, (_, i) => i + 1);
   const explore = ks.map((k) => {
-    const cell = (side: Rules) => {
+    const cell = (side: Side) => {
       const xs = pairs.map((p) => spendTo(p[side], k)).filter((x): x is number => x !== null);
       return xs.length ? `$${(xs.reduce((a, b) => a + b, 0) / xs.length).toFixed(2)} (${xs.length} of ${pairs.length} runs)` : 'never';
     };
