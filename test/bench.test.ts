@@ -1,13 +1,14 @@
 // The Phase 0 checker and the next experiment's societies: the parts that do not need a model.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, renameSync } from 'node:fs';
+import { existsSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { BENCH_DIR, bannedTactics, compile, extractTactics, indentProof } from '../src/bench/check.ts';
 import { SOCIETIES, societyOptions, writeSocieties } from '../src/lean/societies.ts';
 import { Community, runCommunity, stats, referenceAgent, type CommunityOptions } from '../src/lean/community.ts';
 import { leanAvailable } from '../src/lean/tasks.ts';
+import { RESULTS_DIR } from '../src/paths.ts';
 
 const p = { id: 't', header: 'import Mathlib', statement: 'theorem t (a b : ℕ) : a + b = b + a := by' };
 
@@ -71,6 +72,8 @@ test('a planner that runs out of credit stops the run instead of leaving the lab
 
 test('the societies summary handles runs with no actions', () => {
   const empty = { opts: { ...base, counted: ['T1'] }, actions: [], library: [], earnings: [0, 0, 0, 0], spent: [0, 0, 0, 0] };
+  const index = join(RESULTS_DIR, 'README.md'), kept = readFileSync(index, 'utf8'); // the card writer adds a line here
   const dir = writeSocieties(`test-empty-${process.pid}`, [{ key: 'oso', rep: 1, runId: 'x', result: empty }, { key: 'shared', rep: 1, runId: 'y', result: empty }], 1);
   renameSync(dir, join(tmpdir(), `oso-test-empty-${process.pid}`)); // keep results/ for real runs
+  writeFileSync(index, kept);
 });
