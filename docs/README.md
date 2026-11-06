@@ -44,6 +44,7 @@ One word for each idea, used everywhere in this repository.
 - [Equations](equations.md): every rule as a formula, on one page.
 - [Model versions](model-versions.md): what changed in each version of the model; every result records the version it ran on.
 - [The design](design.md): the question, the rules compared, validity, plans, and what is [not yet measured](design.md#not-yet-measured).
+- [The code at a glance](codebase.md): one diagram of the three parts (simulation, AI models on our Lean problems, harness check) and what they share.
 - [Code guide](simulator.md): where the model lives in the code, configuration, plugins and tests.
 - [The default settings](../config/scenarios/default.yaml), each with a comment.
 - [The Lean problems](../lean/README.md): the AI-model tests.
