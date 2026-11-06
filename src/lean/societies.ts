@@ -45,7 +45,7 @@ function solvedAt(pts: [number, number][], x: number) {
   return y;
 }
 
-export function writeSocieties(id: string, runs: SocietyRun[], k: number, note = ''): string {
+export function writeSocieties(id: string, runs: SocietyRun[], k: number, note = '', stub = false): string {
   const dir = join(RESULTS_DIR, 'community', id);
   mkdirSync(join(dir, 'figures'), { recursive: true });
   const keys = [...new Set(runs.map((r) => r.key))];
@@ -88,16 +88,25 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
     };
   });
   const best = [...rows].sort((a, b) => mean(a.to) - mean(b.to))[0];
-  const oso = rows.find((r) => r.key === 'oso'), rest = rows.filter((r) => !r.key.startsWith('oso'));
+  // The verdict: each OSO society against the cheapest other one, run k against run k (the runs are paired),
+  // clear when the mean difference is more than two standard errors from zero.
+  const byRep = (key: string) => new Map(runs.filter((r) => r.key === key).map((r) => [r.rep, spendTo(r.result, k) ?? r.result.opts.budget * r.result.opts.agents.length]));
+  const rest = rows.filter((r) => !r.key.startsWith('oso'));
   const strongest = [...rest].sort((a, b) => mean(a.to) - mean(b.to))[0];
-  const se = (xs: number[]) => (xs.length > 1 ? sd(xs) / Math.sqrt(xs.length) : Infinity);
-  const clear = oso && strongest ? Math.abs(mean(oso.to) - mean(strongest.to)) > 2 * Math.hypot(se(oso.to), se(strongest.to)) : false;
-  const answer = !oso || !strongest ? `Cheapest to ${k} targets: ${SOCIETIES[best.key].name}, $${f2(mean(best.to))}.`
-    : `${reps < 2 ? 'One run each, no verdict' : clear ? (mean(oso.to) < mean(strongest.to) ? 'OSO ahead' : `${SOCIETIES[strongest.key].name} ahead`) : 'No clear difference'}: OSO reached ${k} verified targets for $${f2(mean(oso.to))} on average; the cheapest other society, ${SOCIETIES[strongest.key].name}, for $${f2(mean(strongest.to))}.`;
+  const verdict = (key: string) => {
+    const a = byRep(key), b = byRep(strongest.key);
+    const d = [...a].filter(([rep]) => b.has(rep)).map(([rep, x]) => x - b.get(rep)!);
+    const md = mean(d), se = d.length > 1 ? sd(d) / Math.sqrt(d.length) : Infinity;
+    const word = d.length < 2 ? 'one pair, no verdict' : Math.abs(md) <= 2 * se ? 'no clear difference' : md < 0 ? 'OSO cheaper' : `${SOCIETIES[strongest.key].name} cheaper`;
+    return `${SOCIETIES[key].name} reached ${k} verified targets for $${f2(mean([...a.values()]))} on average, ${Math.abs(md) < 0.005 ? 'the same as' : md < 0 ? '$' + f2(-md) + ' less than' : '$' + f2(md) + ' more than'} ${SOCIETIES[strongest.key].name} over ${d.length} paired run${d.length === 1 ? '' : 's'} (${word}${d.length > 1 ? `; ±$${f2(2 * se)}` : ''}).`;
+  };
+  const osoKeys = rows.map((r) => r.key).filter((x) => x.startsWith('oso'));
+  const answer = !osoKeys.length || !strongest ? `Cheapest to ${k} targets: ${SOCIETIES[best.key].name}, $${f2(mean(best.to))}.`
+    : `${reps < 2 ? 'One run each, no verdict yet. ' : ''}${osoKeys.map(verdict).join(' ')}`;
   const o = [...runs].sort((a, b) => b.result.opts.agents.length - a.result.opts.agents.length)[0].result.opts;
   writeCard(dir, {
     id, kind: 'race', date: new Date().toISOString().slice(0, 10), title: `Societies compared: verified targets for the money (${id})`,
-    ranAt: new Date(Math.min(...runs.flatMap((r) => r.result.actions.map((a) => a.t)).filter(Boolean))).toISOString(),
+    ranAt: new Date(Math.min(Date.now(), ...runs.flatMap((r) => r.result.actions.map((a) => a.t)).filter(Boolean))).toISOString(),
     design: {
       question: 'For the same agents, checker and money, does OSO reach the same verified targets for less than other ways of organizing the agents?',
       compare: keys.map((x) => SOCIETIES[x].name).join(', '),
@@ -109,9 +118,10 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
     table: rows.map((r) => r.row),
     caveats: [
       ...(local ? ['Models on this machine cost nothing; dollars price their tokens as a cheap open model would be served. A test of the setup, not a cost result.'] : []),
-      'Values are mean ± standard deviation over runs.',
+      'Values are mean ± standard deviation over runs; the verdict compares runs in pairs (run k of each society), with ± two standard errors of the difference.',
+      ...(runs.some((r) => r.result.stopped) ? [`Some runs stopped early (${[...new Set(runs.map((r) => r.result.stopped).filter(Boolean))].join(', ')}); their money counts as spent up to the stop.`] : []),
     ],
-    cost: local ? '$0 (local models)' : `$${f2(runs.reduce((a, r) => a + stats(r.result).spent, 0))} ${priced}`,
+    cost: stub ? '$0 (stand-in agents; dollars are a fixed $0.01 a call)' : local ? '$0 (local models)' : `$${f2(runs.reduce((a, r) => a + stats(r.result).spent, 0))} ${priced}`,
     page: `results/community/${id}/summary.md`,
     chart: `results/community/${id}/figures/progress.svg`,
   }, `${note}

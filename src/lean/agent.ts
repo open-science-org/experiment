@@ -58,9 +58,13 @@ export const localPrice = (u: Usage) => ((u.input + u.cacheRead) * LOCAL_PRICE.i
  * A model on this machine, served by Ollama (for testing at no cost). Streamed, so a long reply
  * doesn't hit fetch's 5-minute wait for the first byte. Its thinking is dropped from the reply when there is an answer.
  */
+// One local call at a time: labs in a community call in parallel, and two copies of a model's
+// working memory do not fit on a 24 GB machine next to Lean and Mathlib.
+let localQueue: Promise<unknown> = Promise.resolve();
+
 export function localChat(settings: ModelSettings): Chat {
   const url = process.env.OLLAMA_URL ?? 'http://localhost:11434';
-  return async (system, messages) => {
+  const one: Chat = async (system, messages) => {
     const res = await fetch(`${url}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -101,6 +105,11 @@ export function localChat(settings: ModelSettings): Chat {
       usage: { input: last.prompt_eval_count ?? 0, output: last.eval_count ?? 0, cacheRead: 0, cacheWrite: 0, cost: 0, provider: 'local' },
       stop: last.done_reason === 'length' ? 'length' : (last.done_reason ?? 'stop'),
     };
+  };
+  return (system, messages) => {
+    const next = localQueue.then(() => one(system, messages));
+    localQueue = next.catch(() => {});
+    return next;
   };
 }
 

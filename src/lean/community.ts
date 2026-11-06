@@ -406,8 +406,9 @@ ${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still w
             else {
               ok = true;
               if (trivial) reason = 'trivial: citable, but earns no mint';
-              const hidden = this.library.find((e) => !e.public && e.author !== i && norm(e.signature) === norm(lemma!.signature));
-              if (hidden) reason = `duplicate of lab ${hidden.author + 1}'s private result`;
+              // Already proved by a lab this one cannot see (private, or under independent rules): work done twice.
+              const hidden = this.library.find((e) => e.author !== i && norm(e.signature) === norm(lemma!.signature));
+              if (hidden) reason = `duplicate of lab ${hidden.author + 1}'s ${hidden.public ? 'result' : 'private result'}`;
               const e: Entry = { name: this.uniqueName(lemma.name), ns: 'OSO', signature: lemma.signature, author: i, public: false, round, uses: r.uses.filter((u) => !FREE.includes(u)), ...(trivial ? { trivial } : {}) };
               this.library.push(e);
               if (atOnce(this.opts.rules)) this.publish(e, round);
@@ -488,7 +489,14 @@ export async function runCommunity(opts: CommunityOptions, chatFor: (com: Commun
   for (let round = 1; round <= opts.rounds && !com.done() && !stopped; round++) {
     if (opts.rules === 'planner') {
       com.plans = [];
-      if (com.active(0)) await com.plan(round, chats[0], (u) => price(opts.agents[0], u), (a) => appendFileSync(file, JSON.stringify(a) + '\n')).catch((e) => log(`  round ${round} · planner: error ${(e as Error).message}`));
+      if (com.active(0)) await com.plan(round, chats[0], (u) => price(opts.agents[0], u), (a) => appendFileSync(file, JSON.stringify(a) + '\n')).catch((e) => {
+        const msg = (e as Error).message;
+        log(`  round ${round} · planner: error ${msg}`);
+        if (/\b402\b|credits/i.test(msg)) stopped = 'out of credit';
+      });
+      if (stopped) break;
+      const last = com.actions.at(-1);
+      if (last?.kind === 'plan') log(`  round ${round} · planner: ${com.plans.filter(Boolean).length} assignments · $${costOf(last).toFixed(3)}`);
     }
     // Under planner rules lab 1 only plans.
     const active = opts.agents.map((_, i) => i).filter((i) => com.active(i) && !(opts.rules === 'planner' && i === 0));
@@ -555,7 +563,9 @@ export function stats(r: CommunityResult) {
     lemmasAccepted: lemmas.filter((a) => a.ok && !/trivial/.test(a.reason ?? '')).length,
     lemmasDuplicate: r.actions.filter((a) => a.ok && /duplicate/.test(a.reason ?? '')).length + lemmas.filter((a) => !a.ok && /duplicate/.test(a.reason ?? '')).length,
     trivial: lemmas.filter((a) => /trivial/.test(a.reason ?? '')).length,
-    failed: r.actions.filter((a) => !a.ok && !/duplicate|trivial/.test(a.reason ?? '')).length,
+    failed: r.actions.filter((a) => a.kind !== 'plan' && !a.ok && !/duplicate|trivial/.test(a.reason ?? '')).length,
+    /** Planner rounds whose reply gave no usable `LAB n:` line. */
+    plansUnusable: r.actions.filter((a) => a.kind === 'plan' && !a.ok).length,
     published: r.library.filter((e) => e.public).length,
     neverPublished: r.library.filter((e) => !e.public).length,
     earnings: r.earnings,

@@ -40,6 +40,16 @@ export function bannedTactics(tactics: string): string[] {
   return rules.filter(([re]) => re.test(tactics)).map(([, msg]) => msg);
 }
 
+/**
+ * The proof, moved as one block to two spaces in, so lines keep their depth relative to each other.
+ * Replies differ: some indent the tactics already, some start them at the margin.
+ */
+export function indentProof(tactics: string): string {
+  const lines = tactics.replace(/\t/g, '  ').split('\n');
+  const depth = Math.min(...lines.filter((l) => l.trim()).map((l) => /^ */.exec(l)![0].length));
+  return lines.map((l) => (l.trim() ? `  ${l.slice(Number.isFinite(depth) ? depth : 0)}` : '')).join('\n');
+}
+
 let counter = 0;
 
 /** Checks `tactics` as the proof of `p`. With `allowSorry`, only that the statement compiles. */
@@ -47,7 +57,7 @@ export function compile(p: Statement, tactics: string, { allowSorry = false, tim
   const t0 = Date.now();
   const bad = allowSorry ? [] : bannedTactics(tactics);
   if (bad.length) return Promise.resolve({ ok: false, errors: bad, seconds: 0 });
-  const body = tactics.split('\n').map((l) => (/^\S/.test(l) ? `  ${l}` : l)).join('\n');
+  const body = indentProof(tactics);
   const before = `${p.header}\n\n${p.statement}\n`;
   const first = before.split('\n').length;
   const text = `${before}${body}\n\n#print axioms ${theoremName(p)}\n`;
@@ -68,6 +78,11 @@ export function compile(p: Statement, tactics: string, { allowSorry = false, tim
         const line = Number(m[1]) - first + 1;
         errors.push(`${line >= 1 ? `line ${line} of your proof, column ${m[2]}` : 'in the statement'}: ${m[3].trim()}`);
       }
+      // A tactic run on every case (`<;>`) reports the same error once per case: say it once, with the count,
+      // so the repair message shows each problem instead of one problem many times.
+      const seen = new Map<string, number>();
+      for (const e of errors.splice(0)) seen.set(e, (seen.get(e) ?? 0) + 1);
+      for (const [e, n] of seen) errors.push(n > 1 ? `${e} (reported ${n} times, once per case)` : e);
       const ax = /depends on axioms: \[([^\]]*)\]/.exec(output);
       const axioms = /does not depend on any axioms/.test(output) ? [] : ax ? ax[1].split(',').map((s) => s.trim()) : null;
       const other = (axioms ?? []).filter((a) => !STANDARD_AXIOMS.includes(a) && !(allowSorry && a === 'sorryAx'));

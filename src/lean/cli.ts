@@ -53,7 +53,7 @@ if (cmd === 'calibrate') {
     only: value('only', '').split(',').filter(Boolean),
     model: (() => {
       const provider = value('provider', defaultProvider() ?? 'anthropic') as Provider;
-      // A local model writes about 25 tokens a second: 32k-token replies would take over 20 minutes each.
+      // A local model writes 8-10 tokens a second here (measured on a 24 GB M4 with Mathlib loaded): a 32k-token reply would take about an hour.
       return { ...DEFAULT_MODEL, provider, model: value('model', DEFAULT_MODELS[provider]), effort: value('effort', DEFAULT_MODEL.effort) as PilotOptions['model']['effort'],
         maxTokens: Number(value('max-tokens', provider === 'local' ? '8000' : String(DEFAULT_MODEL.maxTokens))) };
     })(),
@@ -120,7 +120,7 @@ if (cmd === 'community') {
   const chat = (com: import('./community.ts').Community, i: number) => {
     const m = com.opts.agents[i];
     return stub ? referenceAgent(com, i)
-      : isLocal(m) ? localChat({ provider: 'local', model: m.slice(LOCAL_PREFIX.length), effort: base.effort, maxTokens: 8000 })
+      : isLocal(m) ? localChat({ provider: 'local', model: m.slice(LOCAL_PREFIX.length), effort: base.effort, maxTokens: Number(pick('max-tokens', '8000')) })
       : openRouterChat({ provider: 'openrouter', model: m, effort: com.opts.effortByLab?.[i] ?? base.effort, maxTokens: 32_000 });
   };
   if (societies.length) {
@@ -135,7 +135,7 @@ if (cmd === 'community') {
         const runId = `${id}-r${rep}-${key}`;
         done.push({ key, rep, runId, result: await runCommunity(societyOptions(key, opts), chat, price, runId) });
       }
-      writeSocieties(id, done, k, stub ? 'This is a pipeline test: the labs play from the reference proofs.' : String(cfg.design ?? value('design', '')));
+      writeSocieties(id, done, k, stub ? 'This is a pipeline test: the labs play from the reference proofs.' : String(cfg.design ?? value('design', '')), stub);
     }
     console.log(`\nSummary: results/community/${id}/summary.md`);
     process.exit(0);
