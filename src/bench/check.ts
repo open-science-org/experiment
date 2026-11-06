@@ -17,6 +17,8 @@ export const theoremName = (p: Statement) => /^theorem\s+([^\s(:{[]+)/.exec(p.st
  */
 export function extractTactics(text: string, p: Statement): string | null {
   const blocks = [...text.matchAll(/```(?:lean4?|)\s*\n([\s\S]*?)```/g)].map((m) => m[1].replace(/\s+$/, ''));
+  // A reply that is all code, without the ``` fence, still counts when it starts like a proof.
+  if (!blocks.length && /^\s*(by\b|(theorem|lemma)\s|example\b)/.test(text)) blocks.push(text.replace(/\s+$/, ''));
   if (!blocks.length) return null;
   const block = blocks[blocks.length - 1];
   const name = theoremName(p).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -69,7 +71,9 @@ export async function compile(p: Statement, tactics: string, { allowSorry = fals
   const re = /^[^\n:]*\.lean:(\d+):(\d+): error(?:\([^)]*\))?: ([\s\S]*?)(?=^[^\n:]*\.lean:\d+:\d+: |(?![\s\S]))/gm;
   for (const m of c.out.matchAll(re)) {
     const line = Number(m[1]) - first + 1;
-    errors.push(`${line >= 1 ? `line ${line} of your proof, column ${m[2]}` : 'in the statement'}: ${m[3].trim()}`);
+    // Lean reports goals a proof leaves open at its `:= by`, the statement's last line: that is the proof's
+    // fault, and saying "in the statement" made models think the theorem itself was broken.
+    errors.push(`${line >= 1 ? `line ${line} of your proof, column ${m[2]}` : line === 0 ? 'your proof as a whole' : 'in the statement'}: ${m[3].trim()}`);
   }
   // A tactic run on every case (`<;>`) reports the same error once per case: say it once, with the count,
   // so the repair message shows each problem instead of one problem many times.

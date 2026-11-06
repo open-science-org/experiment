@@ -18,6 +18,7 @@ test('the proof is what follows the theorem\'s `:= by`; a different theorem is n
   assert.equal(extractTactics('```lean\nby\n  omega\n```', p), '\n  omega');
   assert.equal(extractTactics('```lean\ntheorem other : True := by\n  trivial\n```', p), null);
   assert.equal(extractTactics('no code', p), null);
+  assert.equal(extractTactics('by\n  omega', p), '\n  omega'); // all code, no fence
 });
 
 test('a proof moves as one block, so nested lines keep their depth', () => {
