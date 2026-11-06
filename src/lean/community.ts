@@ -12,6 +12,9 @@
 //                keeps its own mint and bounty. The gap to OSO is what value flow adds on its own.
 //   independent: nothing is shared; each lab sees only its own results. A target counts when any lab
 //                proves it ("best of N"). With one lab and the whole budget, it is the single agent.
+//   planner:     lab 1 plans and does not prove: each round it gives every other lab one assignment (a
+//                target, or a lemma to state and prove). Results are shared at once and nothing flows
+//                back, as in a shared library. A strong orchestration baseline, at the same total money.
 // Transcripts contain proofs, so they stay in lean/runs/ (private); summaries use anonymous ids.
 import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -23,9 +26,9 @@ import { lineChart } from '../report/figures.ts';
 import { writeCard } from '../card.ts';
 import { RESULTS_DIR } from '../paths.ts';
 
-export type Rules = 'traditional' | 'oso' | 'shared' | 'independent';
+export type Rules = 'traditional' | 'oso' | 'shared' | 'independent' | 'planner';
 /** Rules under which a result is public as soon as Lean accepts it. */
-export const atOnce = (r: Rules) => r === 'oso' || r === 'shared';
+export const atOnce = (r: Rules) => r === 'oso' || r === 'shared' || r === 'planner';
 
 export interface CommunityOptions {
   rules: Rules;
@@ -78,7 +81,7 @@ export interface Entry {
 
 export interface Action {
   round: number; agent: number; model: string;
-  kind: 'target' | 'conjecture' | 'lemma' | 'pass' | 'none';
+  kind: 'target' | 'conjecture' | 'lemma' | 'pass' | 'none' | 'plan';
   target?: string; name?: string; signature?: string;
   ok: boolean; reason?: string; turns: number;
   /** The library entry an accepted action created, and the results its proof used. */
@@ -133,6 +136,8 @@ export class Community {
   free: Pick<Task, 'name' | 'ns' | 'short' | 'signature'>[];
   /** Labs that passed: they stop for the rest of the run. */
   passed = new Set<number>();
+  /** Planner rules: this round's assignment for each lab. */
+  plans: string[] = [];
 
   constructor(opts: CommunityOptions) {
     this.opts = opts;
@@ -216,6 +221,11 @@ export class Community {
         : `How this community works (independent labs):
 - Labs work separately: you see only your own results, and no lab sees yours.
 - Each result you prove earns you a mint of ${o.mint}; each target you prove earns you its bounty.`
+      : o.rules === 'planner'
+      ? `How this community works (with a planner):
+- Lab 1 is the planner: it does not prove anything; each round it gives every other lab an assignment, to bring the targets within reach together. Follow your assignment unless it is clearly impossible.
+- Every result you prove is published at once, and every lab can build on it immediately.
+- Each new result earns its author a mint of ${o.mint}, and a target's bounty goes to the lab that proves it. Nothing is passed on to the results it builds on.`
       : o.rules === 'shared'
       ? `How this community works (shared library):
 - Every result you prove is published at once, and every lab can build on it immediately.
@@ -268,8 +278,55 @@ ${targets.join('\n')}
 
 ${conj.length ? `Posted conjectures:\n${conj.join('\n')}\n\n` : ''}Library you can cite:
 ${lib.length ? '```lean\n' + lib.map(fmt).join('\n') + '\n```' : '(empty)'}
-
+${this.plans[i] ? `\nYour assignment from the planner this round: ${this.plans[i]}\n` : ''}
 Take one action.`;
+  }
+
+  /** Planner rules: lab 1's instructions. */
+  plannerSystem(): string {
+    const o = this.opts;
+    return `You are the planner of a research community of ${o.agents.length - 1} labs proving theorems in Lean 4 (version 4.35.0, core library only, no Mathlib). You do not prove anything yourself. Each round you give every lab one assignment, so that together they prove the posted targets for as little money as possible: every model call costs budget, yours included.
+
+Results are published at once and every lab can cite them. A good plan splits each hard target into lemmas, gives different labs different lemmas so no work is done twice, and assigns a target once the lemmas it needs are in the library.
+
+The definitions:
+
+\`\`\`lean
+${definitions().trim()}
+\`\`\`
+
+Reply with one line per lab, and nothing else:
+LAB <n>: target <ID>
+LAB <n>: lemma \`theorem <name> <statement>\` (a short note on why it helps is fine)
+The labs are numbered 2 to ${o.agents.length}.`;
+  }
+
+  plannerPrompt(round: number): string {
+    const pub = this.library.filter((e) => e.public);
+    const targets = this.targets.map((t) => `${t.publicId} (${this.solved(t.publicId) ? `solved by lab ${this.solved(t.publicId)!.author + 1}` : 'open'}): theorem attempt ${norm(t.signature)}${t.ns === 'OSO.M2' ? '   -- stated inside namespace M2' : ''}`);
+    const last = this.actions.filter((a) => a.round === round - 1 && a.kind !== 'plan').map((a) => `lab ${a.agent + 1}: ${a.kind}${a.target ? ` ${a.target}` : a.name ? ` ${a.name}` : ''} ${a.ok ? 'accepted' : `failed${a.reason ? ` (${a.reason})` : ''}`}`);
+    const labs = this.opts.agents.map((_, i) => i).filter((i) => i > 0 && this.active(i)).map((i) => i + 1);
+    return `Round ${round}. Your budget left: $${Math.max(0, this.opts.budget - this.spent[0]).toFixed(3)}. Labs still working: ${labs.join(', ')}.
+
+Posted targets:
+${targets.join('\n')}
+
+Library (everyone can cite):
+${pub.length ? '```lean\n' + pub.map((e) => `theorem ${e.ns === 'OSO' ? '' : e.ns.replace(/^OSO\./, '') + '.'}${e.name} ${e.signature}   -- lab ${e.author + 1}`).join('\n') + '\n```' : '(empty)'}
+
+${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still working its assignment.`;
+  }
+
+  /** Planner rules: one planning call, charged to lab 1; it sets this round's assignments. */
+  async plan(round: number, chat: Chat, price: (u: Usage) => number, log: (a: Action) => void): Promise<void> {
+    const reply = await chat(this.plannerSystem(), [{ role: 'user', content: this.plannerPrompt(round) }]);
+    const cost = price(reply.usage);
+    this.spent[0] += cost;
+    this.plans = [];
+    for (const m of reply.text.matchAll(/^\s*LAB\s*(\d+)\s*:\s*(.+)$/gim)) this.plans[Number(m[1]) - 1] = m[2].trim();
+    const a: Action = { round, agent: 0, model: this.opts.agents[0], kind: 'plan', ok: this.plans.length > 0, turns: 1, usage: reply.usage, cost, spentAfter: this.spent[0], transcript: [{ text: reply.text, proof: null, errors: [] }], t: Date.now() };
+    this.actions.push(a);
+    log(a);
   }
 
   /** One agent's action this round: a reply, then Lean, with repairs. */
@@ -377,7 +434,7 @@ Take one action.`;
   }
 
   active(i: number) { return this.spent[i] < this.opts.budget && !this.passed.has(i); }
-  done() { return this.targets.every((t) => this.solved(t.publicId)) || this.opts.agents.every((_, i) => !this.active(i)); }
+  done() { return this.targets.every((t) => this.solved(t.publicId)) || this.opts.agents.every((_, i) => !this.active(i) || (this.opts.rules === 'planner' && i === 0)); }
 }
 
 /** A stand-in agent that plays from the reference proofs: tests the mechanics without a model. */
@@ -429,7 +486,12 @@ export async function runCommunity(opts: CommunityOptions, chatFor: (com: Commun
   const chats = opts.agents.map((_, i) => chatFor(com, i));
   let stopped: string | undefined;
   for (let round = 1; round <= opts.rounds && !com.done() && !stopped; round++) {
-    const active = opts.agents.map((_, i) => i).filter((i) => com.active(i));
+    if (opts.rules === 'planner') {
+      com.plans = [];
+      if (com.active(0)) await com.plan(round, chats[0], (u) => price(opts.agents[0], u), (a) => appendFileSync(file, JSON.stringify(a) + '\n')).catch((e) => log(`  round ${round} · planner: error ${(e as Error).message}`));
+    }
+    // Under planner rules lab 1 only plans.
+    const active = opts.agents.map((_, i) => i).filter((i) => com.active(i) && !(opts.rules === 'planner' && i === 0));
     await Promise.all(active.map((i) => com.act(i, round, chats[i], (u) => price(opts.agents[i], u), (a) => {
       appendFileSync(file, JSON.stringify(a) + '\n');
       const solved = com.targets.filter((t) => com.solved(t.publicId)).length;

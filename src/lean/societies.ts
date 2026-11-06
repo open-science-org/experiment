@@ -15,6 +15,7 @@ export const SOCIETIES: Record<string, Society> = {
   single: { name: 'Single agent', rules: 'independent', single: true, colour: '#5f5e5a', slot: 3 },
   independent: { name: 'Independent labs', rules: 'independent', colour: '#8a8984', slot: 3 },
   shared: { name: 'Shared library', rules: 'shared', colour: '#b3b1aa', slot: 3 },
+  planner: { name: 'Planner', rules: 'planner', colour: '#33322f', slot: 3 },
   traditional: { name: 'Traditional', rules: 'traditional', colour: '#2a78d6', slot: 1 },
   oso: { name: 'OSO, α 0.8', rules: 'oso', alpha: 0.8, colour: '#eb6834', slot: 2 },
   'oso-0.2': { name: 'OSO, α 0.2', rules: 'oso', alpha: 0.2, colour: '#f2a07b', slot: 2 },
@@ -117,7 +118,7 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
 
 ![Verified targets for the money](figures/progress.svg)
 
-- **Societies:** single agent (one lab, everyone's money); independent labs (nothing shared, a target counts when any lab proves it); shared library (everything public at once, no value flows back); traditional (private until a target is proved); OSO (public at once, value flows back to what a result used; α is the share an author keeps).
+- **Societies:** single agent (one lab, everyone's money); independent labs (nothing shared, a target counts when any lab proves it); shared library (everything public at once, no value flows back); planner (lab 1 assigns work to the others each round, results shared, nothing flows back); traditional (private until a target is proved); OSO (public at once, value flows back to what a result used; α is the share an author keeps).
 - **Agents:** ${o.agents.map((m) => `\`${m}\``).join(', ')}; up to ${o.rounds} rounds; up to ${o.repairs} repairs on Lean's errors per action.
 
 Transcripts, with every proof, are private.`);
