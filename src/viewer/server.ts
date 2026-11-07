@@ -15,7 +15,7 @@ import { MEASURE_NAMES, VALUES } from '../engine/measures.ts';
 import { loadSpace, spaceIds, withCalibratedBudget, type Space } from '../spaces/spaces.ts';
 import { LEAN_DIR, leanAvailable, loadTasks } from '../lean/tasks.ts';
 import * as design from './design.ts';
-import { progress, type CommunityResult } from '../lean/community.ts';
+import { LEAN_REWARDS, progress, type CommunityResult } from '../lean/community.ts';
 import { SOCIETIES } from '../lean/societies.ts';
 import { creditLeft } from '../lean/agent.ts';
 import { allCards } from '../card.ts';
@@ -311,7 +311,7 @@ async function progressData() {
   const key = process.env.OPENROUTER_API_KEY;
   let credit: number | null = null;
   try { credit = key ? await creditLeft(key) : null; } catch { credit = null; }
-  return { now: Date.now(), credit, societies: Object.fromEntries(Object.entries(SOCIETIES).map(([k, v]) => [k, { name: v.name, params: v.params, colour: v.colour }])), experiments, bench };
+  return { now: Date.now(), credit, rewards: { follows: LEAN_REWARDS.follows, current: MODEL_VERSION, differs: LEAN_REWARDS.differs }, societies: Object.fromEntries(Object.entries(SOCIETIES).map(([k, v]) => [k, { name: v.name, params: v.params, colour: v.colour }])), experiments, bench };
 }
 
 /** What is left on the OpenRouter key's limit (the key itself is never sent to the page). */

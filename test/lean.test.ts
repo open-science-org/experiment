@@ -5,6 +5,8 @@ import assert from 'node:assert/strict';
 import { banned, checkFile, parseAxioms, parseErrors } from '../src/lean/checker.ts';
 import { extractProof } from '../src/lean/agent.ts';
 import { leanAvailable } from '../src/lean/tasks.ts';
+import { LEAN_REWARDS } from '../src/lean/community.ts';
+import { MODEL_VERSION } from '../src/engine/version.ts';
 
 test('the screen rejects unsound, unsafe and banned proofs', () => {
   assert.deepEqual(banned(':= by simp [u]'), []);
@@ -125,4 +127,12 @@ test('flow-back is split by what each used result cost to prove, equally when a 
   assert.deepEqual(w([1, 3]), [0.25, 0.75]);
   assert.deepEqual(w([1, undefined]), [0.5, 0.5]);
   assert.deepEqual(w([]), []);
+});
+
+test('the Lean runs\' rewards were checked against the current simulation model', () => {
+  assert.equal(LEAN_REWARDS.checkedAgainst, MODEL_VERSION,
+    `the simulation is now model v${MODEL_VERSION}: compare the Lean rewards (LEAN_REWARDS in src/lean/community.ts) with it, list what differs, and set checkedAgainst`);
+  // Following an older model is allowed only with the differences written down, so summaries can say so.
+  if (LEAN_REWARDS.follows < MODEL_VERSION) assert.ok(LEAN_REWARDS.differs.length > 0);
+  else assert.equal(LEAN_REWARDS.differs.length, 0);
 });

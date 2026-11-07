@@ -27,6 +27,20 @@ import { writeCard } from '../card.ts';
 import { RESULTS_DIR } from '../paths.ts';
 
 export type Rules = 'traditional' | 'oso' | 'shared' | 'independent' | 'planner';
+
+/**
+ * The simulation model (src/engine/version.ts) whose reward rules these runs follow, and what still differs
+ * from the current one. When MODEL_VERSION changes, check the rewards here against it, then set
+ * `checkedAgainst`: a test fails until then, and every summary lists what differs.
+ */
+export const LEAN_REWARDS = {
+  follows: 3,
+  checkedAgainst: 6,
+  differs: [
+    'a flat mint of 1 per new result, 15% of it to the results it cites; the simulation pays a knowledge reward per new bit instead (since v5)',
+    'value flowing back is split by the money spent proving each parent; the simulation splits by the work a parent saves (1/p)',
+  ],
+};
 /** Rules under which a result is public as soon as Lean accepts it. */
 export const atOnce = (r: Rules) => r === 'oso' || r === 'shared' || r === 'planner';
 
@@ -485,7 +499,7 @@ export async function runCommunity(opts: CommunityOptions, chatFor: (com: Commun
   const com = new Community(opts);
   const dir = join(root, runId);
   mkdirSync(dir, { recursive: true });
-  writeFileSync(join(dir, 'options.json'), JSON.stringify({ kind: 'community', ...opts }, null, 1));
+  writeFileSync(join(dir, 'options.json'), JSON.stringify({ kind: 'community', ...opts, rewards: { follows: LEAN_REWARDS.follows, differs: LEAN_REWARDS.differs } }, null, 1));
   const file = join(dir, 'actions.jsonl');
   writeFileSync(file, '');
   const chats = opts.agents.map((_, i) => chatFor(com, i));
