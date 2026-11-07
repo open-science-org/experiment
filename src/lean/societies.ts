@@ -102,7 +102,9 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
     return `${SOCIETIES[key].name} reached ${k} verified targets for $${f2(mean([...a.values()]))} on average, ${Math.abs(md) < 0.005 ? 'the same as' : md < 0 ? '$' + f2(-md) + ' less than' : '$' + f2(md) + ' more than'} ${SOCIETIES[strongest.key].name} over ${d.length} paired run${d.length === 1 ? '' : 's'} (${word}${d.length > 1 ? `; ±$${f2(2 * se)}` : ''}).`;
   };
   const osoKeys = rows.map((r) => r.key).filter((x) => x.startsWith('oso'));
-  const answer = !osoKeys.length || !strongest ? `Cheapest to ${k} targets: ${SOCIETIES[best.key].name}, $${f2(mean(best.to))}.`
+  const reached = runs.some((r) => spendTo(r.result, k) !== null);
+  const answer = !reached ? `No run reached ${k} verified targets.`
+    : !osoKeys.length || !strongest ? `Cheapest to ${k} targets: ${SOCIETIES[best.key].name}, $${f2(mean(best.to))}.`
     : `${reps < 2 ? 'One run each, no verdict yet. ' : ''}${osoKeys.map(verdict).join(' ')}`;
   const o = [...runs].sort((a, b) => b.result.opts.agents.length - a.result.opts.agents.length)[0].result.opts;
   writeCard(dir, {

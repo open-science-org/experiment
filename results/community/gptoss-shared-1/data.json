@@ -1,0 +1,47 @@
+{
+ "id": "gptoss-shared-1",
+ "k": 2,
+ "counted": [
+  "C3",
+  "A3",
+  "C4",
+  "X1",
+  "B3",
+  "B5",
+  "X2",
+  "A5"
+ ],
+ "runs": [
+  {
+   "society": "shared",
+   "rep": 1,
+   "runId": "gptoss-shared-1-r1-shared",
+   "stats": {
+    "rules": "shared",
+    "targetsSolved": 0,
+    "countedSolved": 0,
+    "counted": 8,
+    "conjecturesProved": 0,
+    "builtOnOthers": 0,
+    "deepestTarget": 0,
+    "value": 0,
+    "spent": 0.000809484,
+    "budget": 0.6,
+    "actions": 4,
+    "lemmasAccepted": 0,
+    "lemmasDuplicate": 0,
+    "trivial": 0,
+    "failed": 4,
+    "plansUnusable": 0,
+    "published": 0,
+    "neverPublished": 0,
+    "earnings": [
+     0,
+     0,
+     0,
+     0
+    ]
+   }
+  }
+ ]
+}
