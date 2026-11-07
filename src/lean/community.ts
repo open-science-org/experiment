@@ -515,6 +515,8 @@ export async function runCommunity(opts: CommunityOptions, chatFor: (com: Commun
   const dir = join(root, runId);
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, 'options.json'), JSON.stringify({ kind: 'community', ...opts, rewards: { gaps: LEAN_REWARDS.gaps(opts) } }, null, 1));
+  // The exact instructions each lab gets, as sent (the viewer shows these; the code's wording may change later).
+  writeFileSync(join(dir, 'prompts.json'), JSON.stringify(opts.agents.map((_, i) => com.systemPrompt(i)), null, 1));
   const file = join(dir, 'actions.jsonl');
   writeFileSync(file, '');
   const chats = opts.agents.map((_, i) => chatFor(com, i));

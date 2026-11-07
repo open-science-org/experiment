@@ -228,6 +228,7 @@
 <nav class="side" aria-label="Pages">
   <a href="#/runs">Runs</a>
   <a href="#/progress">Progress</a>
+  <a href="#/lean">Lean experiment</a>
   <a href="#/new">New</a>
   <a href="#/how">How it works</a>
   <a href="#/equations" class="sub">Equations</a>
@@ -248,6 +249,18 @@
   <section id="view-doc" class="hidden"><div class="crumbs" id="doc-crumbs"></div><article class="doc" id="doc-body"></article></section>
 
   <!-- New: one form for both kinds -->
+  <!-- Lean experiment: what the AI labs are asked to do, by whom, under which rules, and every turn of every run -->
+  <section id="view-lean" class="hidden">
+    <div class="tabs" role="tablist" id="l-tabs" aria-label="Lean experiment">
+      <a class="btn" role="tab" href="#/lean" data-tab="problems">Problems</a>
+      <a class="btn" role="tab" href="#/lean?tab=labs" data-tab="labs">Labs &amp; setups</a>
+      <a class="btn" role="tab" href="#/lean?tab=prompts" data-tab="prompts">Prompts</a>
+      <a class="btn" role="tab" href="#/lean?tab=runs" data-tab="runs">Runs</a>
+    </div>
+    <div class="pane" style="margin:10px 0 12px"><b>The question.</b> For the same money, does a community of AI labs proving Lean theorems prove more when value flows back to the results a proof used (OSO) than when results are only shared (a shared library), or kept private until a target is proved (traditional)? Results so far: <a href="#/doc/docs/ai-agent-results.md">AI agents on the Lean problems</a>.</div>
+    <div class="bar" id="l-bar"><label>Experiment <select id="l-exp"></select></label></div>
+    <div id="l-body"></div>
+  </section>
   <!-- Progress: the paid runs going now, with what is left of the money -->
   <section id="view-progress" class="hidden">
     <div class="bar"><label>Experiment <select id="p-exp"></select></label><label>Run <select id="p-rep"></select></label>
@@ -451,7 +464,8 @@ function shortLabel(s, max) {
 const api = (path) => fetch(path).then(async (r) => { const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText); return j; });
 const money = (x) => '$' + (x < 0.1 ? x.toFixed(3) : x.toFixed(2));
 
-const VIEWS = ['view-history', 'view-overview', 'view-doc', 'view-new', 'view-live', 'view-progress'];
+const LN = { data: null, run: null }; // the Lean experiment page's data
+const VIEWS = ['view-history', 'view-overview', 'view-doc', 'view-new', 'view-live', 'view-progress', 'view-lean'];
 const RUNS_VIEWS = { 'view-history': 'history', 'view-overview': 'results', 'view-live': 'live' };
 const show = (view) => {
   for (const v of VIEWS) $(v).classList.toggle('hidden', v !== view);
@@ -482,6 +496,7 @@ async function route() {
   if (path.startsWith('/doc/')) { show('view-doc'); return openDoc(path.slice(5)); }
   if (path === '/new') { show('view-new'); return enterNew(); }
   if (path === '/progress') { show('view-progress'); return drawProgress(); }
+  if (path === '/lean') { show('view-lean'); return drawLean(); }
   if (path === '/live') { show('view-live'); return showTab(params().get('tab') ?? 'sim'); }
   // Topics are now presets of the generator: their reports are on Results.
   if (path === '/topics' || path === '/fields') { location.hash = '#/'; return; }
@@ -2052,6 +2067,117 @@ function drawBench() {
 }
 
 route();
+
+/* ------------------------------------------------------------------ Lean experiment: problems, labs, prompts, runs */
+async function drawLean() {
+  const tab = params().get('tab') ?? 'problems';
+  for (const a of $('l-tabs').querySelectorAll('a')) a.setAttribute('aria-selected', a.dataset.tab === tab);
+  const exp = params().get('exp') ?? LN.data?.id ?? '';
+  if (!LN.data || (exp && LN.data.id !== exp)) {
+    $('l-body').innerHTML = '<p class="muted">Loading…</p>';
+    try { LN.data = await api('/api/lean?exp=' + encodeURIComponent(exp)); } catch (e) { $('l-body').textContent = `Could not read the Lean experiment: ${e.message}`; return; }
+    if (!LN.data) { $('l-body').textContent = 'The Lean problem set is not available here.'; return; }
+  }
+  const d = LN.data;
+  $('l-exp').innerHTML = d.experiments.map((x) => `<option${x === d.id ? ' selected' : ''}>${esc(x)}</option>`).join('');
+  $('l-exp').onchange = () => { const q = params(); q.set('exp', $('l-exp').value); q.delete('rep'); q.delete('setup'); location.hash = '#/lean?' + q; };
+  $('l-bar').classList.toggle('hidden', tab === 'problems');
+  for (const a of $('l-tabs').querySelectorAll('a')) a.href = '#/lean?tab=' + a.dataset.tab + '&exp=' + encodeURIComponent(d.id);
+  return tab === 'labs' ? leanLabs(d) : tab === 'prompts' ? leanPrompts(d) : tab === 'runs' ? leanRuns(d) : leanProblems(d);
+}
+
+function leanProblems(d) {
+  const counts = d.setups.length ? `<th>Proved in ${esc(d.id)}<br><span class="muted" style="font-weight:400">${d.setups.map((x) => esc(x.name)).join(' · ')} (runs out of each setup's finished runs)</span></th>` : '';
+  const rows = d.targets.map((t) => `<tr><td><b>${esc(t.id)}</b></td><td>${esc(t.plain)}<br><code style="font-size:12px">theorem ${esc(t.name)} ${esc(t.statement)}</code></td>
+    <td>${esc(t.area)}</td><td>${t.depth}</td><td>${t.bounty}</td><td>${t.uses.map(esc).join(', ') || '—'}<br><span class="muted">${t.below} in all below it</span></td>
+    ${d.setups.length ? `<td>${d.setups.map((x) => `${x.proved[t.id]}/${x.done}`).join(' · ')}</td>` : ''}</tr>`).join('');
+  $('l-body').innerHTML = `
+    <div class="pane" style="margin-bottom:12px;overflow-x:auto"><h3 style="margin:0 0 6px;font-size:15px">The 8 targets</h3>
+      <p class="muted" style="margin:0 0 8px">Each lab sees these with their bounties and tries to prove them in Lean 4 (core library only). A target's <b>depth</b> is how many levels of lemmas sit under it in our reference proofs; its <b>bounty</b> is 4 · 2^(depth − 1). The lemmas listed are what our own proof uses; labs may find other routes, and must state and prove their own lemmas.</p>
+      <table class="agents"><thead><tr><th>Target</th><th>What it says</th><th>Area</th><th>Depth</th><th>Bounty</th><th>Lemmas in our proof</th>${counts}</tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="pane" style="margin-bottom:12px;overflow-x:auto"><h3 style="margin:0 0 6px;font-size:15px">All 42 theorems in our reference proofs</h3>
+      <p class="muted" style="margin:0 0 8px">Left to right by depth; an arrow means "is used by". Targets are dark. Colours are the areas below. Hover for the statement. The labs do not see this graph: they see only the targets and what has been published.</p>${leanGraph(d)}
+      <dl class="muted" style="font-size:13px;margin:8px 0 0">${Object.entries(d.areas).map(([k, v]) => `<dt style="display:inline;font-weight:700">${esc(k)}</dt> <dd style="display:inline;margin:0 14px 0 4px">${esc(v)}</dd>`).join('')}</dl></div>
+    <details class="pane"><summary style="cursor:pointer;font-weight:700">The definitions every lab is given (Lean)</summary><pre style="font-size:12px;overflow-x:auto">${esc(d.definitions)}</pre></details>`;
+}
+
+function leanGraph(d) {
+  const by = {}; for (const t of d.theorems) (by[t.depth] ??= []).push(t);
+  const depths = Object.keys(by).map(Number).sort((a, b) => a - b), colW = 130, rowH = 30, top = 24;
+  const H = top + rowH * Math.max(...depths.map((k) => by[k].length)) + 8, W = 20 + colW * depths.length;
+  const pos = {}; for (const k of depths) by[k].sort((a, b) => a.area.localeCompare(b.area) || a.id.localeCompare(b.id)).forEach((t, j) => { pos[t.id] = [20 + colW * (k - 1), top + j * rowH]; });
+  const fill = { A: 'var(--s1-soft)', B: '#e9e2f7', C: '#e2f2e2', cross: '#f4e8d6' };
+  let svg = depths.map((k) => `<text x="${20 + colW * (k - 1)}" y="14" font-size="11" fill="currentColor" opacity="0.6">depth ${k}</text>`).join('');
+  for (const t of d.theorems) for (const u of t.uses) if (pos[u]) {
+    const [x1, y1] = pos[u], [x2, y2] = pos[t.id];
+    svg += `<path d="M${x1 + 112},${y1 + 10} C${x1 + 125},${y1 + 10} ${x2 - 14},${y2 + 10} ${x2},${y2 + 10}" fill="none" stroke="currentColor" stroke-opacity="${t.posted ? 0.45 : 0.18}" stroke-width="1"/>`;
+  }
+  for (const t of d.theorems) {
+    const [x, y] = pos[t.id];
+    svg += `<g><title>${esc(t.id)} (area ${esc(t.area)}, depth ${t.depth}): ${esc(t.statement)}</title><rect x="${x}" y="${y}" width="112" height="20" rx="4" fill="${t.posted ? '#33322f' : fill[t.area] ?? '#eee'}" stroke="currentColor" stroke-opacity="0.25"/>
+      <text x="${x + 6}" y="${y + 14}" font-size="11" fill="${t.posted ? '#fff' : '#222'}" font-weight="${t.posted ? 700 : 400}">${esc(t.id.length > 17 ? t.id.slice(0, 16) + '…' : t.id)}</text></g>`;
+  }
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" style="max-width:none;color:var(--ink,#222)">${svg}</svg>`;
+}
+
+function leanLabs(d) {
+  if (!d.setups.length) { $('l-body').innerHTML = '<p class="muted">No society experiments yet.</p>'; return; }
+  const o = d.setups[0].options;
+  const fields = [
+    ['Labs', (x) => `${x.options.agents.length}: ${[...new Set(x.options.agents)].map(esc).join(', ')}`],
+    ['Money per lab', (x) => `$${x.options.budget} (as charged)`],
+    ['Rounds, at most', (x) => x.options.rounds],
+    ['Repairs per action', (x) => `${x.options.repairs} (a lab sees Lean's errors and may fix its proof)`],
+    ['Reasoning effort', (x) => x.options.effort],
+    ['May a lab stop early?', (x) => (x.options.mayStop === false ? 'no: a pass only skips that turn' : 'yes: a pass ends its turns')],
+    ['A new result earns for itself', (x) => (x.options.knowledge === 'off' ? 'nothing (knowledge reward off)' : `a flat mint of ${x.options.mint}`)],
+    ['Value flowing back', (x) => (x.options.rules === 'oso' ? `yes: a result keeps ${x.options.alpha * 100}% and passes the rest back` : 'none')],
+    ['Others see a result', (x) => (x.options.rules === 'traditional' ? 'when its author proves a target' : x.options.rules === 'independent' ? 'never' : 'at once')],
+    ['Posted conjectures', (x) => x.options.conjectures?.length || 'none'],
+    ['Runs', (x) => `${x.done} finished of ${x.runs}`],
+  ];
+  $('l-body').innerHTML = `<div class="pane" style="overflow-x:auto"><h3 style="margin:0 0 6px;font-size:15px">Setups in ${esc(d.id)}</h3>
+    <p class="muted" style="margin:0 0 8px">Only the rules should differ between setups; everything else is held the same. Bounties: 4 · 2^(depth − 1) for each target.</p>
+    <table class="agents"><thead><tr><th></th>${d.setups.map((x) => `<th><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${x.colour};margin-right:5px"></span>${esc(x.name)}<br><span class="muted" style="font-weight:400">${esc(x.params)}</span></th>`).join('')}</tr></thead>
+    <tbody>${fields.map(([k, f]) => { const v = d.setups.map((x) => String(f(x))); const same = v.every((y) => y === v[0]);
+      return `<tr><th style="text-align:left">${esc(k)}</th>${v.map((y) => `<td${same ? ' class="muted"' : ' style="font-weight:600"'}>${y}</td>`).join('')}</tr>`; }).join('')}</tbody></table>
+    <p class="muted" style="font-size:12px;margin:8px 0 0">Bold rows differ between setups; grey rows are the same everywhere. Full options of the first run: <code>lean/runs/${esc(d.id)}-r1-${esc(d.setups[0].key)}/options.json</code>${o.design ? '' : ''}.</p></div>`;
+}
+
+function leanPrompts(d) {
+  if (!d.setups.length) { $('l-body').innerHTML = '<p class="muted">No society experiments yet.</p>'; return; }
+  const lines = d.setups.map((x) => x.system.split('\n'));
+  const everywhere = new Set(lines[0].filter((l) => lines.every((ls) => ls.includes(l))));
+  // Each setup's own lines (the rules), side by side; the text every setup shares, once.
+  const own = lines.map((ls) => ls.filter((l) => l.trim() && !everywhere.has(l)));
+  const col = (x, ls) => `<div class="pane" style="min-width:240px;flex:1"><h3 style="margin:0 0 6px;font-size:14px"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${x.colour};margin-right:5px"></span>${esc(x.name)}</h3>
+    <pre style="white-space:pre-wrap;font-size:12.5px;margin:0">${ls.map((l) => esc(l)).join('\n')}</pre></div>`;
+  $('l-body').innerHTML = `<p class="muted" style="margin:0 0 8px">The instructions lab ${d.setups[0].lab} gets in each setup of ${esc(d.id)} (the others differ only in their lab number). ${d.setups.every((x) => x.savedPrompt) ? 'As sent: saved by the run.' : '<b>Rebuilt from the current code with each run\'s settings:</b> runs before this page was added did not save their prompts; the wording has not changed since part B ran.'}</p>
+    <h3 style="font-size:15px;margin:0 0 6px">What differs between setups</h3>
+    <p class="muted" style="margin:0 0 8px">Only these lines differ. Ideally they state the rules and nothing more: any extra wording in one setup could change what its labs do, apart from the rules themselves.</p>
+    <div style="display:flex;gap:12px;overflow-x:auto;margin-bottom:12px">${d.setups.map((x, j) => col(x, own[j])).join('')}</div>
+    <details class="pane" style="margin-bottom:12px"><summary style="cursor:pointer;font-weight:700">The rest of the instructions, the same in every setup</summary><pre style="white-space:pre-wrap;font-size:12px">${esc(lines[0].map((l) => (everywhere.has(l) || !l.trim() ? l : '[the setup\'s own lines, above]')).filter((l, k, a) => !(l === a[k - 1] && l.startsWith('[the setup'))).join('\n'))}</pre></details>
+    <details class="pane"><summary style="cursor:pointer;font-weight:700">What a lab sees at the start of each turn (round 1, ${esc(d.setups[0].name)})</summary><pre style="white-space:pre-wrap;font-size:12px">${esc(d.setups[0].turn)}</pre></details>`;
+}
+
+async function leanRuns(d) {
+  if (!d.setups.length) { $('l-body').innerHTML = '<p class="muted">No society experiments yet.</p>'; return; }
+  const q = params(), rep = Number(q.get('rep') ?? d.reps[0]), setup = q.get('setup') ?? d.setups[0].key, id = `${d.id}-r${rep}-${setup}`;
+  const pick = (k, v) => { const p = params(); p.set('tab', 'runs'); p.set('exp', d.id); p.set(k, v); location.hash = '#/lean?' + p; };
+  $('l-body').innerHTML = `<div class="bar"><label>Run <select id="l-rep">${d.reps.map((r) => `<option${r === rep ? ' selected' : ''}>${r}</option>`).join('')}</select></label>
+    <label>Setup <select id="l-setup">${d.setups.map((x) => `<option value="${esc(x.key)}"${x.key === setup ? ' selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label><span class="muted" id="l-sum"></span></div><div id="l-turns"><p class="muted">Loading…</p></div>`;
+  $('l-rep').onchange = () => pick('rep', $('l-rep').value);
+  $('l-setup').onchange = () => pick('setup', $('l-setup').value);
+  let r; try { r = await api('/api/lean/run?id=' + encodeURIComponent(id)); } catch (e) { $('l-turns').textContent = `No such run: ${e.message}`; return; }
+  const what = (a) => a.kind === 'target' ? `target ${esc(a.target ?? '')}` : a.kind === 'lemma' ? `lemma ${esc(a.name ?? '?')}` : a.kind === 'conjecture' ? `conjecture ${esc(a.target ?? '')}` : a.kind === 'none' ? 'no usable reply' : a.kind === 'pass' ? 'passed' : esc(a.kind);
+  const spent = r.actions.reduce((x, a) => x + (a.cost ?? 0), 0);
+  $('l-sum').textContent = `${r.actions.length} turns, $${spent.toFixed(2)} spent, ${new Set(r.actions.filter((a) => a.kind === 'target' && a.ok).map((a) => a.target)).size} of 8 targets proved${r.finished ? '' : ' (still running)'}`;
+  $('l-turns').innerHTML = `<table class="agents" style="width:100%"><thead><tr><th>Round</th><th>Lab</th><th>Action</th><th>Result</th><th>Uses</th><th>Cost</th></tr></thead><tbody>${r.actions.map((a, j) => `
+    <tr class="l-row" data-j="${j}" style="cursor:pointer"><td>${a.round}</td><td>${a.agent + 1}</td><td>${what(a)}</td><td>${a.ok ? '<span style="color:var(--good)">✓ accepted</span>' : `<span class="muted">${esc(a.reason ?? 'failed')}</span>`}</td>
+    <td style="font-size:12px">${(a.uses ?? []).map((u) => esc(String(u).replace(/^OSO\./, ''))).join(', ')}</td><td>$${(a.cost ?? 0).toFixed(3)}</td></tr>
+    <tr class="hidden" id="l-t${j}"><td colspan="6">${(a.transcript ?? []).map((t, k) => `<div class="muted" style="font-size:12px;margin-top:6px">${k ? `Repair ${k}` : 'Reply'}</div><pre style="white-space:pre-wrap;font-size:12px;margin:2px 0">${esc(t.text)}</pre>${t.errors?.length ? `<pre class="err" style="white-space:pre-wrap;font-size:12px">${esc(t.errors.join('\n'))}</pre>` : ''}`).join('') || '<span class="muted">No transcript saved.</span>'}</td></tr>`).join('')}</tbody></table>`;
+  for (const tr of $('l-turns').querySelectorAll('.l-row')) tr.onclick = () => $('l-t' + tr.dataset.j).classList.toggle('hidden');
+}
 </script>
 </body>
 </html>

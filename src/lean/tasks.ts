@@ -108,6 +108,24 @@ export function asAxiom(t: { ns: string; short: string; signature: string }): st
   return `namespace ${t.ns}\n${t.ns === 'OSO' ? 'open M2 in\n' : ''}axiom ${t.short} ${t.signature}\nend ${t.ns}`;
 }
 
+/** The posted targets and the three areas in plain words, for people reading the experiment (not shown to the labs). */
+export const PLAIN: Record<string, string> = {
+  C3: 'The determinant of a product of two 2×2 matrices is the product of their determinants.',
+  A3: 'A term of the sequence divides every term whose position is a multiple of its own: u(m) divides u(m·k).',
+  C4: 'Matrix powers multiply out: x to the power m·n equals (x to the power m) to the power n.',
+  X1: "Cassini's identity for the sequence: u(n+1)² − u(n+2)·u(n) = (−3)ⁿ. Links the sequence to matrix powers.",
+  B3: "Insertion sort's output is sorted.",
+  B5: 'Merge sort and insertion sort give exactly the same list, for any list of numbers.',
+  X2: 'Sorting the first n terms of the sequence changes nothing: the sequence is already in increasing order.',
+  A5: 'The greatest common divisor of two terms is the term at the gcd of their positions: gcd(u(m), u(n)) = u(gcd(m, n)).',
+};
+export const AREAS: Record<string, string> = {
+  A: 'A number sequence: u(0) = 0, u(1) = 1, u(n+2) = 5·u(n+1) + 3·u(n), so 0, 1, 5, 28, 155, …',
+  B: 'Sorting: insertion sort and merge sort on lists of numbers.',
+  C: '2×2 integer matrices: product, determinant, powers.',
+  cross: 'Mixes two areas.',
+};
+
 export function definitions(): string {
   return readFileSync(join(LEAN_DIR, 'Problems', 'Defs.lean'), 'utf8');
 }

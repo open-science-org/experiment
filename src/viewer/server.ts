@@ -13,9 +13,9 @@ import { traceRun } from '../engine/model.ts';
 import { expand, loadExperiment, OUTCOMES, PROGRESS, PROGRESS_POINTS, preset } from '../experiments/experiment.ts';
 import { MEASURE_NAMES, VALUES } from '../engine/measures.ts';
 import { loadSpace, spaceIds, withCalibratedBudget, type Space } from '../spaces/spaces.ts';
-import { LEAN_DIR, leanAvailable, loadTasks } from '../lean/tasks.ts';
+import { AREAS, LEAN_DIR, PLAIN, definitions, leanAvailable, loadTasks } from '../lean/tasks.ts';
 import * as design from './design.ts';
-import { LEAN_REWARDS, progress, type CommunityResult } from '../lean/community.ts';
+import { Community, LEAN_REWARDS, progress, type CommunityResult } from '../lean/community.ts';
 import { SOCIETIES } from '../lean/societies.ts';
 import { creditLeft } from '../lean/agent.ts';
 import { allCards } from '../card.ts';
@@ -275,6 +275,53 @@ async function models() {
  * The Progress page: every society experiment (runs done, running, waiting, with the money-vs-targets
  * curve of each), every Phase 0 benchmark run, and the credit left. No transcripts or proofs.
  */
+/** The Lean experiment explained: the problems, the society experiments, each setup's labs and exact prompts. */
+function leanData(exp: string) {
+  const tasks = loadTasks();
+  const label = new Map(tasks.map((t) => [t.name, t.posted ? t.publicId : t.short]));
+  const below = (name: string, seen = new Set<string>()): Set<string> => {
+    for (const u of tasks.find((t) => t.name === name)?.uses ?? []) if (!seen.has(u)) { seen.add(u); below(u, seen); }
+    return seen;
+  };
+  const dir = join(LEAN_DIR, 'runs');
+  const keys = Object.keys(SOCIETIES).sort((a, b) => b.length - a.length);
+  const runs = new Map<string, { key: string; rep: number; done: boolean }[]>();
+  for (const d of existsSync(dir) ? readdirSync(dir) : []) {
+    const m = /^(.*)-r(\d+)-(.+)$/.exec(d);
+    if (!m || !keys.includes(m[3]) || m[1].startsWith('test-') || !existsSync(join(dir, d, 'options.json'))) continue;
+    runs.set(m[1], [...(runs.get(m[1]) ?? []), { key: m[3], rep: Number(m[2]), done: existsSync(join(dir, d, 'result.json')) }]);
+  }
+  const saved = (run: string) => (existsSync(join(dir, run, 'prompts.json')) ? JSON.parse(readFileSync(join(dir, run, 'prompts.json'), 'utf8')) as string[] : null);
+  const experiments = [...runs.keys()].sort((a, b) => statSync(join(dir, `${b}-r1-${runs.get(b)![0].key}`)).mtimeMs - statSync(join(dir, `${a}-r1-${runs.get(a)![0].key}`)).mtimeMs);
+  const id = runs.has(exp) ? exp : experiments[0];
+  const mine = runs.get(id) ?? [];
+  const setups = [...new Set(mine.map((r) => r.key))].sort((a, b) => Object.keys(SOCIETIES).indexOf(a) - Object.keys(SOCIETIES).indexOf(b)).map((key) => {
+    const first = mine.filter((r) => r.key === key).sort((a, b) => a.rep - b.rep)[0];
+    const options = JSON.parse(readFileSync(join(dir, `${id}-r${first.rep}-${key}`, 'options.json'), 'utf8'));
+    const com = new Community(options);
+    const lab = Math.min(1, options.agents.length - 1);
+    const done = mine.filter((r) => r.key === key && r.done).map((r) => JSON.parse(readFileSync(join(dir, `${id}-r${r.rep}-${key}`, 'result.json'), 'utf8')) as CommunityResult);
+    const proved = Object.fromEntries(tasks.filter((t) => t.posted).map((t) => [t.publicId, done.filter((r) => r.library.some((e) => e.target === t.publicId)).length]));
+    return { key, name: SOCIETIES[key].name, params: SOCIETIES[key].params, colour: SOCIETIES[key].colour, options, runs: mine.filter((r) => r.key === key).length, done: done.length, proved,
+      system: saved(`${id}-r${first.rep}-${key}`)?.[lab] ?? com.systemPrompt(lab), savedPrompt: !!saved(`${id}-r${first.rep}-${key}`), turn: com.turnPrompt(lab, 1), lab: lab + 1 };
+  });
+  return {
+    experiments, id, setups, reps: [...new Set(mine.map((r) => r.rep))].sort((a, b) => a - b),
+    areas: AREAS, definitions: definitions(),
+    theorems: tasks.map((t) => ({ id: label.get(t.name), depth: t.depth, area: t.area, posted: t.posted ? t.publicId : null, statement: t.signature, uses: t.uses.map((u) => label.get(u)) })),
+    targets: tasks.filter((t) => t.posted).map((t) => ({ id: t.publicId, name: t.short, area: t.area, depth: t.depth, bounty: 4 * 2 ** (t.depth - 1), plain: PLAIN[t.publicId] ?? '', statement: t.signature,
+      uses: t.uses.map((u) => label.get(u)), below: below(t.name).size })),
+  };
+}
+
+/** Every turn of one society run, with the lab's replies and Lean's errors. */
+function leanRun(id: string) {
+  if (!/^[\w.-]+$/.test(id)) throw new Error('bad run id');
+  const d = join(LEAN_DIR, 'runs', id);
+  if (!existsSync(join(d, 'options.json'))) throw new Error('no such run');
+  return { id, options: JSON.parse(readFileSync(join(d, 'options.json'), 'utf8')), actions: jsonl(join(d, 'actions.jsonl')), finished: existsSync(join(d, 'result.json')) };
+}
+
 async function progressData() {
   const dir = join(LEAN_DIR, 'runs');
   const keys = Object.keys(SOCIETIES).sort((a, b) => b.length - a.length);
@@ -362,6 +409,8 @@ const server = createServer(async (req, res) => {
     if (url.pathname === '/api/models') return send(200, await models());
     if (url.pathname === '/api/balance') return send(200, await balance());
     if (url.pathname === '/api/progress') return send(200, await progressData());
+    if (url.pathname === '/api/lean') return send(200, leanAvailable() ? leanData(url.searchParams.get('exp') ?? '') : null);
+    if (url.pathname === '/api/lean/run') return send(200, leanRun(url.searchParams.get('id') ?? ''));
     if (url.pathname === '/api/design/field') return send(200, design.fieldValues(url.searchParams.get('id') ?? ''));
     if (url.pathname === '/api/jobs') return send(200, design.listJobs());
     if (url.pathname.startsWith('/api/jobs/')) return send(200, design.getJob(url.pathname.slice('/api/jobs/'.length)));
