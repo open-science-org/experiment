@@ -308,6 +308,8 @@ function leanData(exp: string) {
     const done = mine.filter((r) => r.key === key && r.done).map((r) => JSON.parse(readFileSync(join(dir, `${id}-r${r.rep}-${key}`, 'result.json'), 'utf8')) as CommunityResult);
     const proved = Object.fromEntries(tasks.filter((t) => t.posted).map((t) => [t.publicId, done.filter((r) => r.library.some((e) => e.target === t.publicId)).length]));
     return { key, name: SOCIETIES[key].name, params: SOCIETIES[key].params, colour: SOCIETIES[key].colour, options, runs: mine.filter((r) => r.key === key).length, done: done.length, proved,
+      // Each finished run's targets proved by money spent, for the mean graph.
+      curves: done.map((r) => progress(r).map(([x, y]) => [Math.round(x * 1e4) / 1e4, y])),
       system: saved(`${id}-r${first.rep}-${key}`)?.prompts[lab] ?? com.systemPrompt(lab), promptFrom: saved(`${id}-r${first.rep}-${key}`)?.rebuilt ?? (saved(`${id}-r${first.rep}-${key}`) ? 'sent' : 'current'), turn: com.turnPrompt(lab, 1), lab: lab + 1 };
   });
   return {
