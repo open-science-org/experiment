@@ -1,0 +1,62 @@
+{
+ "id": "lean-main-b",
+ "kind": "race",
+ "date": "2026-11-07",
+ "title": "Societies compared: verified targets for the money (lean-main-b)",
+ "ranAt": "2026-11-07T08:11:39.791Z",
+ "design": {
+  "question": "For the same agents, checker and money, does OSO reach the same verified targets for less than other ways of organizing the agents?",
+  "compare": "Shared library, OSO, α 0.8, OSO, α 0.2, Traditional",
+  "fixed": "the same 4 agents (the single agent: the first, with all the money), $0.60 in all, Lean checks every proof",
+  "measure": "money spent to verify 3 of the counted targets (C3, A3, C4, X1, B3, B5, X2, A5); a run that never does counts as its whole budget",
+  "better": "lower",
+  "runs": "20 runs per society, paired"
+ },
+ "answer": "OSO, α 0.8 reached 3 verified targets for $0.05 on average, $0.01 more than Shared library over 20 paired runs (Shared library cheaper; ±$0.01). OSO, α 0.2 reached 3 verified targets for $0.05 on average, $0.01 more than Shared library over 20 paired runs (no clear difference; ±$0.01).",
+ "table": [
+  {
+   "society": "Shared library",
+   "settings": "shared at once · α 1",
+   "money to 3 targets": "$0.04 ± 0.02",
+   "got there": "20 of 20",
+   "targets at full budget": "5.85 of 8",
+   "spent": "$0.61",
+   "work done twice": "3.70"
+  },
+  {
+   "society": "OSO, α 0.8",
+   "settings": "shared at once · α 0.8",
+   "money to 3 targets": "$0.05 ± 0.02",
+   "got there": "20 of 20",
+   "targets at full budget": "5.80 of 8",
+   "spent": "$0.60",
+   "work done twice": "3.15"
+  },
+  {
+   "society": "OSO, α 0.2",
+   "settings": "shared at once · α 0.2",
+   "money to 3 targets": "$0.05 ± 0.03",
+   "got there": "20 of 20",
+   "targets at full budget": "6.25 of 8",
+   "spent": "$0.61",
+   "work done twice": "3.05"
+  },
+  {
+   "society": "Traditional",
+   "settings": "shared when a target is proved · α 1",
+   "money to 3 targets": "$0.05 ± 0.02",
+   "got there": "20 of 20",
+   "targets at full budget": "5.80 of 8",
+   "spent": "$0.61",
+   "work done twice": "2.95"
+  }
+ ],
+ "caveats": [
+  "Labs could not stop early: each worked until its money or the rounds ran out, so setups are compared at the same money spent.",
+  "Rewards differ from the current simulation model: the knowledge reward is off (the simulation pays 1 per new bit since v5): Lean has no agreed measure of a result's new knowledge yet, see docs/design.md; value flowing back is still split by the money spent proving each parent, not by the work a parent saves (1/p) as in the simulation.",
+  "Values are mean ± standard deviation over runs; the verdict compares runs in pairs (run k of each society), with ± two standard errors of the difference."
+ ],
+ "cost": "$48.68 as charged",
+ "page": "results/community/lean-main-b/summary.md",
+ "chart": "results/community/lean-main-b/figures/progress.svg"
+}

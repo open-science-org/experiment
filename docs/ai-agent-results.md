@@ -67,7 +67,7 @@ Money to reach 2 counted targets, run by run (OSO / traditional): $0.25 / never,
 
 ## 4. The main experiment, part B (2026-11-08)
 
-**Question, fixed in advance** (the design is in the local notes, `notes/lean-main-experiment.md`): at the same money **spent**, does a community prove more when value flows back (OSO) than when results are only shared (a shared library)? 4 DeepSeek V4.1 Flash labs, $0.15 each; labs could not stop early, so every run spent its money (about $0.61); 20 runs per setup; knowledge reward off; bounties 4 · 2^(depth − 1). Results: [lean-main-b](../results/community/lean-main-b/summary.md). Traditional (20 runs) was added afterwards as a reference and is still running.
+**Question, fixed in advance** (the design is in the local notes, `notes/lean-main-experiment.md`): at the same money **spent**, does a community prove more when value flows back (OSO) than when results are only shared (a shared library)? 4 DeepSeek V4.1 Flash labs, $0.15 each; labs could not stop early, so every run spent its money (about $0.61); 20 runs per setup; knowledge reward off; bounties 4 · 2^(depth − 1). Results: [lean-main-b](../results/community/lean-main-b/summary.md). Traditional (20 runs) was added afterwards as a reference point; its runs came after the others'. The run summary's own headline uses money to reach 3 targets, its built-in measure, not the measure fixed in advance below.
 
 ### The answer: no clear difference
 
@@ -75,11 +75,12 @@ Targets proved by the end, of 8 (the measure fixed in advance):
 
 | Setup | Mean | Spread | Against the shared library |
 | --- | --- | --- | --- |
+| Traditional | 5.80 | 4–7 | (reference) |
 | Shared library (α 1) | 5.85 | 4–7 | |
 | OSO, α 0.8 | 5.80 | 4–8 | −0.05 (not clear) |
 | OSO, α 0.2 | 6.25 | 5–8 | +0.40 (not clear: 1.6 standard errors; clear needs 2) |
 
-By the rule fixed in advance, neither OSO setting is clearly ahead of the shared library. Runs varied less than in the pilot (about ±0.8 targets against ±1.4), so the test was sharper than planned.
+By the rule fixed in advance, neither OSO setting is clearly ahead of the shared library. Against traditional (secondary): OSO α 0.2 +0.45 (1.6 standard errors, not clear), OSO α 0.8 0.00, shared library +0.05. **Sharing alone did not help here:** the shared library proved no more than traditional. Runs varied less than in the pilot (about ±0.8 targets against ±1.4), so the test was sharper than planned.
 
 ### What changed: which targets, and how labs worked (exploratory)
 
@@ -89,7 +90,8 @@ Looked for after seeing the results, so these are leads, not findings.
 
 | Setup | B5, merge sort = insertion sort (depth 5, bounty 64, 5 lemmas in our proof) | X1, Cassini's identity (depth 3, bounty 16, 2 lemmas) | The other six |
 | --- | --- | --- | --- |
-| Shared library | **0** | 17 | about the same in every setup: C3, A3, C4, B3, X2 nearly always; A5 almost never |
+| Traditional | 3 | 14 | about the same in every setup: C3, A3, C4, B3, X2 nearly always; A5 almost never |
+| Shared library | **0** | 17 | |
 | OSO, α 0.8 | **5** | 10 | |
 | OSO, α 0.2 | **11** | 13 | |
 
@@ -97,11 +99,12 @@ Looked for after seeing the results, so these are leads, not findings.
 
 | Setup | Lemmas proved | Results built on another lab's work | Lemmas proved twice |
 | --- | --- | --- | --- |
+| Traditional | 7.2 | 0.6 | 3.0 |
 | Shared library | 7.2 | 2.6 | 3.7 |
 | OSO, α 0.8 | 10.7 | 4.3 | 3.1 |
 | OSO, α 0.2 | 13.8 | 6.6 | 3.0 |
 
-**What it suggests:** flow-back changes what labs do. The more value flows back (lower α), the more groundwork labs do and the more they build on each other's. That groundwork opens a hard target that needs many lemmas (B5). It costs some quicker wins on a target that needs few (X1). The measure fixed in advance counts every target the same, so the shift barely moves the total. This is the behaviour OSO is meant to cause, seen in real AI agents for the first time. It still needs a test fixed in advance.
+**What it suggests:** flow-back changes what labs do; sharing alone does not. Traditional and the shared library do the same amount of groundwork (7.2 lemmas a run); only flow-back raises it. The more value flows back (lower α), the more groundwork labs do and the more they build on each other's. That groundwork opens a hard target that needs many lemmas (B5). It costs some quicker wins on a target that needs few (X1). The measure fixed in advance counts every target the same, so the shift barely moves the total. This is the behaviour OSO is meant to cause, seen in real AI agents for the first time. It still needs a test fixed in advance.
 
 **How to confirm it:** in part A, fix in advance a measure that counts hard targets more: bounty won (B5 is worth 64, X1 16), or whether the hard targets (B5, X2, A5) are proved.
 
