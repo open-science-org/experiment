@@ -118,7 +118,7 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
     answer,
     table: rows.map((r) => r.row),
     caveats: [
-      ...(LEAN_REWARDS.differs.length ? [`Rewards follow the simulation's model v${LEAN_REWARDS.follows}, not the current one: ${LEAN_REWARDS.differs.join('; ')}.`] : []),
+      ...(LEAN_REWARDS.differs.length ? [`Rewards are the simulation's old ones (model v${LEAN_REWARDS.follows}), not the current ones: ${LEAN_REWARDS.differs.join('; ')}.`] : []),
       ...(local ? ['Models on this machine cost nothing; dollars price their tokens as a cheap open model would be served. A test of the setup, not a cost result.'] : []),
       'Values are mean ± standard deviation over runs; the verdict compares runs in pairs (run k of each society), with ± two standard errors of the difference.',
       ...(runs.some((r) => r.result.stopped) ? [`Some runs stopped early (${[...new Set(runs.map((r) => r.result.stopped).filter(Boolean))].join(', ')}); their money counts as spent up to the stop.`] : []),

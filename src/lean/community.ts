@@ -37,8 +37,8 @@ export const LEAN_REWARDS = {
   follows: 3,
   checkedAgainst: 6,
   differs: [
-    'a flat mint of 1 per new result, 15% of it to the results it cites; the simulation pays a knowledge reward per new bit instead (since v5)',
-    'value flowing back is split by the money spent proving each parent; the simulation splits by the work a parent saves (1/p)',
+    'still the old flat mint (1 per new result, easy or hard, 15% to the results it cites), not the knowledge reward per new bit the simulation has paid since v5',
+    'value flowing back is still split by the money spent proving each parent, not by the work a parent saves (1/p) as in the simulation',
   ],
 };
 /** Rules under which a result is public as soon as Lean accepts it. */
