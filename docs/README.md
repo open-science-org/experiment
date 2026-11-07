@@ -47,5 +47,6 @@ One word for each idea, used everywhere in this repository.
 - [The code at a glance](codebase.md): one diagram of the three parts (simulation, AI models on our Lean problems, harness check) and what they share.
 - [Code guide](simulator.md): where the model lives in the code, configuration, plugins and tests.
 - [The default settings](../config/scenarios/default.yaml), each with a comment.
-- [The Lean problems](../lean/README.md): the AI-model tests.
+- [The Lean experiment](lean-experiment.md): the AI-model tests: the problems and how they were chosen, the agents, setups, prompts and measures. Results: [AI agents on the Lean problems](ai-agent-results.md).
+- [The Lean problems](../lean/README.md): the problem set itself.
 - [The repository](../README.md): commands, layout and the app.

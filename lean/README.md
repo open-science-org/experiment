@@ -1,6 +1,6 @@
 # The Lean problem set
 
-The problems for the AI-model tests (see [the design](../docs/design.md)). Agents prove theorems in Lean 4.35.0, with Lean's core library and no Mathlib; Lean checks every proof, and a proof records exactly which earlier theorems it uses.
+The problems for the AI-model tests (see [the Lean experiment design](../docs/lean-experiment.md)). Agents prove theorems in Lean 4.35.0, with Lean's core library and no Mathlib; Lean checks every proof, and a proof records exactly which earlier theorems it uses.
 
 **Public here:** the definitions every agent sees ([Problems/Defs.lean](Problems/Defs.lean)) and the posted targets ([Problems/Targets.lean](Problems/Targets.lean)). Three areas: a number sequence (A), sorting (B) and 2 × 2 integer matrices (C), with targets that join areas.
 
