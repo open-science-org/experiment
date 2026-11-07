@@ -1,0 +1,138 @@
+{
+ "id": "knowledge-reward-by-step",
+ "kind": "simulation",
+ "date": "2026-11-07",
+ "ranAt": "2026-11-07T07:16:24.414Z",
+ "modelVersion": 6,
+ "title": "Does the knowledge reward matter? Step by step, with and without",
+ "design": {
+  "question": "Does paying a knowledge reward (1 per new bit, flowing back with α) change how far a society gets, and when?",
+  "compare": "the knowledge reward on (1 per new bit) and off (0), at each step of the model and each α",
+  "fixed": "everything else in each step experiment (6 × 8 generated graphs, 12 agents, budget 1,200); the same graphs and luck with and without",
+  "measure": "targets solved (of 2)",
+  "better": "higher",
+  "runs": "100 runs per point, paired"
+ },
+ "answer": "With sharing set by the rules and equal money (step 1), the knowledge reward changes nothing. Once agents choose what to share and money follows earnings (steps 3-5), it matters at high α: at α = 0.8 a society solves 1.8 of 2 targets with it and 0.4 without (step 3). At α = 0.2 or 0 it barely matters: flowing value back already pays for intermediate work.",
+ "table": [
+  {
+   "step": "1",
+   "society": "α = 1",
+   "with": "2.00",
+   "without": "1.99",
+   "difference": "+0.01"
+  },
+  {
+   "step": "1",
+   "society": "α = 0.8",
+   "with": "2.00",
+   "without": "2.00",
+   "difference": "+0.00"
+  },
+  {
+   "step": "1",
+   "society": "α = 0.2",
+   "with": "2.00",
+   "without": "2.00",
+   "difference": "+0.00"
+  },
+  {
+   "step": "2",
+   "society": "α = 1",
+   "with": "0.37",
+   "without": "0.34",
+   "difference": "+0.03"
+  },
+  {
+   "step": "2",
+   "society": "α = 0.8",
+   "with": "0.53",
+   "without": "0.35",
+   "difference": "+0.18 (clear)"
+  },
+  {
+   "step": "2",
+   "society": "α = 0.2",
+   "with": "1.97",
+   "without": "1.88",
+   "difference": "+0.09 (clear)"
+  },
+  {
+   "step": "3",
+   "society": "α = 1",
+   "with": "1.53",
+   "without": "0.41",
+   "difference": "+1.12 (clear)"
+  },
+  {
+   "step": "3",
+   "society": "α = 0.8",
+   "with": "1.79",
+   "without": "0.40",
+   "difference": "+1.39 (clear)"
+  },
+  {
+   "step": "3",
+   "society": "α = 0.2",
+   "with": "2.00",
+   "without": "1.88",
+   "difference": "+0.12 (clear)"
+  },
+  {
+   "step": "4",
+   "society": "α = 1",
+   "with": "1.98",
+   "without": "0.93",
+   "difference": "+1.05 (clear)"
+  },
+  {
+   "step": "4",
+   "society": "α = 0.8",
+   "with": "1.91",
+   "without": "1.08",
+   "difference": "+0.83 (clear)"
+  },
+  {
+   "step": "4",
+   "society": "α = 0.2",
+   "with": "1.99",
+   "without": "1.96",
+   "difference": "+0.03"
+  },
+  {
+   "step": "5",
+   "society": "α = 1",
+   "with": "1.97",
+   "without": "0.95",
+   "difference": "+1.02 (clear)"
+  },
+  {
+   "step": "5",
+   "society": "α = 0.8",
+   "with": "1.92",
+   "without": "0.94",
+   "difference": "+0.98 (clear)"
+  },
+  {
+   "step": "5",
+   "society": "α = 0.2",
+   "with": "2.00",
+   "without": "1.93",
+   "difference": "+0.07 (clear)"
+  }
+ ],
+ "caveats": [
+  "Exploratory, not fixed in advance: a first look with 40 runs per point came first (2026-11-06); this is the same comparison with more runs.",
+  "\"Clear\" means the paired difference is more than two standard errors from zero.",
+  "Step 1 has no α = 0 row; its open societies set β = 1, so sharing is fixed at 100%.",
+  "Why it matters for the Lean runs: there, money does not follow earnings and labs do not choose what to publish (like step 1), so on these results a knowledge reward would change little until money follows earnings."
+ ],
+ "page": "results/knowledge-reward-by-step/summary.md",
+ "chart": "results/knowledge-reward-by-step/figures/by-step.svg",
+ "tags": [
+  "knowledge reward",
+  "step by step",
+  "mint",
+  "α"
+ ]
+}

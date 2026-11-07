@@ -73,6 +73,14 @@ if (target === 'ladder') {
   process.exit(0);
 }
 
+if (target === 'knowledge-reward') {
+  // The model step by step with and without the knowledge reward: npm run sim -- knowledge-reward [--seeds N].
+  const { writeKnowledgeReward } = await import('./report/knowledgeReward.ts');
+  const n = args.includes('--seeds') ? Number(args[args.indexOf('--seeds') + 1]) : 100;
+  console.log(`${writeKnowledgeReward(n)}/summary.md`);
+  process.exit(0);
+}
+
 if (target === 'summary-figures') {
   // The README's results plots, from saved results.
   const { writeSummaryFigures } = await import('./report/summary.ts');
