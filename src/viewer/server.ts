@@ -311,7 +311,7 @@ async function progressData() {
   const key = process.env.OPENROUTER_API_KEY;
   let credit: number | null = null;
   try { credit = key ? await creditLeft(key) : null; } catch { credit = null; }
-  return { now: Date.now(), credit, societies: Object.fromEntries(Object.entries(SOCIETIES).map(([k, v]) => [k, { name: v.name, colour: v.colour }])), experiments, bench };
+  return { now: Date.now(), credit, societies: Object.fromEntries(Object.entries(SOCIETIES).map(([k, v]) => [k, { name: v.name, params: v.params, colour: v.colour }])), experiments, bench };
 }
 
 /** What is left on the OpenRouter key's limit (the key itself is never sent to the page). */

@@ -8,17 +8,17 @@ import { lineChart } from '../report/figures.ts';
 import { writeCard } from '../card.ts';
 import { RESULTS_DIR } from '../paths.ts';
 
-export interface Society { name: string; rules: Rules; alpha?: number; /** One lab with everyone's budget. */ single?: boolean; colour: string; slot: 1 | 2 | 3 }
+export interface Society { name: string; /** The setup in OSO settings: when others see a result, α, c, who decides the work. */ params: string; rules: Rules; alpha?: number; /** One lab with everyone's budget. */ single?: boolean; colour: string; slot: 1 | 2 | 3 }
 
 /** OSO is orange, traditional blue; the baselines are greys. */
 export const SOCIETIES: Record<string, Society> = {
-  single: { name: 'Single agent', rules: 'independent', single: true, colour: '#5f5e5a', slot: 3 },
-  independent: { name: 'Independent labs', rules: 'independent', colour: '#8a8984', slot: 3 },
-  shared: { name: 'Shared library', rules: 'shared', colour: '#b3b1aa', slot: 3 },
-  planner: { name: 'Planner', rules: 'planner', colour: '#33322f', slot: 3 },
-  traditional: { name: 'Traditional', rules: 'traditional', colour: '#2a78d6', slot: 1 },
-  oso: { name: 'OSO, α 0.8', rules: 'oso', alpha: 0.8, colour: '#eb6834', slot: 2 },
-  'oso-0.2': { name: 'OSO, α 0.2', rules: 'oso', alpha: 0.2, colour: '#f2a07b', slot: 2 },
+  single: { name: 'Single agent', params: 'one lab, all the money · α 1, c 0', rules: 'independent', single: true, colour: '#5f5e5a', slot: 3 },
+  independent: { name: 'Independent labs', params: 'results never shared · α 1, c 0', rules: 'independent', colour: '#8a8984', slot: 3 },
+  shared: { name: 'Shared library', params: 'shared at once · α 1, c 0', rules: 'shared', colour: '#b3b1aa', slot: 3 },
+  planner: { name: 'Planner', params: 'shared at once · α 1, c 0 · lab 1 assigns the work', rules: 'planner', colour: '#33322f', slot: 3 },
+  traditional: { name: 'Traditional', params: 'shared when a target is proved · α 1, c 0', rules: 'traditional', colour: '#2a78d6', slot: 1 },
+  oso: { name: 'OSO, α 0.8', params: 'shared at once · α 0.8, c 0.15', rules: 'oso', alpha: 0.8, colour: '#eb6834', slot: 2 },
+  'oso-0.2': { name: 'OSO, α 0.2', params: 'shared at once · α 0.2, c 0.15', rules: 'oso', alpha: 0.2, colour: '#f2a07b', slot: 2 },
 };
 
 /** A society's options from the common ones: the same total money in every society. */
@@ -79,6 +79,7 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
       key, to,
       row: {
         society: SOCIETIES[key].name,
+        settings: SOCIETIES[key].params,
         [`money to ${k} targets`]: `$${f2(mean(to))} ± ${f2(sd(to))}`,
         'got there': `${rs.filter((r) => spendTo(r, k) !== null).length} of ${rs.length}`,
         'targets at full budget': `${f2(mean(st.map((x) => x.countedSolved)))} of ${counted.length}`,

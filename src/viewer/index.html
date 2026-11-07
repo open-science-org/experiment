@@ -2049,7 +2049,7 @@ function renderProgress() {
     : r.status === 'running' ? `<b>running</b>, round ${r.round}<br>${r.solved} targets, $${r.spent.toFixed(2)}`
     : r.status === 'stopped' ? `<span style="color:var(--bad)">stopped</span><br>${r.solved} targets, $${r.spent.toFixed(2)}`
     : `${r.solved} targets<br>$${r.spent.toFixed(2)}${r.stopped ? ` <span class="muted">(${esc(r.stopped)})</span>` : ''}`;
-  $('p-grid').innerHTML = `<table class="agents"><thead><tr><th>Setup</th>${Array.from({ length: reps }, (_, i) => `<th>Run ${i + 1}</th>`).join('')}</tr></thead><tbody>${keys.map((k) => `<tr><td><svg width="22" height="10" aria-hidden="true"><line x1="0" x2="22" y1="5" y2="5" stroke="${(P_STYLE[k] ?? [])[0]}" stroke-width="2" stroke-dasharray="${(P_STYLE[k] ?? [])[1]}"/></svg> ${esc(d.societies[k]?.name ?? k)}</td>${Array.from({ length: reps }, (_, i) => `<td>${cell(run(k, i + 1))}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  $('p-grid').innerHTML = `<table class="agents"><thead><tr><th>Setup</th>${Array.from({ length: reps }, (_, i) => `<th>Run ${i + 1}</th>`).join('')}</tr></thead><tbody>${keys.map((k) => `<tr><td><svg width="22" height="10" aria-hidden="true"><line x1="0" x2="22" y1="5" y2="5" stroke="${(P_STYLE[k] ?? [])[0]}" stroke-width="2" stroke-dasharray="${(P_STYLE[k] ?? [])[1]}"/></svg> ${esc(d.societies[k]?.name ?? k)}<div class="muted" style="font-size:11px;margin-left:26px">${esc(d.societies[k]?.params ?? '')}</div></td>${Array.from({ length: reps }, (_, i) => `<td>${cell(run(k, i + 1))}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
   drawBench();
 }
 function drawBench() {
