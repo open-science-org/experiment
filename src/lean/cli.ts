@@ -19,7 +19,9 @@
 import { chatFor, creditLeft, DEFAULT_MODEL, DEFAULT_MODELS, defaultProvider, type Provider } from './agent.ts';
 import { estimate, readRun, writeComparison, referenceChat, runPilot, writeMeasuredWorld, writeSummary, type Condition, type PilotOptions } from './pilot.ts';
 import { selftest } from './selftest.ts';
-import { leanAvailable, loadTasks } from './tasks.ts';
+import { writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { LEAN_DIR, leanAvailable, loadTasks } from './tasks.ts';
 
 const args = process.argv.slice(2);
 const [cmd, arg] = args;
@@ -128,6 +130,8 @@ if (cmd === 'community') {
     const k = Number(pick('k', '2'));
     const opts = { ...base, rules: 'oso' as const, allowGrind: stub };
     const done = [];
+    // The plan, so the viewer's Progress page can show runs still waiting.
+    writeFileSync(join(LEAN_DIR, 'runs', `${id}.plan.json`), JSON.stringify({ id, societies, repeats, k, startedAt: Date.now() }) + '\n');
     for (let rep = 1; rep <= repeats; rep++) {
       for (const key of societies) {
         console.log(`\nRun ${rep} of ${repeats}, ${key}:`);

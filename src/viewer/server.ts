@@ -15,6 +15,9 @@ import { MEASURE_NAMES, VALUES } from '../engine/measures.ts';
 import { loadSpace, spaceIds, withCalibratedBudget, type Space } from '../spaces/spaces.ts';
 import { LEAN_DIR, leanAvailable, loadTasks } from '../lean/tasks.ts';
 import * as design from './design.ts';
+import { progress, type CommunityResult } from '../lean/community.ts';
+import { SOCIETIES } from '../lean/societies.ts';
+import { creditLeft } from '../lean/agent.ts';
 import { allCards } from '../card.ts';
 
 const PORT = Number(process.env.PORT ?? 8791);
@@ -268,6 +271,49 @@ async function models() {
   return list;
 }
 
+/**
+ * The Progress page: every society experiment (runs done, running, waiting, with the money-vs-targets
+ * curve of each), every Phase 0 benchmark run, and the credit left. No transcripts or proofs.
+ */
+async function progressData() {
+  const dir = join(LEAN_DIR, 'runs');
+  const keys = Object.keys(SOCIETIES).sort((a, b) => b.length - a.length);
+  const groups = new Map<string, { id: string; plan: { societies: string[]; repeats: number; k: number; startedAt?: number } | null; runs: Record<string, unknown>[] }>();
+  for (const d of existsSync(dir) ? readdirSync(dir) : []) {
+    const m = /^(.*)-r(\d+)-(.+)$/.exec(d);
+    if (!m || !keys.includes(m[3]) || m[1].startsWith('test-') || !existsSync(join(dir, d, 'options.json'))) continue;
+    const opts = JSON.parse(readFileSync(join(dir, d, 'options.json'), 'utf8'));
+    const actions = jsonl(join(dir, d, 'actions.jsonl'));
+    const f = join(dir, d, 'actions.jsonl');
+    const modified = existsSync(f) ? statSync(f).mtimeMs : 0;
+    const finished = existsSync(join(dir, d, 'result.json'));
+    const result = finished ? JSON.parse(readFileSync(join(dir, d, 'result.json'), 'utf8')) as CommunityResult : null;
+    const pts = progress(result ?? ({ opts, actions } as unknown as CommunityResult));
+    type Group = typeof groups extends Map<string, infer G> ? G : never;
+    const g: Group = groups.get(m[1]) ?? { id: m[1], plan: existsSync(join(dir, `${m[1]}.plan.json`)) ? JSON.parse(readFileSync(join(dir, `${m[1]}.plan.json`), 'utf8')) : null, runs: [] };
+    g.runs.push({
+      key: m[3], rep: Number(m[2]), status: finished ? 'done' : Date.now() - modified < 10 * 60_000 ? 'running' : 'stopped',
+      round: actions.reduce((a, x) => Math.max(a, x.round ?? 0), 0), rounds: opts.rounds, budget: opts.budget * opts.agents.length,
+      spent: pts.at(-1)![0], solved: pts.at(-1)![1], counted: (opts.counted ?? []).length || null, stopped: result?.stopped ?? null,
+      started: actions.length ? Math.min(...actions.map((a) => a.t)) : null, modified, points: pts,
+    });
+    groups.set(m[1], g);
+  }
+  const experiments = [...groups.values()].map((g) => ({ ...g, modified: Math.max(...g.runs.map((r) => r.modified as number)) })).sort((a, b) => b.modified - a.modified);
+  const bdir = join(RESULTS_DIR, 'bench');
+  const bench = (existsSync(bdir) ? readdirSync(bdir) : []).filter((d) => existsSync(join(bdir, d, 'records.jsonl'))).map((d) => {
+    const f = join(bdir, d, 'records.jsonl'), recs = jsonl(f);
+    const problems = new Set(recs.map((r) => r.id)), solved = new Set(recs.filter((r) => r.ok).map((r) => r.id));
+    const sum = join(bdir, d, 'summary.md');
+    const model = existsSync(sum) ? (/\*\*Agent:\*\* `([^`]+)`/.exec(readFileSync(sum, 'utf8'))?.[1] ?? '') : '';
+    return { id: d, model, attempts: recs.length, problems: problems.size, solved: solved.size, cost: recs.reduce((a, r) => a + (r.dollars ?? 0), 0), modified: statSync(f).mtimeMs, finished: existsSync(join(bdir, d, 'summary.md')) && statSync(join(bdir, d, 'summary.md')).mtimeMs >= statSync(f).mtimeMs - 5000 };
+  }).sort((a, b) => b.modified - a.modified);
+  const key = process.env.OPENROUTER_API_KEY;
+  let credit: number | null = null;
+  try { credit = key ? await creditLeft(key) : null; } catch { credit = null; }
+  return { now: Date.now(), credit, societies: Object.fromEntries(Object.entries(SOCIETIES).map(([k, v]) => [k, { name: v.name, colour: v.colour }])), experiments, bench };
+}
+
 /** What is left on the OpenRouter key's limit (the key itself is never sent to the page). */
 async function balance() {
   const key = process.env.OPENROUTER_API_KEY;
@@ -315,6 +361,7 @@ const server = createServer(async (req, res) => {
     if (url.pathname === '/api/design/agents') return send(200, design.fieldAgents(url.searchParams.get('id') ?? ''));
     if (url.pathname === '/api/models') return send(200, await models());
     if (url.pathname === '/api/balance') return send(200, await balance());
+    if (url.pathname === '/api/progress') return send(200, await progressData());
     if (url.pathname === '/api/design/field') return send(200, design.fieldValues(url.searchParams.get('id') ?? ''));
     if (url.pathname === '/api/jobs') return send(200, design.listJobs());
     if (url.pathname.startsWith('/api/jobs/')) return send(200, design.getJob(url.pathname.slice('/api/jobs/'.length)));

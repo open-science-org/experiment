@@ -227,6 +227,7 @@
 <div class="app">
 <nav class="side" aria-label="Pages">
   <a href="#/runs">Runs</a>
+  <a href="#/progress">Progress</a>
   <a href="#/new">New</a>
   <a href="#/how">How it works</a>
   <a href="#/equations" class="sub">Equations</a>
@@ -247,6 +248,14 @@
   <section id="view-doc" class="hidden"><div class="crumbs" id="doc-crumbs"></div><article class="doc" id="doc-body"></article></section>
 
   <!-- New: one form for both kinds -->
+  <!-- Progress: the paid runs going now, with what is left of the money -->
+  <section id="view-progress" class="hidden">
+    <div class="bar"><label>Experiment <select id="p-exp"></select></label><label>Run <select id="p-rep"></select></label>
+      <span id="p-credit"></span><span class="muted" id="p-updated"></span></div>
+    <div class="pane" style="margin-bottom:12px"><div id="p-head"></div><div id="p-chart"></div></div>
+    <div class="pane" style="margin-bottom:12px;overflow-x:auto"><h3 style="margin:0 0 8px;font-size:15px">Runs</h3><div id="p-grid"></div></div>
+    <div class="pane" style="overflow-x:auto"><h3 style="margin:0 0 8px;font-size:15px">Harness checks on the public benchmark</h3><div id="p-bench"></div></div>
+  </section>
   <section id="view-new" class="hidden">
     <div class="tabs" role="tablist" id="n-model" aria-label="Which model">
       <button class="btn" role="tab" data-model="simple">Simple model (α, β)</button>
@@ -442,7 +451,7 @@ function shortLabel(s, max) {
 const api = (path) => fetch(path).then(async (r) => { const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText); return j; });
 const money = (x) => '$' + (x < 0.1 ? x.toFixed(3) : x.toFixed(2));
 
-const VIEWS = ['view-history', 'view-overview', 'view-doc', 'view-new', 'view-live'];
+const VIEWS = ['view-history', 'view-overview', 'view-doc', 'view-new', 'view-live', 'view-progress'];
 const RUNS_VIEWS = { 'view-history': 'history', 'view-overview': 'results', 'view-live': 'live' };
 const show = (view) => {
   for (const v of VIEWS) $(v).classList.toggle('hidden', v !== view);
@@ -472,6 +481,7 @@ async function route() {
   if (path === '/runs/results') { show('view-overview'); return drawResults(); }
   if (path.startsWith('/doc/')) { show('view-doc'); return openDoc(path.slice(5)); }
   if (path === '/new') { show('view-new'); return enterNew(); }
+  if (path === '/progress') { show('view-progress'); return drawProgress(); }
   if (path === '/live') { show('view-live'); return showTab(params().get('tab') ?? 'sim'); }
   // Topics are now presets of the generator: their reports are on Results.
   if (path === '/topics' || path === '/fields') { location.hash = '#/'; return; }
@@ -1971,6 +1981,82 @@ $('pilot-first').onclick = () => { stopPilot(); $('pilot-follow').checked = fals
 $('pilot-scrub').oninput = (e) => { stopPilot(); $('pilot-follow').checked = false; pilot.now = pilot.t0 + Number(e.target.value) * 1000; drawPilot(); };
 $('pilot-follow').onchange = (e) => { if (e.target.checked) { stopPilot(); loadPilot(); } };
 $('pilot-load').onclick = loadPilot;
+// ---------------------------------------------------------------------------- Progress
+// Paid runs going now: one line per society (money against counted targets Lean verified), which runs are
+// done, running or waiting, the benchmark checks, and the credit left. Refreshes itself every 15 s.
+const PG = { data: null, poll: null };
+// OSO orange, traditional blue; the baselines are inks with their own dash, so no line is told apart by colour alone.
+const P_STYLE = { traditional: ['var(--s1)', ''], oso: ['var(--s2)', ''], 'oso-0.2': ['var(--s2)', '6 4'], single: ['var(--ink)', '2 4'], independent: ['var(--ink-2)', '8 4'], shared: ['var(--ink-3)', ''], planner: ['var(--ink-2)', '10 3 2 3'] };
+const ago = (ms) => { const m = Math.round(ms / 60000); return m < 1 ? 'just now' : m < 60 ? `${m} min ago` : `${Math.floor(m / 60)} h ${m % 60} min ago`; };
+async function drawProgress() {
+  clearTimeout(PG.poll);
+  try { PG.data = await api('/api/progress'); } catch (e) { $('p-head').textContent = `Could not read the runs: ${e.message}`; return; }
+  const d = PG.data;
+  const sel = $('p-exp'), keep = sel.value || params().get('id');
+  sel.innerHTML = d.experiments.map((e) => `<option value="${esc(e.id)}">${esc(e.id)}${e.runs.some((r) => r.status === 'running') ? ' · running' : ''}</option>`).join('');
+  if (keep && d.experiments.some((e) => e.id === keep)) sel.value = keep;
+  sel.onchange = () => { $('p-rep').value = ''; renderProgress(); };
+  $('p-credit').innerHTML = d.credit === null ? '' : `<b>$${d.credit.toFixed(2)}</b> <span class="muted">credit left</span>`;
+  $('p-updated').textContent = `updated ${new Date(d.now).toLocaleTimeString()}, every 15 s`;
+  renderProgress();
+  if (location.hash.startsWith('#/progress')) PG.poll = setTimeout(drawProgress, 15000);
+}
+function renderProgress() {
+  const d = PG.data, e = d.experiments.find((x) => x.id === $('p-exp').value);
+  if (!e) { $('p-head').textContent = 'No society experiments yet.'; $('p-chart').innerHTML = $('p-grid').innerHTML = ''; return drawBench(); }
+  const keys = e.plan?.societies ?? [...new Set(e.runs.map((r) => r.key))];
+  const reps = e.plan?.repeats ?? Math.max(...e.runs.map((r) => r.rep));
+  const run = (k, rep) => e.runs.find((r) => r.key === k && r.rep === rep);
+  const repSel = $('p-rep'), had = Number(repSel.value);
+  const latest = Math.max(...e.runs.map((r) => r.rep));
+  repSel.innerHTML = Array.from({ length: reps }, (_, i) => `<option value="${i + 1}">${i + 1} of ${reps}</option>`).join('');
+  repSel.value = String(had && had <= reps ? had : latest);
+  repSel.onchange = renderProgress;
+  const rep = Number(repSel.value);
+  const total = keys.length * reps, done = e.runs.filter((r) => r.status === 'done').length, now = e.runs.find((r) => r.status === 'running');
+  const spent = e.runs.reduce((a, r) => a + r.spent, 0);
+  const budget = Math.max(0.01, ...e.runs.map((r) => r.budget));
+  // Time left, from the finished runs' average length.
+  const lens = e.runs.filter((r) => r.status === 'done' && r.started).map((r) => r.modified - r.started);
+  const avg = lens.length ? lens.reduce((a, b) => a + b, 0) / lens.length : null;
+  const left = avg && total > done ? avg * (total - done - (now ? 1 : 0)) + (now ? Math.max(0, avg - (d.now - now.started)) : 0) : null;
+  $('p-head').innerHTML = `<p style="margin:0 0 6px"><b>${done} of ${total} runs done</b>${now ? ` · running: ${esc(d.societies[now.key]?.name ?? now.key)}, run ${now.rep}, round ${now.round} of ${now.rounds}` : ''} · $${spent.toFixed(2)} spent of $${(budget * total).toFixed(2)} at most${left ? ` · about ${Math.round(left / 3600000 * 10) / 10} h left` : ''}${e.plan?.k ? ` · measure: money to ${e.plan.k} targets` : ''}</p>`;
+
+  // The graph: money spent against counted targets, one line per society, for the chosen run.
+  const lines = keys.map((k) => ({ k, r: run(k, rep) })).filter((x) => x.r);
+  const yMax = Math.max(2, ...e.runs.map((r) => r.counted ?? r.solved), ...lines.map((x) => x.r.solved));
+  const W = 760, H = 320, l = 46, rgt = 190, top = 34, bot = 42, pw = W - l - rgt, ph = H - top - bot;
+  const sx = (x) => l + (x / budget) * pw, sy = (y) => top + ph - (y / yMax) * ph;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="Counted targets verified by money spent, run ${rep}"><text x="${l}" y="18" font-size="14" font-weight="700" fill="var(--ink)">Targets verified by Lean, by money spent (run ${rep})</text>`;
+  for (let y = 0; y <= yMax; y++) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"/><text x="${l - 8}" y="${sy(y) + 4}" text-anchor="end" font-size="11" fill="var(--ink-2)">${y}</text>`;
+  if (e.plan?.k) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(e.plan.k)}" y2="${sy(e.plan.k)}" stroke="var(--ink-3)" stroke-dasharray="1 3"/><text x="${l + 4}" y="${sy(e.plan.k) - 5}" font-size="11" fill="var(--ink-3)">measure: ${e.plan.k} targets</text>`;
+  for (const q of [0, 0.25, 0.5, 0.75, 1]) svg += `<text x="${sx(budget * q)}" y="${top + ph + 16}" text-anchor="middle" font-size="11" fill="var(--ink-2)">$${(budget * q).toFixed(2)}</text>`;
+  svg += `<text x="${l + pw / 2}" y="${H - 6}" text-anchor="middle" font-size="11" fill="var(--ink-2)">Money spent so far</text>`;
+  const ends = [];
+  for (const { k, r } of lines) {
+    const [colour, dash] = P_STYLE[k] ?? ['var(--ink-2)', ''];
+    let path = ''; r.points.forEach(([x, y], i) => { path += i ? ` H${sx(x).toFixed(1)} V${sy(y).toFixed(1)}` : `M${sx(x).toFixed(1)} ${sy(y).toFixed(1)}`; });
+    const [lx, ly] = r.points.at(-1);
+    svg += `<path d="${path}" fill="none" stroke="${colour}" stroke-width="2" stroke-dasharray="${dash}" stroke-linejoin="round"><title>${esc(d.societies[k]?.name ?? k)}</title></path><circle cx="${sx(lx)}" cy="${sy(ly)}" r="4" fill="${colour}" stroke="var(--surface)" stroke-width="2"/>`;
+    ends.push([sy(ly), `${d.societies[k]?.name ?? k}: ${ly}, $${lx.toFixed(2)}${r.status === 'running' ? ' …' : ''}`, colour, dash]);
+  }
+  ends.sort((a, b) => a[0] - b[0]); for (let i = 1; i < ends.length; i++) if (ends[i][0] - ends[i - 1][0] < 15) ends[i][0] = ends[i - 1][0] + 15;
+  for (const [y, t, colour, dash] of ends) svg += `<line x1="${l + pw + 8}" x2="${l + pw + 26}" y1="${y}" y2="${y}" stroke="${colour}" stroke-width="2" stroke-dasharray="${dash}"/><text x="${l + pw + 30}" y="${y + 4}" font-size="11" fill="var(--ink)">${esc(t)}</text>`;
+  $('p-chart').innerHTML = lines.length ? svg + '</svg>' : `<p class="muted">Run ${rep} has not started.</p>`;
+
+  // The grid: every planned run.
+  const cell = (r) => !r ? '<span class="muted">waiting</span>'
+    : r.status === 'running' ? `<b>running</b>, round ${r.round}<br>${r.solved} targets, $${r.spent.toFixed(2)}`
+    : r.status === 'stopped' ? `<span style="color:var(--bad)">stopped</span><br>${r.solved} targets, $${r.spent.toFixed(2)}`
+    : `${r.solved} targets<br>$${r.spent.toFixed(2)}${r.stopped ? ` <span class="muted">(${esc(r.stopped)})</span>` : ''}`;
+  $('p-grid').innerHTML = `<table class="agents"><thead><tr><th>Setup</th>${Array.from({ length: reps }, (_, i) => `<th>Run ${i + 1}</th>`).join('')}</tr></thead><tbody>${keys.map((k) => `<tr><td><svg width="22" height="10" aria-hidden="true"><line x1="0" x2="22" y1="5" y2="5" stroke="${(P_STYLE[k] ?? [])[0]}" stroke-width="2" stroke-dasharray="${(P_STYLE[k] ?? [])[1]}"/></svg> ${esc(d.societies[k]?.name ?? k)}</td>${Array.from({ length: reps }, (_, i) => `<td>${cell(run(k, i + 1))}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  drawBench();
+}
+function drawBench() {
+  const b = PG.data.bench;
+  $('p-bench').innerHTML = !b.length ? '<p class="muted">None yet.</p>' : `<table class="agents"><thead><tr><th>Run</th><th>Model</th><th>Problems solved</th><th>Attempts</th><th>Cost</th><th>Status</th></tr></thead><tbody>${b.map((x) => `<tr><td>${esc(x.id)}</td><td>${esc(x.model)}</td><td>${x.solved} of ${x.problems}</td><td>${x.attempts}</td><td>$${x.cost.toFixed(3)}</td><td>${x.finished ? `done ${ago(PG.data.now - x.modified)} · <a href="#/doc/results/bench/${encodeURIComponent(x.id)}/summary.md">summary</a>` : '<b>running</b>'}</td></tr>`).join('')}</tbody></table>`;
+}
+
 route();
 </script>
 </body>
