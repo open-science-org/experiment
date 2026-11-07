@@ -20,6 +20,8 @@ export interface ModelSettings {
 }
 
 /** OpenRouter's API; OPENROUTER_URL points it elsewhere (the fault tests use a fake server). */
+/** Wait before asking again after a dropped connection or a cut-off reply (shorter in tests). */
+const RETRY_MS = Number(process.env.OPENROUTER_RETRY_MS ?? 15_000);
 export const OPENROUTER_API = process.env.OPENROUTER_URL ?? 'https://openrouter.ai/api/v1';
 
 /**
@@ -181,19 +183,25 @@ export function openRouterChat(settings: ModelSettings): Chat {
         });
       } catch (e) {
         // A dropped connection (network change, sleep, provider reset): wait and try again.
-        if (tryNo < 4) { await new Promise((ok) => setTimeout(ok, 15_000 * tryNo)); continue; }
+        if (tryNo < 4) { await new Promise((ok) => setTimeout(ok, RETRY_MS * tryNo)); continue; }
         throw e;
       }
       if ((res.status === 429 || res.status >= 500) && tryNo < 4) {
         await new Promise((ok) => setTimeout(ok, 5000 * tryNo));
         continue;
       }
-      const json = await res.json() as {
+      type Reply = {
         error?: { message: string };
         provider?: string;
         choices?: { message: { content: string | null; reasoning_details?: unknown }; finish_reason: string }[];
         usage?: { prompt_tokens: number; completion_tokens: number; prompt_tokens_details?: { cached_tokens?: number }; cost?: number };
       };
+      let json: Reply;
+      try { json = await res.json() as Reply; } catch (e) {
+        // The reply was cut off while arriving ("terminated"): ask again, as for a dropped connection.
+        if (tryNo < 4) { await new Promise((ok) => setTimeout(ok, RETRY_MS * tryNo)); continue; }
+        throw e;
+      }
       if (!res.ok || json.error || !json.choices?.length) throw new Error(`OpenRouter ${res.status}: ${json.error?.message ?? 'no reply'}${res.status === 404 && allowed.length ? ` (none of the companies within the price cap could serve it: ${allowed.map((x) => x.name).join(', ')})` : ''}`);
       const choice = json.choices[0];
       const text = choice.message.content ?? '';

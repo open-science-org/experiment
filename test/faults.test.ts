@@ -8,7 +8,7 @@ import { mkdtempSync, readFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-type Mode = 'ok-noproof' | 'http500' | 'stall' | 'stream-error' | 'or-402' | 'or-nocost' | 'or-costly';
+type Mode = 'ok-noproof' | 'http500' | 'stall' | 'stream-error' | 'or-402' | 'or-nocost' | 'or-costly' | 'or-cut-once';
 let mode: Mode = 'ok-noproof', creditLeft = 100, calls = 0;
 let server: Server, url = '';
 const out = mkdtempSync(join(tmpdir(), 'oso-faults-'));
@@ -31,6 +31,8 @@ before(async () => {
         return res.end(JSON.stringify({ message: { content: 'the answer is clear.' }, done: true, done_reason: 'stop', prompt_eval_count: 100, eval_count: 50 }) + '\n');
       }
       if (req.url === '/chat/completions') {
+        // Half a reply, then the connection drops: like OpenRouter's "terminated". The next call is whole.
+        if (mode === 'or-cut-once' && calls === 1) { res.write('{"provider":"Fake","choices":[{"mess'); return res.socket?.destroy(); }
         if (mode === 'or-402') { res.statusCode = 402; return res.end(JSON.stringify({ error: { message: 'Insufficient credits' } })); }
         const usage = { prompt_tokens: 100, completion_tokens: 50, ...(mode === 'or-nocost' ? {} : { cost: mode === 'or-costly' ? 0.5 : 0.001 }) };
         return res.end(JSON.stringify({ provider: 'Fake', choices: [{ message: { content: 'No code here.' }, finish_reason: 'stop' }], usage }));
@@ -123,4 +125,13 @@ test('the run stops at its budget, and money already spent is counted', async ()
   assert.equal(s.code, 2, s.stdout);
   assert.match(s.summary, /budget of \$0\.9 spent/);
   assert.match(s.summary, /\*\*Cost:\*\* \$1\.00/); // one problem: two calls at $0.50, then the stop
+});
+
+test('a reply cut off partway is asked for again, not lost', async () => {
+  mode = 'or-cut-once'; calls = 0;
+  process.env.OPENROUTER_URL = url; process.env.OPENROUTER_API_KEY = 'test'; process.env.OPENROUTER_RETRY_MS = '50';
+  const { openRouterChat } = await import('../src/lean/agent.ts');
+  const reply = await openRouterChat({ provider: 'openrouter', model: 'fake/model', effort: 'low', maxTokens: 100 } as never)('system', [{ role: 'user', content: 'hi' }]);
+  assert.equal(reply.text, 'No code here.');
+  assert.equal(calls, 2);
 });
