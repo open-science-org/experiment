@@ -2103,19 +2103,20 @@ function leanProblems(d) {
 
 function leanGraph(d) {
   const by = {}; for (const t of d.theorems) (by[t.depth] ??= []).push(t);
-  const depths = Object.keys(by).map(Number).sort((a, b) => a - b), colW = 130, rowH = 30, top = 24;
+  const depths = Object.keys(by).map(Number).sort((a, b) => a - b), colW = 175, boxW = 158, rowH = 30, top = 24;
   const H = top + rowH * Math.max(...depths.map((k) => by[k].length)) + 8, W = 20 + colW * depths.length;
   const pos = {}; for (const k of depths) by[k].sort((a, b) => a.area.localeCompare(b.area) || a.id.localeCompare(b.id)).forEach((t, j) => { pos[t.id] = [20 + colW * (k - 1), top + j * rowH]; });
   const fill = { A: 'var(--s1-soft)', B: '#e9e2f7', C: '#e2f2e2', cross: '#f4e8d6' };
   let svg = depths.map((k) => `<text x="${20 + colW * (k - 1)}" y="14" font-size="11" fill="currentColor" opacity="0.6">depth ${k}</text>`).join('');
   for (const t of d.theorems) for (const u of t.uses) if (pos[u]) {
     const [x1, y1] = pos[u], [x2, y2] = pos[t.id];
-    svg += `<path d="M${x1 + 112},${y1 + 10} C${x1 + 125},${y1 + 10} ${x2 - 14},${y2 + 10} ${x2},${y2 + 10}" fill="none" stroke="currentColor" stroke-opacity="${t.posted ? 0.45 : 0.18}" stroke-width="1"/>`;
+    svg += `<path d="M${x1 + boxW},${y1 + 10} C${x1 + boxW + 13},${y1 + 10} ${x2 - 14},${y2 + 10} ${x2},${y2 + 10}" fill="none" stroke="currentColor" stroke-opacity="${t.posted ? 0.45 : 0.18}" stroke-width="1"/>`;
   }
   for (const t of d.theorems) {
     const [x, y] = pos[t.id];
-    svg += `<g><title>${esc(t.id)} (area ${esc(t.area)}, depth ${t.depth}): ${esc(t.statement)}</title><rect x="${x}" y="${y}" width="112" height="20" rx="4" fill="${t.posted ? '#33322f' : fill[t.area] ?? '#eee'}" stroke="currentColor" stroke-opacity="0.25"/>
-      <text x="${x + 6}" y="${y + 14}" font-size="11" fill="${t.posted ? '#fff' : '#222'}" font-weight="${t.posted ? 700 : 400}">${esc(t.id.length > 17 ? t.id.slice(0, 16) + '…' : t.id)}</text></g>`;
+    const text = t.posted ? `${t.id} · ${t.name}` : t.id;
+    svg += `<g><title>${esc(text)} (area ${esc(t.area)}, depth ${t.depth})${t.plain ? '\n' + esc(t.plain) : ''}\n${esc(t.statement)}</title><rect x="${x}" y="${y}" width="${boxW}" height="20" rx="4" fill="${t.posted ? '#33322f' : fill[t.area] ?? '#eee'}" stroke="currentColor" stroke-opacity="0.25"/>
+      <text x="${x + 6}" y="${y + 14}" font-size="11" fill="${t.posted ? '#fff' : '#222'}" font-weight="${t.posted ? 700 : 400}">${esc(text.length > 24 ? text.slice(0, 23) + '…' : text)}</text></g>`;
   }
   return `<svg viewBox="0 0 ${W} ${H}" width="${W}" style="max-width:none;color:var(--ink,#222)">${svg}</svg>`;
 }

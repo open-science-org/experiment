@@ -308,7 +308,7 @@ function leanData(exp: string) {
   return {
     experiments, id, setups, reps: [...new Set(mine.map((r) => r.rep))].sort((a, b) => a - b),
     areas: AREAS, definitions: definitions(),
-    theorems: tasks.map((t) => ({ id: label.get(t.name), depth: t.depth, area: t.area, posted: t.posted ? t.publicId : null, statement: t.signature, uses: t.uses.map((u) => label.get(u)) })),
+    theorems: tasks.map((t) => ({ id: label.get(t.name), name: t.short, plain: t.posted ? PLAIN[t.publicId] ?? '' : '', depth: t.depth, area: t.area, posted: t.posted ? t.publicId : null, statement: t.signature, uses: t.uses.map((u) => label.get(u)) })),
     targets: tasks.filter((t) => t.posted).map((t) => ({ id: t.publicId, name: t.short, area: t.area, depth: t.depth, bounty: 4 * 2 ** (t.depth - 1), plain: PLAIN[t.publicId] ?? '', statement: t.signature,
       uses: t.uses.map((u) => label.get(u)), below: below(t.name).size })),
   };
