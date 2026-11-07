@@ -59,7 +59,7 @@ The mixed corners separate the gain from sharing from the gain from credit. When
 
 1. **Simulation:** built; the simple model, the full model and scaling runs done.
 2. **Lean problem set:** built and verified.
-3. **AI-model tests:** first runs done with cheap models; to scale up.
+3. **AI-model tests:** first runs done with cheap models; to scale up. Results so far: [AI agents on the Lean problems](ai-agent-results.md).
 4. **Demo:** both societies' graphs growing side by side, the scaling charts, replayable from logs.
 
 - [ ] Audience and deadline for the demo.
