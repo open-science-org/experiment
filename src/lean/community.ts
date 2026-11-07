@@ -278,7 +278,7 @@ ${targets.join('\n')}
 
 ${conj.length ? `Posted conjectures:\n${conj.join('\n')}\n\n` : ''}Library you can cite:
 ${lib.length ? '```lean\n' + lib.map(fmt).join('\n') + '\n```' : '(empty)'}
-${this.plans[i] ? `\nYour assignment from the planner this round: ${this.plans[i]}\n` : ''}
+${this.plans[i] ? `\nYour assignment from the planner this round:\n${this.plans[i]}\n` : ''}
 Take one action.`;
   }
 
@@ -323,7 +323,11 @@ ${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still w
     const cost = price(reply.usage);
     this.spent[0] += cost;
     this.plans = [];
-    for (const m of reply.text.matchAll(/^\s*LAB\s*(\d+)\s*:\s*(.+)$/gim)) this.plans[Number(m[1]) - 1] = m[2].trim();
+    // A planner may give a lab several lines (one per lemma): the lab gets all of them, in order.
+    for (const m of reply.text.matchAll(/^\s*LAB\s*(\d+)\s*:\s*(.+)$/gim)) {
+      const i = Number(m[1]) - 1;
+      this.plans[i] = this.plans[i] ? `${this.plans[i]}\n${m[2].trim()}` : m[2].trim();
+    }
     const a: Action = { round, agent: 0, model: this.opts.agents[0], kind: 'plan', ok: this.plans.length > 0, turns: 1, usage: reply.usage, cost, spentAfter: this.spent[0], transcript: [{ text: reply.text, proof: null, errors: [] }], t: Date.now() };
     this.actions.push(a);
     log(a);

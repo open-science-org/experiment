@@ -59,6 +59,9 @@ test('the planner reads `LAB n:` lines and charges lab 1; a reply without them i
   await com.plan(1, async () => ({ text: 'LAB 2: target T1\nlab 3 : lemma `theorem x : True`\nLAB 4: target T2', content: '', usage, stop: 'end_turn' }), () => 0.01, () => {});
   assert.deepEqual([com.plans[1], com.plans[3], com.spent[0]], ['target T1', 'target T2', 0.01]);
   assert.match(com.plans[2], /lemma/);
+  await com.plan(2, async () => ({ text: 'LAB 2: lemma `theorem a : True`\nLAB 2: lemma `theorem b : True`', content: '', usage, stop: 'end_turn' }), () => 0.01, () => {});
+  assert.equal(com.plans[1], 'lemma `theorem a : True`\nlemma `theorem b : True`'); // several lines for one lab: all kept
+  com.actions.pop();
   await com.plan(2, async () => ({ text: 'I suggest everyone works on T1.', content: '', usage, stop: 'end_turn' }), () => 0.01, () => {});
   const st = stats({ opts: com.opts, actions: com.actions, library: com.library, earnings: com.earnings, spent: com.spent });
   assert.deepEqual([st.failed, st.plansUnusable], [0, 1]);
