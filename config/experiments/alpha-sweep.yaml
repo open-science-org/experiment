@@ -10,8 +10,6 @@ measure: sharing
 better: higher
 seeds: 100
 set:
-  rules: { c: 0.15, visibility: { kind: choice } }
+  rules: { visibility: { kind: choice } }
 factors:
   - { name: α, path: rules.alpha, values: [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1] }
-patches:
-  - { when: { rules.alpha: 1 }, set: { rules.c: 0 } }

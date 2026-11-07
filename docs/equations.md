@@ -17,12 +17,12 @@ Every rule of the experiment as a formula, in the order a run uses them. Each fo
 
 ## One round, as a loop
 
-![One round as a loop of six steps: 1 money, 2 choose what to attempt, 3 attempt, 4 publish or keep, 5 rewards, 6 earnings, which shape the next round's money through f. Dashed: alpha and c send credit back to earlier ideas, which changes what agents choose to try and share](img/equations-loop.svg)
+![One round as a loop of six steps: 1 money, 2 choose what to attempt, 3 attempt, 4 publish or keep, 5 rewards, 6 earnings, which shape the next round's money through f. Dashed: alpha and alpha0 send credit back to earlier ideas, which changes what agents choose to try and share](img/equations-loop.svg)
 
 A run is $R$ rounds (120 by default). A **round** is one pass through steps 1 to 6: that round's money $\text{Budget}/R$ is split among the agents, each makes the attempts it can afford, new ideas are shared or kept, rewards are paid and earnings are updated. The **next round** starts again at step 1, with the money split by those updated earnings. Each step's box names its section and symbols. Two loops feed back:
 
 - **Earnings shape next round's research money ($f$).** Earnings in step 6 set next round's money in step 1. This happens under both rules.
-- **Credit flows back (absorption rate $\alpha$, and $c$).** Rewards in step 5 reach earlier ideas, so agents expect more from building and sharing (steps 2 and 4). This is where traditional ($\alpha = 1$, $c = 0$) and OSO ($\alpha = 0.8$, $c = 0.15$) differ.
+- **Credit flows back (absorption rates $\alpha$ and $\alpha_0$).** Rewards in step 5 reach earlier ideas, so agents expect more from building and sharing (steps 2 and 4). This is where traditional ($\alpha = 1$) and OSO ($\alpha = 0.8$) differ.
 
 ## Symbols
 
@@ -79,10 +79,9 @@ Grouped by what they belong to, in the order of the sections below. A hat marks 
 | Symbol | Meaning | In the example | Default |
 | --- | --- | --- | --- |
 | $m$ | flat mint: tokens for each new idea (off since model v5) | | 0 |
-| $c$ | cited share: part of each mint passed to the parents | | traditional 0, OSO 0.15 |
 | $m_{\text{bit}}$ | knowledge reward: paid per new bit when an idea is published | reward 3 for HHTHHH | 1 |
-| $\alpha_0$ | absorption rate of the knowledge reward: the share an idea keeps, the rest flows to its parents | keeps 2.4 of 3 | $= \alpha$ |
-| $m_x$ | what $x$'s author gets from its mint | $m_{y_1} = 0.85$ | $(1-c)\,m$; $m$ for a root |
+| $\alpha_0$ | absorption rate of a new idea's own reward (knowledge reward and flat mint): the share it keeps, the rest flows to its parents | keeps 2.4 of 3 | $= \alpha$ |
+| $m_x$ | what $x$'s author keeps of its mint | $m_{y_1} = 0.8$ | $\alpha_0\,m$; $m$ for a root |
 | $\theta$ | chance a trivial idea is rejected | | 0.5 |
 | $g_i$ | gaming: share of attempts spent on trivial ideas, for their mint | | 0 (gamer 0.6) |
 
@@ -262,9 +261,9 @@ $E_i$ is what agent $i$ earned this round, plus a fading share of earlier rounds
 
 ## 6. The mint
 
-**Since model v5 the flat mint is off ($m = 0$) and the knowledge reward below replaces it.** The flat mint is kept as an option: every new idea mints $m$ tokens; its author gets $m_x = (1-c)\,m$, and $c\,m$ goes to its parents by link weight, then flows back from there (section 7). A root keeps all of $m$.
+**Since model v5 the flat mint is off ($m = 0$) and the knowledge reward below replaces it.** The flat mint is kept as an option: every new idea mints $m$ tokens, which flow back like the knowledge reward below: its author keeps $m_x = \alpha_0\,m$ and the rest passes to its parents (section 7, with $\alpha_0$ in place of $\alpha$). A root keeps all of $m$. (Before 2026-11-07 the mint had its own cited share $c$, the part passed to the parents; one absorption rate now serves both of a new idea's own rewards.)
 
-*Example* ($c = 0.15$): when $y_1$ is published, its author gets $m_{y_1} = 0.85$, and the authors of $z_1$ and $z_2$ get 0.075 each.
+*Example* ($m = 1$, $\alpha_0 = 0.8$): when $y_1$ is published, its author keeps $m_{y_1} = 0.8$, and the authors of $z_1$ and $z_2$ get 0.1 each.
 
 **Gaming.** With chance $g_i$ an agent spends an attempt on a trivial idea instead, to collect its mint. A trivial idea is rejected with chance $\theta$; if accepted, it earns $m$.
 
@@ -281,7 +280,9 @@ A trivial idea or a copy adds no new bits, so it earns nothing; publishing first
 Value enters an idea in two ways, and then spreads through the graph by $\text{share}$ (section 2):
 
 - **A bounty** $B_x$ enters $x$ when $x$ is first published. The author of each $z$ gets $B_x \, \text{share}(x, z)$.
-- **A mint's cited part** $c\,m$ enters $x$'s parents by link weight when $x$ is published (section 6), and spreads on from each parent the same way.
+- **A new idea's own reward** (its mint $m$ and its knowledge reward) enters $x$ when $x$ is published (section 6) and spreads the same way, by $\text{share}_0$ ($\alpha_0$ in place of $\alpha$).
+
+**With neither** ($m = 0$ and no knowledge reward, as in the Lean runs now), only bounties flow back.
 
 *Example* ($\alpha = 0.8$): $x$'s bounty of 16 pays **$x$ 12.8, $y_1$ 1.6, $y_2$ 1.2, $z_1$ 0.2, $z_2$ 0.2** ($16 \times$ the shares in section 3.2). Under traditional rules ($\alpha = 1$), $x$ keeps all 16.
 
@@ -299,11 +300,11 @@ Agents see only published work, so $\text{rivals}_x$ counts the agents that know
 
 $$h_x = \max\!\big(1,\ 5\,(\text{average level of the ideas with a bounty after } x - \ell_x)\big)$$
 
-**Flow-back: what authoring $x$ earns from later work,** if every idea after it is found and published. For each later idea $u$, its bounty and its mint flow back to $x$:
+**Flow-back: what authoring $x$ earns from later work,** if every idea after it is found and published. For each later idea $u$, its bounty and its own reward flow back to $x$:
 
-$$F_x = \sum_{u \text{ after } x} \Big( B_u \, \text{share}(u, x) \;+\; c\, m \sum_{y \to u} w_{y \to u}\, \text{share}(y, x) \Big)$$
+$$F_x = \sum_{u \text{ after } x} \Big( B_u \, \text{share}(u, x) \;+\; (m + \text{reward}_u)\, \text{share}_0(u, x) \Big)$$
 
-*Example,* for $y_1$: $x$'s bounty sends $16 \times 0.2 \times 0.625 \times 0.8 = 1.6$, and $x$'s mint sends $0.15 \times 0.625 \times 0.8 = 0.075$, so $F_{y_1} = 1.675$. Under traditional rules $F_x = 0$ for every idea.
+*Example,* for $y_1$ ($\alpha_0 = \alpha = 0.8$): $x$'s bounty sends $16 \times 0.2 \times 0.625 \times 0.8 = 1.6$, and a mint of 1 at $x$ would send $0.1$, so $F_{y_1} = 1.7$. Under traditional rules $F_x = 0$ for every idea.
 
 **What $x$ is worth to agent $i$.** $\hat B^{\text{after}}_x$ and $\hat F_x$ are the largest bounty after $x$ and the flow-back, as $i$ sees them: the true value times $(1 + \sigma_0 (1 - q_i)\, \xi)$, with $\xi$ a random normal number drawn once.
 

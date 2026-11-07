@@ -1,10 +1,10 @@
 id: alpha-psi
-title: 'Where sharing becomes rational: α × scoop risk ψ × cited share c'
+title: 'Where sharing becomes rational: α × scoop risk ψ'
 description: >-
   Agent's-choice visibility. ψ is how much publishing a lemma raises a rival's chance of winning the
-  target below it; c is the share of each mint paid to what an idea built on.
-question: "At which α, scoop risk ψ and cited share c does sharing become worth it to agents?"
-compare: "α × ψ × c, agents choosing what to publish"
+  target below it.
+question: "At which α and scoop risk ψ does sharing become worth it to agents?"
+compare: "α × ψ, agents choosing what to publish"
 fixed: "the field, agents and budget"
 measure: sharing
 better: higher
@@ -14,6 +14,3 @@ set:
 factors:
   - { name: ψ, path: behaviour.psi, values: [0.5, 0.25, 0.1] }
   - { name: α, path: rules.alpha, values: [1, 0.8, 0.5, 0.3, 0.1] }
-  - { name: c, path: rules.c, values: [0, 0.15] }
-exclude:
-  - { rules.alpha: 1, rules.c: 0.15 }

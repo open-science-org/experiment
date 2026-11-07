@@ -45,9 +45,10 @@ deciders.register('formula', {
   create: () => ({ s, perception }) => {
     const { world, sc } = s;
     // Each agent's noisy perception of attribution value S and of the best bounty below each result.
-    const S = attributionValue(world, s.share, s.w, sc.rules.c, sc.rules.mint, sc.rules.mintPerBit, s.share0);
+    const S = attributionValue(world, s.share, sc.rules.mint, sc.rules.mintPerBit, s.share0);
     // The knowledge reward the author of r keeps: its new bits (those not yet public) at the moment of choosing.
-    const keep0 = (r: number) => (sc.rules.mintPerBit > 0 ? sc.rules.mintPerBit * newBits(s, r) * s.share0[r][r] : 0);
+    // What a new idea keeps of its own reward (knowledge reward and flat mint), at absorption rate alpha0.
+    const keep0 = (r: number) => ((sc.rules.mintPerBit > 0 ? sc.rules.mintPerBit * newBits(s, r) : 0) + sc.rules.mint) * s.share0[r][r];
     const down = world.targetsBelow.map((ts) => Math.max(0, ...ts.map((t) => world.bounty[t])));
     const noisy = (base: number[], q: number) =>
       Float64Array.from(base, (x) => Math.max(0, x * (1 + sc.behaviour.perceptionNoise * (1 - q) * perception.normal())));
@@ -56,17 +57,16 @@ deciders.register('formula', {
     const policy = policies.create(sc.behaviour.policy, 'behaviour.policy');
 
     const score = (i: number, r: number) => {
-      const { alpha, c, mint: m } = sc.rules;
+      const { alpha } = sc.rules;
       const t = s.agents[i].traits;
       const pi = Math.min(1, skillIn(s.agents[i], world.area[r], sc.agents.specialist) * chanceOf(s, i, r));
       const win = 1 / (1 + Math.max(0, s.rivalsAt[r] - 1));
       const later = t.horizon ** delay(s, r);
-      const mint = world.prereqs[r].length ? (1 - c) * m : m;
       const bounty = world.isTarget[r] ? alpha * world.bounty[r] * win : 0;
       // A lemma is a stepping stone to a target the agent may win itself, under any rules.
       const step = later * alpha * seenDown[i][r] * win;
       const flow = later * seenS[i][r];
-      const value = mint + keep0(r) + bounty + step + flow;
+      const value = keep0(r) + bounty + step + flow;
       return { u: value * (pi - t.risk * Math.sqrt(pi * (1 - pi))), win, later };
     };
 
@@ -80,12 +80,12 @@ deciders.register('formula', {
       },
       wouldPublish: (i, r, choice) => {
         const { win, later } = (choice as { note: { win: number; later: number } }).note;
-        const { alpha, c, mint: m } = sc.rules;
+        const { alpha, mint: m } = sc.rules;
         const { kappa, psi } = sc.behaviour;
         const t = s.agents[i].traits;
         // Kept private, the mint arrives only if the agent later wins a target that uses r.
         // The knowledge reward is lost too if someone else publishes those bits first.
-        const mint = (world.prereqs[r].length ? 1 - c : 1) * m + keep0(r);
+        const mint = keep0(r);
         const mintAtRisk = mint * (1 - (world.targetsBelow[r].length ? later * win : 0));
         const gain = t.sharing * m + mintAtRisk + later * seenS[i][r] * kappa;
         const scoop = alpha * seenDown[i][r] * win * psi;

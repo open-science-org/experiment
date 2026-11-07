@@ -2,14 +2,14 @@
 # The six rule settings of docs/simulator.md, section 2.3.
 
 traditional:
-  rules: { alpha: 1, c: 0, visibility: { kind: finished-only } }
+  rules: { alpha: 1, visibility: { kind: finished-only } }
 oso:
-  rules: { alpha: 0.8, c: 0.15, visibility: { kind: immediate } }
+  rules: { alpha: 0.8, visibility: { kind: immediate } }
 creditOnly:
-  rules: { alpha: 0.8, c: 0.15, visibility: { kind: finished-only } }
+  rules: { alpha: 0.8, visibility: { kind: finished-only } }
 sharingOnly:
-  rules: { alpha: 1, c: 0, visibility: { kind: immediate } }
+  rules: { alpha: 1, visibility: { kind: immediate } }
 traditionalChoice:
-  rules: { alpha: 1, c: 0, visibility: { kind: choice } }
+  rules: { alpha: 1, visibility: { kind: choice } }
 osoChoice:
-  rules: { alpha: 0.8, c: 0.15, visibility: { kind: choice } }
+  rules: { alpha: 0.8, visibility: { kind: choice } }

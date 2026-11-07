@@ -86,7 +86,7 @@ test('a lemma declaration splits into name, statement and proof', async () => {
 
 test('with Lean: communities run, and under OSO results are shared while traditional labs duplicate', { skip: !leanAvailable() }, async () => {
   const { runCommunity, referenceAgent } = await import('../src/lean/community.ts');
-  const base = { agents: ['a', 'b', 'c'], budget: 0.12, rounds: 12, repairs: 0, alpha: 0.8, c: 0.15, mint: 1, effort: 'low' as const, allowGrind: true };
+  const base = { agents: ['a', 'b', 'c'], budget: 0.12, rounds: 12, repairs: 0, alpha: 0.8, mint: 1, effort: 'low' as const, allowGrind: true };
   const { mkdtempSync } = await import('node:fs');
   const { tmpdir } = await import('node:os');
   const root = mkdtempSync(`${tmpdir()}/oso-community-`);
@@ -105,7 +105,7 @@ test('a community stops, marked, when the key runs out of credit', async () => {
   const root = mkdtempSync(`${tmpdir()}/oso-credit-`);
   let calls = 0;
   const broke = async () => { calls++; throw new Error('OpenRouter 402: This request would exceed your available credits'); };
-  const r = await runCommunity({ rules: 'oso', agents: ['a', 'b'], budget: 1, rounds: 10, repairs: 0, alpha: 0.8, c: 0.15, mint: 1, effort: 'low' }, () => broke, () => 0, 'test-credit', () => {}, root);
+  const r = await runCommunity({ rules: 'oso', agents: ['a', 'b'], budget: 1, rounds: 10, repairs: 0, alpha: 0.8, mint: 1, effort: 'low' }, () => broke, () => 0, 'test-credit', () => {}, root);
   assert.equal(r.stopped, 'out of credit');
   assert.equal(calls, 2, 'no round after the first refusal');
 });
@@ -138,7 +138,7 @@ test('the Lean runs\' rewards were checked against the current simulation model'
 
 test('with the knowledge reward off, a new result earns nothing and the prompt says so', async () => {
   const { Community, mintOf } = await import('../src/lean/community.ts');
-  const base = { rules: 'oso' as const, agents: ['a', 'b'], budget: 1, rounds: 1, repairs: 0, alpha: 0.8, c: 0.15, mint: 1, effort: 'low' as const };
+  const base = { rules: 'oso' as const, agents: ['a', 'b'], budget: 1, rounds: 1, repairs: 0, alpha: 0.8, mint: 1, effort: 'low' as const };
   assert.equal(mintOf({ ...base, knowledge: 'off' }), 0);
   assert.equal(mintOf(base), 1); // runs from before the setting existed: the old flat mint
   for (const rules of ['oso', 'shared', 'traditional', 'independent', 'planner'] as const) {

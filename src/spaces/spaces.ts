@@ -105,7 +105,7 @@ export function spaceToYaml(spec: SpaceSpec): string {
  */
 export function calibrateBudget(space: Space, { share = 0.9, seeds = 50, max = 200_000 } = {}): number {
   const oso = (X: number) => loadScenario(space.spec.scenarioFile ?? null, expandPaths(space.spec.scenario ?? {}), {
-    rules: { alpha: 0.8, c: 0.15, visibility: { kind: 'immediate' } },
+    rules: { alpha: 0.8, visibility: { kind: 'immediate' } },
     budget: { X, rounds: Math.max(10, Math.round(X / Math.max(1, agentsOf(space.scenario)))), perAgentPerRound: null },
   });
   /** Mean share of targets solved by OSO with budget X. */

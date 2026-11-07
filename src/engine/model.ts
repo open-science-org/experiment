@@ -107,13 +107,12 @@ function payInto(s: State, x: number, v: number, bounty = false, fallback = s.au
 
 function publishOne(s: State, i: number, x: number) {
   const { world } = s;
-  const { mint, c } = s.sc.rules;
+  const { mint } = s.sc.rules;
   s.author[x] = i;
   s.pubRound[x] = s.round;
   s.trace?.push({ r: s.round, k: 'publish', a: i, x });
-  const ps = world.prereqs[x];
-  s.roundEarnings[i] += ps.length ? (1 - c) * mint : mint;
-  ps.forEach((j, k) => payInto(s, j, c * mint * s.w[x][k], false, i));
+  // The flat mint, like the knowledge reward below, flows back with absorption rate alpha0.
+  if (mint > 0) payInto(s, x, mint, false, i, s.share0);
   if (world.isTarget[x]) payInto(s, x, world.bounty[x], true);
   // Knowledge reward: per new bit, flowing back with absorption rate alpha0.
   const mb = s.sc.rules.mintPerBit;

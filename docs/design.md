@@ -69,7 +69,7 @@ The mixed corners separate the gain from sharing from the gain from credit. When
 
 ## The knowledge reward in Lean
 
-**Off for now (since 2026-11-06), as a setting:** `npm run pilot -- community --knowledge off|flat-mint` (default `off`). Off, a new result earns nothing for itself: only bounties pay, flowing back by α. `flat-mint` is the old rule (1 per result, easy or hard, 15% to what it cites), kept so runs before 2026-11-06 read as they ran. Every summary lists how its rewards differ from the current simulation.
+**Off for now (since 2026-11-06), as a setting:** `npm run pilot -- community --knowledge off|flat-mint` (default `off`). Off, a new result earns nothing for itself: only bounties pay, flowing back by α. `flat-mint` pays 1 per result, easy or hard, flowing back by α like a bounty (before 2026-11-07, 15% of it went to the results it cited). Every summary lists how its rewards differ from the current simulation.
 
 **Why off:**
 

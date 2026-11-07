@@ -267,17 +267,15 @@ export function ownBits(world: World): number[] {
  * S_r: what authoring r can be expected to earn later from flow-back, assuming every target below it
  * is eventually solved and every descendant published.
  */
-export function attributionValue(world: World, share: Float64Array[], w: number[][], c: number, m: number, mintPerBit = 0, share0 = share): number[] {
+export function attributionValue(world: World, share: Float64Array[], m: number, mintPerBit = 0, share0 = share): number[] {
   const S = new Array<number>(world.n).fill(0);
   const own = mintPerBit > 0 ? ownBits(world) : null;
   for (let d = 0; d < world.n; d++) {
     for (const r of world.ancestors[d]) {
       if (world.isTarget[d]) S[r] += world.bounty[d] * share[d][r];
-      // The knowledge reward of d (its own new bits) flows back with alpha0.
-      if (own) S[r] += mintPerBit * own[d] * share0[d][r];
-      world.prereqs[d].forEach((j, k) => {
-        if (j === r || world.ancestors[j].has(r)) S[r] += c * m * w[d][k] * share[j][r];
-      });
+      // d's own reward (knowledge reward for its new bits, and the flat mint) flows back with alpha0.
+      const reward = (own ? mintPerBit * own[d] : 0) + m;
+      if (reward > 0) S[r] += reward * share0[d][r];
     }
   }
   return S;

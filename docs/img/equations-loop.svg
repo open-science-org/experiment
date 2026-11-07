@@ -65,7 +65,7 @@
     <text x="636" y="462">ωᵢ: reuse of published ideas</text>
     <text x="636" y="480">θ: screen for trivial ideas</text>
 
-    <text x="341" y="426">mint m: author (1−c)m, parents c·m</text>
+    <text x="341" y="426">own reward (mint, knowledge): keeps α₀</text>
     <text x="341" y="444">bounty Bₓ · share(x, z) · flow-back Fₓ</text>
     <text x="341" y="462">gᵢ: gaming, attempts spent on trivial ideas</text>
 
@@ -76,8 +76,8 @@
 
   <!-- the two rule settings: where traditional and OSO differ -->
   <g font-size="12" font-weight="700">
-    <text x="341" y="484" fill="#2a78d6">Traditional: α = 1, c = 0</text>
-    <text x="341" y="501" fill="#eb6834">OSO: α = 0.8, c = 0.15</text>
+    <text x="341" y="484" fill="#2a78d6">Traditional: α = 1</text>
+    <text x="341" y="501" fill="#eb6834">OSO: α = 0.8</text>
   </g>
 
   <!-- the round: arrows between steps -->

@@ -51,14 +51,12 @@ export interface Scenario {
   rules: {
     /** Share of incoming value a result keeps; the rest flows to what it built on. */
     alpha: number;
-    /** Share of each mint paid to what the new result built on. */
-    c: number;
-    /** Mint per newly published result. */
+    /** Flat mint per newly published result; it flows back with alpha0, like the knowledge reward. */
     mint: number;
     /** Knowledge reward: paid per new bit (bits in no published idea yet) when an idea is published. */
     mintPerBit: number;
-    /** Absorption rate of the knowledge reward: the share an idea keeps, the rest flowing to what it built
-     *  on. null: the same as alpha. */
+    /** Absorption rate of a new idea's own reward (the knowledge reward and the flat mint): the share the idea
+     *  keeps, the rest flowing to what it built on. null: the same as alpha. */
     alpha0: number | null;
     /** Chance the validation screen rejects a trivial result. */
     screen: number;
@@ -200,10 +198,21 @@ export function defaultScenario(): Scenario {
 }
 
 /** Loads a scenario: the defaults, then an optional file, then patches in order (dotted paths allowed). */
+/**
+ * Reads a settings patch written before 2026-11-07, which may set `c`: the share of the flat mint passed to the
+ * results a new one cites. The mint now flows back with alpha0, like the knowledge reward, so `c` is dropped.
+ */
+export function upgradeOld(patch: Record<string, unknown>): Record<string, unknown> {
+  const rules = patch.rules;
+  if (!isObject(rules) || !('c' in rules)) return patch;
+  const { c: _, ...rest } = rules;
+  return { ...patch, rules: rest };
+}
+
 export function loadScenario(file: string | null = null, ...patches: Record<string, unknown>[]): Scenario {
   let s = defaultScenario();
-  if (file && file !== 'default') s = merge(s, readConfigFile(file.includes('/') || file.includes('.') ? file : `config/scenarios/${file}.yaml`));
-  for (const p of patches) s = merge(s, expandPaths(p));
+  if (file && file !== 'default') s = merge(s, upgradeOld(readConfigFile(file.includes('/') || file.includes('.') ? file : `config/scenarios/${file}.yaml`) as Record<string, unknown>));
+  for (const p of patches) s = merge(s, upgradeOld(expandPaths(p)));
   validate(s, defaultScenario());
   for (const name of [...Object.keys(s.agents.mix), ...Object.keys(s.agents.deciders)]) {
     if (!(name in s.agents.archetypes)) throw new Error(`scenario: "${name}" is used in agents but not defined in agents.archetypes`);

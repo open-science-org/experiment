@@ -88,9 +88,9 @@ test('the one-chain check matches its exact predictions', () => {
 
 test('with traditional rules, only targets have attribution value', () => {
   const world = worldOf(loadScenario(), 3);
-  const S = attributionValue(world, shares(world, 1, world.weights), world.weights, 0, 1);
+  const S = attributionValue(world, shares(world, 1, world.weights), 1);
   for (let r = 0; r < world.n; r++) if (!world.isTarget[r]) assert.equal(S[r], 0);
-  const osoS = attributionValue(world, shares(world, 0.8, world.weights), world.weights, 0.15, 1);
+  const osoS = attributionValue(world, shares(world, 0.8, world.weights), 1);
   assert.ok(osoS.some((x, r) => !world.isTarget[r] && x > 0));
 });
 
@@ -117,7 +117,7 @@ test('prediction 1: sharing pools search, so OSO reaches deeper than traditional
 
 test('prediction 2: with enough flow-back, agents choose to share', () => {
   const sharing = (alpha: number) => mean(Array.from({ length: 12 }, (_, k) =>
-    run(loadScenario(null, LAYERED, { 'behaviour.psi': 0.1, rules: { alpha, c: alpha === 1 ? 0 : 0.15, visibility: { kind: 'choice' } } }), 200 + k).sharingRate));
+    run(loadScenario(null, LAYERED, { 'behaviour.psi': 0.1, rules: { alpha, visibility: { kind: 'choice' } } }), 200 + k).sharingRate));
   assert.ok(sharing(0.3) > sharing(1) + 0.3);
 });
 
@@ -151,11 +151,9 @@ test('a world read from a file runs, with levels derived from prerequisites', ()
 
 test('experiments expand factors, presets, patches and exclusions into rows', () => {
   const psi = expand(loadExperiment('alpha-psi'));
-  assert.equal(psi.length, 27);
-  assert.ok(!psi.some((r) => r.scenario.rules.alpha === 1 && r.scenario.rules.c === 0.15));
+  assert.equal(psi.length, 15);
   const sweep = expand(loadExperiment('alpha-sweep'));
-  assert.equal(sweep[0].scenario.rules.c, 0);
-  assert.equal(sweep[1].scenario.rules.c, 0.15);
+  assert.deepEqual(sweep.slice(0, 2).map((r) => r.scenario.rules.alpha), [1, 0.9]);
   const settings = expand(loadExperiment('settings'));
   assert.deepEqual(settings[1].scenario.rules, scenarioFor('oso').rules);
   const sens = expand(loadExperiment('sensitivity'));
@@ -229,7 +227,7 @@ test('the Lean reference tree loads as a world', () => {
   assert.equal(world.n, 42);
   assert.equal(world.targets.length, 8);
   assert.equal(world.levels, 7);
-  assert.ok(mean(Array.from({ length: 10 }, (_, k) => run(loadScenario('lean-tree', { rules: { alpha: 0.8, c: 0.15, visibility: { kind: 'immediate' } } }), k + 1).targetsSolved)) > 7);
+  assert.ok(mean(Array.from({ length: 10 }, (_, k) => run(loadScenario('lean-tree', { rules: { alpha: 0.8, visibility: { kind: 'immediate' } } }), k + 1).targetsSolved)) > 7);
 });
 
 test('problem spaces load, and a bad space is rejected with a usable message', async () => {
@@ -309,9 +307,9 @@ test('the designer turns a design into a valid experiment and rejects bad design
   assert.equal(design.checkExperiment({ ...d, vary: [{ path: 'rules.nope', values: [1] }] }).ok, false);
   // α belongs to the flow-back settings: varying it leaves the traditional row traditional.
   const { expand } = await import('../src/experiments/experiment.ts');
-  const rows = expand(design.experimentFor({ ...d, settings: ['traditional', 'osoChoice'], vary: [{ path: 'rules.alpha', values: [0.2, 0.6] }], set: { 'rules.c': 0.3, 'rules.screen': 0.9 } }));
+  const rows = expand(design.experimentFor({ ...d, settings: ['traditional', 'osoChoice'], vary: [{ path: 'rules.alpha', values: [0.2, 0.6] }], set: { 'rules.screen': 0.9 } }));
   assert.equal(rows.length, 3);
-  assert.deepEqual(rows.map((r) => [r.scenario.rules.alpha, r.scenario.rules.c, r.scenario.rules.screen]), [[1, 0, 0.9], [0.2, 0.3, 0.9], [0.6, 0.3, 0.9]]);
+  assert.deepEqual(rows.map((r) => [r.scenario.rules.alpha, r.scenario.rules.screen]), [[1, 0.9], [0.2, 0.9], [0.6, 0.9]]);
   assert.equal(design.checkExperiment({ ...d, set: { 'rules.screen': 3 } }).ok, false, 'out of range');
   // A designed community replaces the field's: kinds left out get no agents.
   const custom = expand(design.experimentFor({ ...d, agents: { archetypes: { foundation: { skill: 1.5, conjecture: 0.7, cost: 1, horizon: 0.98, risk: 0.2, reuse: 0.9, sharing: 0.5, gaming: 0, specialist: false } }, mix: { foundation: 6 } } }));
@@ -404,7 +402,7 @@ test('knowledge counts distinct bits of solved ideas, a shared bit once', async 
 });
 
 test('the knowledge reward pays each new bit once, and alpha0 only moves who gets it', () => {
-  const sc = (alpha0: number | null) => loadScenario(null, { rules: { alpha: 0.8, alpha0, c: 0, mint: 0, mintPerBit: 1, visibility: { kind: 'immediate' } } });
+  const sc = (alpha0: number | null) => loadScenario(null, { rules: { alpha: 0.8, alpha0, mint: 0, mintPerBit: 1, visibility: { kind: 'immediate' } } });
   for (const a0 of [null, 1, 0.3]) {
     const r = run(sc(a0), 11);
     // Everything paid is bounties plus one unit per bit published (flow-back moves money, never makes it).
@@ -556,4 +554,10 @@ test('labs: lab mates share every proof privately; one lab of everyone repeats n
   // shared at once, so a little shows).
   assert.ok(mean(withLabs([12]), (r) => r.sharingRate) < 0.05);
   assert.throws(() => run(withLabs([10, 5]), 1));
+});
+
+test('old settings files with c (the share of the mint passed on) still load', () => {
+  // Settings written before 2026-11-07 may set c (the share of the mint passed on); it is dropped.
+  const old = loadScenario(null, { rules: { alpha: 0.8, c: 0.15, mint: 1, mintPerBit: 0 } });
+  assert.ok(!('c' in old.rules));
 });

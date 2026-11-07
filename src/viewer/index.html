@@ -1456,12 +1456,6 @@ const EXPLAIN = {
     return { svg: exampleTree({ values: v, labels: Object.fromEntries(Object.entries(v).map(([k, x]) => [k, r0(x)])), notes: { T: 'target: bounty 100' } }),
       cap: `A bounty of 100 for target T. At α = ${a}, T's authors keep ${r0(v.T)}; ${r0(100 - v.T)} flows back: B and C keep α of what reaches them and pass the rest on, split by the percentages on the arrows. A1 and A2 build on nothing, so they keep all they get. ${a >= 1 ? 'At α = 1 nothing flows back: this is traditional research.' : ''}` };
   },
-  'rules.c': (c) => {
-    const a = val('rules.alpha'), m = 10, toB = m * c * 0.6, toC = m * c * 0.4;
-    const v = { T: m * (1 - c), B: toB * a, C: toC * a, A1: toB * (1 - a) * 0.5, A2: toB * (1 - a) * 0.5 + toC * (1 - a) };
-    return { svg: exampleTree({ values: v, max: 10, labels: Object.fromEntries(Object.entries(v).map(([k, x]) => [k, x.toFixed(2)])), notes: { T: 'new idea: mints 10' } }),
-      cap: `T has just been validated and mints 10 tokens. At c = ${c}, T's authors get ${(m * (1 - c)).toFixed(1)} and ${(m * c).toFixed(1)} goes to what T built on (B 60%, C 40%), flowing on down at α = ${a}. So B, C and their foundations earn as soon as someone builds on them, not only when a bounty is won.` };
-  },
   'rules.mint': (m) => ({ svg: exampleTree({ values: { A1: m, A2: m, B: m, C: m, T: m }, max: 5, labels: { A1: `+${m}`, A2: `+${m}`, B: `+${m}`, C: `+${m}`, T: `+${m}` }, notes: { T: 'plus its bounty' } }),
     cap: `Every validated idea mints ${m} tokens for its authors (less the cited share c under OSO rules). Five ideas here: ${(5 * m).toFixed(1)} tokens in all, before any bounty. A trivial idea also earns ${m} if the validation screen lets it through, which is what gaming agents chase.` }),
   'rules.screen': (th) => {
@@ -1516,7 +1510,7 @@ const EXPLAIN = {
   'agents.mix.gamer': (g) => ({ svg: exampleTree({ notes: { T: 'target' } }), cap: `${g} gaming agent${g === 1 ? '' : 's'} in the community, in addition to the others. A gaming agent submits trivial ideas to collect the mint; the validation screen θ (now ${val('rules.screen')}) decides how often that pays.` }),
 };
 function decision(kappa, psi) {
-  const a = val('rules.alpha'), c = val('rules.c'), m = val('rules.mint');
+  const a = val('rules.alpha'), c = 1 - a, m = val('rules.mint'); // the mint flows back like a bounty (α0 = α)
   const flow = 100 * (1 - a) * 0.6 * a;
   const gain = m * (1 - c) + 0.8 * flow * kappa / 10;
   const risk = a * 60 * 0.5 * psi / 10;

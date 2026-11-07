@@ -41,7 +41,7 @@ test('with Mathlib: a proof starting at the margin with nested lines is accepted
   assert.ok(!(await compile(q, 'constructor\n· simp')).ok);
 });
 
-const base: CommunityOptions = { agents: ['a', 'b', 'c', 'd'], budget: 0.5, rounds: 30, repairs: 2, alpha: 0.8, c: 0.15, mint: 1, effort: 'medium', allowGrind: true, rules: 'oso' } as CommunityOptions;
+const base: CommunityOptions = { agents: ['a', 'b', 'c', 'd'], budget: 0.5, rounds: 30, repairs: 2, alpha: 0.8, mint: 1, effort: 'medium', allowGrind: true, rules: 'oso' } as CommunityOptions;
 
 test('every society has the same total money; the single agent has it all, with rounds to spend it', () => {
   for (const key of Object.keys(SOCIETIES)) {

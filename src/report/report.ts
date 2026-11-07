@@ -203,15 +203,15 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
     format: (v) => (v > 0 ? '+' : '') + v.toFixed(1),
   }));
   const grid = outputs.grid;
-  const gridCell = (a: number, c: number) => summarize(byLabel(grid, { 'α': a, c }));
+  const gridCell = (a: number, am: number) => summarize(byLabel(grid, { 'α': a, 'α0': am }));
   const cFmt = (v: number) => `${Math.round(v * 100)}%`;
   writeFileSync(join(outDir, 'figures', 'flow-back-grid.svg'), heatmap({
     title: 'The flow-back levers together',
     subtitle: 'Share of intermediate ideas agents choose to publish; below it, the hardest level reached.',
-    rowLabel: 'α, absorption rate', colLabel: 'c, cited share of the mint',
-    rows: GRID.alpha.map(String), cols: GRID.c.map(cFmt),
-    values: GRID.alpha.map((a) => GRID.c.map((c) => gridCell(a, c).sharing)), range: [0, 1],
-    format: (v) => pct(v), note: (r, k) => `level ${f1(gridCell(GRID.alpha[r], GRID.c[k]).frontier)}`,
+    rowLabel: 'α, absorption rate', colLabel: 'α0, share of its own reward an idea keeps',
+    rows: GRID.alpha.map(String), cols: GRID.alpha0.map(cFmt),
+    values: GRID.alpha.map((a) => GRID.alpha0.map((am) => gridCell(a, am).sharing)), range: [0, 1],
+    format: (v) => pct(v), note: (r, k) => `level ${f1(gridCell(GRID.alpha[r], GRID.alpha0[k]).frontier)}`,
   }));
   const market = sens.filter((x) => x.p.group === 'market');
   const mostSensitive = market.reduce((a, b) => (b.max - b.min > a.max - a.min ? b : a));
@@ -225,7 +225,7 @@ export function buildReport(input: Space, seeds = 100, log: (s: string) => void 
     'OSO frontier': f1(q.oso.frontier), 'traditional frontier': f1(q.trad.frontier), 'OSO lead': (q.lead >= 0 ? '+' : '') + f1(q.lead),
     'OSO targets': f1(q.oso.targetsSolved), 'traditional targets': f1(q.trad.targetsSolved), 'ideas shared': pct(q.oso.sharing),
   })));
-  const gridTable = GRID.alpha.map((a) => ({ 'α \\ c': a, ...Object.fromEntries(GRID.c.map((c) => { const g = gridCell(a, c); return [cFmt(c), `${pct(g.sharing)} · ${f1(g.frontier)}`]; })) }));
+  const gridTable = GRID.alpha.map((a) => ({ 'α \\ α0': a, ...Object.fromEntries(GRID.alpha0.map((am) => { const g = gridCell(a, am); return [cFmt(am), `${pct(g.sharing)} · ${f1(g.frontier)}`]; })) }));
   const gamerNote = mostSensitive.p.id === 'rho' && (scenario.agents.mix.gamer ?? 0) > 0
     ? ' Why f matters so much here: under traditional rules, when money follows earnings, the first agent to earn takes the money. In this community that is the gaming agent, which earns early from trivial ideas and then, holding all the money, does the research too. Without a gaming agent the effect disappears (see the funding-rule-gamer experiment).'
     : '';

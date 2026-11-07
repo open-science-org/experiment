@@ -38,15 +38,14 @@ export const LEAN_REWARDS = {
   gaps: (o: Pick<CommunityOptions, 'knowledge'>): string[] => [
     o.knowledge === 'off'
       ? 'the knowledge reward is off (the simulation pays 1 per new bit since v5): Lean has no agreed measure of a result\'s new knowledge yet, see docs/design.md'
-      : 'still the old flat mint (1 per new result, easy or hard, 15% to the results it cites), not the knowledge reward per new bit the simulation has paid since v5',
+      : 'a flat mint (1 per new result, easy or hard, flowing back by α), not the knowledge reward per new bit the simulation has paid since v5',
     'value flowing back is still split by the money spent proving each parent, not by the work a parent saves (1/p) as in the simulation',
   ],
 };
 /** Rules under which a result is public as soon as Lean accepts it. */
 export const atOnce = (r: Rules) => r === 'oso' || r === 'shared' || r === 'planner';
-/** The flat mint a new result earns, and the share of it passed to cited results (0 with the knowledge reward off). */
+/** The flat mint a new result earns (0 with the knowledge reward off). */
 export const mintOf = (o: Pick<CommunityOptions, 'knowledge' | 'mint'>) => (o.knowledge === 'off' ? 0 : o.mint);
-export const citedShareOf = (o: Pick<CommunityOptions, 'knowledge' | 'c'>) => (o.knowledge === 'off' ? 0 : o.c);
 
 export interface CommunityOptions {
   rules: Rules;
@@ -57,7 +56,8 @@ export interface CommunityOptions {
   rounds: number;
   repairs: number;
   alpha: number;
-  c: number;
+  /** Runs before 2026-11-07 only: the share of the flat mint passed to cited results. It now flows back by α. */
+  c?: number;
   mint: number;
   /**
    * The knowledge reward: what a new result earns for itself when it is published. 'off' (new runs since
@@ -218,10 +218,9 @@ export class Community {
     e.public = true;
     e.publishedRound = round;
     const used = e.uses.map((n) => this.library.find((x) => `${x.ns}.${x.name}` === n)).filter((x): x is Entry => !!x);
-    const c = this.opts.rules === 'oso' && used.length ? citedShareOf(this.opts) : 0;
+    // A new result's own reward flows back like a bounty (the simulation's α0, equal to α).
     const mint = e.trivial ? 0 : mintOf(this.opts);
-    this.earnings[e.author] += mint * (1 - c);
-    { const w = this.weights(used); used.forEach((u, k) => this.pay(u, mint * c * w[k])); }
+    if (mint) this.pay(e, mint);
     if (e.target) this.pay(e, this.bounty(this.targets.find((t) => t.publicId === e.target)!));
     if (e.conjecture && !e.trivial) this.pay(e, this.opts.conjectureBounty ?? 1);
   }
@@ -261,7 +260,7 @@ export class Community {
 - When you prove a posted target, it is published together with every lemma it rests on, and you receive the whole bounty.${M ? `\n- Each published result also earns its author a mint of ${M}.` : ''}`
       : `How this community works (OSO rules):
 - Every result you prove is published at once, and every lab can build on it immediately.
-${M ? `- Each new result earns its author a mint of ${M}; if it builds on earlier results, ${citedShareOf(o) * 100}% of that mint goes to them.\n` : '- A new result earns nothing by itself; value comes from targets\' bounties, flowing back through the results they used.\n'}- When value reaches a result (a target's bounty, or value flowing from later work), its author keeps ${o.alpha * 100}% and the rest flows back to the results it used, split by how much each cost to prove, and on down.`;
+${M ? `- Each new result earns a mint of ${M}, which flows back like a bounty: its author keeps ${o.alpha * 100}% and the rest goes to the results it used.\n` : '- A new result earns nothing by itself; value comes from targets\' bounties, flowing back through the results they used.\n'}- When value reaches a result (a target's bounty, or value flowing from later work), its author keeps ${o.alpha * 100}% and the rest flows back to the results it used, split by how much each cost to prove, and on down.`;
     const persona = o.personas?.[i]?.trim() ? `Your lab's way of working${o.personaNames?.[i] ? ` (${o.personaNames[i]})` : ''}: ${o.personas[i].trim()}` : '';
     return `You are lab ${i + 1} of ${o.agents.length} in a research community proving theorems in Lean 4 (version 4.35.0, core library only, no Mathlib). Your aim is to earn as much as you can within your budget; every model call you make costs budget.
 
@@ -642,7 +641,7 @@ ${table}
 
 - **Agents:** ${o.agents.map((m, i) => `agent ${i + 1}: \`${m}\``).join(', ')}; each with $${o.budget} ${money}; reasoning effort ${o.effort}.
 - **Each round,** every agent with budget left takes one action: prove a target, or state and prove a new lemma; up to ${o.repairs} repairs on Lean's errors.
-- **Traditional:** lemmas stay private until their author proves a target; the target and the lemmas it rests on are then published and the author takes the bounty. **OSO:** every idea is published at once; mint ${o.mint}, c = ${o.c}, α = ${o.alpha}.
+- **Traditional:** lemmas stay private until their author proves a target; the target and the lemmas it rests on are then published and the author takes the bounty. **OSO:** every idea is published at once; mint ${o.mint}${o.c !== undefined ? `, c = ${o.c}` : ''}, α = ${o.alpha}.
 - **Duplicated work:** a lemma proved again when another agent already had it (privately, under traditional rules), or a target solved twice, for example by two agents in the same round. **Trivial:** one basic tactic proves it; it can be cited but earns no mint. **Agents may pass** when nothing seems worth their budget, and keep the rest.
 - **One run per setting:** results vary from run to run; several runs are needed before reading much into a difference.
 
@@ -762,7 +761,7 @@ ${design}
 - **Counted targets:** ${counted.join(', ')}. The others are warm-ups: solved, they are reported but do not count.
 - **Agents:** ${o.agents.map((mdl, i) => `agent ${i + 1}: \`${mdl}\`${o.personaNames?.[i] ? ` as ${o.personaNames[i]}` : ''}`).join('; ')}. The same agents and personas on both sides.
 - **Budget:** $${o.budget} per agent ${priced}; up to ${o.rounds} rounds. **Posted conjectures:** ${o.conjectures?.length ?? 0}, bounty ${o.conjectureBounty ?? 1} each; their ids (K1, …) are neutral, and their statements are given to the agents but not listed here.
-- **Rules:** traditional: ideas private until their agent proves a target, then published with it; OSO: everything published at once, α = ${o.alpha}, c = ${o.c}, mint ${o.mint}.
+- **Rules:** traditional: ideas private until their agent proves a target, then published with it; OSO: everything published at once, α = ${o.alpha}${o.c !== undefined ? `, c = ${o.c}` : ''}, mint ${o.mint}.
 
 ## Every run
 
