@@ -115,7 +115,8 @@ if (cmd === 'community') {
   const price = (m: string, u: { input: number; output: number; cacheRead: number; cacheWrite: number; cost?: number }) => (!prices ? 0.01 : isLocal(m) ? localPrice(u) : u.cost ?? (u.input + u.cacheRead) * prices[m].input + u.output * prices[m].output);
   if (!stub && remote.length) {
     // Refuse to start a test the key cannot pay for: running out midway makes the result useless.
-    const most = rules.length * agents.length * base.budget * Number(pick('repeats', '1'));
+    // Only the runs still to do (--from-rep skips the ones done earlier).
+    const most = rules.length * agents.length * base.budget * (Number(pick('repeats', '1')) - Number(pick('from-rep', '1')) + 1);
     const left = await creditLeft(process.env.OPENROUTER_API_KEY!);
     if (left != null && left < most * 1.1) { console.error(`The key has $${left.toFixed(2)} left; this test can spend up to $${most.toFixed(2)}. Add credit first.`); process.exit(1); }
   }
