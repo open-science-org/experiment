@@ -19,7 +19,7 @@
 import { chatFor, creditLeft, DEFAULT_MODEL, DEFAULT_MODELS, defaultProvider, type Provider } from './agent.ts';
 import { estimate, readRun, writeComparison, referenceChat, runPilot, writeMeasuredWorld, writeSummary, type Condition, type PilotOptions } from './pilot.ts';
 import { selftest } from './selftest.ts';
-import { writeFileSync } from 'node:fs';
+import { existsSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { LEAN_DIR, leanAvailable, loadTasks } from './tasks.ts';
 
@@ -133,22 +133,32 @@ if (cmd === 'community') {
     const done = [];
     // The plan, so the viewer's Progress page can show runs still waiting.
     writeFileSync(join(LEAN_DIR, 'runs', `${id}.plan.json`), JSON.stringify({ id, societies, repeats, k, startedAt: Date.now() }) + '\n');
-    // --parallel: the societies of one run go at once, so they all meet the same provider speed and load.
-    // --from-rep N: runs before N were done earlier under the same --run id; read them instead of rerunning.
+    // --parallel: every run not yet done goes at once (a redo of an earlier run included), so they all meet
+    // the same provider speed and load. --from-rep N: runs before N were done earlier under the same --run
+    // id; they are read, not rerun (one that is missing is run).
     const parallel = flag('parallel'), fromRep = Number(pick('from-rep', '1'));
-    for (let rep = 1; rep <= repeats; rep++) {
-      if (rep < fromRep) {
-        for (const key of societies) { const runId = `${id}-r${rep}-${key}`; done.push({ key, rep, runId, result: readCommunity(runId) }); }
-        continue;
+    const one = async (key: string, rep: number) => {
+      const runId = `${id}-r${rep}-${key}`;
+      console.log(`\nRun ${rep} of ${repeats}, ${key}:`);
+      const log = parallel ? (line: string) => console.log(`[r${rep} ${key}] ${line.trimStart()}`) : console.log;
+      return { key, rep, runId, result: await runCommunity(societyOptions(key, opts), chat, price, runId, log) };
+    };
+    const have = (key: string, rep: number) => rep < fromRep && existsSync(join(LEAN_DIR, 'runs', `${id}-r${rep}-${key}`, 'result.json'));
+    if (parallel) {
+      const jobs = [];
+      for (let rep = 1; rep <= repeats; rep++) for (const key of societies) {
+        if (have(key, rep)) done.push({ key, rep, runId: `${id}-r${rep}-${key}`, result: readCommunity(`${id}-r${rep}-${key}`) });
+        else jobs.push(one(key, rep));
       }
-      const one = async (key: string) => {
-        const runId = `${id}-r${rep}-${key}`;
-        console.log(`\nRun ${rep} of ${repeats}, ${key}:`);
-        const log = parallel ? (line: string) => console.log(`[${key}] ${line.trimStart()}`) : console.log;
-        return { key, rep, runId, result: await runCommunity(societyOptions(key, opts), chat, price, runId, log) };
-      };
-      if (parallel) done.push(...(await Promise.all(societies.map(one))));
-      else for (const key of societies) done.push(await one(key));
+      done.push(...(await Promise.all(jobs)));
+      done.sort((a, b) => a.rep - b.rep || societies.indexOf(a.key) - societies.indexOf(b.key));
+      writeSocieties(id, done, k, stub ? 'This is a pipeline test: the labs play from the reference proofs.' : String(cfg.design ?? value('design', '')), stub);
+    }
+    for (let rep = 1; rep <= repeats && !parallel; rep++) {
+      for (const key of societies) {
+        if (have(key, rep)) done.push({ key, rep, runId: `${id}-r${rep}-${key}`, result: readCommunity(`${id}-r${rep}-${key}`) });
+        else done.push(await one(key, rep));
+      }
       writeSocieties(id, done, k, stub ? 'This is a pipeline test: the labs play from the reference proofs.' : String(cfg.design ?? value('design', '')), stub);
     }
     console.log(`\nSummary: results/community/${id}/summary.md`);
