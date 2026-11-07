@@ -1,8 +1,8 @@
 # AI agents on the Lean problems: results so far
 
-Last updated: 2026-11-07. Every result here has its own page under `results/` (the links), with its design, caveats and logs. This page only gathers them.
+Last updated: 2026-11-08. Every result here has its own page under `results/` (the links), with its design, caveats and logs. This page only gathers them.
 
-**In short:** with help (lemmas), weak models prove targets they cannot prove alone. In five paired races with one cheap model, OSO reached 2 hard targets in every run and for about half the money; traditional reached them in 3 of 5. The test setup itself checks out. What we do not know yet is whether OSO beats a plain shared library, meaning whether flow-back adds anything beyond sharing. The pilot of seven setups was too easy to tell.
+**In short:** with help (lemmas), weak models prove targets they cannot prove alone. In five paired races with one cheap model, OSO reached 2 hard targets in every run and for about half the money; traditional reached them in 3 of 5. In the main experiment (part B, 20 runs per setup), OSO did **not** prove clearly more targets than a plain shared library. But it changed how labs worked: with more value flowing back, labs proved more lemmas and built on each other more, and that opened a hard target (B5) that the shared library never proved. That last finding is exploratory and needs a test fixed in advance. The test setup itself checks out.
 
 ## 1. Do lemmas help a model? (single model, no community)
 
@@ -65,7 +65,49 @@ Money to reach 2 counted targets, run by run (OSO / traditional): $0.25 / never,
 
 **Choosing the lab model.** A lab model must keep working and gain from lemmas. DeepSeek V4.1 Flash is the cheapest tested model that does both. GPT-OSS-120B is cheaper but gave up as a lab. It has not been tried in the lemma panel or a plain race, so it may have failed only in the planner trial's setup. The strong Claude models prove every target alone, so they cannot show what sharing is worth.
 
-## 4. Is the test setup sound? (harness checks)
+## 4. The main experiment, part B (2026-11-08)
+
+**Question, fixed in advance** (the design is in the local notes, `notes/lean-main-experiment.md`): at the same money **spent**, does a community prove more when value flows back (OSO) than when results are only shared (a shared library)? 4 DeepSeek V4.1 Flash labs, $0.15 each; labs could not stop early, so every run spent its money (about $0.61); 20 runs per setup; knowledge reward off; bounties 4 · 2^(depth − 1). Results: [lean-main-b](../results/community/lean-main-b/summary.md). Traditional (20 runs) was added afterwards as a reference and is still running.
+
+### The answer: no clear difference
+
+Targets proved by the end, of 8 (the measure fixed in advance):
+
+| Setup | Mean | Spread | Against the shared library |
+| --- | --- | --- | --- |
+| Shared library (α 1) | 5.85 | 4–7 | |
+| OSO, α 0.8 | 5.80 | 4–8 | −0.05 (not clear) |
+| OSO, α 0.2 | 6.25 | 5–8 | +0.40 (not clear: 1.6 standard errors; clear needs 2) |
+
+By the rule fixed in advance, neither OSO setting is clearly ahead of the shared library. Runs varied less than in the pilot (about ±0.8 targets against ±1.4), so the test was sharper than planned.
+
+### What changed: which targets, and how labs worked (exploratory)
+
+Looked for after seeing the results, so these are leads, not findings.
+
+**Which targets** (runs out of 20 that proved each):
+
+| Setup | B5, merge sort = insertion sort (depth 5, bounty 64, 5 lemmas in our proof) | X1, Cassini's identity (depth 3, bounty 16, 2 lemmas) | The other six |
+| --- | --- | --- | --- |
+| Shared library | **0** | 17 | about the same in every setup: C3, A3, C4, B3, X2 nearly always; A5 almost never |
+| OSO, α 0.8 | **5** | 10 | |
+| OSO, α 0.2 | **11** | 13 | |
+
+**How labs worked** (per run):
+
+| Setup | Lemmas proved | Results built on another lab's work | Lemmas proved twice |
+| --- | --- | --- | --- |
+| Shared library | 7.2 | 2.6 | 3.7 |
+| OSO, α 0.8 | 10.7 | 4.3 | 3.1 |
+| OSO, α 0.2 | 13.8 | 6.6 | 3.0 |
+
+**What it suggests:** flow-back changes what labs do. The more value flows back (lower α), the more groundwork labs do and the more they build on each other's. That groundwork opens a hard target that needs many lemmas (B5). It costs some quicker wins on a target that needs few (X1). The measure fixed in advance counts every target the same, so the shift barely moves the total. This is the behaviour OSO is meant to cause, seen in real AI agents for the first time. It still needs a test fixed in advance.
+
+**How to confirm it:** in part A, fix in advance a measure that counts hard targets more: bounty won (B5 is worth 64, X1 16), or whether the hard targets (B5, X2, A5) are proved.
+
+**Also:** "money to reach 3 targets" was too easy; every run got there for $0.04–0.05.
+
+## 5. Is the test setup sound? (harness checks)
 
 | Check | Result |
 | --- | --- |
@@ -75,10 +117,10 @@ Money to reach 2 counted targets, run by run (OSO / traditional): $0.25 / never,
 
 Faults found and fixed on the way: wrong error labels, proofs without a code block, planner lines dropped, dotted lemma names, replies cut off partway, and runs spoiled by the laptop sleeping. Budgets count the actual charge since 2026-10-21.
 
-## 5. What is still open
+## 6. What is still open
 
-1. **Does flow-back add anything beyond sharing?** Shared library against OSO, with many runs and a harder measure. This is the main experiment.
-2. **How many runs it needs,** from the pilot's spread.
+1. **Does flow-back open hard targets?** Part B's lead (B5: 0, 5 and 11 runs of 20), tested with a measure fixed in advance that counts hard targets more (part A).
+2. **Does flow-back keep labs working?** Part A, where labs may stop early.
 3. **The knowledge reward in Lean:** off for now; how to measure it later is in [design.md](design.md#the-knowledge-reward-in-lean).
 4. **Agents choosing what to publish:** in every test so far the rules set sharing. In the simulation, flow-back matters most when agents choose.
 5. **One model, one small problem set (42 theorems).** Results may not carry over to other models or harder mathematics.
