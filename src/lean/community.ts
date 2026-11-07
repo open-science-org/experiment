@@ -396,7 +396,7 @@ ${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still w
       } else {
         kind = 'lemma';
         lemma = parseLemma(code);
-        if (!lemma) errors = ['Give the whole declaration: theorem <name> <statement> := <proof>.'];
+        if (!lemma) errors = [/^\s*(?:theorem|lemma)\s+[\w']+\./.test(code) ? 'Lemma names cannot contain a dot: use a plain name such as pow_add.' : 'Give the whole declaration: theorem <name> <statement> := <proof>.'];
         else if (this.targets.some((t) => norm(t.signature) === norm(lemma!.signature))) errors = ['That is a posted target: use ACTION: target <ID> instead.'];
         else {
           const r = await check({ ns: 'OSO', signature: lemma.signature }, lemma.proof.replace(new RegExp(`(?<![\\w.])${lemma.name}(?![\\w'])`, 'g'), 'attempt'), { library: this.checkLibrary(i), allowGrind: this.opts.allowGrind });
