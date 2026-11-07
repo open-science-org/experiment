@@ -127,17 +127,28 @@ if (cmd === 'community') {
   if (societies.length) {
     // Paired runs: run k of every society before run k + 1 of any, so a stop midway leaves complete pairs.
     const { societyOptions, writeSocieties } = await import('./societies.ts');
+    const { readCommunity } = await import('./community.ts');
     const k = Number(pick('k', '2'));
     const opts = { ...base, rules: 'oso' as const, allowGrind: stub };
     const done = [];
     // The plan, so the viewer's Progress page can show runs still waiting.
     writeFileSync(join(LEAN_DIR, 'runs', `${id}.plan.json`), JSON.stringify({ id, societies, repeats, k, startedAt: Date.now() }) + '\n');
+    // --parallel: the societies of one run go at once, so they all meet the same provider speed and load.
+    // --from-rep N: runs before N were done earlier under the same --run id; read them instead of rerunning.
+    const parallel = flag('parallel'), fromRep = Number(pick('from-rep', '1'));
     for (let rep = 1; rep <= repeats; rep++) {
-      for (const key of societies) {
-        console.log(`\nRun ${rep} of ${repeats}, ${key}:`);
-        const runId = `${id}-r${rep}-${key}`;
-        done.push({ key, rep, runId, result: await runCommunity(societyOptions(key, opts), chat, price, runId) });
+      if (rep < fromRep) {
+        for (const key of societies) { const runId = `${id}-r${rep}-${key}`; done.push({ key, rep, runId, result: readCommunity(runId) }); }
+        continue;
       }
+      const one = async (key: string) => {
+        const runId = `${id}-r${rep}-${key}`;
+        console.log(`\nRun ${rep} of ${repeats}, ${key}:`);
+        const log = parallel ? (line: string) => console.log(`[${key}] ${line.trimStart()}`) : console.log;
+        return { key, rep, runId, result: await runCommunity(societyOptions(key, opts), chat, price, runId, log) };
+      };
+      if (parallel) done.push(...(await Promise.all(societies.map(one))));
+      else for (const key of societies) done.push(await one(key));
       writeSocieties(id, done, k, stub ? 'This is a pipeline test: the labs play from the reference proofs.' : String(cfg.design ?? value('design', '')), stub);
     }
     console.log(`\nSummary: results/community/${id}/summary.md`);
