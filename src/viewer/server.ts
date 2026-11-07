@@ -291,7 +291,12 @@ function leanData(exp: string) {
     if (!m || !keys.includes(m[3]) || m[1].startsWith('test-') || !existsSync(join(dir, d, 'options.json'))) continue;
     runs.set(m[1], [...(runs.get(m[1]) ?? []), { key: m[3], rep: Number(m[2]), done: existsSync(join(dir, d, 'result.json')) }]);
   }
-  const saved = (run: string) => (existsSync(join(dir, run, 'prompts.json')) ? JSON.parse(readFileSync(join(dir, run, 'prompts.json'), 'utf8')) as string[] : null);
+  // A run's prompts: as sent (a list), or rebuilt afterwards from the code that ran it ({ rebuilt, prompts }).
+  const saved = (run: string): { prompts: string[]; rebuilt: string | null } | null => {
+    if (!existsSync(join(dir, run, 'prompts.json'))) return null;
+    const j = JSON.parse(readFileSync(join(dir, run, 'prompts.json'), 'utf8'));
+    return Array.isArray(j) ? { prompts: j, rebuilt: null } : { prompts: j.prompts, rebuilt: j.rebuilt };
+  };
   const experiments = [...runs.keys()].sort((a, b) => statSync(join(dir, `${b}-r1-${runs.get(b)![0].key}`)).mtimeMs - statSync(join(dir, `${a}-r1-${runs.get(a)![0].key}`)).mtimeMs);
   const id = runs.has(exp) ? exp : experiments[0];
   const mine = runs.get(id) ?? [];
@@ -303,7 +308,7 @@ function leanData(exp: string) {
     const done = mine.filter((r) => r.key === key && r.done).map((r) => JSON.parse(readFileSync(join(dir, `${id}-r${r.rep}-${key}`, 'result.json'), 'utf8')) as CommunityResult);
     const proved = Object.fromEntries(tasks.filter((t) => t.posted).map((t) => [t.publicId, done.filter((r) => r.library.some((e) => e.target === t.publicId)).length]));
     return { key, name: SOCIETIES[key].name, params: SOCIETIES[key].params, colour: SOCIETIES[key].colour, options, runs: mine.filter((r) => r.key === key).length, done: done.length, proved,
-      system: saved(`${id}-r${first.rep}-${key}`)?.[lab] ?? com.systemPrompt(lab), savedPrompt: !!saved(`${id}-r${first.rep}-${key}`), turn: com.turnPrompt(lab, 1), lab: lab + 1 };
+      system: saved(`${id}-r${first.rep}-${key}`)?.prompts[lab] ?? com.systemPrompt(lab), promptFrom: saved(`${id}-r${first.rep}-${key}`)?.rebuilt ?? (saved(`${id}-r${first.rep}-${key}`) ? 'sent' : 'current'), turn: com.turnPrompt(lab, 1), lab: lab + 1 };
   });
   return {
     experiments, id, setups, reps: [...new Set(mine.map((r) => r.rep))].sort((a, b) => a - b),

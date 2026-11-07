@@ -1,28 +1,28 @@
 # Societies compared: verified targets for the money (lean-main-b)
 
-**Question:** For the same agents, checker and money, does OSO reach the same verified targets for less than other ways of organizing the agents?
+**Question:** For the same agents, checker and money, does a community prove more targets when value flows back (OSO) than when results are only shared, or kept private until a target is proved?
 
-**Answer:** OSO, α 0.8 reached 3 verified targets for $0.05 on average, $0.01 more than Shared library over 20 paired runs (Shared library cheaper; ±$0.01). OSO, α 0.2 reached 3 verified targets for $0.05 on average, $0.01 more than Shared library over 20 paired runs (no clear difference; ±$0.01).
+**Answer:** OSO, α 0.8 proved 5.80 targets of 8 on average, 0.05 fewer than Shared library (5.85): not clear: 0.19 standard errors, clear needs 2. OSO, α 0.2 proved 6.25 targets of 8 on average, 0.40 more than Shared library (5.85): not clear: 1.58 standard errors, clear needs 2.
 
 ![Societies compared: verified targets for the money (lean-main-b)](figures/progress.svg)
 
-| society | settings | money to 3 targets | got there | targets at full budget | spent | work done twice |
-| --- | --- | --- | --- | --- | --- | --- |
-| Shared library | shared at once · α 1 | $0.04 ± 0.02 | 20 of 20 | 5.85 of 8 | $0.61 | 3.70 |
-| OSO, α 0.8 | shared at once · α 0.8 | $0.05 ± 0.02 | 20 of 20 | 5.80 of 8 | $0.60 | 3.15 |
-| OSO, α 0.2 | shared at once · α 0.2 | $0.05 ± 0.03 | 20 of 20 | 6.25 of 8 | $0.61 | 3.05 |
-| Traditional | shared when a target is proved · α 1 | $0.05 ± 0.02 | 20 of 20 | 5.80 of 8 | $0.61 | 2.95 |
+| society | settings | targets proved | money to 3 targets | spent | lemmas proved | built on another lab | lemmas proved twice | targets proved twice |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| OSO, α 0.8 | shared at once · α 0.8 | 5.80 ± 1.01 of 8 | $0.05 (20 of 20 got there) | $0.60 | 10.65 | 4.35 | 0.15 | 3.00 |
+| OSO, α 0.2 | shared at once · α 0.2 | 6.25 ± 0.97 of 8 | $0.05 (20 of 20 got there) | $0.61 | 13.75 | 6.60 | 0.20 | 2.85 |
+| Shared library | shared at once · α 1 | 5.85 ± 0.59 of 8 | $0.04 (20 of 20 got there) | $0.61 | 7.15 | 2.60 | 0.15 | 3.55 |
+| Traditional | shared when a target is proved · α 1 | 5.80 ± 0.77 of 8 | $0.05 (20 of 20 got there) | $0.61 | 7.20 | 0.55 | 0.40 | 2.55 |
 
-**Design** (fixed before the run): compared Shared library, OSO, α 0.8, OSO, α 0.2, Traditional · held the same: the same 4 agents (the single agent: the first, with all the money), $0.60 in all, Lean checks every proof · measure: money spent to verify 3 of the counted targets (C3, A3, C4, X1, B3, B5, X2, A5); a run that never does counts as its whole budget, lower is better · 20 runs per society, paired. Cost: $48.68 as charged.
+**Design** (fixed before the run): compared OSO, α 0.8, OSO, α 0.2, Shared library, Traditional · held the same: the same 4 agents (the single agent: the first, with all the money), $0.60 in all, Lean checks every proof · measure: targets proved by the end of a run, of 8; money to reach 3 targets is shown beside it, higher is better · 20 runs per setup, not paired. Cost: $48.68 as charged.
 
 **Caveats:**
 - Labs could not stop early: each worked until its money or the rounds ran out, so setups are compared at the same money spent.
 - Rewards differ from the current simulation model: the knowledge reward is off (the simulation pays 1 per new bit since v5): Lean has no agreed measure of a result's new knowledge yet, see docs/design.md; value flowing back is still split by the money spent proving each parent, not by the work a parent saves (1/p) as in the simulation.
-- Values are mean ± standard deviation over runs; the verdict compares runs in pairs (run k of each society), with ± two standard errors of the difference.
+- Values are mean ± standard deviation over runs. The verdict compares each OSO setup with the shared library (or the best other setup); runs are not paired, and a difference is clear when it is more than two standard errors.
 
 <details><summary>Details</summary>
 
-Main Lean experiment, part B (pre-registered in notes/lean-main-experiment.md, 2026-11-07): does flow-back add anything beyond sharing, at the same money spent? Shared library, OSO α 0.8 and OSO α 0.2, 20 runs each; labs cannot stop early. Traditional (20 runs) added on 2026-11-08, after the other three had run, as the reference point.
+Main Lean experiment, part B (pre-registered in notes/lean-main-experiment.md, 2026-11-07): does flow-back add anything beyond sharing, at the same money spent? Shared library, OSO α 0.8 and OSO α 0.2, 20 runs each; labs cannot stop early. Traditional (20 runs) added later the same day, after the other three had run, as the reference point. These runs used the earlier prompt wording, which differed between setups by more than the rules (see docs/lean-experiment.md).
 
 ![Verified targets for the money](figures/progress.svg)
 

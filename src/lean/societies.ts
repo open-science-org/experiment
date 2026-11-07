@@ -7,6 +7,7 @@ import { LEAN_REWARDS, charged, countedOf, progress, spendTo, stats, type Commun
 import { lineChart } from '../report/figures.ts';
 import { writeCard } from '../card.ts';
 import { RESULTS_DIR } from '../paths.ts';
+import { loadTasks } from './tasks.ts';
 
 export interface Society { name: string; /** The setup in OSO settings: when others see a result, α, who decides the work. */ params: string; rules: Rules; alpha?: number; /** One lab with everyone's budget. */ single?: boolean; colour: string; slot: 1 | 2 | 3 }
 
@@ -71,51 +72,53 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
     format: { x: (v) => `$${v.toFixed(2)}`, y: (v) => String(v) },
   }));
 
-  // The measure fixed in advance: money to reach k counted targets (a run that never does counts as its whole budget).
+  // The measure fixed in advance (main Lean experiment, 2026-11-07): targets proved by the end of a run, of all posted.
+  // Money to reach k targets is kept beside it.
+  const nTargets = loadTasks().filter((t) => t.posted).length;
   const rows = keys.map((key) => {
     const rs = runs.filter((r) => r.key === key).map((r) => r.result), st = rs.map(stats);
     const to = rs.map((r) => spendTo(r, k) ?? r.opts.budget * r.opts.agents.length);
+    const got = st.map((x) => x.targetsSolved);
     return {
-      key, to,
+      key, got,
       row: {
         society: SOCIETIES[key].name,
         settings: SOCIETIES[key].params,
-        [`money to ${k} targets`]: `$${f2(mean(to))} ± ${f2(sd(to))}`,
-        'got there': `${rs.filter((r) => spendTo(r, k) !== null).length} of ${rs.length}`,
-        'targets at full budget': `${f2(mean(st.map((x) => x.countedSolved)))} of ${counted.length}`,
+        'targets proved': `${f2(mean(got))} ± ${f2(sd(got))} of ${nTargets}`,
+        [`money to ${k} targets`]: `$${f2(mean(to))} (${rs.filter((r) => spendTo(r, k) !== null).length} of ${rs.length} got there)`,
         spent: `$${f2(mean(st.map((x) => x.spent)))}`,
-        'work done twice': f2(mean(st.map((x) => x.lemmasDuplicate))),
+        'lemmas proved': f2(mean(st.map((x) => x.lemmasAccepted))),
+        'built on another lab': f2(mean(st.map((x) => x.builtOnOthers))),
+        'lemmas proved twice': f2(mean(st.map((x) => x.lemmasDuplicate))),
+        'targets proved twice': f2(mean(st.map((x) => x.targetsDuplicate))),
+        ...(st.some((x) => x.errors) ? { 'turns lost to errors': f2(mean(st.map((x) => x.errors))) } : {}),
       },
     };
   });
-  const best = [...rows].sort((a, b) => mean(a.to) - mean(b.to))[0];
-  // The verdict: each OSO society against the cheapest other one, run k against run k (the runs are paired),
-  // clear when the mean difference is more than two standard errors from zero.
-  const byRep = (key: string) => new Map(runs.filter((r) => r.key === key).map((r) => [r.rep, spendTo(r.result, k) ?? r.result.opts.budget * r.result.opts.agents.length]));
+  // The verdict: each OSO setup against the shared library (or, without one, the best other setup). Runs are not
+  // paired (model calls cannot be replayed with the same luck); clear when the difference is more than two standard errors.
   const rest = rows.filter((r) => !r.key.startsWith('oso'));
-  const strongest = [...rest].sort((a, b) => mean(a.to) - mean(b.to))[0];
-  const verdict = (key: string) => {
-    const a = byRep(key), b = byRep(strongest.key);
-    const d = [...a].filter(([rep]) => b.has(rep)).map(([rep, x]) => x - b.get(rep)!);
-    const md = mean(d), se = d.length > 1 ? sd(d) / Math.sqrt(d.length) : Infinity;
-    const word = d.length < 2 ? 'one pair, no verdict' : Math.abs(md) <= 2 * se ? 'no clear difference' : md < 0 ? 'OSO cheaper' : `${SOCIETIES[strongest.key].name} cheaper`;
-    return `${SOCIETIES[key].name} reached ${k} verified targets for $${f2(mean([...a.values()]))} on average, ${Math.abs(md) < 0.005 ? 'the same as' : md < 0 ? '$' + f2(-md) + ' less than' : '$' + f2(md) + ' more than'} ${SOCIETIES[strongest.key].name} over ${d.length} paired run${d.length === 1 ? '' : 's'} (${word}${d.length > 1 ? `; ±$${f2(2 * se)}` : ''}).`;
+  const base = rest.find((r) => r.key === 'shared') ?? [...rest].sort((a, b) => mean(b.got) - mean(a.got))[0];
+  const verdict = (r: (typeof rows)[number]) => {
+    const a = r.got, b = base.got, md = mean(a) - mean(b);
+    const se = a.length > 1 && b.length > 1 ? Math.sqrt(sd(a) ** 2 / a.length + sd(b) ** 2 / b.length) : Infinity;
+    const word = !Number.isFinite(se) ? 'too few runs for a verdict' : Math.abs(md) <= 2 * se ? `not clear: ${se ? f2(Math.abs(md) / se) : '0'} standard errors, clear needs 2` : `clear: ${f2(Math.abs(md) / se)} standard errors`;
+    return `${SOCIETIES[r.key].name} proved ${f2(mean(a))} targets of ${nTargets} on average, ${Math.abs(md) < 0.005 ? 'the same as' : `${f2(Math.abs(md))} ${md > 0 ? 'more' : 'fewer'} than`} ${SOCIETIES[base.key].name} (${f2(mean(b))}): ${word}.`;
   };
-  const osoKeys = rows.map((r) => r.key).filter((x) => x.startsWith('oso'));
-  const reached = runs.some((r) => spendTo(r.result, k) !== null);
-  const answer = !reached ? `No run reached ${k} verified targets.`
-    : !osoKeys.length || !strongest ? `Cheapest to ${k} targets: ${SOCIETIES[best.key].name}, $${f2(mean(best.to))}.`
-    : `${reps < 2 ? 'One run each, no verdict yet. ' : ''}${osoKeys.map(verdict).join(' ')}`;
+  const osoRows = rows.filter((r) => r.key.startsWith('oso'));
+  const best = [...rows].sort((a, b) => mean(b.got) - mean(a.got))[0];
+  const answer = !osoRows.length || !base ? `Most targets proved: ${SOCIETIES[best.key].name}, ${f2(mean(best.got))} of ${nTargets}.`
+    : `${reps < 2 ? 'One run each, no verdict yet. ' : ''}${osoRows.map(verdict).join(' ')}`;
   const o = [...runs].sort((a, b) => b.result.opts.agents.length - a.result.opts.agents.length)[0].result.opts;
   writeCard(dir, {
     id, kind: 'race', date: new Date().toISOString().slice(0, 10), title: `Societies compared: verified targets for the money (${id})`,
     ranAt: new Date(Math.min(Date.now(), ...runs.flatMap((r) => r.result.actions.map((a) => a.t)).filter(Boolean))).toISOString(),
     design: {
-      question: 'For the same agents, checker and money, does OSO reach the same verified targets for less than other ways of organizing the agents?',
+      question: 'For the same agents, checker and money, does a community prove more targets when value flows back (OSO) than when results are only shared, or kept private until a target is proved?',
       compare: keys.map((x) => SOCIETIES[x].name).join(', '),
       fixed: `the same ${o.agents.length} agents (the single agent: the first, with all the money), $${f2(total)} in all, Lean checks every proof`,
-      measure: `money spent to verify ${k} of the counted targets (${counted.join(', ')}); a run that never does counts as its whole budget`,
-      better: 'lower', runs: `${reps} run${reps > 1 ? 's' : ''} per society, paired`,
+      measure: `targets proved by the end of a run, of ${nTargets}; money to reach ${k} targets is shown beside it`,
+      better: 'higher', runs: `${reps} run${reps > 1 ? 's' : ''} per setup, not paired`,
     },
     answer,
     table: rows.map((r) => r.row),
@@ -123,7 +126,7 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
       o.mayStop === false ? 'Labs could not stop early: each worked until its money or the rounds ran out, so setups are compared at the same money spent.' : 'Labs could stop early by passing, so setups are compared at the same money offered; money spent is shown beside each.',
       ...(() => { const gaps = LEAN_REWARDS.gaps(o); return gaps.length ? [`Rewards differ from the current simulation model: ${gaps.join('; ')}.`] : []; })(),
       ...(local ? ['Models on this machine cost nothing; dollars price their tokens as a cheap open model would be served. A test of the setup, not a cost result.'] : []),
-      'Values are mean ± standard deviation over runs; the verdict compares runs in pairs (run k of each society), with ± two standard errors of the difference.',
+      'Values are mean ± standard deviation over runs. The verdict compares each OSO setup with the shared library (or the best other setup); runs are not paired, and a difference is clear when it is more than two standard errors.',
       ...(runs.some((r) => r.result.stopped) ? [`Some runs stopped early (${[...new Set(runs.map((r) => r.result.stopped).filter(Boolean))].join(', ')}); their money counts as spent up to the stop.`] : []),
     ],
     cost: stub ? '$0 (stand-in agents; dollars are a fixed $0.01 a call)' : local ? '$0 (local models)' : `$${f2(runs.reduce((a, r) => a + stats(r.result).spent, 0))} ${priced}`,

@@ -109,7 +109,7 @@ export interface Entry {
 
 export interface Action {
   round: number; agent: number; model: string;
-  kind: 'target' | 'conjecture' | 'lemma' | 'pass' | 'none' | 'plan';
+  kind: 'target' | 'conjecture' | 'lemma' | 'pass' | 'none' | 'plan' | 'error';
   target?: string; name?: string; signature?: string;
   ok: boolean; reason?: string; turns: number;
   /** The library entry an accepted action created, and the results its proof used. */
@@ -242,28 +242,20 @@ export class Community {
 
   systemPrompt(i: number): string {
     const o = this.opts, M = mintOf(o);
-    const rules = o.rules === 'independent'
-      ? o.agents.length === 1
-        ? `How this works: you work alone, with the whole budget. Each result you prove goes into your own library${M ? ` and earns a mint of ${M}` : ''}; each target you prove earns its bounty.${M ? '' : ' Other results earn nothing by themselves.'}`
-        : `How this community works (independent labs):
-- Labs work separately: you see only your own results, and no lab sees yours.
-- ${M ? `Each result you prove earns you a mint of ${M}; each` : 'Each'} target you prove earns you its bounty.${M ? '' : ' Other results earn nothing by themselves.'}`
-      : o.rules === 'planner'
-      ? `How this community works (with a planner):
-- Lab 1 is the planner: it does not prove anything; each round it gives every other lab an assignment, to bring the targets within reach together. Follow your assignment unless it is clearly impossible.
-- Every result you prove is published at once, and every lab can build on it immediately.
-- ${M ? `Each new result earns its author a mint of ${M}, and a` : 'A'} target's bounty goes to the lab that proves it. Nothing is passed on to the results it builds on.${M ? '' : ' Other results earn nothing by themselves.'}`
-      : o.rules === 'shared'
-      ? `How this community works (shared library):
-- Every result you prove is published at once, and every lab can build on it immediately.
-- ${M ? `Each new result earns its author a mint of ${M}, and a` : 'A'} target's bounty goes to the lab that proves it. Nothing is passed on to the results it builds on.${M ? '' : ' Other results earn nothing by themselves.'}`
+    // One template for every setup: the same three lines, each stating one rule, so the setups' prompts differ only
+    // where their rules do (runs before 2026-11-07 used freer wording per setup; see docs/lean-experiment.md).
+    const name = { independent: o.agents.length === 1 ? 'one lab' : 'independent labs', planner: 'with a planner', shared: 'shared library', traditional: 'traditional rules', oso: 'OSO rules' }[o.rules];
+    const seeing = o.rules === 'independent'
+      ? o.agents.length === 1 ? 'You work alone, with the whole budget; your results go into your own library.' : 'Labs work separately: you see only your own results, and no lab sees yours.'
       : o.rules === 'traditional'
-      ? `How this community works (traditional rules):
-- Lemmas you prove stay private to you; other labs cannot see or use them, and you cannot see theirs.
-- When you prove a posted target, it is published together with every lemma it rests on, and you receive the whole bounty.${M ? `\n- Each published result also earns its author a mint of ${M}.` : ''}`
-      : `How this community works (OSO rules):
-- Every result you prove is published at once, and every lab can build on it immediately.
-${M ? `- Each new result earns a mint of ${M}, which flows back like a bounty: its author keeps ${o.alpha * 100}% and the rest goes to the results it used.\n` : '- A new result earns nothing by itself; value comes from targets\' bounties, flowing back through the results they used.\n'}- When value reaches a result (a target's bounty, or value flowing from later work), its author keeps ${o.alpha * 100}% and the rest flows back to the results it used, split by how much each cost to prove, and on down.`;
+      ? 'Lemmas you prove stay private to you; other labs cannot see or use them, and you cannot see theirs. When you prove a posted target, it is published together with every lemma it rests on.'
+      : 'Every result you prove is published at once, and every lab can build on it immediately.';
+    const flow = o.rules === 'oso'
+      ? `When value reaches a result (a target's bounty, or value flowing back from later work), its author keeps ${o.alpha * 100}% and the rest flows back to the results it used, split by how much each cost to prove, and on down.`
+      : "A target's bounty goes to the lab that proves it. Nothing flows back to the results it used.";
+    const own = M ? `A new result earns its author a mint of ${M}${o.rules === 'oso' ? ', which flows back in the same way' : ''}.` : 'A new result earns nothing by itself.';
+    const planner = o.rules === 'planner' ? '\n- Lab 1 is the planner: it does not prove anything; each round it gives every other lab an assignment, to bring the targets within reach together. Follow your assignment unless it is clearly impossible.' : '';
+    const rules = `How this community works (${name}):${planner}\n- Seeing results: ${seeing}\n- Bounties: ${flow}\n- New results: ${own}`;
     const persona = o.personas?.[i]?.trim() ? `Your lab's way of working${o.personaNames?.[i] ? ` (${o.personaNames[i]})` : ''}: ${o.personas[i].trim()}` : '';
     return `You are lab ${i + 1} of ${o.agents.length} in a research community proving theorems in Lean 4 (version 4.35.0, core library only, no Mathlib). Your aim is to earn as much as you can within your budget; every model call you make costs budget.
 
@@ -542,6 +534,10 @@ export async function runCommunity(opts: CommunityOptions, chatFor: (com: Commun
     }).catch((e) => {
       const msg = (e as Error).message;
       log(`  round ${round} · agent ${i + 1}: error ${msg}`);
+      // Kept in the log, so a lost turn is counted, not silently missing.
+      const a: Action = { round, agent: i, model: opts.agents[i], kind: 'error', ok: false, reason: msg.slice(0, 500), turns: 0, usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, cost: 0, spentAfter: com.spent[i], transcript: [], t: Date.now() } as Action;
+      com.actions.push(a);
+      appendFileSync(file, JSON.stringify(a) + '\n');
       // Out of credit: every later call fails too, so the run would only look like labs giving up.
       if (/\b402\b|credits/i.test(msg)) stopped = 'out of credit';
     })));
@@ -596,9 +592,14 @@ export function stats(r: CommunityResult) {
     budget: r.opts.budget * r.opts.agents.length,
     actions: r.actions.length,
     lemmasAccepted: lemmas.filter((a) => a.ok && !/trivial/.test(a.reason ?? '')).length,
-    lemmasDuplicate: r.actions.filter((a) => a.ok && /duplicate/.test(a.reason ?? '')).length + lemmas.filter((a) => !a.ok && /duplicate/.test(a.reason ?? '')).length,
+    /** Groundwork done twice: a lemma or posted conjecture proved again when the same statement was already proved (by the lab or another). */
+    lemmasDuplicate: r.actions.filter((a) => (a.kind === 'lemma' || a.kind === 'conjecture') && /duplicate/.test(a.reason ?? '')).length,
+    /** Targets proved again after another lab had already proved them. */
+    targetsDuplicate: r.actions.filter((a) => a.kind === 'target' && /duplicate/.test(a.reason ?? '')).length,
+    /** Turns lost to an error the harness could not recover from (a call that failed after its retries). */
+    errors: r.actions.filter((a) => a.kind === 'error').length,
     trivial: lemmas.filter((a) => /trivial/.test(a.reason ?? '')).length,
-    failed: r.actions.filter((a) => a.kind !== 'plan' && !a.ok && !/duplicate|trivial/.test(a.reason ?? '')).length,
+    failed: r.actions.filter((a) => a.kind !== 'plan' && a.kind !== 'error' && !a.ok && !/duplicate|trivial/.test(a.reason ?? '')).length,
     /** Planner rounds whose reply gave no usable `LAB n:` line. */
     plansUnusable: r.actions.filter((a) => a.kind === 'plan' && !a.ok).length,
     published: r.library.filter((e) => e.public).length,
@@ -630,7 +631,7 @@ export function writeCommunityComparison(id: string, runs: { runId: string; resu
   const rows = curves.map((c) => ({
     rules: label(c.result.opts.rules), 'targets solved': `${c.st.targetsSolved} of 8`, 'deepest target': c.st.deepestTarget,
     spent: `$${c.st.spent.toFixed(2)} of $${c.st.budget.toFixed(2)}`, 'value gained': c.st.value, 'ROI (value per $)': c.st.spent > 0 ? Math.round(c.st.value / c.st.spent) : '–', actions: c.st.actions, 'lemmas accepted': c.st.lemmasAccepted,
-    'duplicated work': c.st.lemmasDuplicate, trivial: c.st.trivial, 'failed attempts': c.st.failed, 'never published': c.st.neverPublished,
+    'lemmas proved twice': c.st.lemmasDuplicate, 'targets proved twice': c.st.targetsDuplicate, trivial: c.st.trivial, 'failed attempts': c.st.failed, 'never published': c.st.neverPublished,
   }));
   const cols = Object.keys(rows[0] ?? {});
   const table = [`| ${cols.join(' | ')} |`, `| ${cols.map(() => '---').join(' | ')} |`, ...rows.map((r) => `| ${cols.map((c) => (r as Record<string, unknown>)[c]).join(' | ')} |`)].join('\n');
@@ -660,7 +661,7 @@ Runs: ${runs.map((x) => x.runId).join(', ')}. Transcripts (with proofs) are priv
     ranAt: firstAt(runs.map((x) => x.result)),
     id, kind: 'race', date: new Date(Math.min(...runs.map((x) => x.result.actions[0]?.t ?? Date.now()))).toISOString().slice(0, 10), title: 'First AI test, OSO vs traditional',
     design: { question: 'For the same money, does an OSO community of AI agents solve more targets than a traditional one?', compare: 'traditional rules and OSO rules', fixed: `the same ${o.agents.length} agents, $${o.budget} each, no personas`, measure: 'targets solved', better: 'higher', runs: '1 run per side' },
-    answer: verdict.replace(/\*\*/g, ''), table: rows.map((r) => ({ rules: r.rules, 'targets solved': r['targets solved'], spent: r.spent, 'ROI (value per $)': r['ROI (value per $)'], 'lemmas accepted': r['lemmas accepted'], 'duplicated work': r['duplicated work'] })),
+    answer: verdict.replace(/\*\*/g, ''), table: rows.map((r) => ({ rules: r.rules, 'targets solved': r['targets solved'], spent: r.spent, 'ROI (value per $)': r['ROI (value per $)'], 'lemmas accepted': r['lemmas accepted'], 'lemmas proved twice': r['lemmas proved twice'], 'targets proved twice': r['targets proved twice'] })),
     caveats: ['One run per side: no verdict either way.', ...(note ? [note] : [])],
     page: `results/community/${id}/summary.md`,
     chart: `results/community/${id}/figures/progress.svg`,
@@ -757,7 +758,7 @@ The verdict compares the mean number of counted targets solved against two stand
 
 ![Counted targets solved for the money](figures/progress.svg)
 
-| rules | counted targets solved | all targets | spent (mean) | conjectures proved | duplicated work | built on another agent's idea |
+| rules | counted targets solved | all targets | spent (mean) | conjectures proved | lemmas proved twice | built on another agent's idea |
 | --- | --- | --- | --- | --- | --- | --- |
 ${rows.join('\n')}
 
@@ -774,7 +775,7 @@ ${design}
 
 ## Every run
 
-| run | traditional: counted | spent | OSO: counted | spent | traditional duplicated | OSO duplicated | OSO built on others |
+| run | traditional: counted | spent | OSO: counted | spent | traditional: lemmas twice | OSO: lemmas twice | OSO built on others |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 ${perRun.join('\n')}
 

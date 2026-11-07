@@ -1,8 +1,8 @@
 # AI agents on the Lean problems: results so far
 
-Last updated: 2026-11-08. Every result here has its own page under `results/` (the links), with its design, caveats and logs. This page only gathers them.
+Last updated: 2026-11-07. Every result here has its own page under `results/` (the links), with its design, caveats and logs. This page only gathers them.
 
-**In short:** with help (lemmas), weak models prove targets they cannot prove alone. In five paired races with one cheap model, OSO reached 2 hard targets in every run and for about half the money; traditional reached them in 3 of 5. In the main experiment (part B, 20 runs per setup), OSO did **not** prove clearly more targets than a plain shared library. But it changed how labs worked: with more value flowing back, labs proved more lemmas and built on each other more, and that opened a hard target (B5) that the shared library never proved. That last finding is exploratory and needs a test fixed in advance. The test setup itself checks out.
+**In short:** with help (lemmas), weak models prove targets they cannot prove alone. In five paired races with one cheap model, OSO reached 2 hard targets in every run and for about half the money; traditional reached them in 3 of 5. In the main experiment (part B, 20 runs per setup), OSO did **not** prove clearly more targets than a plain shared library. Looked for afterwards: with more value flowing back, labs proved more lemmas and built on each other more, and OSO α 0.2 proved a hard target (B5) in 11 of 20 runs, the shared library in none. That is a lead, not a finding: it was not the measure fixed in advance, and the setups' prompts differed by more than the rules. The test setup itself checks out.
 
 ## 1. Do lemmas help a model? (single model, no community)
 
@@ -33,12 +33,13 @@ Last updated: 2026-11-08. Every result here has its own page under `results/` (t
 | Counted targets proved (of 4) | 1.6 | 2.0 |
 | Runs that reached 2 counted targets | 3 of 5 | **5 of 5** |
 | Money to reach 2, when reached | $0.24 | **$0.13** |
-| Work done twice | 20.4 | 2.4 |
+| Lemmas and conjectures proved twice | 20.0 | 0 |
+| Targets proved twice (two labs in the same round) | 0.4 | 2.4 |
 | Used another lab's result | 0 | 6.4 |
 
 Money to reach 2 counted targets, run by run (OSO / traditional): $0.25 / never, $0.11 / never, $0.07 / $0.18, $0.13 / $0.26, $0.11 / $0.28. OSO was cheaper in every run. The spend measure was chosen after the run (exploratory); budgets were at list prices, and OpenRouter charged about 5.6× more on both sides.
 
-**What it means:** OSO's lead comes from what the simulation predicts: sharing at once stops labs proving the same lemma again (20 against 2 repeats), and labs build on each other's results. But OSO here was also sharing, so this race cannot say how much is due to flow-back.
+**What it means:** OSO's lead comes from what the simulation predicts: sharing at once stops labs proving the same groundwork again (20 repeats a run against none), and labs build on each other's results. But OSO here was also sharing, so this race cannot say how much is due to flow-back.
 
 ## 3. Seven setups (pilot, 2026-11-07)
 
@@ -65,9 +66,11 @@ Money to reach 2 counted targets, run by run (OSO / traditional): $0.25 / never,
 
 **Choosing the lab model.** A lab model must keep working and gain from lemmas. DeepSeek V4.1 Flash is the cheapest tested model that does both. GPT-OSS-120B is cheaper but gave up as a lab. It has not been tried in the lemma panel or a plain race, so it may have failed only in the planner trial's setup. The strong Claude models prove every target alone, so they cannot show what sharing is worth.
 
-## 4. The main experiment, part B (2026-11-08)
+## 4. The main experiment, part B (2026-11-07)
 
-**Question, fixed in advance** (the design is in the local notes, `notes/lean-main-experiment.md`): at the same money **spent**, does a community prove more when value flows back (OSO) than when results are only shared (a shared library)? 4 DeepSeek V4.1 Flash labs, $0.15 each; labs could not stop early, so every run spent its money (about $0.61); 20 runs per setup; knowledge reward off; bounties 4 · 2^(depth − 1). Results: [lean-main-b](../results/community/lean-main-b/summary.md). Traditional (20 runs) was added afterwards as a reference point; its runs came after the others'. The run summary's own headline uses money to reach 3 targets, its built-in measure, not the measure fixed in advance below.
+**Question, fixed in advance** (the design is in the local notes, `notes/lean-main-experiment.md`): at the same money **spent**, does a community prove more when value flows back (OSO) than when results are only shared (a shared library)? 4 DeepSeek V4.1 Flash labs, $0.15 each; labs could not stop early, so every run spent its money (about $0.61); 20 runs per setup; knowledge reward off; bounties 4 · 2^(depth − 1). Results: [lean-main-b](../results/community/lean-main-b/summary.md). Traditional (20 runs) was added afterwards as a reference point; its runs came after the others'. Full design: [the Lean experiment](lean-experiment.md).
+
+**A known flaw:** the setups' prompts differed by more than the rules. The shared library's had an extra line, "Other results earn nothing by themselves", and the OSO prompts explained flow-back at length. Some of any difference between setups could come from the wording. New runs use one template, where only the rule lines differ.
 
 ### The answer: no clear difference
 
@@ -80,7 +83,7 @@ Targets proved by the end, of 8 (the measure fixed in advance):
 | OSO, α 0.8 | 5.80 | 4–8 | −0.05 (not clear) |
 | OSO, α 0.2 | 6.25 | 5–8 | +0.40 (not clear: 1.6 standard errors; clear needs 2) |
 
-By the rule fixed in advance, neither OSO setting is clearly ahead of the shared library. Against traditional (secondary): OSO α 0.2 +0.45 (1.6 standard errors, not clear), OSO α 0.8 0.00, shared library +0.05. **Sharing alone did not help here:** the shared library proved no more than traditional. Runs varied less than in the pilot (about ±0.8 targets against ±1.4), so the test was sharper than planned.
+By the rule fixed in advance, neither OSO setting is clearly ahead of the shared library. Against traditional (secondary): OSO α 0.2 +0.45 (1.6 standard errors, not clear), OSO α 0.8 0.00, shared library +0.05. Sharing alone did not raise the number of targets: the shared library proved no more than traditional. Runs varied less than in the pilot (about ±0.8 targets against ±1.4), so the test was sharper than planned.
 
 ### What changed: which targets, and how labs worked (exploratory)
 
@@ -97,16 +100,23 @@ Looked for after seeing the results, so these are leads, not findings.
 
 **How labs worked** (per run):
 
-| Setup | Lemmas proved | Results built on another lab's work | Lemmas proved twice |
-| --- | --- | --- | --- |
-| Traditional | 7.2 | 0.6 | 3.0 |
-| Shared library | 7.2 | 2.6 | 3.7 |
-| OSO, α 0.8 | 10.7 | 4.3 | 3.1 |
-| OSO, α 0.2 | 13.8 | 6.6 | 3.0 |
+| Setup | Lemmas proved | Results built on another lab's work | Lemmas proved twice | Targets proved twice |
+| --- | --- | --- | --- | --- |
+| Traditional | 7.2 | 0.6 | 0.4 | 2.6 |
+| Shared library | 7.2 | 2.6 | 0.2 | 3.6 |
+| OSO, α 0.8 | 10.7 | 4.3 | 0.2 | 3.0 |
+| OSO, α 0.2 | 13.8 | 6.6 | 0.2 | 2.9 |
 
-**What it suggests:** flow-back changes what labs do; sharing alone does not. Traditional and the shared library do the same amount of groundwork (7.2 lemmas a run); only flow-back raises it. The more value flows back (lower α), the more groundwork labs do and the more they build on each other's. That groundwork opens a hard target that needs many lemmas (B5). It costs some quicker wins on a target that needs few (X1). The measure fixed in advance counts every target the same, so the shift barely moves the total. This is the behaviour OSO is meant to cause, seen in real AI agents for the first time. It still needs a test fixed in advance.
+A target is proved twice when two labs prove it in the same round. (An earlier version of this table counted both kinds together as "lemmas proved twice".)
 
-**How to confirm it:** in part A, fix in advance a measure that counts hard targets more: bounty won (B5 is worth 64, X1 16), or whether the hard targets (B5, X2, A5) are proved.
+**What it suggests:**
+- **Sharing changes how labs work:** labs built on each other's results 2.6 times a run in the shared library, against 0.6 under traditional.
+- **Flow-back goes with more groundwork:** traditional and the shared library proved the same number of lemmas (7.2 a run); OSO proved more, and more the lower the α (10.7 at α 0.8, 13.8 at α 0.2). Labs also built on each other more.
+- **And with B5:** the hard target that needs the most lemmas was proved more often the more value flowed back (0, 5 and 11 runs of 20).
+- **The total barely moves,** because the measure fixed in advance counts every target the same.
+- These go together; they do not show that flow-back caused them. The prompts differed by more than the rules (above), and these patterns were looked for after the results.
+
+**How to confirm it:** with the prompts fixed, a run fixed in advance on B5 alone: is B5 proved, OSO α 0.2 against the shared library, about 40 runs each.
 
 **Also:** "money to reach 3 targets" was too easy; every run got there for $0.04–0.05.
 
@@ -122,7 +132,7 @@ Faults found and fixed on the way: wrong error labels, proofs without a code blo
 
 ## 6. What is still open
 
-1. **Does flow-back open hard targets?** Part B's lead (B5: 0, 5 and 11 runs of 20), tested with a measure fixed in advance that counts hard targets more (part A).
+1. **Does flow-back open hard targets?** Part B's lead (B5: 0, 5 and 11 runs of 20), tested with fair prompts and a measure fixed in advance.
 2. **Does flow-back keep labs working?** Part A, where labs may stop early.
 3. **The knowledge reward in Lean:** off for now; how to measure it later is in [design.md](design.md#the-knowledge-reward-in-lean).
 4. **Agents choosing what to publish:** in every test so far the rules set sharing. In the simulation, flow-back matters most when agents choose.

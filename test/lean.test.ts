@@ -2,6 +2,7 @@
 // Lean and the private reference proofs run only where they exist (not in CI).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { join } from 'node:path';
 import { banned, checkFile, parseAxioms, parseErrors } from '../src/lean/checker.ts';
 import { extractProof } from '../src/lean/agent.ts';
 import { leanAvailable } from '../src/lean/tasks.ts';
@@ -146,6 +147,35 @@ test('with the knowledge reward off, a new result earns nothing and the prompt s
     assert.doesNotMatch(off, /mint/, rules);
     assert.match(old, /mint of 1/, rules);
   }
+});
+
+test('every setup states its rules in the same three lines; only the rule lines differ', async () => {
+  const { Community } = await import('../src/lean/community.ts');
+  const base = { agents: ['a', 'b', 'c', 'd'], budget: 1, rounds: 1, repairs: 0, mint: 1, effort: 'low' as const, knowledge: 'off' as const };
+  const lines = (rules: 'shared' | 'oso' | 'traditional', alpha: number) => new Community({ ...base, rules, alpha }).systemPrompt(1).split('\n');
+  const shared = lines('shared', 1), oso = lines('oso', 0.2), trad = lines('traditional', 1);
+  const diff = (a: string[], b: string[]) => a.filter((l, n) => l !== b[n]);
+  assert.equal(shared.length, oso.length);
+  assert.equal(shared.length, trad.length);
+  // Shared library and OSO differ only in the name and how bounties are paid; shared and traditional only in the name and who sees what.
+  assert.deepEqual(diff(shared, oso).map((l) => l.split(':')[0]), ['How this community works (shared library)', '- Bounties']);
+  assert.deepEqual(diff(shared, trad).map((l) => l.split(':')[0]), ['How this community works (shared library)', '- Seeing results']);
+  assert.match(oso.join('\n'), /keeps 20%/);
+});
+
+test('a turn that throws is kept in the log as an error, and not counted as a failed proof', async () => {
+  const { runCommunity, stats } = await import('../src/lean/community.ts');
+  const { mkdtempSync, readFileSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const root = mkdtempSync(join(tmpdir(), 'oso-err-'));
+  const opts = { rules: 'shared' as const, agents: ['a'], budget: 1, rounds: 1, repairs: 0, alpha: 1, mint: 0, effort: 'low' as const, knowledge: 'off' as const };
+  const boom = (() => { throw new Error('upstream 500 after retries'); }) as never;
+  const r = await runCommunity(opts, () => boom, () => 0, 'err-test', () => {}, root);
+  const logged = readFileSync(join(root, 'err-test', 'actions.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l));
+  assert.equal(logged[0].kind, 'error');
+  assert.match(logged[0].reason, /upstream 500/);
+  assert.equal(stats(r).errors, 1);
+  assert.equal(stats(r).failed, 0);
 });
 
 test('labs that may not stop lose only the turn they pass', async () => {

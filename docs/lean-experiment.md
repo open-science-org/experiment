@@ -44,6 +44,8 @@ Each agent sees these, with their bounties. The bounty is 4 · 2^(depth − 1).
 - **Targets must need their lemmas.** In the [model panel](../results/pilot/panel-2026-10-19/summary.md), DeepSeek V4.1 Flash proved 4 of 16 targets alone and 12 of 16 when given the lemmas, so the deep targets really need groundwork.
 - **Tools shaped the choice.** Lean's `grind` tactic proved the matrix facts in one step, which left area C with no depth. So `grind` is banned, and C's targets need induction.
 
+- **Why C3, and not u_add?** No note records why each target was picked. u_add (u(m+n+1) = u(m+1)·u(n+1) + 3·u(m)·u(n)) is also depth 1 and could have been the easy target. But posting a target shows every lab its statement, so posting u_add would have handed out the first step of A3 and of A5's chain (bounty 256). Under OSO a posted target would also be paid twice: its own bounty, and value flowing back from later targets. C3 gives away one step, towards X1 only. So C3 keeps more of the groundwork hidden, and groundwork is what the setups are compared on. In part B labs found u_add themselves.
+
 More: [the problem set](../lean/README.md) and [its notes](../lean/NOTES.md).
 
 ### What agents see and may use
@@ -89,11 +91,19 @@ The pilot also tried single agent, independent labs and a planner; they did not 
 
 ## The prompts
 
-Every lab gets the same instructions: what Lean version and rules apply, the definitions, how to answer, plus a few lines stating the setup's rules. Each turn it also sees its earnings, budget left, the targets and their status, and the published results.
+Every lab gets the same instructions: the Lean version and proof rules, the definitions, how to answer, and the setup's rules. Each turn it also sees its earnings, budget left, the targets and their status, and the published results.
 
-The exact text is on the app's Lean experiment page (Prompts tab), with the lines that differ between setups side by side. Runs from 2026-11-07 on save the prompts they sent.
+The rules come from one template, three lines each, so setups differ only where their rules do:
 
-**Known problem:** the setups' prompts differ by more than the rules. The shared library's has an extra line, "Other results earn nothing by themselves", and the OSO prompts explain flow-back at length. Part of any difference could come from the wording. Fix planned: one template for all setups, and a check with OSO's wording but shared-library payment.
+| | Seeing results | Bounties | New results |
+| --- | --- | --- | --- |
+| Traditional | lemmas stay private; a proved target is published with every lemma it rests on | the prover keeps the bounty; nothing flows back | earn nothing by themselves |
+| Shared library | everything published at once | the prover keeps the bounty; nothing flows back | earn nothing by themselves |
+| OSO | everything published at once | the author keeps α; the rest flows back to the results used, split by cost, and on down | earn nothing by themselves |
+
+The exact text is on the app's Lean experiment page (Prompts tab). Runs from 2026-11-07 on save the prompts they sent.
+
+**Part B used earlier wording** (since 2026-11-07, one template). There the setups' prompts differed by more than the rules: the shared library's had an extra line, "Other results earn nothing by themselves", and the OSO prompts explained flow-back at length. Part of part B's differences could come from the wording.
 
 ## Run settings
 
@@ -114,11 +124,11 @@ All setups in a batch run together, so a change at the model provider hits them 
 - **Main measure:** targets proved (of 8) by the end of a run.
 - **Main comparisons:** OSO α 0.2 against the shared library; OSO α 0.8 against the shared library. Against traditional: secondary.
 - **Clear** means more than 2 standard errors from zero. Runs are not paired.
-- **Also reported:** money spent, lemmas proved, results built on another lab's work, work done twice, and which targets were proved.
+- **Also reported:** money spent, lemmas proved, results built on another lab's work, lemmas proved twice, targets proved twice (two labs in the same round), turns lost to errors, and which targets were proved.
 - **Power:** with 20 runs per setup, a real lead of 1 target shows as clear about 60% of the time; 80% needs about 32 runs.
 
 ## Where it stands
 
 - **Part B** (20 runs per setup, run 2026-11-07): no clear difference on the main measure. Looked for afterwards: OSO α 0.2 proved B5 in 11 of 20 runs, the shared library in 0. Details: [results](ai-agent-results.md).
-- **Next:** fix the prompts, then a run fixed in advance to test the B5 lead, then part A.
+- **Next:** a run fixed in advance to test the B5 lead, with the new prompts; then part A.
 - **Limits:** one model, one small problem set, and the rules (not the agents) decide what is published.
