@@ -67,6 +67,30 @@ The mixed corners separate the gain from sharing from the gain from credit. When
 - [ ] Models for the agents.
 - [ ] Who builds what (Abinash, Bikrant).
 
+## The knowledge reward in Lean
+
+**Off for now (since 2026-11-06), as a setting:** `npm run pilot -- community --knowledge off|flat-mint` (default `off`). Off, a new result earns nothing for itself: only bounties pay, flowing back by α. `flat-mint` is the old rule (1 per result, easy or hard, 15% to what it cites), kept so runs before 2026-11-06 read as they ran. Every summary lists how its rewards differ from the current simulation.
+
+**Why off:**
+
+1. **Lean has no agreed measure of new knowledge yet.** In the simulation one number does three jobs: an idea's new bits are the work it takes ($2^{\text{bits}}$ attempts), its difficulty ($p = 2^{-\text{bits}}$) and its novelty (bits nobody had). In Lean these come apart: a strong tactic makes a hard proof short, and the same statement got proofs from 21 to 784 characters. Picking one now would be a guess presented as a measure.
+2. **The simulation says it would change little in the Lean runs as they are.** With sharing set by the rules and equal money, the knowledge reward changes nothing (step 1 of [does the knowledge reward matter?](../results/knowledge-reward-by-step/summary.md)). The Lean runs are like that: each lab has a fixed budget, and the rules decide what is published.
+3. **The old flat mint did not match the model.** It paid an easy lemma the same as a hard one, which the simulation dropped in v5.
+4. **It keeps the ablation clean.** With it off, the shared library and OSO differ only in whether bounties flow back by α.
+
+**What we give up:** in the simulation the knowledge reward matters at high α once money follows earnings (step 3, α 0.8: 1.8 of 2 targets with it, 0.4 without) or agents choose what to publish (a little). **Before any Lean run where money follows earnings or labs choose what to publish, it must come back.**
+
+**How it could be measured later.** What the simulation's reward does, and a Lean version must do: (a) pay for steps along the way, not only targets; (b) pay whoever publishes first; (c) pay nothing for a copy or a trivial result; (d) pay more for more progress.
+
+| Candidate | A new result earns | Pays for | How to check it before using it |
+| --- | --- | --- | --- |
+| **Proof length** | the length of its proof (comments and spacing removed, a citation counting as one step) | work written | does length track how often agents succeed? 42 theorems × 8 tries, about $3–5; race data so far: shortest proof ranks with log₂(1/p) at 0.71, a single proof at 0.42 |
+| **Difficulty** | log₂(1/p), from the measured chance an agent proves it | how hard it was | p is known for our 42 theorems; for a lemma a lab invents, a few extra attempts by other agents (costly) |
+| **Lines saved** (the team's 2026-10-21 next-steps note, section 6) | nothing at first; later, the lines it saves each proof that cites it | how much it helped | prove a later result again without the lemma and compare; the lemma's own length is a cheap guess at this |
+| **Paid when used** | the flat mint, but only once another result uses it | being useful | already listed below ("minting many real but useless ideas") |
+
+Lines saved is also how link weights should be measured (below), so one measurement would serve both.
+
 ## Not yet measured
 
 What the design defines but the tests measure only with a stand-in. Add to this list whenever a stand-in is chosen.
@@ -76,6 +100,6 @@ What the design defines but the tests measure only with a stand-in. Add to this 
 | **Link weights in the AI tests** | the money spent proving each used idea | re-prove the child without each parent and measure the extra work |
 | **How real agents respond to credit** | formula agents; in AI tests publishing is set by the rules | AI tests where agents choose what to publish, at several α |
 | **Scoop risk ψ and agent traits** | guesses; ψ matters most | from AI tests: how often a published idea helps a rival win |
-| **Knowledge in real research** | the simulation knows every idea's true bits | a proxy, such as the proof length a lemma saves in Lean |
+| **Knowledge in real research** | the simulation knows every idea's true bits; the AI tests pay no knowledge reward (off since 2026-11-06) | a proxy, such as the proof length a lemma saves in Lean ([the knowledge reward in Lean](#the-knowledge-reward-in-lean)) |
 | **Minting many real but useless ideas** | the knowledge reward pays only for new bits, which removes copies and trivial ideas | test against paying the mint only when an idea is used |
 | **AI-test costs before 2026-10-21** | list prices (OpenRouter charged about 5.6× more) | fixed since: budgets count the actual charge |

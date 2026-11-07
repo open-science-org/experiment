@@ -295,7 +295,7 @@ async function progressData() {
       key: m[3], rep: Number(m[2]), status: finished ? 'done' : Date.now() - modified < 10 * 60_000 ? 'running' : 'stopped',
       round: actions.reduce((a, x) => Math.max(a, x.round ?? 0), 0), rounds: opts.rounds, budget: opts.budget * opts.agents.length,
       spent: pts.at(-1)![0], solved: pts.at(-1)![1], counted: (opts.counted ?? []).length || null, stopped: result?.stopped ?? null,
-      started: actions.length ? Math.min(...actions.map((a) => a.t)) : null, modified, points: pts,
+      started: actions.length ? Math.min(...actions.map((a) => a.t)) : null, modified, points: pts, gaps: LEAN_REWARDS.gaps(opts),
     });
     groups.set(m[1], g);
   }
@@ -311,7 +311,7 @@ async function progressData() {
   const key = process.env.OPENROUTER_API_KEY;
   let credit: number | null = null;
   try { credit = key ? await creditLeft(key) : null; } catch { credit = null; }
-  return { now: Date.now(), credit, rewards: { follows: LEAN_REWARDS.follows, current: MODEL_VERSION, differs: LEAN_REWARDS.differs }, societies: Object.fromEntries(Object.entries(SOCIETIES).map(([k, v]) => [k, { name: v.name, params: v.params, colour: v.colour }])), experiments, bench };
+  return { now: Date.now(), credit, rewards: { current: MODEL_VERSION, gaps: LEAN_REWARDS.gaps({ knowledge: 'off' }) }, societies: Object.fromEntries(Object.entries(SOCIETIES).map(([k, v]) => [k, { name: v.name, params: v.params, colour: v.colour }])), experiments, bench };
 }
 
 /** What is left on the OpenRouter key's limit (the key itself is never sent to the page). */

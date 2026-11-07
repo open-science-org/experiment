@@ -16,6 +16,7 @@
 //   community [options]           real-agent communities, traditional and OSO, on the same budget
 //     --agents m1,m2,...  --budget DOLLARS (per agent)  --rounds N (30)  --repairs N (2)
 //     --rules traditional,oso  --effort low|medium|high (medium)  --run ID  --stub  --dry-run
+//     --knowledge off|flat-mint (off): what a new result earns for itself; off: nothing, only bounties
 import { chatFor, creditLeft, DEFAULT_MODEL, DEFAULT_MODELS, defaultProvider, type Provider } from './agent.ts';
 import { estimate, readRun, writeComparison, referenceChat, runPilot, writeMeasuredWorld, writeSummary, type Condition, type PilotOptions } from './pilot.ts';
 import { selftest } from './selftest.ts';
@@ -87,7 +88,7 @@ if (cmd === 'community') {
   const agents = pick('agents', 'deepseek/deepseek-v4.1-flash,google/gemini-3.8-flash,openai/gpt-5.6-terra,deepseek/deepseek-v4.1-flash').split(',');
   const base = {
     agents, budget: Number(pick('budget', '0.5')), rounds: Number(pick('rounds', '30')), repairs: Number(pick('repairs', '2')),
-    alpha: 0.8, c: 0.15, mint: 1, effort: pick('effort', 'medium') as 'low' | 'medium' | 'high', allowGrind: stub,
+    alpha: 0.8, c: 0.15, mint: 1, knowledge: pick('knowledge', 'off') as 'off' | 'flat-mint', effort: pick('effort', 'medium') as 'low' | 'medium' | 'high', allowGrind: stub,
     personas: (cfg.personas as string[] | undefined) ?? [],
     personaNames: (cfg.personaNames as string[] | undefined) ?? [],
     repairsByLab: cfg.repairsByLab as number[] | undefined,

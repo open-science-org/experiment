@@ -131,8 +131,19 @@ test('flow-back is split by what each used result cost to prove, equally when a 
 
 test('the Lean runs\' rewards were checked against the current simulation model', () => {
   assert.equal(LEAN_REWARDS.checkedAgainst, MODEL_VERSION,
-    `the simulation is now model v${MODEL_VERSION}: compare the Lean rewards (LEAN_REWARDS in src/lean/community.ts) with it, list what differs, and set checkedAgainst`);
-  // Following an older model is allowed only with the differences written down, so summaries can say so.
-  if (LEAN_REWARDS.follows < MODEL_VERSION) assert.ok(LEAN_REWARDS.differs.length > 0);
-  else assert.equal(LEAN_REWARDS.differs.length, 0);
+    `the simulation is now model v${MODEL_VERSION}: compare the Lean rewards (LEAN_REWARDS in src/lean/community.ts) with it, update the gaps, and set checkedAgainst`);
+  // Each reward setting says how it differs, so summaries can.
+  for (const knowledge of ['off', 'flat-mint'] as const) assert.ok(LEAN_REWARDS.gaps({ knowledge }).every((g) => g.length > 20));
+});
+
+test('with the knowledge reward off, a new result earns nothing and the prompt says so', async () => {
+  const { Community, mintOf } = await import('../src/lean/community.ts');
+  const base = { rules: 'oso' as const, agents: ['a', 'b'], budget: 1, rounds: 1, repairs: 0, alpha: 0.8, c: 0.15, mint: 1, effort: 'low' as const };
+  assert.equal(mintOf({ ...base, knowledge: 'off' }), 0);
+  assert.equal(mintOf(base), 1); // runs from before the setting existed: the old flat mint
+  for (const rules of ['oso', 'shared', 'traditional', 'independent', 'planner'] as const) {
+    const off = new Community({ ...base, rules, knowledge: 'off' }).systemPrompt(1), old = new Community({ ...base, rules }).systemPrompt(1);
+    assert.doesNotMatch(off, /mint/, rules);
+    assert.match(old, /mint of 1/, rules);
+  }
 });

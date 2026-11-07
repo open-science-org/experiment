@@ -29,20 +29,24 @@ import { RESULTS_DIR } from '../paths.ts';
 export type Rules = 'traditional' | 'oso' | 'shared' | 'independent' | 'planner';
 
 /**
- * The simulation model (src/engine/version.ts) whose reward rules these runs follow, and what still differs
- * from the current one. When MODEL_VERSION changes, check the rewards here against it, then set
- * `checkedAgainst`: a test fails until then, and every summary lists what differs.
+ * How the Lean runs' rewards compare with the current simulation model (src/engine/version.ts). When
+ * MODEL_VERSION changes, compare the rewards here with it, update `gaps`, then set `checkedAgainst`: a test
+ * fails until then. Every summary lists the gaps of the options it ran with.
  */
 export const LEAN_REWARDS = {
-  follows: 3,
   checkedAgainst: 6,
-  differs: [
-    'still the old flat mint (1 per new result, easy or hard, 15% to the results it cites), not the knowledge reward per new bit the simulation has paid since v5',
+  gaps: (o: Pick<CommunityOptions, 'knowledge'>): string[] => [
+    o.knowledge === 'off'
+      ? 'the knowledge reward is off (the simulation pays 1 per new bit since v5): Lean has no agreed measure of a result\'s new knowledge yet, see docs/design.md'
+      : 'still the old flat mint (1 per new result, easy or hard, 15% to the results it cites), not the knowledge reward per new bit the simulation has paid since v5',
     'value flowing back is still split by the money spent proving each parent, not by the work a parent saves (1/p) as in the simulation',
   ],
 };
 /** Rules under which a result is public as soon as Lean accepts it. */
 export const atOnce = (r: Rules) => r === 'oso' || r === 'shared' || r === 'planner';
+/** The flat mint a new result earns, and the share of it passed to cited results (0 with the knowledge reward off). */
+export const mintOf = (o: Pick<CommunityOptions, 'knowledge' | 'mint'>) => (o.knowledge === 'off' ? 0 : o.mint);
+export const citedShareOf = (o: Pick<CommunityOptions, 'knowledge' | 'c'>) => (o.knowledge === 'off' ? 0 : o.c);
 
 export interface CommunityOptions {
   rules: Rules;
@@ -55,6 +59,13 @@ export interface CommunityOptions {
   alpha: number;
   c: number;
   mint: number;
+  /**
+   * The knowledge reward: what a new result earns for itself when it is published. 'off' (new runs since
+   * 2026-11-06): nothing; only bounties pay, flowing back by α. 'flat-mint': the old flat `mint` per
+   * result, `c` of it to the results it cites (runs before 2026-11-06, which have no such field).
+   * Why off for now, and how it could be measured later: docs/design.md, "The knowledge reward in Lean".
+   */
+  knowledge?: 'off' | 'flat-mint';
   effort: 'low' | 'medium' | 'high';
   /** Allow grind (only for the stand-in agents, whose reference proofs use it). */
   allowGrind?: boolean;
@@ -207,8 +218,8 @@ export class Community {
     e.public = true;
     e.publishedRound = round;
     const used = e.uses.map((n) => this.library.find((x) => `${x.ns}.${x.name}` === n)).filter((x): x is Entry => !!x);
-    const c = this.opts.rules === 'oso' && used.length ? this.opts.c : 0;
-    const mint = e.trivial ? 0 : this.opts.mint;
+    const c = this.opts.rules === 'oso' && used.length ? citedShareOf(this.opts) : 0;
+    const mint = e.trivial ? 0 : mintOf(this.opts);
     this.earnings[e.author] += mint * (1 - c);
     { const w = this.weights(used); used.forEach((u, k) => this.pay(u, mint * c * w[k])); }
     if (e.target) this.pay(e, this.bounty(this.targets.find((t) => t.publicId === e.target)!));
@@ -228,31 +239,29 @@ export class Community {
   }
 
   systemPrompt(i: number): string {
-    const o = this.opts;
+    const o = this.opts, M = mintOf(o);
     const rules = o.rules === 'independent'
       ? o.agents.length === 1
-        ? `How this works: you work alone, with the whole budget. Each result you prove goes into your own library and earns a mint of ${o.mint}; each target you prove earns its bounty.`
+        ? `How this works: you work alone, with the whole budget. Each result you prove goes into your own library${M ? ` and earns a mint of ${M}` : ''}; each target you prove earns its bounty.${M ? '' : ' Other results earn nothing by themselves.'}`
         : `How this community works (independent labs):
 - Labs work separately: you see only your own results, and no lab sees yours.
-- Each result you prove earns you a mint of ${o.mint}; each target you prove earns you its bounty.`
+- ${M ? `Each result you prove earns you a mint of ${M}; each` : 'Each'} target you prove earns you its bounty.${M ? '' : ' Other results earn nothing by themselves.'}`
       : o.rules === 'planner'
       ? `How this community works (with a planner):
 - Lab 1 is the planner: it does not prove anything; each round it gives every other lab an assignment, to bring the targets within reach together. Follow your assignment unless it is clearly impossible.
 - Every result you prove is published at once, and every lab can build on it immediately.
-- Each new result earns its author a mint of ${o.mint}, and a target's bounty goes to the lab that proves it. Nothing is passed on to the results it builds on.`
+- ${M ? `Each new result earns its author a mint of ${M}, and a` : 'A'} target's bounty goes to the lab that proves it. Nothing is passed on to the results it builds on.${M ? '' : ' Other results earn nothing by themselves.'}`
       : o.rules === 'shared'
       ? `How this community works (shared library):
 - Every result you prove is published at once, and every lab can build on it immediately.
-- Each new result earns its author a mint of ${o.mint}, and a target's bounty goes to the lab that proves it. Nothing is passed on to the results it builds on.`
+- ${M ? `Each new result earns its author a mint of ${M}, and a` : 'A'} target's bounty goes to the lab that proves it. Nothing is passed on to the results it builds on.${M ? '' : ' Other results earn nothing by themselves.'}`
       : o.rules === 'traditional'
       ? `How this community works (traditional rules):
 - Lemmas you prove stay private to you; other labs cannot see or use them, and you cannot see theirs.
-- When you prove a posted target, it is published together with every lemma it rests on, and you receive the whole bounty.
-- Each published result also earns its author a mint of ${o.mint}.`
+- When you prove a posted target, it is published together with every lemma it rests on, and you receive the whole bounty.${M ? `\n- Each published result also earns its author a mint of ${M}.` : ''}`
       : `How this community works (OSO rules):
 - Every result you prove is published at once, and every lab can build on it immediately.
-- Each new result earns its author a mint of ${o.mint}; if it builds on earlier results, ${o.c * 100}% of that mint goes to them.
-- When value reaches a result (a target's bounty, or value flowing from later work), its author keeps ${o.alpha * 100}% and the rest flows back to the results it used, split by how much each cost to prove, and on down.`;
+${M ? `- Each new result earns its author a mint of ${M}; if it builds on earlier results, ${citedShareOf(o) * 100}% of that mint goes to them.\n` : '- A new result earns nothing by itself; value comes from targets\' bounties, flowing back through the results they used.\n'}- When value reaches a result (a target's bounty, or value flowing from later work), its author keeps ${o.alpha * 100}% and the rest flows back to the results it used, split by how much each cost to prove, and on down.`;
     const persona = o.personas?.[i]?.trim() ? `Your lab's way of working${o.personaNames?.[i] ? ` (${o.personaNames[i]})` : ''}: ${o.personas[i].trim()}` : '';
     return `You are lab ${i + 1} of ${o.agents.length} in a research community proving theorems in Lean 4 (version 4.35.0, core library only, no Mathlib). Your aim is to earn as much as you can within your budget; every model call you make costs budget.
 
@@ -264,7 +273,7 @@ The definitions:
 ${definitions().trim()}
 \`\`\`
 
-Proof rules: core lemmas and tactics such as simp, omega, decide, induction, cases and rw may be used. Not allowed: sorry, admit, native_decide, grind, search tactics (exact?, apply?), commands and set_option. Cite library results by the names shown. A lemma that a single basic tactic proves (rfl, decide, simp, omega) counts as trivial: you may cite it, but it earns no mint.
+Proof rules: core lemmas and tactics such as simp, omega, decide, induction, cases and rw may be used. Not allowed: sorry, admit, native_decide, grind, search tactics (exact?, apply?), commands and set_option. Cite library results by the names shown. A lemma that a single basic tactic proves (rfl, decide, simp, omega) counts as trivial: you may cite it${M ? ', but it earns no mint' : ''}.
 
 Each turn, take exactly one action, and reply with exactly one \`\`\`lean code block:
 - To prove a posted target, start your reply with the line ACTION: target <ID>, and give the proof that completes \`theorem attempt <statement>\` (starting with := or with | match arms).
@@ -499,7 +508,7 @@ export async function runCommunity(opts: CommunityOptions, chatFor: (com: Commun
   const com = new Community(opts);
   const dir = join(root, runId);
   mkdirSync(dir, { recursive: true });
-  writeFileSync(join(dir, 'options.json'), JSON.stringify({ kind: 'community', ...opts, rewards: { follows: LEAN_REWARDS.follows, differs: LEAN_REWARDS.differs } }, null, 1));
+  writeFileSync(join(dir, 'options.json'), JSON.stringify({ kind: 'community', ...opts, rewards: { gaps: LEAN_REWARDS.gaps(opts) } }, null, 1));
   const file = join(dir, 'actions.jsonl');
   writeFileSync(file, '');
   const chats = opts.agents.map((_, i) => chatFor(com, i));

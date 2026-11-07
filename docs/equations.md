@@ -422,6 +422,7 @@ The AI-model tests use a third idea graph, **the Lean graph**, with the definiti
 - **Parents** are exactly the earlier ideas a proof uses; Lean records them.
 - **Bounties:** $B_x = B_0 \cdot 2^{\,\ell_x - 1}$ for the posted theorems, where $\ell_x$ is the theorem's level in the reference tree.
 - **Money** is dollars, as charged by the model provider, and each agent gets the same budget.
+- **The knowledge reward is off** (since 2026-11-06; a setting): a new result earns nothing for itself, and only bounties pay, flowing back by $\alpha$. Lean has no agreed measure of a result's new bits yet; see [the knowledge reward in Lean](design.md#the-knowledge-reward-in-lean).
 - **Contribution** uses the money spent to prove each parent, $\text{spent}_y$, as the stand-in for the work it saves (exact only if the parent would have to be proved again from scratch):
 
 $$w_{y \to x} = \frac{\text{spent}_y}{\sum_{y' \to x} \text{spent}_{y'}}$$
