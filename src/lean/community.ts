@@ -66,6 +66,9 @@ export interface CommunityOptions {
    * Why off for now, and how it could be measured later: docs/design.md, "The knowledge reward in Lean".
    */
   knowledge?: 'off' | 'flat-mint';
+  /** May a lab stop early by passing (default yes)? No: every lab works until its money or the rounds run out,
+   *  so setups are compared at the same money spent; a pass then only skips that turn. */
+  mayStop?: boolean;
   effort: 'low' | 'medium' | 'high';
   /** Allow grind (only for the stand-in agents, whose reference proofs use it). */
   allowGrind?: boolean;
@@ -277,7 +280,7 @@ Proof rules: core lemmas and tactics such as simp, omega, decide, induction, cas
 Each turn, take exactly one action, and reply with exactly one \`\`\`lean code block:
 - To prove a posted target, start your reply with the line ACTION: target <ID>, and give the proof that completes \`theorem attempt <statement>\` (starting with := or with | match arms).
 ${this.conjectures.length ? `- To prove a posted conjecture, start your reply with the line ACTION: conjecture <ID>, and give the proof that completes \`theorem attempt <statement>\` (starting with := or with | match arms). A conjecture is an intermediate result the community wants; it earns a bounty of ${o.conjectureBounty ?? 1} when it is published, and can then be cited by the name shown.\n` : ''}- To state and prove a new lemma, start with ACTION: lemma, and give the whole declaration: \`theorem <name> <statement> := <proof>\`. Choose lemmas that bring a target within reach.
-- If nothing seems worth your budget, reply ACTION: pass. You stop for the rest of the run and keep what you have not spent.${persona ? `\n\n${persona}` : ''}`;
+${o.mayStop === false ? '- You keep working until your budget or the rounds run out: you cannot stop early. Use every turn to prove something useful.' : '- If nothing seems worth your budget, reply ACTION: pass. You stop for the rest of the run and keep what you have not spent.'}${persona ? `\n\n${persona}` : ''}`;
   }
 
   turnPrompt(i: number, round: number): string {
@@ -372,7 +375,11 @@ ${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still w
       if (reply.usage.provider) servedBy.push(reply.usage.provider);
       this.spent[i] += price(reply.usage);
       const text = reply.text;
-      if (/ACTION:\s*pass\b/i.test(text)) { kind = 'pass'; reason = 'passed'; this.passed.add(i); transcript.push({ text, proof: null, errors: [] }); break; }
+      if (/ACTION:\s*pass\b/i.test(text)) {
+        // Labs that may not stop lose only this turn.
+        if (this.opts.mayStop === false) { reason = 'tried to pass, which is not allowed: turn skipped'; transcript.push({ text, proof: null, errors: [] }); break; }
+        kind = 'pass'; reason = 'passed'; this.passed.add(i); transcript.push({ text, proof: null, errors: [] }); break;
+      }
       const action = /ACTION:\s*(target|conjecture|lemma)\s*([A-Za-z0-9-]*)/i.exec(text);
       const code = [...text.matchAll(/```(?:lean4?|)\s*\n([\s\S]*?)```/g)].map((m) => m[1].replace(/\s+$/, '')).pop() ?? null;
       let errors: string[] = [];

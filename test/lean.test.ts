@@ -147,3 +147,17 @@ test('with the knowledge reward off, a new result earns nothing and the prompt s
     assert.match(old, /mint of 1/, rules);
   }
 });
+
+test('labs that may not stop lose only the turn they pass', async () => {
+  const { Community } = await import('../src/lean/community.ts');
+  const base = { rules: 'shared' as const, agents: ['a', 'b'], budget: 1, rounds: 1, repairs: 0, alpha: 1, mint: 1, effort: 'low' as const, knowledge: 'off' as const };
+  assert.match(new Community({ ...base, mayStop: false }).systemPrompt(0), /cannot stop early/);
+  assert.match(new Community(base).systemPrompt(0), /ACTION: pass/);
+  const { runCommunity } = await import('../src/lean/community.ts');
+  const { mkdtempSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const passing = async () => ({ text: 'ACTION: pass', content: '', usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, stop: 'end_turn' });
+  const r = await runCommunity({ ...base, rounds: 3, mayStop: false }, () => passing as never, () => 0.001, 'test-may-stop', () => {}, mkdtempSync(`${tmpdir()}/oso-stop-`));
+  assert.equal(r.actions.filter((a) => a.kind === 'pass').length, 0);
+  assert.equal(r.actions.length, 6, 'both labs take a turn in each of the 3 rounds');
+});

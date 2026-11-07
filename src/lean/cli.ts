@@ -17,6 +17,7 @@
 //     --agents m1,m2,...  --budget DOLLARS (per agent)  --rounds N (30)  --repairs N (2)
 //     --rules traditional,oso  --effort low|medium|high (medium)  --run ID  --stub  --dry-run
 //     --knowledge off|flat-mint (off): what a new result earns for itself; off: nothing, only bounties
+//     --may-stop yes|no (yes): may a lab pass and stop early? no: every lab works until its money or the rounds run out
 import { chatFor, creditLeft, DEFAULT_MODEL, DEFAULT_MODELS, defaultProvider, type Provider } from './agent.ts';
 import { estimate, readRun, writeComparison, referenceChat, runPilot, writeMeasuredWorld, writeSummary, type Condition, type PilotOptions } from './pilot.ts';
 import { selftest } from './selftest.ts';
@@ -96,6 +97,7 @@ if (cmd === 'community') {
     reuseByLab: cfg.reuseByLab as boolean[] | undefined,
     conjectures: (cfg.conjectures as string[] | undefined) ?? (value('conjectures', '') ? value('conjectures', '').split(',') : []),
     conjectureBounty: Number(pick('conjectureBounty', '1')),
+    mayStop: pick('may-stop', 'yes') !== 'no',
     counted: (cfg.counted as string[] | undefined) ?? (value('counted', '') ? value('counted', '').split(',') : []),
   };
   const rules = pick('rules', 'traditional,oso').split(',') as ('traditional' | 'oso')[];

@@ -118,6 +118,7 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
     answer,
     table: rows.map((r) => r.row),
     caveats: [
+      o.mayStop === false ? 'Labs could not stop early: each worked until its money or the rounds ran out, so setups are compared at the same money spent.' : 'Labs could stop early by passing, so setups are compared at the same money offered; money spent is shown beside each.',
       ...(() => { const gaps = LEAN_REWARDS.gaps(o); return gaps.length ? [`Rewards differ from the current simulation model: ${gaps.join('; ')}.`] : []; })(),
       ...(local ? ['Models on this machine cost nothing; dollars price their tokens as a cheap open model would be served. A test of the setup, not a cost result.'] : []),
       'Values are mean ± standard deviation over runs; the verdict compares runs in pairs (run k of each society), with ± two standard errors of the difference.',
