@@ -24,6 +24,7 @@ function cause(turns: Turn[]): { who: 'harness' | 'benchmark' | 'model' | 'run';
   }
   const e = last.errors.join('\n');
   if (said) return { who: 'benchmark', why: 'the model says the statement is false (and still tried)' };
+  if (/in the statement: \(deterministic\) timeout|maximum number of heartbeats/.test(e)) return { who: 'model', why: "proof too heavy: Lean's own work limit" };
   if (/in the statement: unsolved goals/.test(e)) return { who: 'model', why: 'tactics did not close the goal (our feedback wrongly said "in the statement"; fixed 2026-11-06)' };
   if (/in the statement/.test(e)) return { who: 'harness', why: 'Lean reports an error in the statement, not the proof' };
   if (/timed out|axioms check did not finish/.test(e)) return { who: 'harness', why: 'our time limit' };
