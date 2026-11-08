@@ -259,7 +259,7 @@
       <a class="btn" role="tab" href="#/lean?tab=runs" data-tab="runs">Runs</a>
     </div>
     <div class="pane" style="margin:10px 0 12px"><b>The question.</b> For the same money, does a community of AI labs proving Lean theorems prove more when value flows back to the results a proof used (OSO) than when results are only shared (a shared library), or kept private until a target is proved (traditional)? The full design (how the targets were chosen, why this model, the setups, measures): <a href="#/doc/docs/lean-experiment.md">the Lean experiment design</a>. Results so far: <a href="#/doc/docs/ai-agent-results.md">AI agents on the Lean problems</a>.</div>
-    <div class="bar" id="l-bar"><label>Experiment <select id="l-exp"></select></label></div>
+    <div class="bar" id="l-bar"><label>Experiment <select id="l-exp"></select></label><span id="l-live" style="flex:1;min-width:220px"></span></div>
     <div id="l-body"></div>
   </section>
   <!-- Progress: the paid runs going now, with what is left of the money -->
@@ -2030,10 +2030,18 @@ function renderProgress() {
   const spent = e.runs.reduce((a, r) => a + r.spent, 0);
   const budget = Math.max(0.01, ...e.runs.map((r) => r.budget));
   // Time left, from the finished runs' average length.
+  // Runs go several at a time: the running ones finish in about (average length − time so far); the ones not yet
+  // started go in later batches of the same size.
   const lens = e.runs.filter((r) => r.status === 'done' && r.started).map((r) => r.modified - r.started);
   const avg = lens.length ? lens.reduce((a, b) => a + b, 0) / lens.length : null;
-  const left = avg && total > done ? avg * (total - done - (now ? 1 : 0)) + (now ? Math.max(0, avg - (d.now - now.started)) : 0) : null;
-  $('p-head').innerHTML = `<p style="margin:0 0 6px"><b>${done} of ${total} runs done</b>${now ? ` · running: ${esc(d.societies[now.key]?.name ?? now.key)}, run ${now.rep}, round ${now.round} of ${now.rounds}` : ''} · $${spent.toFixed(2)} spent of $${(budget * total).toFixed(2)} at most${left ? ` · about ${Math.round(left / 3600000 * 10) / 10} h left` : ''}${e.plan?.k ? ` · measure: money to ${e.plan.k} targets` : ''}</p>${e.runs[0]?.gaps?.length ? `<p class="muted" style="margin:0 0 6px;font-size:12px"><b style="color:var(--bad)">Rewards differ from the simulation (model v${d.rewards.current}):</b> ${e.runs[0].gaps.map(esc).join('; ')}.</p>` : ''}`;
+  const running = e.runs.filter((r) => r.status === 'running'), waiting = Math.max(0, total - done - running.length);
+  const left = avg && total > done ? Math.max(0, ...running.map((r) => avg - (d.now - (r.started ?? d.now)))) + Math.ceil(waiting / Math.max(1, running.length)) * avg : null;
+  // Progress by money: a run is as far along as the share of its money it has spent (a finished run counts in full).
+  const frac = (r) => (r.status === 'done' ? 1 : Math.min(1, r.spent / (r.budget || 1)));
+  const pDone = done / total, pAll = e.runs.reduce((a, r) => a + frac(r), 0) / total;
+  const bar = (p, q, colour, h = 14) => `<div style="position:relative;height:${h}px;border-radius:${h / 2}px;background:var(--line);overflow:hidden"><div style="position:absolute;inset:0 auto 0 0;width:${(q * 100).toFixed(1)}%;background:${colour};opacity:.35"></div><div style="position:absolute;inset:0 auto 0 0;width:${(p * 100).toFixed(1)}%;background:${colour}"></div></div>`;
+  const runBars = running.length ? `<div style="display:grid;grid-template-columns:minmax(150px,auto) 1fr auto;gap:4px 10px;align-items:center;font-size:12px;margin:8px 0 4px">${running.sort((a, b) => a.rep - b.rep || a.key.localeCompare(b.key)).map((r) => `<span>Run ${r.rep}, ${esc(d.societies[r.key]?.name ?? r.key)}</span>${bar(frac(r), frac(r), d.societies[r.key]?.colour ?? 'var(--s1)', 8)}<span class="muted">round ${r.round} · $${r.spent.toFixed(2)} of $${r.budget.toFixed(2)} · ${r.solved} targets</span>`).join('')}</div>` : '';
+  $('p-head').innerHTML = `${bar(pDone, pAll, 'var(--s1)')}<p class="muted" style="margin:3px 0 8px;font-size:12px">${Math.round(pAll * 100)}% of the money spent · dark: runs finished, light: runs under way</p>${runBars}<p style="margin:0 0 6px"><b>${done} of ${total} runs done</b>${running.length ? ` · ${running.length} running now` : ''} · $${spent.toFixed(2)} spent of $${(budget * total).toFixed(2)} at most${left ? ` · about ${Math.round(left / 3600000 * 10) / 10} h left` : ''}</p>${e.runs[0]?.gaps?.length ? `<p class="muted" style="margin:0 0 6px;font-size:12px"><b style="color:var(--bad)">Rewards differ from the simulation (model v${d.rewards.current}):</b> ${e.runs[0].gaps.map(esc).join('; ')}.</p>` : ''}`;
 
   // The graph: money spent against counted targets, one line per society, for the chosen run.
   const lines = keys.map((k) => ({ k, r: run(k, rep) })).filter((x) => x.r);
@@ -2042,7 +2050,7 @@ function renderProgress() {
   const sx = (x) => l + (x / budget) * pw, sy = (y) => top + ph - (y / yMax) * ph;
   let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="Counted targets verified by money spent, run ${rep}"><text x="${l}" y="18" font-size="14" font-weight="700" fill="var(--ink)">Targets verified by Lean, by money spent (run ${rep})</text>`;
   for (let y = 0; y <= yMax; y++) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"/><text x="${l - 8}" y="${sy(y) + 4}" text-anchor="end" font-size="11" fill="var(--ink-2)">${y}</text>`;
-  if (e.plan?.k) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(e.plan.k)}" y2="${sy(e.plan.k)}" stroke="var(--ink-3)" stroke-dasharray="1 3"/><text x="${l + 4}" y="${sy(e.plan.k) - 5}" font-size="11" fill="var(--ink-3)">measure: ${e.plan.k} targets</text>`;
+  // (The old measure, money to reach k targets, is no longer drawn: the measure fixed in advance is targets proved.)
   for (const q of [0, 0.25, 0.5, 0.75, 1]) svg += `<text x="${sx(budget * q)}" y="${top + ph + 16}" text-anchor="middle" font-size="11" fill="var(--ink-2)">$${(budget * q).toFixed(2)}</text>`;
   svg += `<text x="${l + pw / 2}" y="${H - 6}" text-anchor="middle" font-size="11" fill="var(--ink-2)">Money spent so far</text>`;
   const ends = [];
@@ -2086,6 +2094,9 @@ async function drawLean() {
   $('l-exp').innerHTML = expOptions(d.experiments, d.id);
   $('l-exp').onchange = () => { const q = params(); q.set('exp', $('l-exp').value); q.delete('rep'); q.delete('setup'); location.hash = '#/lean?' + q; };
   $('l-bar').classList.toggle('hidden', tab === 'problems');
+  // Still running: how many runs have finished, with a link to the Progress page.
+  const runsAll = d.setups.reduce((a, x) => a + x.runs, 0), runsDone = d.setups.reduce((a, x) => a + x.done, 0);
+  $('l-live').innerHTML = runsAll > runsDone ? `<a href="#/progress?id=${encodeURIComponent(d.id)}" style="display:flex;gap:8px;align-items:center;text-decoration:none;color:inherit"><span style="flex:1;height:10px;border-radius:5px;background:var(--line);overflow:hidden"><span style="display:block;height:100%;width:${(100 * runsDone / runsAll).toFixed(1)}%;background:var(--s1)"></span></span><span style="font-size:12px;white-space:nowrap">${runsDone} of ${runsAll} runs finished · <u>see progress</u></span></a>` : '';
   for (const a of $('l-tabs').querySelectorAll('a')) a.href = '#/lean?tab=' + a.dataset.tab + '&exp=' + encodeURIComponent(d.id);
   return tab === 'results' ? leanResults(d) : tab === 'labs' ? leanLabs(d) : tab === 'prompts' ? leanPrompts(d) : tab === 'runs' ? leanRuns(d) : leanProblems(d);
 }
