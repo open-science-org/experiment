@@ -122,39 +122,47 @@ A target is proved twice when two labs prove it in the same round. (An earlier v
 
 ## 4a. B5 check, fair prompts (2026-11-07 to 08)
 
-[Result](../results/community/lean-b5/summary.md). Plan fixed before the runs (roadmap M1): part B's B5 lead, tested again with one prompt template, so that the setups differ only in their rules. Shared library against OSO α 0.2, $0.20 a lab, labs cannot stop, 10 runs per setup, 20 in all, $16.10.
+[Result](../results/community/lean-b5/summary.md). Plan fixed before the runs (roadmap M1): part B's B5 lead, tested again with one prompt template, so that the setups' prompts differ only in their rules. Shared library against OSO α 0.2, labs cannot stop, 10 runs per setup, 20 in all, $16.10. **Labs had $0.20 each here, against $0.15 in part B**, so two things changed at once: the prompts and the money.
 
-| Setup | B5 proved | Targets proved (of 8) | Lemmas proved |
-| --- | --- | --- | --- |
-| Shared library | 3 of 10 (95% range 0.11–0.60) | 6.1 (5.6–6.6) | 8.8 (4.9–12.7) |
-| OSO, α 0.2 | 4 of 10 (0.17–0.69) | 6.6 (5.9–7.3) | 17.6 (14.2–21.0) |
-| Difference | +0.1 | +0.5 (−0.4 to +1.4) | +8.8 (+3.6 to +14.0) |
+| Setup | B5 proved | Targets proved (of 8) | Lemmas proved | Built on another lab | Rounds a lab worked |
+| --- | --- | --- | --- | --- | --- |
+| Shared library | 3 of 10 (0.11–0.60) | 6.1 (5.6–6.6) | 8.5 (4.6–12.4) | 3.4 (1.6–5.2) | 16.9 (16.0–17.7) |
+| OSO, α 0.2 | 4 of 10 (0.17–0.69) | 6.6 (5.9–7.3) | 17.2 (13.6–20.8) | 8.4 (6.0–10.8) | 19.6 (18.0–21.1) |
+| OSO minus shared | +0.10 (−0.28 to +0.45) | +0.5 (−0.4 to +1.4) | +8.7 (+3.4 to +14.0) | +5.0 (+2.0 to +8.0) | +2.7 (+0.9 to +4.4) |
 
-**The answer: the B5 lead did not hold** (part B: 11 of 20 against 0 of 20; here 4 of 10 against 3 of 10). With fair prompts, the shared library also proved B5. **The lemma lead held:** with flow-back, labs proved about twice as many lemmas. Targets: no clear difference.
+**B5:** much closer than in part B (11 of 20 against 0 of 20, a gap of 0.55). The range here (−0.28 to +0.45) leaves room for a gap of up to about 0.45, so the B5 question is still open, and we cannot say whether the fair prompts or the extra money closed the gap. We did not add the 10 extra runs the plan allowed: part A and M3 were already using the provider, and the lemma result was what bore on M3.
 
-**What labs thought when they chose a lemma** (runs 6–10, a rough keyword count of their saved thinking): in both setups about 63% of lemma turns mention others building on the lemma. Under OSO, 64% also mention being paid when value flows back, against 20% in the shared library (mostly "nothing flows back"). So labs read the rule and use it, but the extra lemmas did not turn into clearly more targets.
+**Lemmas and building on others:** with flow-back, labs proved about twice as many lemmas and built on another lab's result more often. This is the same direction as in part B. Targets: +0.5, with a range from slightly fewer to about one more. Lead, not a finding: OSO α 0.2 proved A5 in 3 of 10 runs, the shared library in 0.
+
+**What labs thought** (runs 6–10, `scripts/lean-thinking.py`, a rough keyword count checked by hand on 10 matches per setup): on lemma turns, 64% of OSO labs' thinking mentions being paid through flow-back, against 20% in the shared library, where it mostly notes that nothing flows back. So labs notice the rule, often quoting it. Whether it drives their choice is not shown: in about half the OSO samples the lab mentions flow-back and then goes for a target.
 
 ## 4b. Part A: labs may stop early (2026-11-08)
 
-[Result](../results/community/lean-part-a/summary.md). Plan fixed before the runs (roadmap M2). Same setups and money as part B ($0.15 a lab), but a lab that passes stops for good. 10 runs per setup, 40 in all, $11.90.
+[Result](../results/community/lean-part-a/summary.md). Plan fixed before the runs (roadmap M2). Same setups and money as part B ($0.15 a lab, prompts from the one template), but a lab that passes stops for good. 10 runs per setup, 40 in all, $11.90. Main comparison: OSO α 0.2 against the shared library.
 
 **The question:** does flow-back keep labs working, and get further with the same money offered?
 
-**The answer: no difference in targets proved.** Every setup proved about 5 of 8 targets. OSO α 0.8 against the shared library: +0.1 targets (95% range −0.8 to +1.0). OSO α 0.2: +0.0 (−0.8 to +0.8).
+| Setup | Targets proved (of 8) | Targets per dollar | Money spent, of $0.60 | Rounds a lab worked | Labs that never passed | Lemmas proved | Built on another lab |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Traditional | 5.0 (4.4–5.6) | 19.0 (15.8–22.3) | $0.27 (0.23–0.31) | 5.5 (4.8–6.2) | 2 of 40 | 1.0 (0.1–1.9) | 0.2 (0.0–0.5) |
+| Shared library | 5.0 (4.3–5.7) | 17.9 (14.5–21.4) | $0.29 (0.24–0.34) | 5.6 (4.8–6.4) | 2 of 40 | 0.3 (0.0–0.7) | 0.7 (0.1–1.3) |
+| OSO, α 0.8 | 5.1 (4.5–5.7) | 16.3 (12.8–19.8) | $0.34 (0.27–0.40) | 7.7 (6.4–9.0) | 5 of 40 | 3.7 (2.1–5.3) | 2.7 (1.5–3.9) |
+| OSO, α 0.2 | 5.0 (4.5–5.5) | 17.8 (14.9–20.7) | $0.29 (0.24–0.35) | 6.4 (5.4–7.4) | 1 of 40 | 2.5 (1.8–3.2) | 1.5 (0.7–2.3) |
 
-| Setup | Targets proved | Money spent, of $0.60 | Rounds a lab worked | Lemmas proved |
-| --- | --- | --- | --- | --- |
-| Traditional | 5.0 (4.4–5.6) | $0.27 (0.23–0.31) | 5.5 (4.7–6.2) | 1.0 (0.1–1.9) |
-| Shared library | 5.0 (4.3–5.7) | $0.29 (0.24–0.34) | 5.6 (4.8–6.4) | 0.3 (0.0–0.7) |
-| OSO, α 0.8 | 5.1 (4.5–5.7) | $0.34 (0.27–0.40) | 7.7 (6.4–9.0) | 3.7 (2.1–5.3) |
-| OSO, α 0.2 | 5.0 (4.5–5.5) | $0.29 (0.24–0.35) | 6.4 (5.4–7.4) | 2.9 (2.3–3.5) |
+Against the shared library, with 95% ranges:
 
-Means with 95% ranges. "Rounds a lab worked": the last round it took an action other than passing. "Lemmas proved": accepted lemma actions.
+| | Targets | Targets per dollar | Money spent | Rounds a lab worked | Lemmas | Built on another lab |
+| --- | --- | --- | --- | --- | --- | --- |
+| OSO α 0.2 | +0.0 (−0.8 to +0.8) | −0.2 (−4.6 to +4.3) | +$0.00 (−0.07 to +0.07) | +0.8 (−0.5 to +2.1) | +2.2 (+1.4 to +3.0) | +0.8 (−0.2 to +1.8) |
+| OSO α 0.8 | +0.1 (−0.8 to +1.0) | −1.7 (−6.6 to +3.2) | +$0.04 (−0.04 to +0.13) | +2.1 (+0.6 to +3.6) | +3.4 (+1.8 to +5.0) | +2.0 (+0.7 to +3.3) |
+
+Means with 95% ranges (Student t; for differences, degrees of freedom from the smaller group, slightly wider than usual). B5 and A5: proved in no part A run. Definitions and the script: `scripts/lean-estimates.py` ("rounds a lab worked" leaves out passes and turns with no valid action; lemmas leave out those the checker marked trivial).
 
 **What it shows:**
-- **Labs stop early in every setup.** They passed after 5 to 8 rounds and left about half their money unspent. None proved B5.
-- **With flow-back, labs proved more lemmas** (OSO α 0.2: +2.6 against the shared library, 95% range +1.9 to +3.3), and OSO α 0.8 labs worked about two rounds longer. But this extra groundwork did not turn into more targets before they stopped.
-- **Against part B** (labs could not stop, so they spent all their money): every setup proved more there (5.8 to 6.3 targets), for twice the money. Stopping cost about one target, and with it the deep targets B5 and A5.
+- **Targets: about the same in every setup** (about 5 of 8), and the ranges allow at most about one target either way.
+- **Labs stopped early everywhere,** after 5 to 8 rounds, with about half their money unspent.
+- **With flow-back, labs proved more lemmas** (α 0.2: +2.2 a run). At α 0.8 they also worked about two rounds longer and built on each other more. The plan's warning sign, spending more for the same targets, fits α 0.8 weakly (+$0.04, range −0.04 to +0.13, for the same targets); at α 0.2 money spent was the same.
+- **Against part B** (labs could not stop, so they spent all their money): part A proved 0.7 to 1.25 fewer targets per setup (shared library −0.85, range −1.6 to −0.1; OSO α 0.2 −1.25, range −1.9 to −0.6) for about half the money. The prompts differ too (part B used the older wording), so this is not only the effect of stopping.
 
 ## 5. Is the test setup sound? (harness checks)
 
