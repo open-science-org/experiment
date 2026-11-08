@@ -29,6 +29,12 @@ export const OPENROUTER_API = process.env.OPENROUTER_URL ?? 'https://openrouter.
  * show money left under its limit while the account behind it is empty (2026-11-06: $25 on the key, $0.02 in
  * the account), so both are read. Null if neither is known.
  */
+/** What the OpenRouter key has used in all, as OpenRouter counts it (a check on our own totals); null if unknown. */
+export async function keyUsage(key: string): Promise<number | null> {
+  const r = await fetch(`${OPENROUTER_API}/key`, { headers: { Authorization: `Bearer ${key}` } }).then((x) => x.json()).catch(() => ({})) as { data?: { usage?: number } };
+  return typeof r.data?.usage === 'number' ? r.data.usage : null;
+}
+
 export async function creditLeft(key: string): Promise<number | null> {
   const get = (path: string) => fetch(`${OPENROUTER_API}${path}`, { headers: { Authorization: `Bearer ${key}` } }).then((r) => r.json()).catch(() => ({})) as Promise<{ data?: Record<string, number | null> }>;
   const [k, c] = await Promise.all([get('/key'), get('/credits')]);

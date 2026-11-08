@@ -264,6 +264,7 @@
   </section>
   <!-- Progress: the paid runs going now, with what is left of the money -->
   <section id="view-progress" class="hidden">
+    <details class="pane" id="p-money" style="margin-bottom:12px" open><summary style="cursor:pointer;font-weight:700;font-size:15px">Money spent</summary><div id="p-money-body"><p class="muted">Loading…</p></div></details>
     <div class="bar"><label>Experiment <select id="p-exp"></select></label><label>Run <select id="p-rep"></select></label>
       <span id="p-credit"></span><span class="muted" id="p-updated"></span></div>
     <div class="pane" style="margin-bottom:12px"><div id="p-head"></div><div id="p-chart"></div></div>
@@ -499,7 +500,7 @@ async function route() {
   if (path === '/runs/results') { show('view-overview'); return drawResults(); }
   if (path.startsWith('/doc/')) { show('view-doc'); return openDoc(path.slice(5)); }
   if (path === '/new') { show('view-new'); return enterNew(); }
-  if (path === '/progress') { show('view-progress'); return drawProgress(); }
+  if (path === '/progress') { show('view-progress'); drawMoney(); return drawProgress(); }
   if (path === '/lean') { show('view-lean'); return drawLean(); }
   if (path === '/live') { show('view-live'); return showTab(params().get('tab') ?? 'sim'); }
   // Topics are now presets of the generator: their reports are on Results.
@@ -2001,6 +2002,36 @@ const PG = { data: null, poll: null };
 // OSO orange, traditional blue; the baselines are inks with their own dash, so no line is told apart by colour alone.
 const P_STYLE = { traditional: ['var(--s1)', ''], oso: ['var(--s2)', ''], 'oso-0.2': ['var(--s2)', '6 4'], single: ['var(--ink)', '2 4'], independent: ['var(--ink-2)', '8 4'], shared: ['var(--ink-3)', ''], planner: ['var(--ink-2)', '10 3 2 3'] };
 const ago = (ms) => { const m = Math.round(ms / 60000); return m < 1 ? 'just now' : m < 60 ? `${m} min ago` : `${Math.floor(m / 60)} h ${m % 60} min ago`; };
+// Money: every paid Lean run and benchmark, as charged, refreshed every minute.
+async function drawMoney() {
+  let c; try { c = await api('/api/costs'); } catch (e) { $('p-money-body').textContent = `Could not read the costs: ${e.message}`; return; }
+  const day = (t) => new Date(t).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  const today = (() => { const s = c.series, cut = new Date().setHours(0, 0, 0, 0); const before = s.filter(([t]) => t < cut).at(-1)?.[1] ?? 0; return (s.at(-1)?.[1] ?? 0) - before; })();
+  // Cumulative spend over time: a line graph, dollars against date.
+  const s = c.series, W = 760, H = 230, l = 56, top = 12, pw = W - l - 20, ph = H - top - 42;
+  const t0 = s[0]?.[0] ?? Date.now(), t1 = Math.max(Date.now(), s.at(-1)?.[0] ?? t0), yMax = Math.max(1, Math.ceil((s.at(-1)?.[1] ?? 1) / 20) * 20);
+  const sx = (t) => l + ((t - t0) / (t1 - t0 || 1)) * pw, sy = (y) => top + ph - (y / yMax) * ph;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:auto" role="img" aria-label="Money spent so far, by date">`;
+  for (let y = 0; y <= yMax; y += yMax / 4) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"/><text x="${l - 6}" y="${sy(y) + 4}" text-anchor="end" font-size="11" fill="var(--ink-2)">$${y}</text>`;
+  const days = Math.max(1, Math.round((t1 - t0) / 86400_000)), step = Math.max(1, Math.ceil(days / 6));
+  for (let t = new Date(t0).setHours(0, 0, 0, 0) + 86400_000; t <= t1; t += step * 86400_000) svg += `<text x="${sx(t)}" y="${top + ph + 16}" text-anchor="middle" font-size="11" fill="var(--ink-2)">${day(t)}</text>`;
+  svg += `<text x="${l + pw / 2}" y="${H - 4}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">Date</text><text transform="translate(14 ${top + ph / 2}) rotate(-90)" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">Spent so far ($)</text>`;
+  svg += `<path d="${s.map(([t, y], k) => `${k ? 'H' + sx(t).toFixed(1) + ' V' : 'M' + sx(t).toFixed(1) + ' '}${sy(y).toFixed(1)}`).join(' ')}" fill="none" stroke="var(--s1)" stroke-width="2"/></svg>`;
+  const kind = { 'society experiment': 'experiment', 'model panel': 'model panel', benchmark: 'benchmark', race: 'race', other: 'other' };
+  const max = Math.max(...c.experiments.map((r) => r.spent), 0.01);
+  const rows = c.experiments.map((r) => `<tr><td>${r.kind === 'society experiment' ? `<a href="#/lean?tab=results&exp=${encodeURIComponent(r.id)}">${esc(r.name)}</a>` : esc(r.name)}${r.running ? ' <b style="color:var(--s1)">· running</b>' : ''}</td><td class="muted">${esc(kind[r.kind] ?? r.kind)}</td><td>${day(r.first)}</td><td style="text-align:right">${r.runs}</td>
+    <td style="min-width:160px"><div style="display:flex;align-items:center;gap:6px"><span style="flex:1;height:8px;background:var(--line);border-radius:4px;overflow:hidden"><span style="display:block;height:100%;width:${(100 * r.spent / max).toFixed(1)}%;background:var(--s1)"></span></span><b>$${r.spent.toFixed(2)}</b></div>${r.listOnly ? `<span class="muted" style="font-size:11px">$${r.listOnly.toFixed(2)} at list price</span>` : ''}</td></tr>`).join('');
+  $('p-money-body').innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:22px;margin:8px 0 10px">
+      <div><div class="muted" style="font-size:12px">Spent so far</div><div style="font-size:24px;font-weight:700">$${c.total.toFixed(2)}</div></div>
+      <div><div class="muted" style="font-size:12px">Spent today</div><div style="font-size:24px;font-weight:700">$${today.toFixed(2)}</div></div>
+      ${c.credit !== null ? `<div><div class="muted" style="font-size:12px">Credit left</div><div style="font-size:24px;font-weight:700">$${c.credit.toFixed(2)}</div></div>` : ''}
+      ${c.keyUsage !== null ? `<div><div class="muted" style="font-size:12px">OpenRouter's own count</div><div style="font-size:24px;font-weight:700">$${c.keyUsage.toFixed(2)}</div><div class="muted" style="font-size:11px">$${(c.keyUsage - c.total).toFixed(2)} in calls not in our logs</div></div>` : ''}
+    </div>${svg}
+    <div style="overflow-x:auto;margin-top:8px"><table class="agents" style="width:100%"><thead><tr><th>Experiment</th><th>Kind</th><th>Started</th><th style="text-align:right">Runs</th><th>Spent</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="muted" style="font-size:12px;margin:6px 0 0">What each model call was charged, from the runs' own records; newest first. Left out: pipeline tests and local models (no real money). "Calls not in our logs": calls whose record was not kept, such as turns that failed with an error before 2026-11-07 and deleted test runs. Updated every minute.</p>`;
+  clearTimeout(PG.money); if (location.hash.startsWith('#/progress')) PG.money = setTimeout(drawMoney, 60000);
+}
+
 async function drawProgress() {
   clearTimeout(PG.poll);
   try { PG.data = await api('/api/progress'); } catch (e) { $('p-head').textContent = `Could not read the runs: ${e.message}`; return; }

@@ -18,7 +18,7 @@ import * as design from './design.ts';
 import { Community, LEAN_REWARDS, progress, type CommunityResult } from '../lean/community.ts';
 import { SOCIETIES } from '../lean/societies.ts';
 import { experimentName, isTest } from '../lean/names.ts';
-import { creditLeft } from '../lean/agent.ts';
+import { creditLeft, keyUsage } from '../lean/agent.ts';
 import { allCards } from '../card.ts';
 
 const PORT = Number(process.env.PORT ?? 8791);
@@ -353,6 +353,55 @@ function leanRun(id: string) {
   return { id, options: JSON.parse(readFileSync(join(d, 'options.json'), 'utf8')), actions: jsonl(join(d, 'actions.jsonl')), thinking, finished: existsSync(join(d, 'result.json')) };
 }
 
+/** Money spent on model calls, as charged, for every Lean run and benchmark: per experiment, in all, and over time.
+ *  Runs before 2026-10-21 that recorded only list prices count at list price (marked). Stand-in and local runs cost nothing. */
+async function costData() {
+  const dir = join(LEAN_DIR, 'runs');
+  type Row = { id: string; name: string; kind: string; runs: number; spent: number; listOnly: number; first: number; last: number; running: boolean };
+  const rows = new Map<string, Row>(), hours = new Map<number, number>();
+  const add = (id: string, name: string, kind: string, recs: Record<string, unknown>[], modified: number, open: boolean) => {
+    const r = rows.get(id) ?? { id, name, kind, runs: 0, spent: 0, listOnly: 0, first: Infinity, last: 0, running: false };
+    r.runs++;
+    for (const a of recs) {
+      const u = (a.usage ?? {}) as { cost?: number };
+      const charged = (a.cost as number | undefined) ?? u.cost ?? (a.dollars as number | undefined);
+      const c = charged ?? (a.listCost as number | undefined) ?? 0;
+      if (charged === undefined && c) r.listOnly += c;
+      r.spent += c;
+      const t = (a.t as number | undefined) ?? modified;
+      r.first = Math.min(r.first, t); r.last = Math.max(r.last, t);
+      if (c && kind !== 'test') { const h = Math.floor(t / 3_600_000); hours.set(h, (hours.get(h) ?? 0) + c); }
+    }
+    if (!recs.length) { r.first = Math.min(r.first, modified); r.last = Math.max(r.last, modified); }
+    r.running ||= open && Date.now() - modified < 10 * 60_000;
+    rows.set(id, r);
+  };
+  for (const d of existsSync(dir) ? readdirSync(dir) : []) {
+    const p = join(dir, d);
+    if (!statSync(p).isDirectory()) continue;
+    const files = ['actions.jsonl', 'attempts.jsonl', 'attempts-superseded.jsonl'].map((f) => join(p, f)).filter(existsSync);
+    const recs = files.flatMap((f) => jsonl(f));
+    const modified = Math.max(statSync(p).mtimeMs, ...files.map((f) => statSync(f).mtimeMs));
+    const m = /^(.*)-r(\d+)-(.+)$/.exec(d);
+    const open = !existsSync(join(p, 'result.json')) && !existsSync(join(p, 'summary.md'));
+    if (m && !d.startsWith('community-')) add(m[1], experimentName(m[1]), isTest(m[1]) ? 'test' : 'society experiment', recs, modified, open);
+    else if (d.startsWith('panel-')) add(d, `Lemma panel: ${d.slice(6)}`, 'model panel', recs, modified, open);
+    else if (d.startsWith('community-2026-10-20')) add('first-race', 'First race: mixed models, OSO vs traditional (Oct 20)', 'race', recs, modified, open);
+    else add(d, d === 'first-test' ? 'First test: Claude Opus on the problems (Oct 19)' : d, /^(stub|test|local)/.test(d) ? 'test' : 'other', recs, modified, open);
+  }
+  const bench = join(RESULTS_DIR, 'bench');
+  for (const d of existsSync(bench) ? readdirSync(bench) : []) {
+    const f = join(bench, d, 'records.jsonl');
+    if (existsSync(f)) add(`bench-${d}`, `Benchmark: ${d}`, d.startsWith('local') ? 'test' : 'benchmark', jsonl(f), statSync(f).mtimeMs, false);
+  }
+  // Pipeline tests charge a pretend $0.01 a call and local models are priced as if hosted: no real money, left out.
+  const list = [...rows.values()].filter((r) => r.kind !== 'test' && (r.spent > 0 || r.running)).map((r) => ({ ...r, spent: Math.round(r.spent * 1e4) / 1e4, listOnly: Math.round(r.listOnly * 1e4) / 1e4 })).sort((a, b) => b.last - a.last);
+  let run = 0;
+  const series = [...hours.entries()].sort((a, b) => a[0] - b[0]).map(([h, c]) => [h * 3_600_000, Math.round((run += c) * 1e4) / 1e4]);
+  const key = process.env.OPENROUTER_API_KEY;
+  return { total: Math.round(list.reduce((a, r) => a + r.spent, 0) * 100) / 100, experiments: list, series, keyUsage: key ? await keyUsage(key) : null, credit: key ? await creditLeft(key) : null };
+}
+
 async function progressData() {
   const dir = join(LEAN_DIR, 'runs');
   const keys = Object.keys(SOCIETIES).sort((a, b) => b.length - a.length);
@@ -440,6 +489,7 @@ const server = createServer(async (req, res) => {
     if (url.pathname === '/api/models') return send(200, await models());
     if (url.pathname === '/api/balance') return send(200, await balance());
     if (url.pathname === '/api/progress') return send(200, await progressData());
+    if (url.pathname === '/api/costs') return send(200, await costData());
     if (url.pathname === '/api/lean') return send(200, leanAvailable() ? leanData(url.searchParams.get('exp') ?? '') : null);
     if (url.pathname === '/api/lean/run') return send(200, leanRun(url.searchParams.get('id') ?? ''));
     if (url.pathname === '/api/design/field') return send(200, design.fieldValues(url.searchParams.get('id') ?? ''));
