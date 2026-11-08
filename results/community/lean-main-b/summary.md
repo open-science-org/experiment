@@ -1,10 +1,10 @@
-# Main experiment, part B: 4 setups × 20 runs, $0.15 a lab (Nov 7)
+# Spend all: labs must spend all their money, 4 setups × 20 runs, $0.15 a lab (Nov 7)
 
 **Question:** For the same agents, checker and money, does a community prove more targets when value flows back (OSO) than when results are only shared, or kept private until a target is proved?
 
 **Answer:** OSO, α 0.8 proved 5.80 targets of 8 on average, 0.05 fewer than Shared library (5.85): not clear: 0.19 standard errors, clear needs 2. OSO, α 0.2 proved 6.25 targets of 8 on average, 0.40 more than Shared library (5.85): not clear: 1.58 standard errors, clear needs 2.
 
-![Main experiment, part B: 4 setups × 20 runs, $0.15 a lab (Nov 7)](figures/progress.svg)
+![Spend all: labs must spend all their money, 4 setups × 20 runs, $0.15 a lab (Nov 7)](figures/progress.svg)
 
 | society | settings | targets proved | money to 3 targets | spent | lemmas proved | built on another lab | lemmas proved twice | targets proved twice |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -22,7 +22,7 @@
 
 <details><summary>Details</summary>
 
-Main Lean experiment, part B (pre-registered in notes/lean-main-experiment.md, 2026-11-07): does flow-back add anything beyond sharing, at the same money spent? Shared library, OSO α 0.8 and OSO α 0.2, 20 runs each; labs cannot stop early. Traditional (20 runs) added later the same day, after the other three had run, as the reference point. These runs used the earlier prompt wording, which differed between setups by more than the rules (see docs/lean-experiment.md).
+Main Lean experiment, Spend all (pre-registered in notes/lean-main-experiment.md, 2026-11-07): does flow-back add anything beyond sharing, at the same money spent? Shared library, OSO α 0.8 and OSO α 0.2, 20 runs each; labs cannot stop early. Traditional (20 runs) added later the same day, after the other three had run, as the reference point. These runs used the earlier prompt wording, which differed between setups by more than the rules (see docs/lean-experiment.md).
 
 ![Verified targets for the money](figures/progress.svg)
 

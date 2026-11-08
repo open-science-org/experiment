@@ -2,7 +2,7 @@
  "id": "lean-b5",
  "kind": "race",
  "date": "2026-11-08",
- "title": "B5 check: OSO α 0.2 vs shared library, fair prompts, $0.20 a lab (Nov 7)",
+ "title": "Fair-prompt check: OSO α 0.2 vs shared library, $0.20 a lab (Nov 7)",
  "ranAt": "2026-11-08T03:57:52.045Z",
  "design": {
   "question": "For the same agents, checker and money, does a community prove more targets when value flows back (OSO) than when results are only shared, or kept private until a target is proved?",

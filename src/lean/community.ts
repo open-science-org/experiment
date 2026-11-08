@@ -48,7 +48,7 @@ export const LEAN_REWARDS = {
 export const atOnce = (r: Rules) => r === 'oso' || r === 'shared' || r === 'planner';
 /** The flat mint a new result earns (0 with the knowledge reward off or measured by proof size). */
 export const mintOf = (o: Pick<CommunityOptions, 'knowledge' | 'mint'>) => (o.knowledge === 'off' || o.knowledge === 'proof-size' ? 0 : o.mint);
-/** The knowledge reward by proof size: log2(1 + size / PROOF_UNIT), at most PROOF_CAP. In part B the median accepted
+/** The knowledge reward by proof size: log2(1 + size / PROOF_UNIT), at most PROOF_CAP. In Spend all the median accepted
  *  lemma had 82 symbols (1.6), C3 35 (0.9), A5 about 1,200 (the cap). On a log scale with a low cap, padding a proof
  *  pays little; the cap equals the smallest bounty, so a lemma never earns more than a target. */
 export const PROOF_UNIT = 40, PROOF_CAP = 4;

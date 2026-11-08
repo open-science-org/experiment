@@ -2,7 +2,7 @@
  "id": "lean-part-a",
  "kind": "race",
  "date": "2026-11-08",
- "title": "Main experiment, part A: labs may stop early, 4 setups × 10 runs, $0.15 a lab (Nov 7)",
+ "title": "May quit: labs may stop early, 4 setups × 10 runs, $0.15 a lab (Nov 7)",
  "ranAt": "2026-11-08T06:53:52.055Z",
  "design": {
   "question": "For the same agents, checker and money, does a community prove more targets when value flows back (OSO) than when results are only shared, or kept private until a target is proved?",

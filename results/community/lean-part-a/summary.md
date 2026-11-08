@@ -1,10 +1,10 @@
-# Main experiment, part A: labs may stop early, 4 setups × 10 runs, $0.15 a lab (Nov 7)
+# May quit: labs may stop early, 4 setups × 10 runs, $0.15 a lab (Nov 7)
 
 **Question:** For the same agents, checker and money, does a community prove more targets when value flows back (OSO) than when results are only shared, or kept private until a target is proved?
 
 **Answer:** OSO, α 0.8 proved 5.10 (95% range 4.47 to 5.73) targets of 8 a run; Shared library 5.00 (95% range 4.33 to 5.67). Difference: 0.10 (95% range -0.82 to 1.02). OSO, α 0.2 proved 5.00 (95% range 4.52 to 5.48) targets of 8 a run; Shared library 5.00 (95% range 4.33 to 5.67). Difference: 0.00 (95% range -0.83 to 0.83).
 
-![Main experiment, part A: labs may stop early, 4 setups × 10 runs, $0.15 a lab (Nov 7)](figures/progress.svg)
+![May quit: labs may stop early, 4 setups × 10 runs, $0.15 a lab (Nov 7)](figures/progress.svg)
 
 | society | settings | targets proved | money to 3 targets | spent | lemmas proved | built on another lab | lemmas proved twice | targets proved twice |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -22,7 +22,7 @@
 
 <details><summary>Details</summary>
 
-Main Lean experiment, part A (fixed before the runs in notes/lean-main-experiment.md, 2026-11-07): when labs may pass and stop for good, does flow-back keep them working and get further with the same money offered? Traditional, shared library, OSO α 0.8 and OSO α 0.2, 10 runs each, $0.15 a lab, one prompt template, thinking saved.
+May quit (main Lean experiment) (fixed before the runs in notes/lean-main-experiment.md, 2026-11-07): when labs may pass and stop for good, does flow-back keep them working and get further with the same money offered? Traditional, shared library, OSO α 0.8 and OSO α 0.2, 10 runs each, $0.15 a lab, one prompt template, thinking saved.
 
 ![Verified targets for the money](figures/progress.svg)
 

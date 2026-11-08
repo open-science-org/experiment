@@ -1,10 +1,10 @@
-# B5 check: OSO α 0.2 vs shared library, fair prompts, $0.20 a lab (Nov 7)
+# Fair-prompt check: OSO α 0.2 vs shared library, $0.20 a lab (Nov 7)
 
 **Question:** For the same agents, checker and money, does a community prove more targets when value flows back (OSO) than when results are only shared, or kept private until a target is proved?
 
 **Answer:** OSO, α 0.2 proved 6.60 (95% range 5.91 to 7.29) targets of 8 a run; Shared library 6.10 (95% range 5.57 to 6.63). Difference: 0.50 (95% range -0.37 to 1.37).
 
-![B5 check: OSO α 0.2 vs shared library, fair prompts, $0.20 a lab (Nov 7)](figures/progress.svg)
+![Fair-prompt check: OSO α 0.2 vs shared library, $0.20 a lab (Nov 7)](figures/progress.svg)
 
 | society | settings | targets proved | money to 3 targets | spent | lemmas proved | built on another lab | lemmas proved twice | targets proved twice |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -20,7 +20,7 @@
 
 <details><summary>Details</summary>
 
-B5 follow-up (fixed before the runs in notes/lean-main-experiment.md, 2026-11-07): with one prompt template, how often does OSO α 0.2 prove B5 (merge sort = insertion sort) compared with the shared library? $0.20 a lab, labs cannot stop early, 20 runs per setup in two batches of 10; reported as an estimate.
+Fair-prompt check (fixed before the runs in notes/lean-main-experiment.md, 2026-11-07): with one prompt template, how often does OSO α 0.2 prove B5 (merge sort = insertion sort) compared with the shared library? $0.20 a lab, labs cannot stop early, 20 runs per setup in two batches of 10; reported as an estimate.
 
 ![Verified targets for the money](figures/progress.svg)
 

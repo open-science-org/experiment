@@ -94,7 +94,7 @@ Lines saved is also how link weights should be measured (below), so one measurem
 **Chosen for the runs where labs choose what to publish (2026-11-07, provisional, for review):** proof length, as `--knowledge proof-size`. A published result earns log₂(1 + symbols / 40), at most 4, if it is new. "New" means no lab has published it, or a result that proves it in one `apply`. It flows back by α like a bounty.
 - **Why proof length:** it is the only candidate that costs nothing to measure, and it matches the race data best of the cheap ones.
 - **Why a log scale and a cap of 4:** padding a proof pays little, and a lemma never earns more than the smallest bounty. The simulation's reward also grows like log₂(1/p).
-- **Checks against gaming:** trivial results and restatements earn nothing. Lemma sizes are compared with runs without the reward (part B: median 82 symbols).
+- **Checks against gaming:** trivial results and restatements earn nothing. Lemma sizes are compared with runs without the reward (Spend all: median 82 symbols).
 - **Still open:** padding with unused steps is not blocked. The prompt says "up to 4, more for a longer proof", not the formula.
 - It meets (a) to (d) above, but (d) only roughly: length stands in for progress.
 

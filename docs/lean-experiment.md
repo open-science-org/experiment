@@ -44,7 +44,7 @@ Each agent sees these, with their bounties. The bounty is 4 · 2^(depth − 1).
 - **Targets must need their lemmas.** In the [model panel](../results/pilot/panel-2026-10-19/summary.md), DeepSeek V4.1 Flash proved 4 of 16 targets alone and 12 of 16 when given the lemmas, so the deep targets really need groundwork.
 - **Tools shaped the choice.** Lean's `grind` tactic proved the matrix facts in one step, which left area C with no depth. So `grind` is banned, and C's targets need induction.
 
-- **Why C3, and not u_add?** No note records why each target was picked. u_add (u(m+n+1) = u(m+1)·u(n+1) + 3·u(m)·u(n)) is also depth 1 and could have been the easy target. But posting a target shows every lab its statement, so posting u_add would have handed out the first step of A3 and of A5's chain (bounty 256). Under OSO a posted target would also be paid twice: its own bounty, and value flowing back from later targets. C3 gives away one step, towards X1 only. So C3 keeps more of the groundwork hidden, and groundwork is what the setups are compared on. In part B labs found u_add themselves.
+- **Why C3, and not u_add?** No note records why each target was picked. u_add (u(m+n+1) = u(m+1)·u(n+1) + 3·u(m)·u(n)) is also depth 1 and could have been the easy target. But posting a target shows every lab its statement, so posting u_add would have handed out the first step of A3 and of A5's chain (bounty 256). Under OSO a posted target would also be paid twice: its own bounty, and value flowing back from later targets. C3 gives away one step, towards X1 only. So C3 keeps more of the groundwork hidden, and groundwork is what the setups are compared on. In Spend all labs found u_add themselves.
 
 More: [the problem set](../lean/README.md) and [its notes](../lean/NOTES.md).
 
@@ -103,11 +103,22 @@ The rules come from one template, three lines each, so setups differ only where 
 
 The exact text is on the app's Lean experiment page (Prompts tab). Runs from 2026-11-07 on save the prompts they sent.
 
-**Part B used earlier wording** (since 2026-11-07, one template). There the setups' prompts differed by more than the rules: the shared library's had an extra line, "Other results earn nothing by themselves", and the OSO prompts explained flow-back at length. Part of part B's differences could come from the wording.
+**Spend all used earlier wording** (since 2026-11-07, one template). There the setups' prompts differed by more than the rules: the shared library's had an extra line, "Other results earn nothing by themselves", and the OSO prompts explained flow-back at length. Part of Spend all's differences could come from the wording.
+
+## The experiments, by name
+
+| Name | What it tests | Run id |
+| --- | --- | --- |
+| **Spend all** | every lab must spend all its money; setups compared at the same money spent | `lean-main-b` |
+| **Fair-prompt check** | Spend all's B5 lead again, with one prompt template (shared library vs OSO α 0.2, $0.20 a lab) | `lean-b5` |
+| **May quit** | a lab may pass and stop for good; setups compared at the same money offered | `lean-part-a` |
+| **Labs choose what to publish** | each lab decides whether to publish each lemma, at α 1, 0.8 and 0.2 | `lean-m3` |
+
+Until 2026-11-08 Spend all was called "part B" and May quit "part A".
 
 ## Run settings
 
-| | Part B | Part A (planned) |
+| | Spend all | May quit (planned) |
 | --- | --- | --- |
 | Money per lab | $0.15, as charged | $0.15 |
 | Rounds, at most | 60 (money, not rounds, ends a run) | 30 |
@@ -129,7 +140,7 @@ All setups in a batch run together, so a change at the model provider hits them 
 
 ## Where it stands
 
-- **Part B** (20 runs per setup, run 2026-11-07): no clear difference on the main measure. Looked for afterwards: OSO α 0.2 proved B5 in 11 of 20 runs, the shared library in 0. Details: [results](ai-agent-results.md).
-- **Next:** a run fixed in advance to test the B5 lead, with the new prompts; then part A.
+- **Spend all** (20 runs per setup, run 2026-11-07): no clear difference on the main measure. Looked for afterwards: OSO α 0.2 proved B5 in 11 of 20 runs, the shared library in 0. Details: [results](ai-agent-results.md).
+- **Next:** a run fixed in advance to test the B5 lead, with the new prompts; then May quit.
 - **Next, labs choose what to publish (roadmap M3):** each lab ends a lemma reply with `PUBLISH: yes` or `PUBLISH: no`; a kept lemma goes public with a target its author proves on it, or never. A new result earns a small reward by proof length ([design.md](design.md#the-knowledge-reward-in-lean)). Setups: labs choose at α 1, 0.8 and 0.2. On this problem set the simulation predicts that 36% and 43% of lemmas are published at once at α 1 and 0.8, and 91% at α 0.2 ([prediction](../results/lean-tree-choice/summary.md), 12 mixed agents). Set up like the Lean runs (4 identical agents, equal money not following earnings): 17%, 20% and 93% ([matched prediction](../results/lean-tree-choice-matched/summary.md)); this is the one the Lean runs are compared with. The reward still differs: per new bit in the simulation, by proof length in Lean.
 - **Limits:** one model, one small problem set, and the rules (not the agents) decide what is published.
