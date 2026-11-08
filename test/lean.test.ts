@@ -178,6 +178,19 @@ test('a turn that throws is kept in the log as an error, and not counted as a fa
   assert.equal(stats(r).failed, 0);
 });
 
+test("a lab's thinking is saved in its own file, not in the action log", async () => {
+  const { runCommunity } = await import('../src/lean/community.ts');
+  const { mkdtempSync, readFileSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const root = mkdtempSync(join(tmpdir(), 'oso-think-'));
+  const chat = async () => ({ text: 'ACTION: pass', content: 'x', usage: { input: 1, output: 1, cacheRead: 0, cacheWrite: 0, cost: 0.001 }, stop: 'stop', reasoning: 'passing looks best' });
+  const opts = { rules: 'shared' as const, agents: ['a'], budget: 1, rounds: 1, repairs: 0, alpha: 1, mint: 0, effort: 'low' as const, knowledge: 'off' as const, mayStop: false };
+  await runCommunity(opts, () => chat as never, () => 0.001, 'think', () => {}, root);
+  const saved = JSON.parse(readFileSync(join(root, 'think', 'reasoning.jsonl'), 'utf8'));
+  assert.deepEqual([saved.action, saved.reasoning], [0, ['passing looks best']]);
+  assert.doesNotMatch(readFileSync(join(root, 'think', 'actions.jsonl'), 'utf8'), /passing looks best/);
+});
+
 test('labs that may not stop lose only the turn they pass', async () => {
   const { Community } = await import('../src/lean/community.ts');
   const base = { rules: 'shared' as const, agents: ['a', 'b'], budget: 1, rounds: 1, repairs: 0, alpha: 1, mint: 1, effort: 'low' as const, knowledge: 'off' as const };

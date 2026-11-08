@@ -10,7 +10,7 @@ export interface Turn { proof: string | null; check: CheckResult | null; usage: 
 
 /** One model call: the conversation so far → the reply's text, the raw content to send back, usage. */
 export type Chat = (system: string, messages: { role: 'user' | 'assistant'; content: unknown }[]) =>
-  Promise<{ text: string; content: unknown; usage: Usage; stop: string }>;
+  Promise<{ text: string; content: unknown; usage: Usage; stop: string; reasoning?: string }>;
 
 export type Provider = 'anthropic' | 'openrouter' | 'local';
 export interface ModelSettings {
@@ -193,7 +193,7 @@ export function openRouterChat(settings: ModelSettings): Chat {
       type Reply = {
         error?: { message: string };
         provider?: string;
-        choices?: { message: { content: string | null; reasoning_details?: unknown }; finish_reason: string }[];
+        choices?: { message: { content: string | null; reasoning?: string | null; reasoning_details?: { type?: string; text?: string; summary?: string }[] }; finish_reason: string }[];
         usage?: { prompt_tokens: number; completion_tokens: number; prompt_tokens_details?: { cached_tokens?: number }; cost?: number };
       };
       let json: Reply;
@@ -205,6 +205,8 @@ export function openRouterChat(settings: ModelSettings): Chat {
       if (!res.ok || json.error || !json.choices?.length) throw new Error(`OpenRouter ${res.status}: ${json.error?.message ?? 'no reply'}${res.status === 404 && allowed.length ? ` (none of the companies within the price cap could serve it: ${allowed.map((x) => x.name).join(', ')})` : ''}`);
       const choice = json.choices[0];
       const text = choice.message.content ?? '';
+      // The model's thinking, kept so we can see why a lab chose what it did (plain text, or the text of its reasoning parts).
+      const reasoning = choice.message.reasoning || (Array.isArray(choice.message.reasoning_details) ? choice.message.reasoning_details.map((r) => r.text ?? r.summary ?? '').join('\n') : '') || undefined;
       const u = json.usage;
       const cached = u?.prompt_tokens_details?.cached_tokens ?? 0;
       return {
@@ -212,6 +214,7 @@ export function openRouterChat(settings: ModelSettings): Chat {
         content: { text, reasoning_details: choice.message.reasoning_details },
         usage: { input: (u?.prompt_tokens ?? 0) - cached, output: u?.completion_tokens ?? 0, cacheRead: cached, cacheWrite: 0, cost: u?.cost, provider: json.provider },
         stop: choice.finish_reason === 'content_filter' ? 'refusal' : choice.finish_reason,
+        ...(reasoning ? { reasoning } : {}),
       };
     }
   };

@@ -118,7 +118,8 @@ export interface Action {
   usage: Usage; cost?: number; listCost?: number; spentAfter: number;
   /** The companies that served this action's calls, in order. */
   servedBy?: string[];
-  transcript: { text: string; proof: string | null; errors: string[] }[];
+  /** Each reply: the model's thinking (saved since 2026-11-07, where the provider returns it), its answer, the proof and Lean's errors. */
+  transcript: { reasoning?: string; text: string; proof: string | null; errors: string[] }[];
   t: number;
 }
 
@@ -369,13 +370,13 @@ ${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still w
       const text = reply.text;
       if (/ACTION:\s*pass\b/i.test(text)) {
         // Labs that may not stop lose only this turn.
-        if (this.opts.mayStop === false) { reason = 'tried to pass, which is not allowed: turn skipped'; transcript.push({ text, proof: null, errors: [] }); break; }
-        kind = 'pass'; reason = 'passed'; this.passed.add(i); transcript.push({ text, proof: null, errors: [] }); break;
+        if (this.opts.mayStop === false) { reason = 'tried to pass, which is not allowed: turn skipped'; transcript.push({ ...(reply.reasoning ? { reasoning: reply.reasoning } : {}), text, proof: null, errors: [] }); break; }
+        kind = 'pass'; reason = 'passed'; this.passed.add(i); transcript.push({ ...(reply.reasoning ? { reasoning: reply.reasoning } : {}), text, proof: null, errors: [] }); break;
       }
       const action = /ACTION:\s*(target|conjecture|lemma)\s*([A-Za-z0-9-]*)/i.exec(text);
       const code = [...text.matchAll(/```(?:lean4?|)\s*\n([\s\S]*?)```/g)].map((m) => m[1].replace(/\s+$/, '')).pop() ?? null;
       let errors: string[] = [];
-      if (reply.stop === 'refusal') { reason = 'declined'; transcript.push({ text, proof: null, errors: ['declined'] }); break; }
+      if (reply.stop === 'refusal') { reason = 'declined'; transcript.push({ ...(reply.reasoning ? { reasoning: reply.reasoning } : {}), text, proof: null, errors: ['declined'] }); break; }
       if (!action || !code) errors = ['Start with ACTION: target <ID> or ACTION: lemma, then one ```lean code block.'];
       else if (action[1].toLowerCase() === 'conjecture') {
         kind = 'conjecture'; target = action[2].toUpperCase();
@@ -441,7 +442,7 @@ ${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still w
           }
         }
       }
-      transcript.push({ text, proof: code, errors });
+      transcript.push({ ...(reply.reasoning ? { reasoning: reply.reasoning } : {}), text, proof: code, errors });
       if (ok || reason) break;
       if (this.spent[i] >= this.opts.budget) { reason = 'budget spent'; break; }
       messages.push({ role: 'assistant', content: reply.content });
@@ -528,6 +529,12 @@ export async function runCommunity(opts: CommunityOptions, chatFor: (com: Commun
     // Under planner rules lab 1 only plans.
     const active = opts.agents.map((_, i) => i).filter((i) => com.active(i) && !(opts.rules === 'planner' && i === 0));
     await Promise.all(active.map((i) => com.act(i, round, chats[i], (u) => price(opts.agents[i], u), (a) => {
+      // The model's thinking is long (tens of thousands of tokens a turn): it goes to its own file, keyed by the
+      // action's place in actions.jsonl, so the action log stays small.
+      if (a.transcript.some((x) => x.reasoning)) {
+        appendFileSync(join(dir, 'reasoning.jsonl'), JSON.stringify({ action: com.actions.indexOf(a), round, agent: i, reasoning: a.transcript.map((x) => x.reasoning ?? null) }) + '\n');
+        for (const x of a.transcript) delete x.reasoning;
+      }
       appendFileSync(file, JSON.stringify(a) + '\n');
       const solved = com.targets.filter((t) => com.solved(t.publicId)).length;
       log(`  round ${round} · agent ${i + 1} (${a.model.split('/').pop()}): ${a.kind === 'target' ? `target ${a.target}` : a.kind === 'conjecture' ? `conjecture ${a.target}` : a.kind === 'lemma' ? `lemma ${a.name ?? '?'}` : a.kind === 'pass' ? 'passed' : 'no action'} ${a.ok ? 'accepted' : 'failed'}${a.reason ? ` (${a.reason})` : ''} · $${costOf(a).toFixed(3)} · ${solved}/8 targets solved`);

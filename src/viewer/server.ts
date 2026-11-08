@@ -348,7 +348,9 @@ function leanRun(id: string) {
   if (!/^[\w.-]+$/.test(id)) throw new Error('bad run id');
   const d = join(LEAN_DIR, 'runs', id);
   if (!existsSync(join(d, 'options.json'))) throw new Error('no such run');
-  return { id, options: JSON.parse(readFileSync(join(d, 'options.json'), 'utf8')), actions: jsonl(join(d, 'actions.jsonl')), finished: existsSync(join(d, 'result.json')) };
+  // The model's thinking, saved since 2026-11-07 in its own file: action number → one entry per reply.
+  const thinking = Object.fromEntries(jsonl(join(d, 'reasoning.jsonl')).map((x) => [x.action, x.reasoning]));
+  return { id, options: JSON.parse(readFileSync(join(d, 'options.json'), 'utf8')), actions: jsonl(join(d, 'actions.jsonl')), thinking, finished: existsSync(join(d, 'result.json')) };
 }
 
 async function progressData() {
