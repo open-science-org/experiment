@@ -242,6 +242,7 @@
   <a href="#/runs">Experiments</a>
   <a href="#/new">New experiment</a>
   <div class="navhead">AI agents (Lean)</div>
+  <a href="#/doc/docs/ai-agent-results.md">Results</a>
   <a href="#/lean">Experiments</a>
   <a href="#/progress">Running now</a>
   <a href="#/money">Money</a>
@@ -525,7 +526,8 @@ async function route() {
     if (top === '/equations' || /^\/doc\/docs\/equations(-simple|-steps)?\.md$/.test(path)) return '#/equations';
     if (path === '/doc/docs/lean-experiment.md') return '#/doc/docs/lean-experiment.md';
     if (path === '/roadmap') return '#/roadmap';
-    if (/^\/doc\/(docs\/(ai-agent-results|findings)\.md|results\/(community|pilot)\/)/.test(path)) return '#/lean';
+    if (path === '/doc/docs/ai-agent-results.md') return '#/doc/docs/ai-agent-results.md';
+    if (/^\/doc\/(docs\/findings\.md|results\/(community|pilot)\/)/.test(path)) return '#/lean';
     if (top === '/how' || (top === '/doc' && /^\/doc\/(docs\/|README\.md|lean\/)/.test(path))) return '#/how';
     if (path === '/runs/results' || top === '/doc') return '#/runs/results';
     if (top === '/live') return '#/runs';
