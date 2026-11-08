@@ -363,7 +363,7 @@ async function costData() {
   const dir = join(LEAN_DIR, 'runs');
   type Row = { id: string; name: string; kind: string; runs: number; spent: number; listOnly: number; first: number; last: number; running: boolean };
   const rows = new Map<string, Row>(), hours = new Map<number, number>();
-  const add = (id: string, name: string, kind: string, recs: Record<string, unknown>[], modified: number, open: boolean) => {
+  const add = (id: string, name: string, kind: string, recs: Record<string, unknown>[], modified: number, open: boolean, undated = modified) => {
     const r = rows.get(id) ?? { id, name, kind, runs: 0, spent: 0, listOnly: 0, first: Infinity, last: 0, running: false };
     r.runs++;
     for (const a of recs) {
@@ -372,7 +372,8 @@ async function costData() {
       const c = charged ?? (a.listCost as number | undefined) ?? 0;
       if (charged === undefined && c) r.listOnly += c;
       r.spent += c;
-      const t = (a.t as number | undefined) ?? modified;
+      // A record without a time: its file's age (the oldest file, which later edits to the folder do not move).
+      const t = (a.t as number | undefined) ?? undated;
       r.first = Math.min(r.first, t); r.last = Math.max(r.last, t);
       if (c && kind !== 'test') { const h = Math.floor(t / 3_600_000); hours.set(h, (hours.get(h) ?? 0) + c); }
     }
@@ -386,12 +387,13 @@ async function costData() {
     const files = ['actions.jsonl', 'attempts.jsonl', 'attempts-superseded.jsonl'].map((f) => join(p, f)).filter(existsSync);
     const recs = files.flatMap((f) => jsonl(f));
     const modified = Math.max(statSync(p).mtimeMs, ...files.map((f) => statSync(f).mtimeMs));
+    const undated = files.length ? Math.min(...files.map((f) => statSync(f).mtimeMs)) : modified;
     const m = /^(.*)-r(\d+)-(.+)$/.exec(d);
     const open = !existsSync(join(p, 'result.json')) && !existsSync(join(p, 'summary.md'));
-    if (m && !d.startsWith('community-')) add(m[1], experimentName(m[1]), isTest(m[1]) ? 'test' : 'society experiment', recs, modified, open);
-    else if (d.startsWith('panel-')) add(d, `Lemma panel: ${d.slice(6)}`, 'model panel', recs, modified, open);
-    else if (d.startsWith('community-2026-10-20')) add('first-race', 'First race: mixed models, OSO vs traditional (Oct 20)', 'race', recs, modified, open);
-    else add(d, d === 'first-test' ? 'First test: Claude Opus on the problems (Oct 19)' : d, /^(stub|test|local)/.test(d) ? 'test' : 'other', recs, modified, open);
+    if (m && !d.startsWith('community-')) add(m[1], experimentName(m[1]), isTest(m[1]) ? 'test' : 'society experiment', recs, modified, open, undated);
+    else if (d.startsWith('panel-')) add(d, `Lemma panel: ${d.slice(6)}`, 'model panel', recs, modified, open, undated);
+    else if (d.startsWith('community-2026-10-20')) add('first-race', 'First race: mixed models, OSO vs traditional (Oct 20)', 'race', recs, modified, open, undated);
+    else add(d, d === 'first-test' ? 'First test: Claude Opus on the problems (Oct 19)' : d, /^(stub|test|local)/.test(d) ? 'test' : 'other', recs, modified, open, undated);
   }
   const bench = join(RESULTS_DIR, 'bench');
   for (const d of existsSync(bench) ? readdirSync(bench) : []) {

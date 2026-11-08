@@ -22,7 +22,7 @@ export const SOCIETIES: Record<string, Society> = {
   oso: { name: 'OSO, α 0.8', params: 'shared at once · α 0.8', rules: 'oso', alpha: 0.8, colour: '#eb6834', slot: 2 },
   'oso-0.2': { name: 'OSO, α 0.2', params: 'shared at once · α 0.2', rules: 'oso', alpha: 0.2, colour: '#f2a07b', slot: 2 },
   // Labs choose what to publish (roadmap M3); knowledge reward by proof size. α 1: nothing flows back.
-  'choose-1': { name: 'Labs choose, α 1', params: 'each lab chooses what to publish · α 1', rules: 'oso', alpha: 1, choose: true, colour: '#2a78d6', slot: 1 },
+  'choose-1': { name: 'Labs choose, α 1', params: 'each lab chooses what to publish · α 1', rules: 'oso', alpha: 1, choose: true, colour: '#33322f', slot: 3 },
   'choose-0.8': { name: 'Labs choose, α 0.8', params: 'each lab chooses what to publish · α 0.8', rules: 'oso', alpha: 0.8, choose: true, colour: '#eb6834', slot: 2 },
   'choose-0.2': { name: 'Labs choose, α 0.2', params: 'each lab chooses what to publish · α 0.2', rules: 'oso', alpha: 0.2, choose: true, colour: '#f2a07b', slot: 2 },
 };
