@@ -2177,6 +2177,8 @@ function leanPrompts(d) {
 }
 
 // What the Lean results graph can show: columns of the server's per-turn rows (see seriesOf in server.ts).
+// The 95% range of a mean from n runs: ± t × standard error, with t from Student's t for n − 1 (about 2 for many runs).
+const T95 = (n) => (n < 2 ? 0 : [12.71, 4.30, 3.18, 2.78, 2.57, 2.45, 2.36, 2.31, 2.26, 2.23, 2.20, 2.18, 2.16, 2.14, 2.13, 2.12, 2.11, 2.10, 2.09][n - 2] ?? (n < 40 ? 2.05 : 2));
 const LX = [{ id: 0, name: 'Money spent so far, per community ($)' }, { id: 1, name: 'Round' }, { id: 2, name: 'Turns taken (all labs)' }];
 const LY = (d) => [
   { id: 'targets', name: `Targets proved (of ${d.targets.length})`, col: 3 },
@@ -2219,7 +2221,7 @@ function leanResults(d) {
       const per = grid.map((g) => s.series.map((r) => at(r, g)));
       const m = per.map((v) => v.reduce((a, b) => a + b, 0) / v.length);
       const se = per.map((v, k) => (v.length > 1 ? Math.sqrt(v.reduce((a, b) => a + (b - m[k]) ** 2, 0) / (v.length - 1) / v.length) : 0));
-      return { s, m, se };
+      return { s, m, se: se.map((x) => (x * T95(s.series.length)) / 2) };
     });
     const yTop = share ? 100 : Math.max(1, ...lines.flatMap((L) => L.m.map((v, k) => v + 2 * L.se[k])), ...($('l-each').checked ? sets.flatMap((s) => s.series.map((r) => val(r.at(-1)))) : []));
     const yPos = lines.flatMap((L) => L.m).filter((v) => v > 0), yMin = logy ? Math.max(share ? 1 : 0.1, Math.min(...yPos, yTop) / 1.5) : 0;
@@ -2252,17 +2254,17 @@ function leanResults(d) {
     ends.sort((a, b) => a[0] - b[0]); for (let n = 1; n < ends.length; n++) ends[n][0] = Math.max(ends[n][0], ends[n - 1][0] + 15);
     for (const [y, t, c] of ends) svg += `<line x1="${l + pw + 6}" x2="${l + pw + 22}" y1="${y}" y2="${y}" stroke="${c}" stroke-width="2.5"/><text x="${l + pw + 26}" y="${y + 4}" font-size="11" fill="var(--ink)">${esc(t)}</text>`;
     $('l-chart').innerHTML = svg + '</svg>';
-    $('l-cnote').textContent = `Thick lines: the mean of every finished run of “${d.name}” (${sets.map((s) => `${s.name} ${s.series.length}`).join(', ')})${share ? '; the share of runs that had proved it by then' : ''}.${$('l-band').checked ? ' Shaded: the mean ± 2 standard errors, a rough 95% range.' : ''}${$('l-each').checked && !share ? ' Thin lines: single runs.' : ''}${logx || logy ? ' On a log scale, zero cannot be drawn: values below the axis sit on it.' : ''}`;
+    $('l-cnote').textContent = `Thick lines: the mean of every finished run of “${d.name}” (${sets.map((s) => `${s.name} ${s.series.length}`).join(', ')})${share ? '; the share of runs that had proved it by then' : ''}.${$('l-band').checked ? ' Shaded: a 95% range of the mean (± t standard errors; wider when there are few runs).' : ''}${$('l-each').checked && !share ? ' Thin lines: single runs.' : ''}${logx || logy ? ' On a log scale, zero cannot be drawn: values below the axis sit on it.' : ''}`;
   };
   draw();
   const fin = (s, col) => s.series.map((r) => r.at(-1)[col]), mean = (a) => a.reduce((p, q) => p + q, 0) / a.length;
   const se = (a) => (a.length > 1 ? Math.sqrt(a.reduce((p, q) => p + (q - mean(a)) ** 2, 0) / (a.length - 1) / a.length) : 0);
-  const cell = (a) => `${mean(a).toFixed(2)} <span class="muted">(${(mean(a) - 2 * se(a)).toFixed(2)}–${(mean(a) + 2 * se(a)).toFixed(2)})</span>`;
+  const cell = (a) => `${mean(a).toFixed(2)} <span class="muted">(${(mean(a) - T95(a.length) * se(a)).toFixed(2)}–${(mean(a) + T95(a.length) * se(a)).toFixed(2)})</span>`;
   const rows = sets.map((s) => `<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${s.colour};margin-right:5px"></span>${esc(s.name)}</td><td>${s.series.length}</td>
     <td>${cell(fin(s, 3))}</td><td>${cell(fin(s, 5))}</td><td>${cell(fin(s, 6))}</td><td>$${mean(fin(s, 0)).toFixed(2)}</td>
     <td>${d.targets.map((t) => `${t.id} ${s.proved[t.id]}`).join(' · ')}</td></tr>`).join('');
   $('l-table').innerHTML = `<div class="pane" style="overflow-x:auto"><table class="agents"><thead><tr><th>Setup</th><th>Runs</th><th>Targets proved</th><th>Lemmas proved</th><th>Built on another lab</th><th>Spent</th><th>Runs that proved each target</th></tr></thead><tbody>${rows}</tbody></table>
-    <p class="muted" style="font-size:12px;margin:8px 0 0">At the end of each run: mean, with a rough 95% range (± 2 standard errors) in brackets. The verdict and design: <a href="#/doc/results/community/${esc(d.id)}/summary.md">the run summary</a>.</p></div>`;
+    <p class="muted" style="font-size:12px;margin:8px 0 0">At the end of each run: mean, with a 95% range in brackets (± t standard errors, which allows for few runs). The verdict and design: <a href="#/doc/results/community/${esc(d.id)}/summary.md">the run summary</a>.</p></div>`;
 }
 
 async function leanRuns(d) {
