@@ -1,0 +1,48 @@
+{
+ "id": "lean-b5",
+ "kind": "race",
+ "date": "2026-11-08",
+ "title": "B5 check: OSO α 0.2 vs shared library, fair prompts, $0.20 a lab (Nov 7)",
+ "ranAt": "2026-11-08T03:57:52.045Z",
+ "design": {
+  "question": "For the same agents, checker and money, does a community prove more targets when value flows back (OSO) than when results are only shared, or kept private until a target is proved?",
+  "compare": "Shared library, OSO, α 0.2",
+  "fixed": "the same 4 agents (the single agent: the first, with all the money), $0.80 in all, Lean checks every proof",
+  "measure": "targets proved by the end of a run, of 8; money to reach 3 targets is shown beside it",
+  "better": "higher",
+  "runs": "10 runs per setup, not paired"
+ },
+ "answer": "OSO, α 0.2 proved 6.60 targets of 8 on average, 0.50 more than Shared library (6.10): not clear: 1.30 standard errors, clear needs 2.",
+ "table": [
+  {
+   "society": "Shared library",
+   "settings": "shared at once · α 1",
+   "targets proved": "6.10 ± 0.74 of 8",
+   "money to 3 targets": "$0.03 (10 of 10 got there)",
+   "spent": "$0.81",
+   "lemmas proved": "8.50",
+   "built on another lab": "3.40",
+   "lemmas proved twice": "0.20",
+   "targets proved twice": "2.70"
+  },
+  {
+   "society": "OSO, α 0.2",
+   "settings": "shared at once · α 0.2",
+   "targets proved": "6.60 ± 0.97 of 8",
+   "money to 3 targets": "$0.05 (10 of 10 got there)",
+   "spent": "$0.80",
+   "lemmas proved": "17.20",
+   "built on another lab": "8.40",
+   "lemmas proved twice": "0.20",
+   "targets proved twice": "3.00"
+  }
+ ],
+ "caveats": [
+  "Labs could not stop early: each worked until its money or the rounds ran out, so setups are compared at the same money spent.",
+  "Rewards differ from the current simulation model: the knowledge reward is off (the simulation pays 1 per new bit since v5): Lean has no agreed measure of a result's new knowledge yet, see docs/design.md; value flowing back is still split by the money spent proving each parent, not by the work a parent saves (1/p) as in the simulation.",
+  "Values are mean ± standard deviation over runs. The verdict compares each OSO setup with the shared library (or the best other setup); runs are not paired, and a difference is clear when it is more than two standard errors."
+ ],
+ "cost": "$16.11 as charged",
+ "page": "results/community/lean-b5/summary.md",
+ "chart": "results/community/lean-b5/figures/progress.svg"
+}

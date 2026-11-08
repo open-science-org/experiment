@@ -120,6 +120,20 @@ A target is proved twice when two labs prove it in the same round. (An earlier v
 
 **Also:** "money to reach 3 targets" was too easy; every run got there for $0.04–0.05.
 
+## 4a. B5 check, fair prompts (2026-11-07 to 08)
+
+[Result](../results/community/lean-b5/summary.md). Plan fixed before the runs (roadmap M1): part B's B5 lead, tested again with one prompt template, so that the setups differ only in their rules. Shared library against OSO α 0.2, $0.20 a lab, labs cannot stop, 10 runs per setup, 20 in all, $16.10.
+
+| Setup | B5 proved | Targets proved (of 8) | Lemmas proved |
+| --- | --- | --- | --- |
+| Shared library | 3 of 10 (95% range 0.11–0.60) | 6.1 (5.6–6.6) | 8.8 (4.9–12.7) |
+| OSO, α 0.2 | 4 of 10 (0.17–0.69) | 6.6 (5.9–7.3) | 17.6 (14.2–21.0) |
+| Difference | +0.1 | +0.5 (−0.4 to +1.4) | +8.8 (+3.6 to +14.0) |
+
+**The answer: the B5 lead did not hold** (part B: 11 of 20 against 0 of 20; here 4 of 10 against 3 of 10). With fair prompts, the shared library also proved B5. **The lemma lead held:** with flow-back, labs proved about twice as many lemmas. Targets: no clear difference.
+
+**What labs thought when they chose a lemma** (runs 6–10, a rough keyword count of their saved thinking): in both setups about 63% of lemma turns mention others building on the lemma. Under OSO, 64% also mention being paid when value flows back, against 20% in the shared library (mostly "nothing flows back"). So labs read the rule and use it, but the extra lemmas did not turn into clearly more targets.
+
 ## 4b. Part A: labs may stop early (2026-11-08)
 
 [Result](../results/community/lean-part-a/summary.md). Plan fixed before the runs (roadmap M2). Same setups and money as part B ($0.15 a lab), but a lab that passes stops for good. 10 runs per setup, 40 in all, $11.90.
