@@ -43,6 +43,17 @@ export interface SocietyRun { key: string; rep: number; runId: string; result: C
 const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length);
 const sd = (xs: number[]) => { const m = mean(xs); return Math.sqrt(xs.reduce((a, b) => a + (b - m) ** 2, 0) / Math.max(1, xs.length - 1)); };
 const f2 = (x: number) => x.toFixed(2);
+/** Student t for a 95% range, by degrees of freedom (few runs need a wider range than ±2 SE). */
+const T95 = [NaN, 12.71, 4.3, 3.18, 2.78, 2.57, 2.45, 2.36, 2.31, 2.26, 2.23, 2.2, 2.18, 2.16, 2.14, 2.13, 2.12, 2.11, 2.1, 2.09, 2.09];
+const t95 = (df: number) => (df < 1 ? NaN : df < T95.length ? T95[df] : 1.96 + 2.4 / df);
+/** Mean with its 95% range, as text. */
+const range = (xs: number[], fmt = f2) => { const m = mean(xs), h = t95(xs.length - 1) * sd(xs) / Math.sqrt(xs.length); return Number.isFinite(h) ? `${fmt(m)} (95% range ${fmt(m - h)} to ${fmt(m + h)})` : fmt(m); };
+/** The difference of two means with its 95% range (runs not paired; degrees of freedom from the smaller group, a cautious choice). */
+const diff = (a: number[], b: number[], fmt = f2) => {
+  const d = mean(a) - mean(b), h = t95(Math.min(a.length, b.length) - 1) * Math.sqrt(sd(a) ** 2 / a.length + sd(b) ** 2 / b.length);
+  return Number.isFinite(h) ? `${fmt(d)} (95% range ${fmt(d - h)} to ${fmt(d + h)})` : fmt(d);
+};
+const pct = (x: number) => `${Math.round(x * 100)}%`;
 
 /** Counted targets solved once `x` dollars were spent: the step curve, held at its end after the run stops. */
 function solvedAt(pts: [number, number][], x: number) {
@@ -84,8 +95,10 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
     const rs = runs.filter((r) => r.key === key).map((r) => r.result), st = rs.map(stats);
     const to = rs.map((r) => spendTo(r, k) ?? r.opts.budget * r.opts.agents.length);
     const got = st.map((x) => x.targetsSolved);
+    // Labs choosing what to publish: the share of lemmas published at once (explicit choices), per run.
+    const share = st.map((x) => x.sharedOfChosen).filter((x): x is number => x !== null);
     return {
-      key, got,
+      key, got, share,
       row: {
         society: SOCIETIES[key].name,
         settings: SOCIETIES[key].params,
@@ -97,22 +110,29 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
         'lemmas proved twice': f2(mean(st.map((x) => x.lemmasDuplicate))),
         'targets proved twice': f2(mean(st.map((x) => x.targetsDuplicate))),
         ...(st.some((x) => x.errors) ? { 'turns lost to errors': f2(mean(st.map((x) => x.errors))) } : {}),
+        ...(SOCIETIES[key].choose ? {
+          'lemmas published at once': share.length ? range(share, pct) : '—',
+          'with no PUBLISH line': f2(mean(st.map((x) => x.noChoice))),
+          'lemma proof size': f2(mean(st.map((x) => x.lemmaSize ?? 0))),
+        } : {}),
       },
     };
   });
-  // The verdict: each OSO setup against the shared library (or, without one, the best other setup). Runs are not
-  // paired (model calls cannot be replayed with the same luck); clear when the difference is more than two standard errors.
+  // Each OSO setup against the shared library (or, without one, the best other setup), as estimates with 95% ranges.
+  // Runs are not paired (model calls cannot be replayed with the same luck).
   const rest = rows.filter((r) => !r.key.startsWith('oso'));
   const base = rest.find((r) => r.key === 'shared') ?? [...rest].sort((a, b) => mean(b.got) - mean(a.got))[0];
   const verdict = (r: (typeof rows)[number]) => {
-    const a = r.got, b = base.got, md = mean(a) - mean(b);
-    const se = a.length > 1 && b.length > 1 ? Math.sqrt(sd(a) ** 2 / a.length + sd(b) ** 2 / b.length) : Infinity;
-    const word = !Number.isFinite(se) ? 'too few runs for a verdict' : Math.abs(md) <= 2 * se ? `not clear: ${se ? f2(Math.abs(md) / se) : '0'} standard errors, clear needs 2` : `clear: ${f2(Math.abs(md) / se)} standard errors`;
-    return `${SOCIETIES[r.key].name} proved ${f2(mean(a))} targets of ${nTargets} on average, ${Math.abs(md) < 0.005 ? 'the same as' : `${f2(Math.abs(md))} ${md > 0 ? 'more' : 'fewer'} than`} ${SOCIETIES[base.key].name} (${f2(mean(b))}): ${word}.`;
+    return `${SOCIETIES[r.key].name} proved ${range(r.got)} targets of ${nTargets} a run; ${SOCIETIES[base.key].name} ${range(base.got)}. Difference: ${diff(r.got, base.got)}.`;
   };
+  // Labs choosing what to publish (roadmap M3): the main measure is the share published at once, α 0.2 against α 1.
+  const lo = rows.find((r) => r.key === 'choose-0.2'), hi = rows.find((r) => r.key === 'choose-1');
+  const chooseAnswer = lo && hi && lo.share.length && hi.share.length
+    ? `Lemmas published at once: ${rows.filter((r) => SOCIETIES[r.key].choose).map((r) => `${SOCIETIES[r.key].name} ${r.share.length ? range(r.share, pct) : '—'}`).join('; ')}. α 0.2 minus α 1: ${diff(lo.share, hi.share, pct)}.`
+    : null;
   const osoRows = rows.filter((r) => r.key.startsWith('oso'));
   const best = [...rows].sort((a, b) => mean(b.got) - mean(a.got))[0];
-  const answer = !osoRows.length || !base ? `Most targets proved: ${SOCIETIES[best.key].name}, ${f2(mean(best.got))} of ${nTargets}.`
+  const answer = chooseAnswer ? chooseAnswer : !osoRows.length || !base ? `Most targets proved: ${SOCIETIES[best.key].name}, ${f2(mean(best.got))} of ${nTargets}.`
     : `${reps < 2 ? 'One run each, no verdict yet. ' : ''}${osoRows.map(verdict).join(' ')}`;
   const o = [...runs].sort((a, b) => b.result.opts.agents.length - a.result.opts.agents.length)[0].result.opts;
   writeCard(dir, {
@@ -122,7 +142,7 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
       question: 'For the same agents, checker and money, does a community prove more targets when value flows back (OSO) than when results are only shared, or kept private until a target is proved?',
       compare: keys.map((x) => SOCIETIES[x].name).join(', '),
       fixed: `the same ${o.agents.length} agents (the single agent: the first, with all the money), $${f2(total)} in all, Lean checks every proof`,
-      measure: `targets proved by the end of a run, of ${nTargets}; money to reach ${k} targets is shown beside it`,
+      measure: chooseAnswer ? 'the share of lemmas published at once (of those with a PUBLISH line), α 0.2 against α 1; targets proved beside it' : `targets proved by the end of a run, of ${nTargets}; money to reach ${k} targets is shown beside it`,
       better: 'higher', runs: `${reps} run${reps > 1 ? 's' : ''} per setup, not paired`,
     },
     answer,
@@ -131,7 +151,7 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
       o.mayStop === false ? 'Labs could not stop early: each worked until its money or the rounds ran out, so setups are compared at the same money spent.' : 'Labs could stop early by passing, so setups are compared at the same money offered; money spent is shown beside each.',
       ...(() => { const gaps = LEAN_REWARDS.gaps(o); return gaps.length ? [`Rewards differ from the current simulation model: ${gaps.join('; ')}.`] : []; })(),
       ...(local ? ['Models on this machine cost nothing; dollars price their tokens as a cheap open model would be served. A test of the setup, not a cost result.'] : []),
-      'Values are mean ± standard deviation over runs. The verdict compares each OSO setup with the shared library (or the best other setup); runs are not paired, and a difference is clear when it is more than two standard errors.',
+      'Table values are mean ± standard deviation over runs. Above: means with 95% ranges (Student t), and differences between setups with their 95% ranges; runs are not paired.',
       ...(runs.some((r) => r.result.stopped) ? [`Some runs stopped early (${[...new Set(runs.map((r) => r.result.stopped).filter(Boolean))].join(', ')}); their money counts as spent up to the stop.`] : []),
     ],
     cost: stub ? '$0 (stand-in agents; dollars are a fixed $0.01 a call)' : local ? '$0 (local models)' : `$${f2(runs.reduce((a, r) => a + stats(r.result).spent, 0))} ${priced}`,

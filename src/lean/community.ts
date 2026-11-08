@@ -59,7 +59,8 @@ export const sizeReward = (size: number) => Math.min(PROOF_CAP, Math.round(Math.
 /** A lab's PUBLISH choice: the last line that is only "PUBLISH: yes" or "PUBLISH: no", in any of its replies this turn
  *  (so wording copied from the prompt does not count). Both or neither: no choice. */
 export function publishChoice(replies: string[]): 'yes' | 'no' | undefined {
-  const all = replies.flatMap((t) => [...t.matchAll(/^\s*\**PUBLISH:\s*(yes|no)\**\s*$/gim)].map((m) => m[1].toLowerCase()));
+  // The line alone, allowing bold, backticks or a full stop around it.
+  const all = replies.flatMap((t) => [...t.matchAll(/^[\s*`]*PUBLISH:\s*(yes|no)[\s*`.]*$/gim)].map((m) => m[1].toLowerCase()));
   return all.at(-1) as 'yes' | 'no' | undefined;
 }
 
@@ -477,7 +478,7 @@ ${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still w
                 e.size = proofSize(lemma.proof.replace(/^\s*:=/, ''));
                 // A restatement of a published result (renamed variables, say) is not new: one step from it proves it.
                 const pub = this.library.filter((x) => x.public && !x.trivial).map((x) => `${x.ns}.${x.name}`);
-                if (pub.length) e.known = (await check({ ns: 'OSO', signature: lemma.signature }, `:= by first ${pub.map((n) => `| (apply ${n}; done)`).join(' ')}`, { library: this.checkLibrary(i) })).ok;
+                if (pub.length) e.known = (await check({ ns: 'OSO', signature: lemma.signature }, `:= by first ${pub.map((n) => `| (apply ${n} <;> assumption) | (apply ${n}; done)`).join(' ')}`, { library: this.checkLibrary(i) })).ok;
               }
               this.library.push(e);
               if (this.opts.publishing === 'choose') {
@@ -538,7 +539,7 @@ export function referenceAgent(com: Community, i: number): Chat {
     const text = next.posted
       ? `ACTION: target ${next.publicId}\n\`\`\`lean\n${proof}\n\`\`\``
       : conj ? `ACTION: conjecture ${conj.cid}\n\`\`\`lean\n${proof}\n\`\`\``
-      : `ACTION: lemma\n\`\`\`lean\ntheorem ${next.short} ${next.signature} ${proof.trimStart().startsWith('|') ? '\n' + proof : proof}\n\`\`\``;
+      : `ACTION: lemma\n\`\`\`lean\ntheorem ${next.short} ${next.signature} ${proof.trimStart().startsWith('|') ? '\n' + proof : proof}\n\`\`\`${com.opts.publishing === 'choose' ? `\nPUBLISH: ${(i + com.actions.length) % 3 ? 'yes' : 'no'}` : ''}`;
     return { text, content: text, usage, stop: 'end_turn' };
   };
 }
