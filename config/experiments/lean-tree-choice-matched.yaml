@@ -1,0 +1,21 @@
+id: lean-tree-choice-matched
+title: Agents choosing what to publish on the Lean tree, matched to the Lean runs, by α
+description: >-
+  The prediction for roadmap M3, set up like the Lean runs: 4 identical agents (as the 4 DeepSeek labs), money
+  split equally and not following earnings, a third of the Lean tree scenario's money (4 agents, not 12).
+  Agents choose whether to publish each intermediate idea; α 1, 0.8 and 0.2 as in the Lean runs.
+question: "Set up like the Lean runs, does flow-back make agents choose to share?"
+compare: "α 1, 0.8 and 0.2, agents choosing what to publish"
+fixed: "the Lean tree, 4 identical agents, equal money"
+measure: sharing
+better: higher
+seeds: 100
+scenario: lean-tree
+set:
+  rules: { visibility: { kind: choice } }
+  agents.mix: { plain: 4, foundation: 0, racer: 0, explorer: 0, specialist: 0, freeRider: 0, gamer: 0 }
+  budget.X: 133
+  budget.allocation.rho: 0
+factors:
+  - { name: α, path: rules.alpha, values: [1, 0.8, 0.2] }
+columns: [sharing, frontier, targetsSolved, spend, waste]
