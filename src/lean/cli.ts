@@ -95,7 +95,7 @@ if (cmd === 'community') {
   const agents = pick('agents', 'deepseek/deepseek-v4.1-flash,google/gemini-3.8-flash,openai/gpt-5.6-terra,deepseek/deepseek-v4.1-flash').split(',');
   const base = {
     agents, budget: Number(pick('budget', '0.5')), rounds: Number(pick('rounds', '30')), repairs: Number(pick('repairs', '2')),
-    alpha: 0.8, mint: 1, knowledge: pick('knowledge', 'off') as 'off' | 'flat-mint' | 'proof-size', effort: pick('effort', 'medium') as 'low' | 'medium' | 'high', allowGrind: stub,
+    alpha: 0.8, mint: 1, knowledge: pick('knowledge', 'off') as 'off' | 'flat-mint' | 'proof-size', split: 'lines-saved' as const, effort: pick('effort', 'medium') as 'low' | 'medium' | 'high', allowGrind: stub,
     personas: (cfg.personas as string[] | undefined) ?? [],
     personaNames: (cfg.personaNames as string[] | undefined) ?? [],
     repairsByLab: cfg.repairsByLab as number[] | undefined,

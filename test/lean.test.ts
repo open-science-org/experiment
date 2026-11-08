@@ -122,9 +122,9 @@ test('with Lean: race designs suggest counted targets from the pilot and post th
   assert.equal(s.run, null);
 });
 
-test('flow-back is split by what each used result cost to prove, equally when a cost is unknown', async () => {
+test('earlier runs: flow-back split by what each used result cost to prove, equally when a cost is unknown', async () => {
   const { Community } = await import('../src/lean/community.ts');
-  const w = (costs: (number | undefined)[]) => Community.prototype.weights.call(null, costs.map((cost) => ({ cost })) as never);
+  const w = (costs: (number | undefined)[]) => Community.prototype.weights.call({ opts: {} }, costs.map((cost) => ({ cost })) as never);
   assert.deepEqual(w([1, 3]), [0.25, 0.75]);
   assert.deepEqual(w([1, undefined]), [0.5, 0.5]);
   assert.deepEqual(w([]), []);
@@ -224,6 +224,17 @@ test('labs choosing what to publish: PUBLISH no keeps a lemma private until its 
   d.library.push(t); d.publishBundle(t, 3);
   // C3's 4: b keeps 2, p gets 2 and keeps 1 (a); 1 flows to S, which b published first, not to a's copy k.
   assert.deepEqual(d.earnings, [1, 3]);
+});
+
+test('flow-back is split by the lines each cited result saves (its proof length), not by what it cost', async () => {
+  const { Community } = await import('../src/lean/community.ts');
+  const c = new Community({ rules: 'oso', alpha: 0.5, split: 'lines-saved', agents: ['a', 'b', 'c'], budget: 1, rounds: 1, repairs: 0, mint: 1, effort: 'low' });
+  const long = { name: 'long', ns: 'OSO', signature: 'L', author: 0, public: true, round: 1, publishedRound: 1, uses: [], size: 300, cost: 0.01 };
+  const short = { name: 'short', ns: 'OSO', signature: 'S', author: 1, public: true, round: 1, publishedRound: 1, uses: [], size: 100, cost: 0.09 };
+  const t = { name: 't', ns: 'OSO', signature: 'T', author: 2, public: true, round: 2, publishedRound: 2, uses: ['OSO.long', 'OSO.short'] };
+  c.library.push(long, short, t);
+  c.pay(t, 8); // keeps 4; 4 flows back, 3 to the long proof and 1 to the short one, whatever they cost
+  assert.deepEqual(c.earnings, [3, 1, 4]);
 });
 
 test('labs that may not stop lose only the turn they pass', async () => {

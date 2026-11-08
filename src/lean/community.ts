@@ -35,13 +35,15 @@ export type Rules = 'traditional' | 'oso' | 'shared' | 'independent' | 'planner'
  */
 export const LEAN_REWARDS = {
   checkedAgainst: 6,
-  gaps: (o: Pick<CommunityOptions, 'knowledge'>): string[] => [
+  gaps: (o: Pick<CommunityOptions, 'knowledge' | 'split'>): string[] => [
     o.knowledge === 'off'
       ? 'the knowledge reward is off (the simulation pays 1 per new bit since v5): Lean has no agreed measure of a result\'s new knowledge yet, see docs/design.md'
       : o.knowledge === 'proof-size'
       ? `the knowledge reward is measured by proof size (log2(1 + symbols/${PROOF_UNIT}), at most ${PROOF_CAP}), a stand-in for the simulation's log2(1/p) per new bit; the simulation's prediction for sharing comes from its own fields, not from this problem set with this reward; a lab could pad its proofs, so sizes are checked against runs without the reward`
       : 'a flat mint (1 per new result, easy or hard, flowing back by α), not the knowledge reward per new bit the simulation has paid since v5',
-    'value flowing back is still split by the money spent proving each parent, not by the work a parent saves (1/p) as in the simulation',
+    o.split === 'lines-saved'
+      ? 'value flowing back is split by the lines each parent saves (its own proof\'s length in symbols), a stand-in for the work it saves (1/p) in the simulation'
+      : 'value flowing back is split by the money spent proving each parent, not by the work a parent saves (1/p) as in the simulation',
   ],
 };
 /** Rules under which a result is public as soon as Lean accepts it. */
@@ -86,6 +88,9 @@ export interface CommunityOptions {
   /** Who decides when a lemma is published: the rules (default), or each lab, result by result ('choose': a kept
    *  lemma stays private until its author proves a target that rests on it; targets are always published). */
   publishing?: 'rules' | 'choose';
+  /** How value flowing back is split among the results a proof used: by the lines each saves (its own proof's
+   *  length in symbols; runs from 2026-11-08), or by the money spent proving it (earlier runs, which have no such field). */
+  split?: 'lines-saved' | 'cost';
   /** May a lab stop early by passing (default yes)? No: every lab works until its money or the rounds run out,
    *  so setups are compared at the same money spent; a pass then only skips that turn. */
   mayStop?: boolean;
@@ -125,7 +130,7 @@ export interface Entry {
   trivial?: boolean;
   /** Posted conjecture id, if it is one. */
   conjecture?: string;
-  /** Its proof's size (for the knowledge reward by proof size). */
+  /** Its proof's length in symbols: the lines citing it saves (how flow-back is split), and the knowledge reward by proof size. */
   size?: number;
   /** When labs choose: what its author chose ('none': no PUBLISH line, so kept private). */
   choice?: 'yes' | 'no' | 'none';
@@ -228,11 +233,12 @@ export class Community {
 
   /**
    * How flow-back from a result is split between the results it used: by each one's contribution, the
-   * work it saves (docs/design.md, attribution weights). Measured for now by what it cost to prove;
-   * an equal split when a cost is unknown.
+   * work it saves (docs/design.md, attribution weights). Measured by the lines it saves: citing it saves writing
+   * its proof, so its own proof's length in symbols (earlier runs: the money spent proving it). An equal split
+   * when a measure is missing.
    */
   weights(used: Entry[]): number[] {
-    const costs = used.map((u) => u.cost ?? 0), sum = costs.reduce((a, b) => a + b, 0);
+    const costs = used.map((u) => (this.opts.split === 'lines-saved' ? u.size : u.cost) ?? 0), sum = costs.reduce((a, b) => a + b, 0);
     return costs.every((x) => x > 0) ? costs.map((x) => x / sum) : used.map(() => 1 / used.length);
   }
   /** Pays value v into entry x: it keeps α (all, under traditional rules or if it used nothing); the rest flows to what it used. */
@@ -287,7 +293,7 @@ export class Community {
       ? 'Lemmas you prove stay private to you; other labs cannot see or use them, and you cannot see theirs. When you prove a posted target, it is published together with every lemma it rests on.'
       : 'Every result you prove is published at once, and every lab can build on it immediately.';
     const flow = o.rules === 'oso' && o.alpha < 1
-      ? `When value reaches a result (a target's bounty, or value flowing back from later work), its author keeps ${o.alpha * 100}% and the rest flows back to the results it used, split by how much each cost to prove, and on down.`
+      ? `When value reaches a result (a target's bounty, or value flowing back from later work), its author keeps ${o.alpha * 100}% and the rest flows back to the results it used, split by how much of its proof each one saves (the length of its own proof), and on down.`
       : "A target's bounty goes to the lab that proves it. Nothing flows back to the results it used.";
     const own = o.knowledge === 'proof-size'
       ? `When a result is published, it earns up to ${PROOF_CAP}, more for a longer proof, if it is new: no lab has published it, or a result that proves it in one step, before${o.rules === 'oso' && o.alpha < 1 ? '. This flows back in the same way' : '. Its author keeps it'}.`
@@ -429,7 +435,7 @@ ${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still w
               ok = true;
               const hidden = this.library.find((e) => e.conjecture === k.cid && e.author !== i);
               if (hidden) reason = `duplicate of lab ${hidden.author + 1}'s private result`;
-              const e: Entry = { name: this.uniqueName(`conj_${k.cid}`), ns: k.ns, signature: k.signature, author: i, conjecture: k.cid, public: false, round, uses: r.uses.filter((u) => !FREE.includes(u)) };
+              const e: Entry = { name: this.uniqueName(`conj_${k.cid}`), ns: k.ns, signature: k.signature, author: i, conjecture: k.cid, public: false, round, uses: r.uses.filter((u) => !FREE.includes(u)), size: proofSize(code.replace(/^\s*:=/, '')) };
               this.library.push(e);
               if (atOnce(this.opts.rules)) this.publish(e, round);
             }
@@ -446,7 +452,7 @@ ${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still w
             ok = true;
             const e: Entry = { name: this.uniqueName(`target_${t.publicId}`), ns: t.ns, signature: t.signature, author: i, target: t.publicId, public: false, round, uses: r.uses.filter((u) => !FREE.includes(u)) };
             const already = this.solved(t.publicId);
-            if (this.opts.knowledge === 'proof-size') e.size = proofSize(code.replace(/^\s*theorem\s+attempt\b[\s\S]*?(?=:=|\n\s*\|)/, '').replace(/^\s*:=/, ''));
+            e.size = proofSize(code.replace(/^\s*theorem\s+attempt\b[\s\S]*?(?=:=|\n\s*\|)/, '').replace(/^\s*:=/, ''));
             this.library.push(e);
             if (already) reason = 'already solved by another lab: duplicate';
             else if (this.opts.rules === 'traditional' || this.opts.publishing === 'choose') this.publishBundle(e, round);
@@ -474,8 +480,8 @@ ${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still w
               const hidden = this.library.find((e) => e.author !== i && norm(e.signature) === norm(lemma!.signature));
               if (hidden) reason = `duplicate of lab ${hidden.author + 1}'s ${hidden.public ? 'result' : 'private result'}`;
               const e: Entry = { name: this.uniqueName(lemma.name), ns: 'OSO', signature: lemma.signature, author: i, public: false, round, uses: r.uses.filter((u) => !FREE.includes(u)), ...(trivial ? { trivial } : {}) };
+              e.size = proofSize(lemma.proof.replace(/^\s*:=/, ''));
               if (this.opts.knowledge === 'proof-size' && !trivial) {
-                e.size = proofSize(lemma.proof.replace(/^\s*:=/, ''));
                 // A restatement of a published result (renamed variables, say) is not new: one step from it proves it.
                 const pub = this.library.filter((x) => x.public && !x.trivial).map((x) => `${x.ns}.${x.name}`);
                 if (pub.length) e.known = (await check({ ns: 'OSO', signature: lemma.signature }, `:= by first ${pub.map((n) => `| (apply ${n} <;> assumption) | (apply ${n}; done)`).join(' ')}`, { library: this.checkLibrary(i) })).ok;

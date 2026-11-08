@@ -79,7 +79,9 @@ Only the rules differ between setups.
 | **OSO, α 0.8** | at once | a result keeps 80% of what reaches it; 20% flows back to the results it used |
 | **OSO, α 0.2** | at once | a result keeps 20%; 80% flows back |
 
-Value flowing back is split among the results a proof used by how much each cost to prove, and keeps flowing down the tree. α 0.2 is always included, as a low α.
+Value flowing back is split among the results a proof used by **graph weights**, as in the simulation: each cited result's share is the lines it saves divided by the lines all of that proof's cited results save, so the shares add to 1. A cited result saves writing out its proof, so its saving is its own proof's length in symbols. Value keeps flowing down the tree the same way.
+- **Since 2026-11-08** (runs after Labs choose what to publish). The runs before split by the money spent proving each result. That is a poor stand-in: an easy lemma can cost more than a hard one when a lab needs repairs.
+- **Still approximate:** the simulation's weight depends on the edge, meaning how much of this child a parent saves. Here it depends only on the parent. Measuring per edge would mean re-proving each result without the lemma. α 0.2 is always included, as a low α.
 
 The pilot also tried single agent, independent labs and a planner; they did not bear on the question and were left out.
 
@@ -99,7 +101,7 @@ The rules come from one template, three lines each, so setups differ only where 
 | --- | --- | --- | --- |
 | Traditional | lemmas stay private; a proved target is published with every lemma it rests on | the prover keeps the bounty; nothing flows back | earn nothing by themselves |
 | Shared library | everything published at once | the prover keeps the bounty; nothing flows back | earn nothing by themselves |
-| OSO | everything published at once | the author keeps α; the rest flows back to the results used, split by cost, and on down | earn nothing by themselves |
+| OSO | everything published at once | the author keeps α; the rest flows back to the results used, split by the lines each saves, and on down | earn nothing by themselves |
 
 The exact text is on the app's Lean experiment page (Prompts tab). Runs from 2026-11-07 on save the prompts they sent.
 

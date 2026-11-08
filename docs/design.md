@@ -89,7 +89,7 @@ The mixed corners separate the gain from sharing from the gain from credit. When
 | **Lines saved** (the team's 2026-10-21 next-steps note, section 6) | nothing at first; later, the lines it saves each proof that cites it | how much it helped | prove a later result again without the lemma and compare; the lemma's own length is a cheap guess at this |
 | **Paid when used** | the flat mint, but only once another result uses it | being useful | already listed below ("minting many real but useless ideas") |
 
-Lines saved is also how link weights should be measured (below), so one measurement would serve both.
+Lines saved is also how link weights should be measured (below), so one measurement would serve both. **Since 2026-11-08 the Lean runs split flow-back this way:** each cited result's weight is its own proof's length in symbols, relative to the other results the same proof cites (before: the money spent proving it).
 
 **Chosen for the runs where labs choose what to publish (2026-11-07, provisional, for review):** proof length, as `--knowledge proof-size`. A published result earns log₂(1 + symbols / 40), at most 4, if it is new. "New" means no lab has published it, or a result that proves it in one `apply`. It flows back by α like a bounty.
 - **Why proof length:** it is the only candidate that costs nothing to measure, and it matches the race data best of the cheap ones.
