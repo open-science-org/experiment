@@ -80,7 +80,7 @@ Only the rules differ between setups.
 | **OSO, α 0.2** | at once | a result keeps 20%; 80% flows back |
 
 Value flowing back is split among the results a proof used by **graph weights**, as in the simulation: each cited result's share is the lines it saves divided by the lines all of that proof's cited results save, so the shares add to 1. A cited result saves writing out its proof, so its saving is its own proof's length in symbols. Value keeps flowing down the tree the same way.
-- **Since 2026-11-08** (runs after Labs choose what to publish). The runs before split by the money spent proving each result. That is a poor stand-in: an easy lemma can cost more than a hard one when a lab needs repairs.
+- **Since 2026-11-08** (runs after Labs choose what to publish). The runs before split by the money spent proving each result, which was an error; what it changed is in [the correction](ai-agent-results.md#correction-the-graph-weights-for-flow-back-were-wrong-found-2026-11-08).
 - **Still approximate:** the simulation's weight depends on the edge, meaning how much of this child a parent saves. Here it depends only on the parent. Measuring per edge would mean re-proving each result without the lemma. α 0.2 is always included, as a low α.
 
 The pilot also tried single agent, independent labs and a planner; they did not bear on the question and were left out.

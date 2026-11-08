@@ -18,4 +18,6 @@ Last updated: 2026-11-08. Plain summaries; each links to its full result. **Find
 
 - **Finding, labs choose what to publish (M3, 10 runs per setup):** AI labs published nearly every lemma at every α (99–100%; the simulation predicted 17% at α 1 and 93% at α 0.2). Their thinking shows why: the new-result reward is paid only on publishing, and they rarely weigh helping rivals. **Lead:** B5 proved in 8 of 10 runs at α 0.2, 4 of 10 at α 1. [Results](ai-agent-results.md)
 
+**Correction (2026-11-08):** every Lean run so far split flow-back by money spent instead of by graph weights (lines saved). Only 1–5% of earnings would have gone elsewhere and the counted measures are unaffected, but labs saw slightly wrong earnings. [Details](ai-agent-results.md)
+
 **Not yet tested:** AI labs choosing when keeping is worth something (the new-result reward off), other models, and real mathematics designed by others. See the roadmap.

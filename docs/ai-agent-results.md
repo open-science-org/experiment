@@ -4,6 +4,31 @@ Last updated: 2026-11-07. Every result here has its own page under `results/` (t
 
 **In short:** with help (lemmas), weak models prove targets they cannot prove alone. In five paired races with one cheap model, OSO reached 2 hard targets in every run and for about half the money; traditional reached them in 3 of 5. In the Spend all experiment (20 runs per setup), OSO did **not** prove clearly more targets than a plain shared library. Looked for afterwards: with more value flowing back, labs proved more lemmas and built on each other more, and OSO α 0.2 proved a hard target (B5) in 11 of 20 runs, the shared library in none. That is a lead, not a finding: it was not the measure fixed in advance, and the setups' prompts differed by more than the rules. The test setup itself checks out.
 
+## Correction: the graph weights for flow-back were wrong (found 2026-11-08)
+
+**The error.** Under OSO, value that reaches a result flows back to the results its proof cited, split by graph weights. The design (docs/design.md, and the simulation) says each cited result's weight should be the work it saves, relative to the other results the same proof cites. The Lean code instead split it by the **money spent proving** each cited result. That is a poor stand-in: an easy lemma that needed several repairs could take most of the share from a harder one proved at the first try. Every Lean run up to and including Labs choose what to publish used the wrong split. Summaries listed it as a known gap, but it was not fixed. **Since 2026-11-08** the split is by lines saved: each cited result's proof length in symbols, relative to the others the same proof cites. Commit 361b9e7.
+
+**Which runs it touched.** Only OSO setups with α below 1, where value flows back: OSO α 0.8 and α 0.2 in Spend all, the Fair-prompt check and May quit; Labs choose α 0.8 and α 0.2; and the earlier race and pilot. Traditional, the shared library and every α 1 setup pay no flow-back, so they are unaffected.
+
+**How much it changed the payouts.** Each affected run's payouts replayed with both splits (`scripts/lean-resplit.ts`). The replay with the old split matches the recorded payouts exactly for every main experiment.
+
+| Experiment, setup | Runs | Earnings that would move to another lab | Worst run | Runs where the labs' order by earnings changes | Results citing 2+ results | Average change in their split |
+| --- | --- | --- | --- | --- | --- | --- |
+| Spend all, OSO α 0.8 | 20 | 0.8% | 4.5% | 0 | 27 | 23% |
+| Spend all, OSO α 0.2 | 20 | 4.6% | 17.6% | 5 | 41 | 29% |
+| Fair-prompt check, OSO α 0.2 | 10 | 3.9% | 19.0% | 3 | 30 | 22% |
+| May quit, OSO α 0.8 | 10 | 1.0% | 5.0% | 1 | 12 | 32% |
+| May quit, OSO α 0.2 | 10 | 1.1% | 8.3% | 2 | 3 | 24% |
+| Labs choose, α 0.8 | 10 | 1.4% | 2.9% | 1 | 35 | 21% |
+| Labs choose, α 0.2 | 10 | 4.7% | 10.3% | 2 | 46 | 31% |
+
+Where a proof cited two or more results, the split between them was often quite different (by about a quarter on average). But such proofs are few, and most of what labs earn is the share they keep of their own bounties, so overall only 1–5% of earnings would have gone to a different lab. In the worst run, a fifth would have. At α 0.2, where more value flows back, the error mattered more.
+
+**How it affects the results.**
+- **The measures do not depend on the split:** targets proved, lemmas proved, building on others, money spent, and the share published are counted from what labs did, not from what they were paid. Those numbers stand as reported.
+- **What could have changed is behaviour.** Each round a lab saw its own earnings, which were slightly off, and it acted on them. We cannot replay that. Labs could not see how the split was worked out, only that value flows back, and earnings moved by a few percent, so the effect on what they chose to do was probably small. We cannot rule it out, most of all for OSO α 0.2.
+- **No finding rests on who earned what.** The pattern (about twice the groundwork with flow-back, targets about the same) is unaffected as a count. Whether it would be stronger or weaker with the right weights is open: the next runs use them.
+
 ## 1. Do lemmas help a model? (single model, no community)
 
 [Model panel, 2026-10-19](../results/pilot/panel-2026-10-19/summary.md): each model tried each of 16 targets alone, and again with the lemmas the target needs.
