@@ -1,0 +1,70 @@
+{
+ "id": "lean-part-a",
+ "kind": "race",
+ "date": "2026-11-08",
+ "title": "Main experiment, part A: labs may stop early, 4 setups × 10 runs, $0.15 a lab (Nov 7)",
+ "ranAt": "2026-11-08T06:53:52.055Z",
+ "design": {
+  "question": "For the same agents, checker and money, does a community prove more targets when value flows back (OSO) than when results are only shared, or kept private until a target is proved?",
+  "compare": "Traditional, Shared library, OSO, α 0.8, OSO, α 0.2",
+  "fixed": "the same 4 agents (the single agent: the first, with all the money), $0.60 in all, Lean checks every proof",
+  "measure": "targets proved by the end of a run, of 8; money to reach 3 targets is shown beside it",
+  "better": "higher",
+  "runs": "10 runs per setup, not paired"
+ },
+ "answer": "OSO, α 0.8 proved 5.10 targets of 8 on average, 0.10 more than Shared library (5.00): not clear: 0.25 standard errors, clear needs 2. OSO, α 0.2 proved 5.00 targets of 8 on average, the same as Shared library (5.00): not clear: 0.00 standard errors, clear needs 2.",
+ "table": [
+  {
+   "society": "Traditional",
+   "settings": "shared when a target is proved · α 1",
+   "targets proved": "5.00 ± 0.82 of 8",
+   "money to 3 targets": "$0.04 (10 of 10 got there)",
+   "spent": "$0.27",
+   "lemmas proved": "1.00",
+   "built on another lab": "0.20",
+   "lemmas proved twice": "0.00",
+   "targets proved twice": "2.10"
+  },
+  {
+   "society": "Shared library",
+   "settings": "shared at once · α 1",
+   "targets proved": "5.00 ± 0.94 of 8",
+   "money to 3 targets": "$0.04 (10 of 10 got there)",
+   "spent": "$0.29",
+   "lemmas proved": "0.30",
+   "built on another lab": "0.70",
+   "lemmas proved twice": "0.00",
+   "targets proved twice": "2.50"
+  },
+  {
+   "society": "OSO, α 0.8",
+   "settings": "shared at once · α 0.8",
+   "targets proved": "5.10 ± 0.88 of 8",
+   "money to 3 targets": "$0.04 (10 of 10 got there)",
+   "spent": "$0.33",
+   "lemmas proved": "3.70",
+   "built on another lab": "2.70",
+   "lemmas proved twice": "0.00",
+   "targets proved twice": "3.40"
+  },
+  {
+   "society": "OSO, α 0.2",
+   "settings": "shared at once · α 0.2",
+   "targets proved": "5.00 ± 0.67 of 8",
+   "money to 3 targets": "$0.03 (10 of 10 got there)",
+   "spent": "$0.29",
+   "lemmas proved": "2.50",
+   "built on another lab": "1.50",
+   "lemmas proved twice": "0.00",
+   "targets proved twice": "2.10"
+  }
+ ],
+ "caveats": [
+  "Labs could stop early by passing, so setups are compared at the same money offered; money spent is shown beside each.",
+  "Rewards differ from the current simulation model: the knowledge reward is off (the simulation pays 1 per new bit since v5): Lean has no agreed measure of a result's new knowledge yet, see docs/design.md; value flowing back is still split by the money spent proving each parent, not by the work a parent saves (1/p) as in the simulation.",
+  "Values are mean ± standard deviation over runs. The verdict compares each OSO setup with the shared library (or the best other setup); runs are not paired, and a difference is clear when it is more than two standard errors."
+ ],
+ "cost": "$11.90 as charged",
+ "page": "results/community/lean-part-a/summary.md",
+ "chart": "results/community/lean-part-a/figures/progress.svg"
+}

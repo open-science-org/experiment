@@ -120,6 +120,28 @@ A target is proved twice when two labs prove it in the same round. (An earlier v
 
 **Also:** "money to reach 3 targets" was too easy; every run got there for $0.04–0.05.
 
+## 4b. Part A: labs may stop early (2026-11-08)
+
+[Result](../results/community/lean-part-a/summary.md). Plan fixed before the runs (roadmap M2). Same setups and money as part B ($0.15 a lab), but a lab that passes stops for good. 10 runs per setup, 40 in all, $11.90.
+
+**The question:** does flow-back keep labs working, and get further with the same money offered?
+
+**The answer: no difference in targets proved.** Every setup proved about 5 of 8 targets. OSO α 0.8 against the shared library: +0.1 targets (95% range −0.8 to +1.0). OSO α 0.2: +0.0 (−0.8 to +0.8).
+
+| Setup | Targets proved | Money spent, of $0.60 | Rounds a lab worked | Lemmas proved |
+| --- | --- | --- | --- | --- |
+| Traditional | 5.0 (4.4–5.6) | $0.27 (0.23–0.31) | 5.5 (4.7–6.2) | 1.0 (0.1–1.9) |
+| Shared library | 5.0 (4.3–5.7) | $0.29 (0.24–0.34) | 5.6 (4.8–6.4) | 0.3 (0.0–0.7) |
+| OSO, α 0.8 | 5.1 (4.5–5.7) | $0.34 (0.27–0.40) | 7.7 (6.4–9.0) | 3.7 (2.1–5.3) |
+| OSO, α 0.2 | 5.0 (4.5–5.5) | $0.29 (0.24–0.35) | 6.4 (5.4–7.4) | 2.9 (2.3–3.5) |
+
+Means with 95% ranges. "Rounds a lab worked": the last round it took an action other than passing. "Lemmas proved": accepted lemma actions.
+
+**What it shows:**
+- **Labs stop early in every setup.** They passed after 5 to 8 rounds and left about half their money unspent. None proved B5.
+- **With flow-back, labs proved more lemmas** (OSO α 0.2: +2.6 against the shared library, 95% range +1.9 to +3.3), and OSO α 0.8 labs worked about two rounds longer. But this extra groundwork did not turn into more targets before they stopped.
+- **Against part B** (labs could not stop, so they spent all their money): every setup proved more there (5.8 to 6.3 targets), for twice the money. Stopping cost about one target, and with it the deep targets B5 and A5.
+
 ## 5. Is the test setup sound? (harness checks)
 
 | Check | Result |
