@@ -21,12 +21,17 @@
 import { chatFor, creditLeft, DEFAULT_MODEL, DEFAULT_MODELS, defaultProvider, type Provider } from './agent.ts';
 import { estimate, readRun, writeComparison, referenceChat, runPilot, writeMeasuredWorld, writeSummary, type Condition, type PilotOptions } from './pilot.ts';
 import { selftest } from './selftest.ts';
-import { existsSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { LEAN_DIR, leanAvailable, loadTasks } from './tasks.ts';
 
 const args = process.argv.slice(2);
 const [cmd, arg] = args;
+// Help only prints the usage above: a bare command with defaults would start a paid run.
+if (!cmd || args.includes('--help') || args.includes('-h')) {
+  console.log(readFileSync(new URL(import.meta.url), 'utf8').split('\n').filter((l) => l.startsWith('//')).map((l) => l.slice(3)).join('\n'));
+  process.exit(0);
+}
 const flag = (name: string) => args.includes(`--${name}`);
 const value = (name: string, fallback: string) => { const i = args.indexOf(`--${name}`); return i >= 0 ? args[i + 1] : fallback; };
 
