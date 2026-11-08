@@ -192,10 +192,12 @@ test("a lab's thinking is saved in its own file, not in the action log", async (
 });
 
 test('labs choosing what to publish: PUBLISH no keeps a lemma private until its target, and only a new result earns the proof-size reward', async () => {
-  const { Community, proofSize, sizeReward } = await import('../src/lean/community.ts');
-  assert.equal(proofSize(':= by\n  -- a comment\n  simp [foo]  /- block -/'), 5); // by simp [ foo ]
-  assert.equal(sizeReward(82), 2.1);
-  assert.equal(sizeReward(5000), 8);
+  const { Community, proofSize, sizeReward, publishChoice } = await import('../src/lean/community.ts');
+  assert.equal(proofSize('by\n  -- a comment\n  simp [foo]  /- block -/'), 5); // by simp [ foo ]
+  assert.equal(sizeReward(82), 1.6);
+  assert.equal(sizeReward(5000), 4);
+  assert.equal(publishChoice(['Answer PUBLISH: yes or PUBLISH: no.', 'theorem x ...\nPUBLISH: no']), 'no');
+  assert.equal(publishChoice(['PUBLISH: yes or PUBLISH: no']), undefined);
   const c = new Community({ rules: 'oso', alpha: 0.8, publishing: 'choose', knowledge: 'proof-size', agents: ['a', 'b'], budget: 1, rounds: 1, repairs: 0, mint: 1, effort: 'low' });
   const kept = { name: 'k1', ns: 'OSO', signature: '(n : Nat) : n + 0 = n', author: 0, public: false, round: 1, uses: [], size: 80, choice: 'no' as const };
   c.library.push(kept);
@@ -203,13 +205,25 @@ test('labs choosing what to publish: PUBLISH no keeps a lemma private until its 
   // Another lab publishes the same statement first: the kept one earns nothing when it is published later.
   const other = { ...kept, name: 'k2', author: 1, choice: 'yes' as const };
   c.library.push(other); c.publish(other, 1);
-  assert.equal(c.earnings[1], 2); // 80 symbols → 2, kept whole (it used nothing)
+  assert.equal(c.earnings[1], 1.6); // 80 symbols → log2(3) = 1.6, kept whole (it used nothing)
   c.publish(kept, 2);
   assert.equal(c.earnings[0], 0);
   const p = c.systemPrompt(0);
-  assert.match(p, /PUBLISH: yes or PUBLISH: no/);
+  assert.match(p, /only PUBLISH: yes, or only PUBLISH: no/);
   assert.match(p, /keeps 80%/);
-  assert.match(p, /1 for every 40 symbols/);
+  assert.match(p, /up to 4, more for a longer proof/);
+  // Another lab's target never publishes a lab's kept lemma; flow-back goes to the first publisher of a statement.
+  const d = new Community({ rules: 'oso', alpha: 0.5, publishing: 'choose', knowledge: 'off', agents: ['a', 'b'], budget: 1, rounds: 1, repairs: 0, mint: 1, effort: 'low' });
+  const k = { name: 'k', ns: 'OSO', signature: 'S', author: 0, public: false, round: 1, uses: [] };
+  const pubA = { name: 'p', ns: 'OSO', signature: 'P', author: 0, public: false, round: 1, uses: ['OSO.k'] };
+  const firstS = { name: 'f', ns: 'OSO', signature: 'S', author: 1, public: false, round: 1, uses: [] };
+  d.library.push(k, pubA, firstS);
+  d.publish(firstS, 1); d.publishBundle(pubA, 2);
+  assert.equal(k.public, true); // its author's PUBLISH: yes on p took k along
+  const t = { name: 't', ns: 'OSO', signature: 'T', author: 1, public: false, round: 3, uses: ['OSO.p'], target: 'C3' };
+  d.library.push(t); d.publishBundle(t, 3);
+  // C3's 4: b keeps 2, p gets 2 and keeps 1 (a); 1 flows to S, which b published first, not to a's copy k.
+  assert.deepEqual(d.earnings, [1, 3]);
 });
 
 test('labs that may not stop lose only the turn they pass', async () => {

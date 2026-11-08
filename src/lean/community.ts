@@ -39,7 +39,7 @@ export const LEAN_REWARDS = {
     o.knowledge === 'off'
       ? 'the knowledge reward is off (the simulation pays 1 per new bit since v5): Lean has no agreed measure of a result\'s new knowledge yet, see docs/design.md'
       : o.knowledge === 'proof-size'
-      ? `the knowledge reward is measured by proof size (1 per ${PROOF_UNIT} symbols, at most ${PROOF_CAP}), a stand-in for the simulation's new bits; a lab could pad its proofs, so sizes are checked against runs without the reward`
+      ? `the knowledge reward is measured by proof size (log2(1 + symbols/${PROOF_UNIT}), at most ${PROOF_CAP}), a stand-in for the simulation's log2(1/p) per new bit; the simulation's prediction for sharing comes from its own fields, not from this problem set with this reward; a lab could pad its proofs, so sizes are checked against runs without the reward`
       : 'a flat mint (1 per new result, easy or hard, flowing back by α), not the knowledge reward per new bit the simulation has paid since v5',
     'value flowing back is still split by the money spent proving each parent, not by the work a parent saves (1/p) as in the simulation',
   ],
@@ -48,15 +48,20 @@ export const LEAN_REWARDS = {
 export const atOnce = (r: Rules) => r === 'oso' || r === 'shared' || r === 'planner';
 /** The flat mint a new result earns (0 with the knowledge reward off or measured by proof size). */
 export const mintOf = (o: Pick<CommunityOptions, 'knowledge' | 'mint'>) => (o.knowledge === 'off' || o.knowledge === 'proof-size' ? 0 : o.mint);
-/** The knowledge reward by proof size: 1 per PROOF_UNIT symbols, at most PROOF_CAP. In part B the median accepted
- *  lemma had 82 symbols (about 2), C3 35, A5 about 1,200 (the cap): small next to bounties of 4 to 256, as in the simulation. */
-export const PROOF_UNIT = 40, PROOF_CAP = 8;
-/** A proof's size: its names, numbers and signs, with comments and spaces left out. */
-export const proofSize = (proof: string) => {
-  const body = proof.includes(':=') ? proof.slice(proof.indexOf(':=') + 2) : proof;
-  return body.replace(/\/-[\s\S]*?-\//g, '').replace(/--[^\n]*/g, '').match(/[A-Za-z_][\w'.]*|\d+|[^\s\w]/g)?.length ?? 0;
-};
-export const sizeReward = (size: number) => Math.min(PROOF_CAP, Math.round((size / PROOF_UNIT) * 10) / 10);
+/** The knowledge reward by proof size: log2(1 + size / PROOF_UNIT), at most PROOF_CAP. In part B the median accepted
+ *  lemma had 82 symbols (1.6), C3 35 (0.9), A5 about 1,200 (the cap). On a log scale with a low cap, padding a proof
+ *  pays little; the cap equals the smallest bounty, so a lemma never earns more than a target. */
+export const PROOF_UNIT = 40, PROOF_CAP = 4;
+/** A proof's size: its names, numbers and signs, with comments and spaces left out. Give it the proof only, not the statement. */
+export const proofSize = (proof: string) =>
+  proof.replace(/\/-[\s\S]*?-\//g, '').replace(/--[^\n]*/g, '').match(/[A-Za-z_][\w'.]*|\d+|[^\s\w]/g)?.length ?? 0;
+export const sizeReward = (size: number) => Math.min(PROOF_CAP, Math.round(Math.log2(1 + size / PROOF_UNIT) * 10) / 10);
+/** A lab's PUBLISH choice: the last line that is only "PUBLISH: yes" or "PUBLISH: no", in any of its replies this turn
+ *  (so wording copied from the prompt does not count). Both or neither: no choice. */
+export function publishChoice(replies: string[]): 'yes' | 'no' | undefined {
+  const all = replies.flatMap((t) => [...t.matchAll(/^\s*\**PUBLISH:\s*(yes|no)\**\s*$/gim)].map((m) => m[1].toLowerCase()));
+  return all.at(-1) as 'yes' | 'no' | undefined;
+}
 
 export interface CommunityOptions {
   rules: Rules;
@@ -123,6 +128,8 @@ export interface Entry {
   size?: number;
   /** When labs choose: what its author chose ('none': no PUBLISH line, so kept private). */
   choice?: 'yes' | 'no' | 'none';
+  /** An already published result proves it in one step (a restatement): it earns no knowledge reward. */
+  known?: boolean;
 }
 
 export interface Action {
@@ -229,7 +236,10 @@ export class Community {
   }
   /** Pays value v into entry x: it keeps α (all, under traditional rules or if it used nothing); the rest flows to what it used. */
   pay(x: Entry, v: number) {
-    const used = x.uses.map((n) => this.library.find((e) => `${e.ns}.${e.name}` === n)).filter((e): e is Entry => !!e);
+    // A copy of a statement another lab published first: credit goes to the first publisher, as in the simulation.
+    const first = (u: Entry) => this.library.filter((e) => e.public && norm(e.signature) === norm(u.signature) && !e.target)
+      .sort((a, b) => a.publishedRound! - b.publishedRound! || this.library.indexOf(a) - this.library.indexOf(b))[0] ?? u;
+    const used = [...new Set(x.uses.map((n) => this.library.find((e) => `${e.ns}.${e.name}` === n)).filter((e): e is Entry => !!e).map((u) => (u.target ? u : first(u))))];
     const keep = this.opts.rules === 'oso' && used.length ? this.opts.alpha : 1;
     this.earnings[x.author] += v * keep;
     if (keep < 1) { const w = this.weights(used); used.forEach((u, k) => this.pay(u, v * (1 - keep) * w[k])); }
@@ -245,17 +255,18 @@ export class Community {
     if (mint) this.pay(e, mint);
     // The knowledge reward by proof size: only for what is new, so nothing if a lab published the same statement first.
     const first = !this.library.some((x) => x !== e && x.public && norm(x.signature) === norm(e.signature));
-    if (this.opts.knowledge === 'proof-size' && !e.trivial && first && e.size) this.pay(e, sizeReward(e.size));
+    if (this.opts.knowledge === 'proof-size' && !e.trivial && !e.known && first && e.size) this.pay(e, sizeReward(e.size));
     if (e.target) this.pay(e, this.bounty(this.targets.find((t) => t.publicId === e.target)!));
     if (e.conjecture && !e.trivial) this.pay(e, this.opts.conjectureBounty ?? 1);
   }
-  /** Traditional rules: a solved target is published with every private result it rests on. */
+  /** Publishing with the author's own private results it rests on (traditional rules, and a lab's PUBLISH: yes),
+   *  so nothing public rests on hidden work. Another lab's private results are never published by it. */
   publishBundle(e: Entry, round: number) {
     const seen = new Set<string>();
     const walk = (x: Entry) => {
       for (const n of x.uses) {
         const u = this.library.find((y) => `${y.ns}.${y.name}` === n);
-        if (u && !seen.has(n)) { seen.add(n); walk(u); }
+        if (u && u.author === e.author && !seen.has(n)) { seen.add(n); walk(u); }
       }
       if (!x.public) this.publish(x, round);
     };
@@ -266,9 +277,9 @@ export class Community {
     const o = this.opts, M = mintOf(o);
     // One template for every setup: the same three lines, each stating one rule, so the setups' prompts differ only
     // where their rules do (runs before 2026-11-07 used freer wording per setup; see docs/lean-experiment.md).
-    const name = o.publishing === 'choose' ? `labs choose what to publish${o.alpha < 1 ? `, value flows back` : ''}` : { independent: o.agents.length === 1 ? 'one lab' : 'independent labs', planner: 'with a planner', shared: 'shared library', traditional: 'traditional rules', oso: 'OSO rules' }[o.rules];
+    const name = o.publishing === 'choose' ? 'labs choose what to publish' : { independent: o.agents.length === 1 ? 'one lab' : 'independent labs', planner: 'with a planner', shared: 'shared library', traditional: 'traditional rules', oso: 'OSO rules' }[o.rules];
     const seeing = o.publishing === 'choose'
-      ? 'You choose, for each lemma you prove, whether to publish it now: then every lab can see it and build on it. Or keep it private: only you can see and use it, and it is published when you prove a posted target that rests on it. Targets are always published. When you prove a lemma, add the line PUBLISH: yes or PUBLISH: no.'
+      ? 'You choose, for each lemma you prove, whether to publish it now: then every lab can see it and build on it. Or keep it private: only you can see and use it. A kept lemma is published when you prove a posted target that rests on it; if you never do, it is never published and earns nothing. Publishing a lemma also publishes your kept lemmas it rests on. Targets are always published. When you prove a lemma, end your reply with a line that says only PUBLISH: yes, or only PUBLISH: no.'
       : o.rules === 'independent'
       ? o.agents.length === 1 ? 'You work alone, with the whole budget; your results go into your own library.' : 'Labs work separately: you see only your own results, and no lab sees yours.'
       : o.rules === 'traditional'
@@ -278,7 +289,7 @@ export class Community {
       ? `When value reaches a result (a target's bounty, or value flowing back from later work), its author keeps ${o.alpha * 100}% and the rest flows back to the results it used, split by how much each cost to prove, and on down.`
       : "A target's bounty goes to the lab that proves it. Nothing flows back to the results it used.";
     const own = o.knowledge === 'proof-size'
-      ? `When a result is published, it earns 1 for every ${PROOF_UNIT} symbols of its proof (names, numbers and signs; comments and spaces not counted), at most ${PROOF_CAP}, if no lab has published the same statement before${o.rules === 'oso' && o.alpha < 1 ? '. This flows back in the same way' : '. Its author keeps it'}.`
+      ? `When a result is published, it earns up to ${PROOF_CAP}, more for a longer proof, if it is new: no lab has published it, or a result that proves it in one step, before${o.rules === 'oso' && o.alpha < 1 ? '. This flows back in the same way' : '. Its author keeps it'}.`
       : M ? `A new result earns its author a mint of ${M}${o.rules === 'oso' && o.alpha < 1 ? ', which flows back in the same way' : ''}.` : 'A new result earns nothing by itself.';
     const planner = o.rules === 'planner' ? '\n- Lab 1 is the planner: it does not prove anything; each round it gives every other lab an assignment, to bring the targets within reach together. Follow your assignment unless it is clearly impossible.' : '';
     const rules = `How this community works (${name}):${planner}\n- Seeing results: ${seeing}\n- Bounties: ${flow}\n- New results: ${own}`;
@@ -434,7 +445,7 @@ ${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still w
             ok = true;
             const e: Entry = { name: this.uniqueName(`target_${t.publicId}`), ns: t.ns, signature: t.signature, author: i, target: t.publicId, public: false, round, uses: r.uses.filter((u) => !FREE.includes(u)) };
             const already = this.solved(t.publicId);
-            if (this.opts.knowledge === 'proof-size') e.size = proofSize(code);
+            if (this.opts.knowledge === 'proof-size') e.size = proofSize(code.replace(/^\s*theorem\s+attempt\b[\s\S]*?(?=:=|\n\s*\|)/, '').replace(/^\s*:=/, ''));
             this.library.push(e);
             if (already) reason = 'already solved by another lab: duplicate';
             else if (this.opts.rules === 'traditional' || this.opts.publishing === 'choose') this.publishBundle(e, round);
@@ -462,13 +473,18 @@ ${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still w
               const hidden = this.library.find((e) => e.author !== i && norm(e.signature) === norm(lemma!.signature));
               if (hidden) reason = `duplicate of lab ${hidden.author + 1}'s ${hidden.public ? 'result' : 'private result'}`;
               const e: Entry = { name: this.uniqueName(lemma.name), ns: 'OSO', signature: lemma.signature, author: i, public: false, round, uses: r.uses.filter((u) => !FREE.includes(u)), ...(trivial ? { trivial } : {}) };
-              if (this.opts.knowledge === 'proof-size') e.size = proofSize(lemma.proof);
+              if (this.opts.knowledge === 'proof-size' && !trivial) {
+                e.size = proofSize(lemma.proof.replace(/^\s*:=/, ''));
+                // A restatement of a published result (renamed variables, say) is not new: one step from it proves it.
+                const pub = this.library.filter((x) => x.public && !x.trivial).map((x) => `${x.ns}.${x.name}`);
+                if (pub.length) e.known = (await check({ ns: 'OSO', signature: lemma.signature }, `:= by first ${pub.map((n) => `| (apply ${n}; done)`).join(' ')}`, { library: this.checkLibrary(i) })).ok;
+              }
               this.library.push(e);
               if (this.opts.publishing === 'choose') {
-                // The lab's choice; without a PUBLISH line the lemma stays private (the cautious default, counted).
-                const c = /PUBLISH:\s*(yes|no)\b/i.exec(text)?.[1]?.toLowerCase() as 'yes' | 'no' | undefined;
+                // The lab's choice; without a PUBLISH line the lemma stays private (counted, and β is also given over explicit choices).
+                const c = publishChoice([...transcript.map((t) => t.text ?? ''), text]);
                 e.choice = c ?? 'none';
-                if (c === 'yes') this.publish(e, round);
+                if (c === 'yes') this.publishBundle(e, round);
               } else if (atOnce(this.opts.rules)) this.publish(e, round);
             }
           }
@@ -625,6 +641,8 @@ export function stats(r: CommunityResult) {
     /** Accepted results whose proof used another lab's result: the community building on itself. */
     /** Sharing (the simulation's β): of the lemmas proved (not trivial, not targets), the share published in the round they were proved. */
     sharedAtOnce: (() => { const xs = r.library.filter((e) => !e.target && !e.trivial); return xs.length ? xs.filter((e) => e.public && e.publishedRound === e.round).length / xs.length : null; })(),
+    /** Labs choosing: the share published at once among lemmas with an explicit PUBLISH line. */
+    sharedOfChosen: (() => { const xs = r.library.filter((e) => e.choice === 'yes' || e.choice === 'no'); return xs.length ? xs.filter((e) => e.choice === 'yes').length / xs.length : null; })(),
     /** Labs choosing: lemmas kept private because the reply gave no PUBLISH line. */
     noChoice: r.library.filter((e) => e.choice === 'none').length,
     /** The knowledge reward by proof size: mean proof size of accepted lemmas (to spot padding). */
