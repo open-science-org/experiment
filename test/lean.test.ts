@@ -191,6 +191,27 @@ test("a lab's thinking is saved in its own file, not in the action log", async (
   assert.doesNotMatch(readFileSync(join(root, 'think', 'actions.jsonl'), 'utf8'), /passing looks best/);
 });
 
+test('labs choosing what to publish: PUBLISH no keeps a lemma private until its target, and only a new result earns the proof-size reward', async () => {
+  const { Community, proofSize, sizeReward } = await import('../src/lean/community.ts');
+  assert.equal(proofSize(':= by\n  -- a comment\n  simp [foo]  /- block -/'), 5); // by simp [ foo ]
+  assert.equal(sizeReward(82), 2.1);
+  assert.equal(sizeReward(5000), 8);
+  const c = new Community({ rules: 'oso', alpha: 0.8, publishing: 'choose', knowledge: 'proof-size', agents: ['a', 'b'], budget: 1, rounds: 1, repairs: 0, mint: 1, effort: 'low' });
+  const kept = { name: 'k1', ns: 'OSO', signature: '(n : Nat) : n + 0 = n', author: 0, public: false, round: 1, uses: [], size: 80, choice: 'no' as const };
+  c.library.push(kept);
+  assert.equal(c.visible(1).length, 0); // the other lab cannot see a kept lemma
+  // Another lab publishes the same statement first: the kept one earns nothing when it is published later.
+  const other = { ...kept, name: 'k2', author: 1, choice: 'yes' as const };
+  c.library.push(other); c.publish(other, 1);
+  assert.equal(c.earnings[1], 2); // 80 symbols → 2, kept whole (it used nothing)
+  c.publish(kept, 2);
+  assert.equal(c.earnings[0], 0);
+  const p = c.systemPrompt(0);
+  assert.match(p, /PUBLISH: yes or PUBLISH: no/);
+  assert.match(p, /keeps 80%/);
+  assert.match(p, /1 for every 40 symbols/);
+});
+
 test('labs that may not stop lose only the turn they pass', async () => {
   const { Community } = await import('../src/lean/community.ts');
   const base = { rules: 'shared' as const, agents: ['a', 'b'], budget: 1, rounds: 1, repairs: 0, alpha: 1, mint: 1, effort: 'low' as const, knowledge: 'off' as const };

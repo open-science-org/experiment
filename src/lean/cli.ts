@@ -16,7 +16,8 @@
 //   community [options]           real-agent communities, traditional and OSO, on the same budget
 //     --agents m1,m2,...  --budget DOLLARS (per agent)  --rounds N (30)  --repairs N (2)
 //     --rules traditional,oso  --effort low|medium|high (medium)  --run ID  --stub  --dry-run
-//     --knowledge off|flat-mint (off): what a new result earns for itself; off: nothing, only bounties
+//     --knowledge off|flat-mint|proof-size (off): what a new result earns for itself; off: nothing, only bounties
+//     --societies choose-1,choose-0.8,choose-0.2: labs choose what to publish, with the knowledge reward by proof size
 //     --may-stop yes|no (yes): may a lab pass and stop early? no: every lab works until its money or the rounds run out
 import { chatFor, creditLeft, DEFAULT_MODEL, DEFAULT_MODELS, defaultProvider, type Provider } from './agent.ts';
 import { estimate, readRun, writeComparison, referenceChat, runPilot, writeMeasuredWorld, writeSummary, type Condition, type PilotOptions } from './pilot.ts';
@@ -94,7 +95,7 @@ if (cmd === 'community') {
   const agents = pick('agents', 'deepseek/deepseek-v4.1-flash,google/gemini-3.8-flash,openai/gpt-5.6-terra,deepseek/deepseek-v4.1-flash').split(',');
   const base = {
     agents, budget: Number(pick('budget', '0.5')), rounds: Number(pick('rounds', '30')), repairs: Number(pick('repairs', '2')),
-    alpha: 0.8, mint: 1, knowledge: pick('knowledge', 'off') as 'off' | 'flat-mint', effort: pick('effort', 'medium') as 'low' | 'medium' | 'high', allowGrind: stub,
+    alpha: 0.8, mint: 1, knowledge: pick('knowledge', 'off') as 'off' | 'flat-mint' | 'proof-size', effort: pick('effort', 'medium') as 'low' | 'medium' | 'high', allowGrind: stub,
     personas: (cfg.personas as string[] | undefined) ?? [],
     personaNames: (cfg.personaNames as string[] | undefined) ?? [],
     repairsByLab: cfg.repairsByLab as number[] | undefined,
