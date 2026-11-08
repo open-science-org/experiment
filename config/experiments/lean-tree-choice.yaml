@@ -1,0 +1,17 @@
+id: lean-tree-choice
+title: Agents choosing what to publish on the Lean problem set's tree, by α
+description: >-
+  The prediction for roadmap M3 (labs choose what to publish): the simulation's agents choose whether to publish
+  each intermediate idea, on the real shape of the Lean problem set, at the three α values of the Lean runs.
+question: "On the Lean tree, does flow-back make agents choose to share?"
+compare: "α 1, 0.8 and 0.2, agents choosing what to publish"
+fixed: "the Lean tree, the agents and the budget"
+measure: sharing
+better: higher
+seeds: 100
+scenario: lean-tree
+set:
+  rules: { visibility: { kind: choice } }
+factors:
+  - { name: α, path: rules.alpha, values: [1, 0.8, 0.2] }
+columns: [sharing, frontier, targetsSolved, spend, waste]
