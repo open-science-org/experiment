@@ -131,4 +131,5 @@ All setups in a batch run together, so a change at the model provider hits them 
 
 - **Part B** (20 runs per setup, run 2026-11-07): no clear difference on the main measure. Looked for afterwards: OSO α 0.2 proved B5 in 11 of 20 runs, the shared library in 0. Details: [results](ai-agent-results.md).
 - **Next:** a run fixed in advance to test the B5 lead, with the new prompts; then part A.
+- **Next, labs choose what to publish (roadmap M3):** each lab ends a lemma reply with `PUBLISH: yes` or `PUBLISH: no`; a kept lemma goes public with a target its author proves on it, or never. A new result earns a small reward by proof length ([design.md](design.md#the-knowledge-reward-in-lean)). Setups: labs choose at α 1, 0.8 and 0.2. The simulation predicts, on this problem set, that about 0.2–0.4 of lemmas are published at once at α 1 and 0.8, and about 0.9 at α 0.2 ([prediction](../results/lean-tree-choice/summary.md)).
 - **Limits:** one model, one small problem set, and the rules (not the agents) decide what is published.
