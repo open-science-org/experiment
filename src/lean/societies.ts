@@ -47,7 +47,12 @@ const f2 = (x: number) => x.toFixed(2);
 const T95 = [NaN, 12.71, 4.3, 3.18, 2.78, 2.57, 2.45, 2.36, 2.31, 2.26, 2.23, 2.2, 2.18, 2.16, 2.14, 2.13, 2.12, 2.11, 2.1, 2.09, 2.09];
 const t95 = (df: number) => (df < 1 ? NaN : df < T95.length ? T95[df] : 1.96 + 2.4 / df);
 /** Mean with its 95% range, as text. */
-const range = (xs: number[], fmt = f2) => { const m = mean(xs), h = t95(xs.length - 1) * sd(xs) / Math.sqrt(xs.length); return Number.isFinite(h) ? `${fmt(m)} (95% range ${fmt(m - h)} to ${fmt(m + h)})` : fmt(m); };
+/** Mean with its 95% range, as text; a share's range is kept within 0 and 1. */
+const range = (xs: number[], fmt = f2) => {
+  const m = mean(xs), h = t95(xs.length - 1) * sd(xs) / Math.sqrt(xs.length), share = fmt === pct;
+  const lo = share ? Math.max(0, m - h) : m - h, hi = share ? Math.min(1, m + h) : m + h;
+  return Number.isFinite(h) ? `${fmt(m)} (95% range ${fmt(lo)} to ${fmt(hi)})` : fmt(m);
+};
 /** The difference of two means with its 95% range (runs not paired; degrees of freedom from the smaller group, a cautious choice). */
 const diff = (a: number[], b: number[], fmt = f2) => {
   const d = mean(a) - mean(b), h = t95(Math.min(a.length, b.length) - 1) * Math.sqrt(sd(a) ** 2 / a.length + sd(b) ** 2 / b.length);

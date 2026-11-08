@@ -1,0 +1,68 @@
+{
+ "id": "lean-m3",
+ "kind": "race",
+ "date": "2026-11-08",
+ "title": "Labs choose what to publish: α 1, 0.8, 0.2 × 10 runs, $0.15 a lab (Nov 8)",
+ "ranAt": "2026-11-08T07:55:23.793Z",
+ "design": {
+  "question": "For the same agents, checker and money, does a community prove more targets when value flows back (OSO) than when results are only shared, or kept private until a target is proved?",
+  "compare": "Labs choose, α 0.2, Labs choose, α 0.8, Labs choose, α 1",
+  "fixed": "the same 4 agents (the single agent: the first, with all the money), $0.60 in all, Lean checks every proof",
+  "measure": "the share of lemmas published at once (of those with a PUBLISH line), α 0.2 against α 1; targets proved beside it",
+  "better": "higher",
+  "runs": "10 runs per setup, not paired"
+ },
+ "answer": "Lemmas published at once: Labs choose, α 0.2 100% (95% range 99% to 100%); Labs choose, α 0.8 99% (95% range 97% to 100%); Labs choose, α 1 99% (95% range 98% to 100%). α 0.2 minus α 1: 1% (95% range -1% to 2%).",
+ "table": [
+  {
+   "society": "Labs choose, α 0.2",
+   "settings": "each lab chooses what to publish · α 0.2",
+   "targets proved": "6.70 ± 1.06 of 8",
+   "money to 3 targets": "$0.05 (10 of 10 got there)",
+   "spent": "$0.59",
+   "lemmas proved": "20.40",
+   "built on another lab": "11.10",
+   "lemmas proved twice": "0.50",
+   "targets proved twice": "3.70",
+   "lemmas published at once": "100% (95% range 99% to 100%)",
+   "with no PUBLISH line": "0.10",
+   "lemma proof size": "130.94"
+  },
+  {
+   "society": "Labs choose, α 0.8",
+   "settings": "each lab chooses what to publish · α 0.8",
+   "targets proved": "6.10 ± 1.10 of 8",
+   "money to 3 targets": "$0.05 (10 of 10 got there)",
+   "spent": "$0.60",
+   "lemmas proved": "19.60",
+   "built on another lab": "8.90",
+   "lemmas proved twice": "0.80",
+   "targets proved twice": "3.00",
+   "lemmas published at once": "99% (95% range 97% to 100%)",
+   "with no PUBLISH line": "0.00",
+   "lemma proof size": "104.97"
+  },
+  {
+   "society": "Labs choose, α 1",
+   "settings": "each lab chooses what to publish · α 1",
+   "targets proved": "6.30 ± 0.95 of 8",
+   "money to 3 targets": "$0.04 (10 of 10 got there)",
+   "spent": "$0.61",
+   "lemmas proved": "19.60",
+   "built on another lab": "9.00",
+   "lemmas proved twice": "0.60",
+   "targets proved twice": "2.20",
+   "lemmas published at once": "99% (95% range 98% to 100%)",
+   "with no PUBLISH line": "0.00",
+   "lemma proof size": "108.83"
+  }
+ ],
+ "caveats": [
+  "Labs could not stop early: each worked until its money or the rounds ran out, so setups are compared at the same money spent.",
+  "Rewards differ from the current simulation model: the knowledge reward is measured by proof size (log2(1 + symbols/40), at most 4), a stand-in for the simulation's log2(1/p) per new bit; the simulation's prediction for sharing comes from its own fields, not from this problem set with this reward; a lab could pad its proofs, so sizes are checked against runs without the reward; value flowing back is still split by the money spent proving each parent, not by the work a parent saves (1/p) as in the simulation.",
+  "Table values are mean ± standard deviation over runs. Above: means with 95% ranges (Student t), and differences between setups with their 95% ranges; runs are not paired."
+ ],
+ "cost": "$17.94 as charged",
+ "page": "results/community/lean-m3/summary.md",
+ "chart": "results/community/lean-m3/figures/progress.svg"
+}

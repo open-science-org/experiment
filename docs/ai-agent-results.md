@@ -164,6 +164,31 @@ Means with 95% ranges (Student t; for differences, degrees of freedom from the s
 - **With flow-back, labs proved more lemmas** (α 0.2: +2.2 a run). At α 0.8 they also worked about two rounds longer and built on each other more. The plan's warning sign, spending more for the same targets, fits α 0.8 weakly (+$0.04, range −0.04 to +0.13, for the same targets); at α 0.2 money spent was the same.
 - **Against part B** (labs could not stop, so they spent all their money): part A proved 0.7 to 1.25 fewer targets per setup (shared library −0.85, range −1.6 to −0.1; OSO α 0.2 −1.25, range −1.9 to −0.6) for about half the money. The prompts differ too (part B used the older wording), so this is not only the effect of stopping.
 
+## 4c. Labs choose what to publish (2026-11-08, roadmap M3)
+
+[Result](../results/community/lean-m3/summary.md). Plan fixed before the runs. Each lab, after proving a lemma, says whether to publish it now or keep it private; a kept lemma goes public only with a target its author proves on it. A new result earns a small reward by proof length (at most 4) when it is published, if no lab published it first. α 1, 0.8 and 0.2; labs cannot stop; $0.15 a lab; 10 runs per setup, 30 in all, $17.94.
+
+**The question:** does flow-back make labs choose to share?
+
+| Setup | Lemmas published at once | Predicted (simulation, matched) | Targets proved (of 8) | Lemmas proved | B5 proved |
+| --- | --- | --- | --- | --- | --- |
+| Labs choose, α 1 | 99% (98–100%) | 17% | 6.3 (5.6–7.0) | 19.6 (14.0–25.2) | 4 of 10 |
+| Labs choose, α 0.8 | 99% (97–100%) | 20% | 6.1 (5.3–6.9) | 19.6 (15.3–23.9) | 4 of 10 |
+| Labs choose, α 0.2 | 100% (99–100%) | 93% | 6.7 (5.9–7.5) | 20.4 (16.3–24.5) | 8 of 10 |
+
+α 0.2 minus α 1: share published +1 point (−1 to +2); targets +0.4 (−0.6 to +1.4); B5 +0.4 (−0.02 to +0.67).
+
+**The answer: labs published nearly everything at every α** (596 of 602 lemmas; 6 kept, 1 with no PUBLISH line). This is the outcome the plan named as "against": the share published does not rise with flow-back, because it is already at the top. The simulation predicted that agents at α 1 keep most lemmas, to avoid helping rivals to the next bounty.
+
+**Why, from the labs' thinking:** they publish to collect the new-result reward, which a kept lemma loses ("Publishing now gives up to 4"; "Keeping private doesn't earn unless used in a solved target"). They rarely weigh the risk that publishing helps a rival win the next target. In the simulation the same reward exists, but agents weigh that risk. So with this reward, keeping costs an AI lab more than it gains, at any α.
+
+**Other measures:**
+- **No sign of padding:** median lemma proof 69–79 symbols, against 82 in part B.
+- **Lead, not a finding:** α 0.2 proved B5 in 8 of 10 runs, α 1 in 4 of 10 (difference +0.4, range −0.02 to +0.67). B5 keeps coming up with low α, but not yet as a planned measure.
+- Compared with part B's OSO setups (everything published by rule, no new-result reward), labs here proved more lemmas (about 20 against 11–14 a run). The rules and prompts differ, so this is not a clean comparison.
+
+**What it means for the next step:** with a reward paid on publication, AI labs share by default, so this setup cannot show flow-back raising sharing. To test that, the incentive to keep has to be real: run the same setups with the new-result reward off (then keeping costs nothing at α 1). Not yet run.
+
 ## 5. Is the test setup sound? (harness checks)
 
 | Check | Result |
