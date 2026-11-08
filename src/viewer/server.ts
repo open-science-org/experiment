@@ -300,6 +300,7 @@ function leanData(exp: string) {
   const experiments = [...runs.keys()].sort((a, b) => statSync(join(dir, `${b}-r1-${runs.get(b)![0].key}`)).mtimeMs - statSync(join(dir, `${a}-r1-${runs.get(a)![0].key}`)).mtimeMs);
   const id = runs.has(exp) ? exp : experiments[0];
   const mine = runs.get(id) ?? [];
+  const posted = tasks.filter((t) => t.posted).map((t) => ({ id: t.publicId, bounty: 4 * 2 ** (t.depth - 1) }));
   const setups = [...new Set(mine.map((r) => r.key))].sort((a, b) => Object.keys(SOCIETIES).indexOf(a) - Object.keys(SOCIETIES).indexOf(b)).map((key) => {
     const first = mine.filter((r) => r.key === key).sort((a, b) => a.rep - b.rep)[0];
     const options = JSON.parse(readFileSync(join(dir, `${id}-r${first.rep}-${key}`, 'options.json'), 'utf8'));
@@ -309,7 +310,7 @@ function leanData(exp: string) {
     const proved = Object.fromEntries(tasks.filter((t) => t.posted).map((t) => [t.publicId, done.filter((r) => r.library.some((e) => e.target === t.publicId)).length]));
     return { key, name: SOCIETIES[key].name, params: SOCIETIES[key].params, colour: SOCIETIES[key].colour, options, runs: mine.filter((r) => r.key === key).length, done: done.length, proved,
       // Each finished run's targets proved by money spent, for the mean graph.
-      curves: done.map((r) => progress(r).map(([x, y]) => [Math.round(x * 1e4) / 1e4, y])),
+      series: done.map((r) => seriesOf(r, posted)),
       system: saved(`${id}-r${first.rep}-${key}`)?.prompts[lab] ?? com.systemPrompt(lab), promptFrom: saved(`${id}-r${first.rep}-${key}`)?.rebuilt ?? (saved(`${id}-r${first.rep}-${key}`) ? 'sent' : 'current'), turn: com.turnPrompt(lab, 1), lab: lab + 1 };
   });
   return {
@@ -319,6 +320,25 @@ function leanData(exp: string) {
     targets: tasks.filter((t) => t.posted).map((t) => ({ id: t.publicId, name: t.short, area: t.area, depth: t.depth, bounty: 4 * 2 ** (t.depth - 1), plain: PLAIN[t.publicId] ?? '', statement: t.signature,
       uses: t.uses.map((u) => label.get(u)), below: below(t.name).size })),
   };
+}
+
+/** One run turn by turn, for the Lean results graph: after each turn, the money spent, round, turn number, targets
+ *  proved, bounty value of those targets, lemmas proved, results built on another lab's work, and which targets are
+ *  proved (bit n = the n-th posted target). */
+function seriesOf(r: CommunityResult, posted: { id: string; bounty: number }[]) {
+  const acts = [...r.actions].sort((a, b) => a.t - b.t), byName = new Map(r.library.map((e) => [`${e.ns}.${e.name}`, e]));
+  const solved = new Set<string>();
+  let spent = 0, lemmas = 0, built = 0;
+  const rows: number[][] = [[0, 0, 0, 0, 0, 0, 0, 0]];
+  acts.forEach((a, n) => {
+    spent += a.cost ?? a.listCost ?? 0;
+    if (a.ok && a.kind === 'target' && a.target) solved.add(a.target);
+    if (a.ok && a.kind === 'lemma' && !/trivial/.test(a.reason ?? '')) lemmas++;
+    if (a.ok && (a.uses ?? []).some((u) => { const e = byName.get(u); return e && e.author !== a.agent; })) built++;
+    const mask = posted.reduce((m, t, k) => (solved.has(t.id) ? m | (1 << k) : m), 0);
+    rows.push([Math.round(spent * 1e4) / 1e4, a.round, n + 1, solved.size, posted.reduce((v, t) => v + (solved.has(t.id) ? t.bounty : 0), 0), lemmas, built, mask]);
+  });
+  return rows;
 }
 
 /** Every turn of one society run, with the lab's replies and Lean's errors. */

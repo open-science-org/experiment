@@ -2162,40 +2162,93 @@ function leanPrompts(d) {
     <details class="pane"><summary style="cursor:pointer;font-weight:700">What a lab sees at the start of each turn (round 1, ${esc(d.setups[0].name)})</summary><pre style="white-space:pre-wrap;font-size:12px">${esc(d.setups[0].turn)}</pre></details>`;
 }
 
+// What the Lean results graph can show: columns of the server's per-turn rows (see seriesOf in server.ts).
+const LX = [{ id: 0, name: 'Money spent so far, per community ($)' }, { id: 1, name: 'Round' }, { id: 2, name: 'Turns taken (all labs)' }];
+const LY = (d) => [
+  { id: 'targets', name: `Targets proved (of ${d.targets.length})`, col: 3 },
+  { id: 'bounty', name: 'Bounty value of the targets proved', col: 4 },
+  { id: 'lemmas', name: 'Lemmas proved', col: 5 },
+  { id: 'built', name: "Results built on another lab's work", col: 6 },
+  ...d.targets.map((t, k) => ({ id: 'T' + t.id, name: `Runs that have proved ${t.id} (${t.name}), %`, bit: k })),
+];
 function leanResults(d) {
-  const sets = d.setups.filter((x) => x.curves.length);
+  const sets = d.setups.filter((x) => x.series.length);
   if (!sets.length) { $('l-body').innerHTML = '<p class="muted">No finished runs yet.</p>'; return; }
-  // Targets proved by money spent: thin lines are single runs, the thick line their mean.
-  const at = (c, x) => { let y = 0; for (const [px, py] of c) { if (px > x) break; y = py; } return y; };
-  const xMax = Math.max(...sets.flatMap((x) => x.curves.map((c) => c.at(-1)[0]))), yMax = d.targets.length;
-  const W = 760, H = 380, l = 44, top = 34, pw = W - l - 150, ph = H - top - 44;
-  const sx = (x) => l + (x / xMax) * pw, sy = (y) => top + ph - (y / yMax) * ph;
-  const grid = Array.from({ length: 121 }, (_, n) => (xMax * n) / 120);
-  let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:auto" role="img" aria-label="Mean targets proved by money spent"><text x="${l}" y="18" font-size="14" font-weight="700" fill="var(--ink)">Targets proved by money spent: mean of all runs</text>`;
-  for (let y = 0; y <= yMax; y++) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"/><text x="${l - 8}" y="${sy(y) + 4}" text-anchor="end" font-size="11" fill="var(--ink-2)">${y}</text>`;
-  for (let v = 0; v <= xMax + 1e-9; v += 0.1) svg += `<text x="${sx(v)}" y="${top + ph + 16}" text-anchor="middle" font-size="11" fill="var(--ink-2)">$${v.toFixed(2)}</text>`;
-  svg += `<text x="${l + pw / 2}" y="${H - 6}" text-anchor="middle" font-size="11" fill="var(--ink-2)">Money spent so far, per community</text>`;
-  for (const x of sets) for (const c of x.curves) {
-    let path = ''; c.forEach(([px, py], i) => { path += i ? ` H${sx(px).toFixed(1)} V${sy(py).toFixed(1)}` : `M${sx(px).toFixed(1)} ${sy(py).toFixed(1)}`; });
-    svg += `<path d="${path}" fill="none" stroke="${x.colour}" stroke-opacity="0.12" stroke-width="1"/>`;
-  }
-  const ends = [];
-  for (const x of sets) {
-    const m = grid.map((g) => x.curves.reduce((a, c) => a + at(c, g), 0) / x.curves.length);
-    svg += `<path d="${m.map((y, i) => `${i ? 'L' : 'M'}${sx(grid[i]).toFixed(1)} ${sy(y).toFixed(1)}`).join(' ')}" fill="none" stroke="${x.colour}" stroke-width="2.5" stroke-linejoin="round"><title>${esc(x.name)}</title></path>`;
-    ends.push([sy(m.at(-1)), `${x.name} ${m.at(-1).toFixed(2)}`, x.colour]);
-  }
-  ends.sort((a, b) => a[0] - b[0]); for (let n = 1; n < ends.length; n++) ends[n][0] = Math.max(ends[n][0], ends[n - 1][0] + 15);
-  for (const [y, t, c] of ends) svg += `<line x1="${l + pw + 6}" x2="${l + pw + 22}" y1="${y}" y2="${y}" stroke="${c}" stroke-width="2.5"/><text x="${l + pw + 26}" y="${y + 4}" font-size="11" fill="var(--ink)">${esc(t)}</text>`;
-  svg += '</svg>';
-  const fin = (x) => x.curves.map((c) => c.at(-1)[1]), mean = (a) => a.reduce((p, q) => p + q, 0) / a.length;
-  const sd = (a) => Math.sqrt(a.reduce((p, q) => p + (q - mean(a)) ** 2, 0) / Math.max(1, a.length - 1));
-  const rows = sets.map((x) => `<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${x.colour};margin-right:5px"></span>${esc(x.name)}</td><td>${x.curves.length}</td>
-    <td>${mean(fin(x)).toFixed(2)} ± ${(sd(fin(x)) / Math.sqrt(x.curves.length)).toFixed(2)}</td><td>${Math.min(...fin(x))}–${Math.max(...fin(x))}</td>
-    <td>${d.targets.map((t) => `${t.id} ${x.proved[t.id]}`).join(' · ')}</td></tr>`).join('');
-  $('l-body').innerHTML = `<div class="pane" style="margin-bottom:12px">${svg}<p class="muted" style="font-size:12px;margin:6px 0 0">Thin lines: single runs. Thick lines: their mean at each amount spent. Every finished run of ${esc(d.id)}.</p></div>
-    <div class="pane" style="overflow-x:auto"><table class="agents"><thead><tr><th>Setup</th><th>Runs</th><th>Targets proved at the end (mean ± standard error)</th><th>Range</th><th>Runs that proved each target</th></tr></thead><tbody>${rows}</tbody></table>
-    <p class="muted" style="font-size:12px;margin:8px 0 0">The verdict and design: <a href="#/doc/results/community/${esc(d.id)}/summary.md">the run summary</a>.</p></div>`;
+  const q = params(), ys = LY(d);
+  const yv = ys.some((y) => y.id === q.get('y')) ? q.get('y') : 'targets', xv = Number(q.get('x') ?? 0);
+  $('l-body').innerHTML = `<div class="pane" style="margin-bottom:12px">
+    <div class="row" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px">
+      <label><b>y-axis</b> <select id="l-y">${ys.map((y) => `<option value="${y.id}"${y.id === yv ? ' selected' : ''}>${esc(y.name)}</option>`).join('')}</select></label>
+      <label><b>x-axis</b> <select id="l-x">${LX.map((x) => `<option value="${x.id}"${x.id === xv ? ' selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label>
+      <label><input type="checkbox" id="l-logy"${q.get('logy') ? ' checked' : ''}> log y</label>
+      <label><input type="checkbox" id="l-logx"${q.get('logx') ? ' checked' : ''}> log x</label>
+      <label><input type="checkbox" id="l-band"${q.get('band') === '0' ? '' : ' checked'}> 95% range of the mean</label>
+      <label><input type="checkbox" id="l-each"${q.get('each') === '0' ? '' : ' checked'}> single runs</label>
+    </div><div id="l-chart"></div><p class="muted" id="l-cnote" style="font-size:12px;margin:6px 0 0"></p></div><div id="l-table"></div>`;
+  const set = (k, v) => { const p = params(); p.set('tab', 'results'); p.set('exp', d.id); if (v === null) p.delete(k); else p.set(k, v); history.replaceState(null, '', '#/lean?' + p); draw(); };
+  $('l-y').onchange = () => set('y', $('l-y').value);
+  $('l-x').onchange = () => set('x', $('l-x').value);
+  $('l-logy').onchange = () => set('logy', $('l-logy').checked ? '1' : null);
+  $('l-logx').onchange = () => set('logx', $('l-logx').checked ? '1' : null);
+  $('l-band').onchange = () => set('band', $('l-band').checked ? null : '0');
+  $('l-each').onchange = () => set('each', $('l-each').checked ? null : '0');
+  const draw = () => {
+    const Y = ys.find((y) => y.id === $('l-y').value), xi = Number($('l-x').value), X = LX[xi];
+    const logy = $('l-logy').checked, logx = $('l-logx').checked, share = Y.bit !== undefined;
+    const val = (row) => (share ? ((row[7] >> Y.bit) & 1) * 100 : row[Y.col]);
+    // A run's value at x: its last row at or before x (a finished run keeps its last value).
+    const at = (rows, x) => { let v = val(rows[0]); for (const r of rows) { if (r[xi] > x) break; v = val(r); } return v; };
+    const xMax = Math.max(...sets.flatMap((s) => s.series.map((r) => r.at(-1)[xi])));
+    const xMin = logx ? (xi === 0 ? Math.max(1e-3, xMax / 200) : 1) : 0;
+    const grid = xi === 0 ? Array.from({ length: 151 }, (_, n) => xMin + ((xMax - xMin) * n) / 150) : Array.from({ length: Math.round(xMax) - xMin + 1 }, (_, n) => xMin + n);
+    const lines = sets.map((s) => {
+      const per = grid.map((g) => s.series.map((r) => at(r, g)));
+      const m = per.map((v) => v.reduce((a, b) => a + b, 0) / v.length);
+      const se = per.map((v, k) => (v.length > 1 ? Math.sqrt(v.reduce((a, b) => a + (b - m[k]) ** 2, 0) / (v.length - 1) / v.length) : 0));
+      return { s, m, se };
+    });
+    const yTop = share ? 100 : Math.max(1, ...lines.flatMap((L) => L.m.map((v, k) => v + 2 * L.se[k])), ...($('l-each').checked ? sets.flatMap((s) => s.series.map((r) => val(r.at(-1)))) : []));
+    const yPos = lines.flatMap((L) => L.m).filter((v) => v > 0), yMin = logy ? Math.max(share ? 1 : 0.1, Math.min(...yPos, yTop) / 1.5) : 0;
+    const W = 820, H = 420, l = 64, top = 16, pw = W - l - 170, ph = H - top - 54, Lg = Math.log10;
+    const sx = (x) => l + (logx ? (Lg(Math.max(x, xMin)) - Lg(xMin)) / (Lg(xMax) - Lg(xMin) || 1) : (x - xMin) / (xMax - xMin || 1)) * pw;
+    const sy = (y) => top + ph - (logy ? (Lg(Math.max(y, yMin)) - Lg(yMin)) / (Lg(yTop) - Lg(yMin) || 1) : y / yTop) * ph;
+    const ticks = (lo, hi, log, int) => {
+      if (log) { const t = []; for (let e = Math.floor(Lg(lo)); e <= Math.ceil(Lg(hi)); e++) for (const k of [1, 2, 5]) { const v = k * 10 ** e; if (v >= lo * 0.999 && v <= hi * 1.001) t.push(v); } return t; }
+      const raw = (hi - lo) / 5, mag = 10 ** Math.floor(Lg(raw || 1)), step = Math.max(int ? 1 : 0, [1, 2, 2.5, 5, 10].map((k) => k * mag).find((k) => k >= raw) ?? mag * 10);
+      const t = []; for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) t.push(+v.toFixed(6)); return t;
+    };
+    const fmtx = (v) => (xi === 0 ? (v === 0 ? '$0' : '$' + (v < 0.01 ? v.toFixed(3) : v.toFixed(2))) : String(Math.round(v)));
+    let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:auto" role="img" aria-label="${esc(Y.name)} by ${esc(X.name)}">`;
+    for (const y of ticks(yMin, yTop, logy, !share && Y.col !== undefined && yTop > 5)) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"/><text x="${l - 8}" y="${sy(y) + 4}" text-anchor="end" font-size="11" fill="var(--ink-2)">${share ? y + '%' : +y.toFixed(2)}</text>`;
+    for (const x of ticks(xMin, xMax, logx, xi !== 0)) svg += `<line x1="${sx(x)}" x2="${sx(x)}" y1="${top + ph}" y2="${top + ph + 4}" stroke="var(--ink-3)"/><text x="${sx(x)}" y="${top + ph + 18}" text-anchor="middle" font-size="11" fill="var(--ink-2)">${fmtx(x)}</text>`;
+    svg += `<line x1="${l}" x2="${l + pw}" y1="${top + ph}" y2="${top + ph}" stroke="var(--ink-3)"/><line x1="${l}" x2="${l}" y1="${top}" y2="${top + ph}" stroke="var(--ink-3)"/>`;
+    svg += `<text x="${l + pw / 2}" y="${H - 8}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">${esc(X.name)}${logx ? ' (log scale)' : ''}</text>`;
+    svg += `<text transform="translate(16 ${top + ph / 2}) rotate(-90)" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">${esc(Y.name)}${logy ? ' (log scale)' : ''}</text>`;
+    if ($('l-each').checked && !share) for (const s of sets) for (const r of s.series) {
+      let path = ''; r.filter((row) => !logx || row[xi] >= xMin).forEach((row, i) => { path += i ? ` H${sx(row[xi]).toFixed(1)} V${sy(val(row)).toFixed(1)}` : `M${sx(row[xi]).toFixed(1)} ${sy(val(row)).toFixed(1)}`; });
+      svg += `<path d="${path}" fill="none" stroke="${s.colour}" stroke-opacity="0.13" stroke-width="1"/>`;
+    }
+    const ends = [];
+    for (const L of lines) {
+      if ($('l-band').checked) { const up = grid.map((g, k) => `${sx(g).toFixed(1)} ${sy(Math.min(yTop, L.m[k] + 2 * L.se[k])).toFixed(1)}`), dn = grid.map((g, k) => `${sx(g).toFixed(1)} ${sy(Math.max(logy ? yMin : 0, L.m[k] - 2 * L.se[k])).toFixed(1)}`).reverse();
+        svg += `<path d="M${up.join(' L')} L${dn.join(' L')} Z" fill="${L.s.colour}" fill-opacity="0.13" stroke="none"/>`; }
+      svg += `<path d="${L.m.map((v, k) => `${k ? 'L' : 'M'}${sx(grid[k]).toFixed(1)} ${sy(v).toFixed(1)}`).join(' ')}" fill="none" stroke="${L.s.colour}" stroke-width="2.5" stroke-linejoin="round"><title>${esc(L.s.name)}</title></path>`;
+      ends.push([sy(L.m.at(-1)), `${L.s.name}: ${share ? Math.round(L.m.at(-1)) + '%' : L.m.at(-1).toFixed(2)}`, L.s.colour]);
+    }
+    ends.sort((a, b) => a[0] - b[0]); for (let n = 1; n < ends.length; n++) ends[n][0] = Math.max(ends[n][0], ends[n - 1][0] + 15);
+    for (const [y, t, c] of ends) svg += `<line x1="${l + pw + 6}" x2="${l + pw + 22}" y1="${y}" y2="${y}" stroke="${c}" stroke-width="2.5"/><text x="${l + pw + 26}" y="${y + 4}" font-size="11" fill="var(--ink)">${esc(t)}</text>`;
+    $('l-chart').innerHTML = svg + '</svg>';
+    $('l-cnote').textContent = `Thick lines: the mean of every finished run of ${d.id} (${sets.map((s) => `${s.name} ${s.series.length}`).join(', ')})${share ? '; the share of runs that had proved it by then' : ''}.${$('l-band').checked ? ' Shaded: the mean ± 2 standard errors, a rough 95% range.' : ''}${$('l-each').checked && !share ? ' Thin lines: single runs.' : ''}${logx || logy ? ' On a log scale, zero cannot be drawn: values below the axis sit on it.' : ''}`;
+  };
+  draw();
+  const fin = (s, col) => s.series.map((r) => r.at(-1)[col]), mean = (a) => a.reduce((p, q) => p + q, 0) / a.length;
+  const se = (a) => (a.length > 1 ? Math.sqrt(a.reduce((p, q) => p + (q - mean(a)) ** 2, 0) / (a.length - 1) / a.length) : 0);
+  const cell = (a) => `${mean(a).toFixed(2)} <span class="muted">(${(mean(a) - 2 * se(a)).toFixed(2)}–${(mean(a) + 2 * se(a)).toFixed(2)})</span>`;
+  const rows = sets.map((s) => `<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${s.colour};margin-right:5px"></span>${esc(s.name)}</td><td>${s.series.length}</td>
+    <td>${cell(fin(s, 3))}</td><td>${cell(fin(s, 5))}</td><td>${cell(fin(s, 6))}</td><td>$${mean(fin(s, 0)).toFixed(2)}</td>
+    <td>${d.targets.map((t) => `${t.id} ${s.proved[t.id]}`).join(' · ')}</td></tr>`).join('');
+  $('l-table').innerHTML = `<div class="pane" style="overflow-x:auto"><table class="agents"><thead><tr><th>Setup</th><th>Runs</th><th>Targets proved</th><th>Lemmas proved</th><th>Built on another lab</th><th>Spent</th><th>Runs that proved each target</th></tr></thead><tbody>${rows}</tbody></table>
+    <p class="muted" style="font-size:12px;margin:8px 0 0">At the end of each run: mean, with a rough 95% range (± 2 standard errors) in brackets. The verdict and design: <a href="#/doc/results/community/${esc(d.id)}/summary.md">the run summary</a>.</p></div>`;
 }
 
 async function leanRuns(d) {
