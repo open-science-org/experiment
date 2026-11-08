@@ -29,8 +29,11 @@ const PUBLIC_FILES = ['README.md', 'lean/README.md', 'lean/Problems/Defs.lean', 
 const TYPES: Record<string, string> = { '.svg': 'image/svg+xml', '.png': 'image/png', '.json': 'application/json', '.md': 'text/plain; charset=utf-8', '.yaml': 'text/plain; charset=utf-8', '.jsonl': 'text/plain; charset=utf-8', '.py': 'text/plain; charset=utf-8', '.lean': 'text/plain; charset=utf-8' };
 
 /** A repository path, if it is inside a public folder. */
+/** The roadmap lives in the local notes, beside this repository; the app reads that one file and nothing else there. */
+const ROADMAP = join(ROOT, '..', 'notes', 'roadmap.md');
 function publicPath(path: string): string | null {
   const rel = normalize(path).replace(/^(\.\.\/)+/, '');
+  if (rel === 'notes/roadmap.md') return existsSync(ROADMAP) ? ROADMAP : null;
   if (rel.startsWith('/') || rel.includes('..') || !(PUBLIC_DIRS.includes(rel.split('/')[0]) || PUBLIC_FILES.includes(rel))) return null;
   const full = join(ROOT, rel);
   return existsSync(full) ? full : null;
@@ -300,7 +303,8 @@ function leanData(exp: string) {
   };
   const ids = [...runs.keys()].sort((a, b) => Number(isTest(a)) - Number(isTest(b)) || statSync(join(dir, `${b}-r1-${runs.get(b)![0].key}`)).mtimeMs - statSync(join(dir, `${a}-r1-${runs.get(a)![0].key}`)).mtimeMs);
   const experiments = ids.map((x) => ({ id: x, name: experimentName(x), test: isTest(x) }));
-  const id = runs.has(exp) ? exp : ids[0];
+  // By default the newest experiment with a finished run, so the page opens on results, not an empty table.
+  const id = runs.has(exp) ? exp : ids.find((x) => !isTest(x) && runs.get(x)!.some((r) => r.done)) ?? ids[0];
   const mine = runs.get(id) ?? [];
   const posted = tasks.filter((t) => t.posted).map((t) => ({ id: t.publicId, bounty: 4 * 2 ** (t.depth - 1) }));
   const setups = [...new Set(mine.map((r) => r.key))].sort((a, b) => Object.keys(SOCIETIES).indexOf(a) - Object.keys(SOCIETIES).indexOf(b)).map((key) => {
@@ -506,6 +510,16 @@ const server = createServer(async (req, res) => {
     if (url.pathname === '/') return send(200, readFileSync(PAGE, 'utf8'), 'text/html; charset=utf-8');
     if (url.pathname === '/api/overview') return send(200, overview());
     if (url.pathname === '/api/doc') return send(200, doc(url.searchParams.get('path') ?? ''));
+    if (url.pathname === '/api/roadmap') {
+      // The milestones for the Home page: "### M1. Title", its status line and its question.
+      if (!existsSync(ROADMAP)) return send(200, { milestones: [] });
+      const md = readFileSync(ROADMAP, 'utf8');
+      const milestones = md.split(/\n(?=### )/).filter((b) => /^### M\d/.test(b)).map((b) => ({
+        id: /^### (M\d+)/.exec(b)![1], title: /^### M\d+\.\s*(.+)/.exec(b)![1].trim(),
+        status: /\*\*Status:\*\*\s*(.+)/.exec(b)?.[1].trim() ?? '', question: /\*\*Question:\*\*\s*(.+)/.exec(b)?.[1].trim() ?? '',
+      }));
+      return send(200, { milestones, aim: /\*\*The claim we want to be able to make:\*\*\s*(.+)/.exec(md)?.[1] ?? '' });
+    }
     if (url.pathname.startsWith('/files/')) {
       const full = publicPath(decodeURIComponent(url.pathname.slice('/files/'.length)));
       if (!full || statSync(full).isDirectory()) return send(404, { error: 'not found' });
