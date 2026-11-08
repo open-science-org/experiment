@@ -91,6 +91,13 @@ export interface CommunityOptions {
   /** How value flowing back is split among the results a proof used: by the lines each saves (its own proof's
    *  length in symbols; runs from 2026-11-08), or by the money spent proving it (earlier runs, which have no such field). */
   split?: 'lines-saved' | 'cost';
+  /**
+   * Money follows earnings, as in the simulation (docs/equations.md, section 5): the funder releases the money
+   * round by round, the same amount each round (all labs' money / rounds); a share 1 − follow of it is split equally
+   * among the labs still working, a share `follow` by their recent earnings (0.7 old, 0.3 this round). Unspent money
+   * carries over. Not set: each lab has its own fixed budget for the whole run (runs before 2026-11-08).
+   */
+  follow?: number;
   /** May a lab stop early by passing (default yes)? No: every lab works until its money or the rounds run out,
    *  so setups are compared at the same money spent; a pass then only skips that turn. */
   mayStop?: boolean;
@@ -194,6 +201,9 @@ export class Community {
   spent: number[];
   actions: Action[] = [];
   free: Pick<Task, 'name' | 'ns' | 'short' | 'signature'>[];
+  /** Money follows earnings: money released to each lab so far, and its smoothed recent earnings. */
+  released: number[] = [];
+  recent: number[] = [];
   /** Labs that passed: they stop for the rest of the run. */
   passed = new Set<number>();
   /** Planner rules: this round's assignment for each lab. */
@@ -210,6 +220,8 @@ export class Community {
     });
     this.earnings = opts.agents.map(() => 0);
     this.spent = opts.agents.map(() => 0);
+    this.released = opts.agents.map(() => 0);
+    this.recent = opts.agents.map(() => 0);
     const ref = parseReference();
     this.free = FREE.map((name) => ({ name, ...ref.get(name)! }));
   }
@@ -299,7 +311,8 @@ export class Community {
       ? `When a result is published, it earns up to ${PROOF_CAP}, more for a longer proof, if it is new: no lab has published it, or a result that proves it in one step, before${o.rules === 'oso' && o.alpha < 1 ? '. This flows back in the same way' : '. Its author keeps it'}.`
       : M ? `A new result earns its author a mint of ${M}${o.rules === 'oso' && o.alpha < 1 ? ', which flows back in the same way' : ''}.` : 'A new result earns nothing by itself.';
     const planner = o.rules === 'planner' ? '\n- Lab 1 is the planner: it does not prove anything; each round it gives every other lab an assignment, to bring the targets within reach together. Follow your assignment unless it is clearly impossible.' : '';
-    const rules = `How this community works (${name}):${planner}\n- Seeing results: ${seeing}\n- Bounties: ${flow}\n- New results: ${own}`;
+    const money = o.follow === undefined ? '' : `\n- Money: the funder releases the money round by round, $${((o.budget * o.agents.length) / o.rounds).toFixed(3)} a round for all labs: ${Math.round((1 - o.follow) * 100)}% split equally among the labs still working, ${Math.round(o.follow * 100)}% in proportion to what each earned recently. Unspent money carries over; a lab with no money left waits for the next round.`;
+    const rules = `How this community works (${name}):${planner}\n- Seeing results: ${seeing}\n- Bounties: ${flow}\n- New results: ${own}${money}`;
     const persona = o.personas?.[i]?.trim() ? `Your lab's way of working${o.personaNames?.[i] ? ` (${o.personaNames[i]})` : ''}: ${o.personas[i].trim()}` : '';
     return `You are lab ${i + 1} of ${o.agents.length} in a research community proving theorems in Lean 4 (version 4.35.0, core library only, no Mathlib). Your aim is to earn as much as you can within your budget; every model call you make costs budget.
 
@@ -332,7 +345,7 @@ ${o.mayStop === false ? '- You keep working until your budget or the rounds run 
       const status = e ? (e.public ? `proved by lab ${e.author + 1}: cite it as ${e.name}` : e.author === i ? `proved by you (private): cite it as ${e.name}` : 'open') : 'open';
       return `${k.cid} (${status}): theorem attempt ${norm(k.signature)}`;
     });
-    return `Round ${round}. Your earnings so far: ${this.earnings[i].toFixed(1)}. Budget left: $${Math.max(0, this.opts.budget - this.spent[i]).toFixed(3)}.
+    return `Round ${round}. Your earnings so far: ${this.earnings[i].toFixed(1)}. Budget left: $${Math.max(0, this.budgetOf(i) - this.spent[i]).toFixed(3)}.${this.opts.follow !== undefined ? ` Money you get next round: about $${this.nextFunding(i).toFixed(3)}.` : ''}
 
 Posted targets:
 ${targets.join('\n')}
@@ -367,7 +380,7 @@ The labs are numbered 2 to ${o.agents.length}.`;
     const targets = this.targets.map((t) => `${t.publicId} (${this.solved(t.publicId) ? `solved by lab ${this.solved(t.publicId)!.author + 1}` : 'open'}): theorem attempt ${norm(t.signature)}${t.ns === 'OSO.M2' ? '   -- stated inside namespace M2' : ''}`);
     const last = this.actions.filter((a) => a.round === round - 1 && a.kind !== 'plan').map((a) => `lab ${a.agent + 1}: ${a.kind}${a.target ? ` ${a.target}` : a.name ? ` ${a.name}` : ''} ${a.ok ? 'accepted' : `failed${a.reason ? ` (${a.reason})` : ''}`}`);
     const labs = this.opts.agents.map((_, i) => i).filter((i) => i > 0 && this.active(i)).map((i) => i + 1);
-    return `Round ${round}. Your budget left: $${Math.max(0, this.opts.budget - this.spent[0]).toFixed(3)}. Labs still working: ${labs.join(', ')}.
+    return `Round ${round}. Your budget left: $${Math.max(0, this.budgetOf(0) - this.spent[0]).toFixed(3)}. Labs still working: ${labs.join(', ')}.
 
 Posted targets:
 ${targets.join('\n')}
@@ -499,7 +512,7 @@ ${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still w
       }
       transcript.push({ ...(reply.reasoning ? { reasoning: reply.reasoning } : {}), text, proof: code, errors });
       if (ok || reason) break;
-      if (this.spent[i] >= this.opts.budget) { reason = 'budget spent'; break; }
+      if (this.spent[i] >= this.budgetOf(i)) { reason = 'budget spent'; break; }
       messages.push({ role: 'assistant', content: reply.content });
       messages.push({ role: 'user', content: `Not accepted:\n\n${errors.join('\n\n').slice(0, 5000)}\n\nFix it and reply again in the same format.` });
     }
@@ -515,8 +528,33 @@ ${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still w
     return a;
   }
 
-  active(i: number) { return this.spent[i] < this.opts.budget && !this.passed.has(i); }
-  done() { return this.targets.every((t) => this.solved(t.publicId)) || this.opts.agents.every((_, i) => !this.active(i) || (this.opts.rules === 'planner' && i === 0)); }
+  /** The money lab i may spend: its fixed budget, or what the funder has released to it so far. */
+  budgetOf(i: number) { return this.opts.follow === undefined ? this.opts.budget : this.released[i]; }
+  active(i: number) { return this.spent[i] < this.budgetOf(i) && !this.passed.has(i); }
+  /** Money follows earnings: the start of a round, when the funder releases this round's money. */
+  fund() {
+    const f = this.opts.follow;
+    if (f === undefined) return;
+    const n = this.opts.agents.length, perRound = (this.opts.budget * n) / this.opts.rounds;
+    const working = this.opts.agents.map((_, i) => i).filter((i) => !this.passed.has(i));
+    const total = working.reduce((a, i) => a + this.recent[i], 0);
+    for (const i of working) this.released[i] += perRound * ((1 - f) / working.length + f * (total > 0 ? this.recent[i] / total : 1 / working.length));
+  }
+  /** What lab i would get next round at its current recent earnings (shown to it). */
+  nextFunding(i: number) {
+    const f = this.opts.follow ?? 0, n = this.opts.agents.length, perRound = (this.opts.budget * n) / this.opts.rounds;
+    const working = this.opts.agents.map((_, k) => k).filter((k) => !this.passed.has(k));
+    const total = working.reduce((a, k) => a + this.recent[k], 0);
+    return this.passed.has(i) ? 0 : perRound * ((1 - f) / working.length + f * (total > 0 ? this.recent[i] / total : 1 / working.length));
+  }
+  /** Money follows earnings: the end of a round; `before` is each lab's earnings when the round began. */
+  settle(before: number[]) { this.recent = this.recent.map((e, i) => 0.7 * e + 0.3 * (this.earnings[i] - before[i])); }
+  done() {
+    if (this.targets.every((t) => this.solved(t.publicId))) return true;
+    // Money released round by round: a lab out of money now gets more next round, so only passing or the whole budget ends it.
+    if (this.opts.follow !== undefined) return this.opts.agents.every((_, i) => this.passed.has(i)) || this.spent.reduce((a, b) => a + b, 0) >= this.opts.budget * this.opts.agents.length;
+    return this.opts.agents.every((_, i) => !this.active(i) || (this.opts.rules === 'planner' && i === 0));
+  }
 }
 
 /** A stand-in agent that plays from the reference proofs: tests the mechanics without a model. */
@@ -570,6 +608,8 @@ export async function runCommunity(opts: CommunityOptions, chatFor: (com: Commun
   const chats = opts.agents.map((_, i) => chatFor(com, i));
   let stopped: string | undefined;
   for (let round = 1; round <= opts.rounds && !com.done() && !stopped; round++) {
+    com.fund();
+    const before = [...com.earnings];
     if (opts.rules === 'planner') {
       com.plans = [];
       if (com.active(0)) await com.plan(round, chats[0], (u) => price(opts.agents[0], u), (a) => appendFileSync(file, JSON.stringify(a) + '\n')).catch((e) => {
@@ -603,6 +643,7 @@ export async function runCommunity(opts: CommunityOptions, chatFor: (com: Commun
       // Out of credit: every later call fails too, so the run would only look like labs giving up.
       if (/\b402\b|credits/i.test(msg)) stopped = 'out of credit';
     })));
+    com.settle(before);
   }
   if (stopped) log(`  stopped: ${stopped}`);
   const result: CommunityResult = { opts, actions: com.actions, library: com.library, earnings: com.earnings, spent: com.spent, ...(stopped ? { stopped } : {}) };

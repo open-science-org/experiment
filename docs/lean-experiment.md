@@ -118,6 +118,16 @@ The exact text is on the app's Lean experiment page (Prompts tab). Runs from 202
 
 Until 2026-11-08 Spend all was called "part B" and May quit "part A".
 
+## Money that follows earnings (a setting, from 2026-11-08)
+
+`--follow f`. In every run so far each lab had a fixed budget, whatever it earned, so earnings were only a score. With `--follow`, money works as in the simulation (docs/equations.md, section 5), which adds the feedback loop: earning buys more research.
+- The funder releases the money round by round, the same amount each round (all labs' money ÷ rounds).
+- A share 1 − f is split equally among the labs still working; a share f goes by recent earnings (0.7 of the old value plus 0.3 of this round's).
+- Unspent money carries over. A lab with no money left skips the round and gets more next round.
+- Labs are told the rule, and each round they see the money they would get next round.
+
+f = 0 gives equal money each round, which is the control. f = 0.5 is the simulation's default. With 4 labs at $0.15 each and 20 rounds, the funder releases $0.03 a round, about one turn per lab. Not yet run with real models.
+
 ## Run settings
 
 | | Spend all | May quit (planned) |

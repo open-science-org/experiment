@@ -237,6 +237,27 @@ test('flow-back is split by the lines each cited result saves (its proof length)
   assert.deepEqual(c.earnings, [3, 1, 4]);
 });
 
+test('money follows earnings: each round the funder releases the same money, a share f of it by recent earnings', async () => {
+  const { Community } = await import('../src/lean/community.ts');
+  const c = new Community({ rules: 'oso', alpha: 0.8, follow: 0.5, agents: ['a', 'b'], budget: 1, rounds: 10, repairs: 0, mint: 1, effort: 'low' });
+  c.fund(); // round 1: nobody has earned yet, so equal: 0.2 a round for both labs, 0.1 each
+  assert.deepEqual(c.released, [0.1, 0.1]);
+  const before = [...c.earnings];
+  c.earnings[0] += 10; // lab 1 earns this round
+  c.settle(before);
+  c.fund(); // round 2: half equal (0.05 each), half by recent earnings (all to lab 1)
+  assert.deepEqual(c.released.map((x) => Math.round(x * 1000) / 1000), [0.25, 0.15]);
+  c.spent[1] = 0.16; // a turn can go a little over what it had
+  assert.equal(c.active(1), false); // out of money this round
+  assert.equal(c.done(), false); // more comes next round
+  assert.match(c.systemPrompt(0), /Money: the funder releases the money round by round, \$0\.200 a round for all labs: 50% split equally/);
+  // Without the setting, a fixed budget per lab, as before.
+  const d = new Community({ rules: 'oso', alpha: 0.8, agents: ['a'], budget: 1, rounds: 10, repairs: 0, mint: 1, effort: 'low' });
+  d.fund();
+  assert.equal(d.budgetOf(0), 1);
+  assert.doesNotMatch(d.systemPrompt(0), /Money:/);
+});
+
 test('labs that may not stop lose only the turn they pass', async () => {
   const { Community } = await import('../src/lean/community.ts');
   const base = { rules: 'shared' as const, agents: ['a', 'b'], budget: 1, rounds: 1, repairs: 0, alpha: 1, mint: 1, effort: 'low' as const, knowledge: 'off' as const };
