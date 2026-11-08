@@ -8,6 +8,7 @@ import { lineChart } from '../report/figures.ts';
 import { writeCard } from '../card.ts';
 import { RESULTS_DIR } from '../paths.ts';
 import { loadTasks } from './tasks.ts';
+import { experimentName } from './names.ts';
 
 export interface Society { name: string; /** The setup in OSO settings: when others see a result, α, who decides the work. */ params: string; rules: Rules; alpha?: number; /** One lab with everyone's budget. */ single?: boolean; colour: string; slot: 1 | 2 | 3 }
 
@@ -111,7 +112,7 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
     : `${reps < 2 ? 'One run each, no verdict yet. ' : ''}${osoRows.map(verdict).join(' ')}`;
   const o = [...runs].sort((a, b) => b.result.opts.agents.length - a.result.opts.agents.length)[0].result.opts;
   writeCard(dir, {
-    id, kind: 'race', date: new Date().toISOString().slice(0, 10), title: `Societies compared: verified targets for the money (${id})`,
+    id, kind: 'race', date: new Date().toISOString().slice(0, 10), title: experimentName(id) === id ? `Societies compared: targets proved for the money (${id})` : experimentName(id),
     ranAt: new Date(Math.min(Date.now(), ...runs.flatMap((r) => r.result.actions.map((a) => a.t)).filter(Boolean))).toISOString(),
     design: {
       question: 'For the same agents, checker and money, does a community prove more targets when value flows back (OSO) than when results are only shared, or kept private until a target is proved?',

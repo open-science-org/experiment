@@ -17,6 +17,7 @@ import { AREAS, LEAN_DIR, PLAIN, definitions, leanAvailable, loadTasks } from '.
 import * as design from './design.ts';
 import { Community, LEAN_REWARDS, progress, type CommunityResult } from '../lean/community.ts';
 import { SOCIETIES } from '../lean/societies.ts';
+import { experimentName, isTest } from '../lean/names.ts';
 import { creditLeft } from '../lean/agent.ts';
 import { allCards } from '../card.ts';
 
@@ -297,8 +298,9 @@ function leanData(exp: string) {
     const j = JSON.parse(readFileSync(join(dir, run, 'prompts.json'), 'utf8'));
     return Array.isArray(j) ? { prompts: j, rebuilt: null } : { prompts: j.prompts, rebuilt: j.rebuilt };
   };
-  const experiments = [...runs.keys()].sort((a, b) => statSync(join(dir, `${b}-r1-${runs.get(b)![0].key}`)).mtimeMs - statSync(join(dir, `${a}-r1-${runs.get(a)![0].key}`)).mtimeMs);
-  const id = runs.has(exp) ? exp : experiments[0];
+  const ids = [...runs.keys()].sort((a, b) => Number(isTest(a)) - Number(isTest(b)) || statSync(join(dir, `${b}-r1-${runs.get(b)![0].key}`)).mtimeMs - statSync(join(dir, `${a}-r1-${runs.get(a)![0].key}`)).mtimeMs);
+  const experiments = ids.map((x) => ({ id: x, name: experimentName(x), test: isTest(x) }));
+  const id = runs.has(exp) ? exp : ids[0];
   const mine = runs.get(id) ?? [];
   const posted = tasks.filter((t) => t.posted).map((t) => ({ id: t.publicId, bounty: 4 * 2 ** (t.depth - 1) }));
   const setups = [...new Set(mine.map((r) => r.key))].sort((a, b) => Object.keys(SOCIETIES).indexOf(a) - Object.keys(SOCIETIES).indexOf(b)).map((key) => {
@@ -314,7 +316,7 @@ function leanData(exp: string) {
       system: saved(`${id}-r${first.rep}-${key}`)?.prompts[lab] ?? com.systemPrompt(lab), promptFrom: saved(`${id}-r${first.rep}-${key}`)?.rebuilt ?? (saved(`${id}-r${first.rep}-${key}`) ? 'sent' : 'current'), turn: com.turnPrompt(lab, 1), lab: lab + 1 };
   });
   return {
-    experiments, id, setups, reps: [...new Set(mine.map((r) => r.rep))].sort((a, b) => a - b),
+    experiments, id, name: experimentName(id), setups, reps: [...new Set(mine.map((r) => r.rep))].sort((a, b) => a - b),
     areas: AREAS, definitions: definitions(),
     theorems: tasks.map((t) => ({ id: label.get(t.name), name: t.short, plain: t.posted ? PLAIN[t.publicId] ?? '' : '', depth: t.depth, area: t.area, posted: t.posted ? t.publicId : null, statement: t.signature, uses: t.uses.map((u) => label.get(u)) })),
     targets: tasks.filter((t) => t.posted).map((t) => ({ id: t.publicId, name: t.short, area: t.area, depth: t.depth, bounty: 4 * 2 ** (t.depth - 1), plain: PLAIN[t.publicId] ?? '', statement: t.signature,
@@ -373,7 +375,7 @@ async function progressData() {
     });
     groups.set(m[1], g);
   }
-  const experiments = [...groups.values()].map((g) => ({ ...g, modified: Math.max(...g.runs.map((r) => r.modified as number)) })).sort((a, b) => b.modified - a.modified);
+  const experiments = [...groups.values()].map((g) => ({ ...g, name: experimentName(g.id), test: isTest(g.id), modified: Math.max(...g.runs.map((r) => r.modified as number)) })).sort((a, b) => Number(a.test) - Number(b.test) || b.modified - a.modified);
   const bdir = join(RESULTS_DIR, 'bench');
   const bench = (existsSync(bdir) ? readdirSync(bdir) : []).filter((d) => existsSync(join(bdir, d, 'records.jsonl'))).map((d) => {
     const f = join(bdir, d, 'records.jsonl'), recs = jsonl(f);

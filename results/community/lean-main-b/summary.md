@@ -1,10 +1,10 @@
-# Societies compared: verified targets for the money (lean-main-b)
+# Main experiment, part B: 4 setups × 20 runs, $0.15 a lab (Nov 7)
 
 **Question:** For the same agents, checker and money, does a community prove more targets when value flows back (OSO) than when results are only shared, or kept private until a target is proved?
 
 **Answer:** OSO, α 0.8 proved 5.80 targets of 8 on average, 0.05 fewer than Shared library (5.85): not clear: 0.19 standard errors, clear needs 2. OSO, α 0.2 proved 6.25 targets of 8 on average, 0.40 more than Shared library (5.85): not clear: 1.58 standard errors, clear needs 2.
 
-![Societies compared: verified targets for the money (lean-main-b)](figures/progress.svg)
+![Main experiment, part B: 4 setups × 20 runs, $0.15 a lab (Nov 7)](figures/progress.svg)
 
 | society | settings | targets proved | money to 3 targets | spent | lemmas proved | built on another lab | lemmas proved twice | targets proved twice |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |

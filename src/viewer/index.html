@@ -466,6 +466,9 @@ const api = (path) => fetch(path).then(async (r) => { const j = await r.json(); 
 const money = (x) => '$' + (x < 0.1 ? x.toFixed(3) : x.toFixed(2));
 
 const LN = { data: null, run: null }; // the Lean experiment page's data
+// Experiment choices by readable name; pipeline tests (stand-in agents) in their own group at the end.
+const expOptions = (list, chosen, suffix = () => '') => { const opt = (e) => `<option value="${esc(e.id)}"${e.id === chosen ? ' selected' : ''}>${esc(e.name)}${suffix(e)}</option>`;
+  return `<optgroup label="Experiments">${list.filter((e) => !e.test).map(opt).join('')}</optgroup>${list.some((e) => e.test) ? `<optgroup label="Pipeline tests (no model)">${list.filter((e) => e.test).map(opt).join('')}</optgroup>` : ''}`; };
 const VIEWS = ['view-history', 'view-overview', 'view-doc', 'view-new', 'view-live', 'view-progress', 'view-lean'];
 const RUNS_VIEWS = { 'view-history': 'history', 'view-overview': 'results', 'view-live': 'live' };
 const show = (view) => {
@@ -2003,7 +2006,7 @@ async function drawProgress() {
   try { PG.data = await api('/api/progress'); } catch (e) { $('p-head').textContent = `Could not read the runs: ${e.message}`; return; }
   const d = PG.data;
   const sel = $('p-exp'), keep = sel.value || params().get('id');
-  sel.innerHTML = d.experiments.map((e) => `<option value="${esc(e.id)}">${esc(e.id)}${e.runs.some((r) => r.status === 'running') ? ' · running' : ''}</option>`).join('');
+  sel.innerHTML = expOptions(d.experiments, null, (e) => (e.runs.some((r) => r.status === 'running') ? ' · running' : ''));
   if (keep && d.experiments.some((e) => e.id === keep)) sel.value = keep;
   sel.onchange = () => { $('p-rep').value = ''; renderProgress(); };
   $('p-credit').innerHTML = d.credit === null ? '' : `<b>$${d.credit.toFixed(2)}</b> <span class="muted">credit left</span>`;
@@ -2080,7 +2083,7 @@ async function drawLean() {
     if (!LN.data) { $('l-body').textContent = 'The Lean problem set is not available here.'; return; }
   }
   const d = LN.data;
-  $('l-exp').innerHTML = d.experiments.map((x) => `<option${x === d.id ? ' selected' : ''}>${esc(x)}</option>`).join('');
+  $('l-exp').innerHTML = expOptions(d.experiments, d.id);
   $('l-exp').onchange = () => { const q = params(); q.set('exp', $('l-exp').value); q.delete('rep'); q.delete('setup'); location.hash = '#/lean?' + q; };
   $('l-bar').classList.toggle('hidden', tab === 'problems');
   for (const a of $('l-tabs').querySelectorAll('a')) a.href = '#/lean?tab=' + a.dataset.tab + '&exp=' + encodeURIComponent(d.id);
@@ -2088,7 +2091,7 @@ async function drawLean() {
 }
 
 function leanProblems(d) {
-  const counts = d.setups.length ? `<th>Proved in ${esc(d.id)}<br><span class="muted" style="font-weight:400">${d.setups.map((x) => esc(x.name)).join(' · ')} (runs out of each setup's finished runs)</span></th>` : '';
+  const counts = d.setups.length ? `<th>Proved in: ${esc(d.name)}<br><span class="muted" style="font-weight:400">${d.setups.map((x) => esc(x.name)).join(' · ')} (runs out of each setup's finished runs)</span></th>` : '';
   const rows = d.targets.map((t) => `<tr><td><b>${esc(t.id)}</b></td><td>${esc(t.plain)}<br><code style="font-size:12px">theorem ${esc(t.name)} ${esc(t.statement)}</code></td>
     <td>${esc(t.area)}</td><td>${t.depth}</td><td>${t.bounty}</td><td>${t.uses.map(esc).join(', ') || '—'}<br><span class="muted">${t.below} in all below it</span></td>
     ${d.setups.length ? `<td>${d.setups.map((x) => `${x.proved[t.id]}/${x.done}`).join(' · ')}</td>` : ''}</tr>`).join('');
@@ -2138,7 +2141,7 @@ function leanLabs(d) {
     ['Posted conjectures', (x) => x.options.conjectures?.length || 'none'],
     ['Runs', (x) => `${x.done} finished of ${x.runs}`],
   ];
-  $('l-body').innerHTML = `<div class="pane" style="overflow-x:auto"><h3 style="margin:0 0 6px;font-size:15px">Setups in ${esc(d.id)}</h3>
+  $('l-body').innerHTML = `<div class="pane" style="overflow-x:auto"><h3 style="margin:0 0 6px;font-size:15px">Setups in: ${esc(d.name)}</h3>
     <p class="muted" style="margin:0 0 8px">Only the rules should differ between setups; everything else is held the same. Bounties: 4 · 2^(depth − 1) for each target.</p>
     <table class="agents"><thead><tr><th></th>${d.setups.map((x) => `<th><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${x.colour};margin-right:5px"></span>${esc(x.name)}<br><span class="muted" style="font-weight:400">${esc(x.params)}</span></th>`).join('')}</tr></thead>
     <tbody>${fields.map(([k, f]) => { const v = d.setups.map((x) => String(f(x))); const same = v.every((y) => y === v[0]);
@@ -2154,7 +2157,7 @@ function leanPrompts(d) {
   const own = lines.map((ls) => ls.filter((l) => l.trim() && !everywhere.has(l)));
   const col = (x, ls) => `<div class="pane" style="min-width:240px;flex:1"><h3 style="margin:0 0 6px;font-size:14px"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${x.colour};margin-right:5px"></span>${esc(x.name)}</h3>
     <pre style="white-space:pre-wrap;font-size:12.5px;margin:0">${ls.map((l) => esc(l)).join('\n')}</pre></div>`;
-  $('l-body').innerHTML = `<p class="muted" style="margin:0 0 8px">The instructions lab ${d.setups[0].lab} gets in each setup of ${esc(d.id)} (the others differ only in their lab number). ${d.setups.every((x) => x.promptFrom === 'sent') ? 'As sent: saved by the run.' : d.setups.some((x) => x.promptFrom === 'current') ? '<b>Not saved by these runs:</b> rebuilt from the current code, so the wording may differ from what the labs got.' : `<b>Rebuilt</b> ${esc(d.setups[0].promptFrom)}.`}</p>
+  $('l-body').innerHTML = `<p class="muted" style="margin:0 0 8px">The instructions lab ${d.setups[0].lab} gets in each setup of “${esc(d.name)}” (the others differ only in their lab number). ${d.setups.every((x) => x.promptFrom === 'sent') ? 'As sent: saved by the run.' : d.setups.some((x) => x.promptFrom === 'current') ? '<b>Not saved by these runs:</b> rebuilt from the current code, so the wording may differ from what the labs got.' : `<b>Rebuilt</b> ${esc(d.setups[0].promptFrom)}.`}</p>
     <h3 style="font-size:15px;margin:0 0 6px">What differs between setups</h3>
     <p class="muted" style="margin:0 0 8px">Only these lines differ. Ideally they state the rules and nothing more: any extra wording in one setup could change what its labs do, apart from the rules themselves.</p>
     <div style="display:flex;gap:12px;overflow-x:auto;margin-bottom:12px">${d.setups.map((x, j) => col(x, own[j])).join('')}</div>
@@ -2238,7 +2241,7 @@ function leanResults(d) {
     ends.sort((a, b) => a[0] - b[0]); for (let n = 1; n < ends.length; n++) ends[n][0] = Math.max(ends[n][0], ends[n - 1][0] + 15);
     for (const [y, t, c] of ends) svg += `<line x1="${l + pw + 6}" x2="${l + pw + 22}" y1="${y}" y2="${y}" stroke="${c}" stroke-width="2.5"/><text x="${l + pw + 26}" y="${y + 4}" font-size="11" fill="var(--ink)">${esc(t)}</text>`;
     $('l-chart').innerHTML = svg + '</svg>';
-    $('l-cnote').textContent = `Thick lines: the mean of every finished run of ${d.id} (${sets.map((s) => `${s.name} ${s.series.length}`).join(', ')})${share ? '; the share of runs that had proved it by then' : ''}.${$('l-band').checked ? ' Shaded: the mean ± 2 standard errors, a rough 95% range.' : ''}${$('l-each').checked && !share ? ' Thin lines: single runs.' : ''}${logx || logy ? ' On a log scale, zero cannot be drawn: values below the axis sit on it.' : ''}`;
+    $('l-cnote').textContent = `Thick lines: the mean of every finished run of “${d.name}” (${sets.map((s) => `${s.name} ${s.series.length}`).join(', ')})${share ? '; the share of runs that had proved it by then' : ''}.${$('l-band').checked ? ' Shaded: the mean ± 2 standard errors, a rough 95% range.' : ''}${$('l-each').checked && !share ? ' Thin lines: single runs.' : ''}${logx || logy ? ' On a log scale, zero cannot be drawn: values below the axis sit on it.' : ''}`;
   };
   draw();
   const fin = (s, col) => s.series.map((r) => r.at(-1)[col]), mean = (a) => a.reduce((p, q) => p + q, 0) / a.length;
