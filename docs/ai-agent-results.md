@@ -2,7 +2,18 @@
 
 Last updated: 2026-11-08. Every result here has its own page under `results/` (the links), with its design, caveats and logs. This page only gathers them.
 
-**In short:** with help (lemmas), weak models prove targets they cannot prove alone. Sharing at once stops labs proving the same groundwork again: in five paired races, OSO reached 2 hard targets in every run for about half the money, traditional in 3 of 5. Flow-back goes with more groundwork in every experiment so far (more lemmas, more building on each other), but not with more targets proved: about the same in Spend all, the fair-prompt check, May quit and Labs choose. A lead, not a finding: the hardest target, B5, keeps coming up at low α, but the gap shrank with fair prompts and was never the measure fixed in advance. Two results went against OSO: flow-back did not keep labs working when they could stop (May quit), and labs published nearly everything at every α when a reward was paid on publishing (Labs choose). Flow-back was split by money spent instead of lines saved until 2026-11-08; the counts stand (see the correction). The test setup itself checks out.
+## TL;DR
+
+Checked after every run; last checked 2026-11-08, after Labs choose (M3).
+
+- **Lemmas help weak models.** DeepSeek proves 4 of 16 targets alone, 12 of 16 with the lemmas they need.
+- **Sharing at once stops repeated work.** Traditional labs proved the same lemma about 20 times a run; with sharing, almost never. A plain shared library gets this too, so it is not unique to OSO.
+- **Flow-back (OSO's own rule): no clear gain in targets proved yet.** Against the shared library, OSO α 0.2 proved about the same: +0.4 (Spend all), +0.5 (Fair-prompt check), +0.0 (May quit), all with ranges that include zero.
+- **Flow-back goes with more lemmas in most experiments** (about twice as many with fair prompts), but over half are never used, and in Labs choose α 1 labs proved as many once publishing paid a small reward.
+- **Lead, not a finding:** the hardest target, B5, comes up more at low α, but the gap shrank with fair prompts and B5 was picked after looking.
+- **Against OSO:** labs did not share more with flow-back (they published nearly everything at every α), and did not clearly keep working longer (α 0.8: about 2 rounds longer; α 0.2: no clear change).
+- **Why the tests may be blind:** five of the 8 targets are nearly always proved, so "targets proved" barely moves. Flow-back should matter most on deep problems, not tested yet.
+- **The setup checks out** (proof checker, fault tests, public benchmark). Flow-back was split by money spent instead of lines saved until 2026-11-08; the counts stand (correction below).
 
 ## Correction: the graph weights for flow-back were wrong (found 2026-11-08)
 
@@ -228,6 +239,6 @@ Faults found and fixed on the way: wrong error labels, proofs without a code blo
 
 1. **Does flow-back make labs choose to share?** Labs choose found no answer: labs published nearly everything at every α, to collect the new-result reward. Next: the same setups with that reward off, α 1 against α 0.2, so keeping costs nothing at α 1.
 2. **Does flow-back open hard targets?** B5 keeps coming up at low α (Spend all, Labs choose), but the fair-prompt check gave a much smaller gap. Next: B5 as the measure fixed in advance.
-3. **Does flow-back keep labs working?** May quit says no: labs stopped after 5 to 8 rounds in every setup. Settled for this setup.
-4. **More groundwork, same targets:** flow-back raised lemmas and building on others in every experiment, but not targets proved. Whether the extra groundwork pays off on harder problems is open (roadmap M4b, M5).
+3. **Does flow-back keep labs working?** May quit: no clear change at α 0.2, about 2 rounds longer at α 0.8 (+0.6 to +3.6); labs stopped after 5 to 8 rounds in every setup. 10 runs each.
+4. **More groundwork, same targets:** flow-back raised lemmas in Spend all, the fair-prompt check and May quit, but not in Labs choose (where publishing paid at every α), and not targets proved. Lemmas a later proof cites are the better measure. Whether the extra groundwork pays off on harder problems is open (roadmap M4b, M5).
 5. **One model, one small problem set (42 theorems).** Results may not carry over to other models or harder mathematics.
