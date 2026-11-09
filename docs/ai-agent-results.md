@@ -274,7 +274,7 @@ Faults found and fixed on the way: wrong error labels, proofs without a code blo
 
 Each model reply may use up to 32,000 tokens, including its thinking. In the four main experiments 5,646 of 24,902 replies (23%) used all of them and gave no text at all. Each cost about $0.0066, so about $37 of the $94.63 spent. All setups are affected: 27% of replies in the shared library, 25% traditional, 22–23% OSO, 16–18% Labs choose. Costs on this page include this waste.
 
-A further 15% or so of replies had an answer that never reached Lean, because of its format. From 2026-11-08 these are read more tolerantly, and the prompt shows an example; the same checks still apply. Runs after that date are not directly comparable with earlier ones on cost.
+A further 22% of replies (5,385) had text that never reached Lean, mostly because of its format. From 2026-11-08 these are read more tolerantly, and the prompt shows an example; the same checks still apply. Read again by the new code, 3,517 of those saved replies would now reach Lean; whether they would pass is not known. Runs after that date are not directly comparable with earlier ones on cost.
 
 ## 6. What is still open
 
