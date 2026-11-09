@@ -527,7 +527,7 @@ const server = createServer(async (req, res) => {
       if (!existsSync(ROADMAP)) return send(200, { milestones: [] });
       const md = readFileSync(ROADMAP, 'utf8');
       const milestones = md.split(/\n(?=### )/).filter((b) => /^### M\d/.test(b)).map((b) => ({
-        id: /^### (M\d+)/.exec(b)![1], title: /^### M\d+\.\s*(.+)/.exec(b)![1].trim(),
+        id: /^### (M\d+[a-z]?)/.exec(b)![1], title: /^### M\d+[a-z]?\.\s*(.+)/.exec(b)![1].trim(),
         status: /\*\*Status:\*\*\s*(.+)/.exec(b)?.[1].trim() ?? '', question: /\*\*Question:\*\*\s*(.+)/.exec(b)?.[1].trim() ?? '',
       }));
       return send(200, { milestones, aim: /\*\*The claim we want to be able to make:\*\*\s*(.+)/.exec(md)?.[1] ?? '' });
