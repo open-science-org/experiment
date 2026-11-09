@@ -497,3 +497,4 @@ Runs up to 2026-10-19 were made when the simulator lived in `sim/` of [open-scie
 | 2026-10-29 | [simple-ideas-6x64-p2-len3g4-comp0-7-lab-size-192-agents-20261028](simple-ideas-6x64-p2-len3g4-comp0-7-lab-size-192-agents-20261028/summary.md) | `776b77f` | 24 | `npm run sim -- simple-ideas-6x64-p2-len3g4-comp0-7-lab-size-192-agents-20261028 --seeds 24 --save` |
 | 2026-11-08 | [lean-tree-choice](lean-tree-choice/summary.md) | `e245416` (uncommitted changes) | 100 | `npm run sim -- lean-tree-choice --seeds 100 --save` |
 | 2026-11-08 | [lean-tree-choice-matched](lean-tree-choice-matched/summary.md) | `efe8878` | 100 | `npm run sim -- lean-tree-choice-matched --seeds 100 --save` |
+| 2026-11-09 | [epochs](epochs/summary.md) | `a14577c` | 100 | `npm run sim -- epochs --seeds 100 --save` |

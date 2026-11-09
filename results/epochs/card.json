@@ -1,0 +1,264 @@
+{
+ "chart": "results/epochs/figures/compare.svg",
+ "id": "epochs",
+ "kind": "simulation",
+ "date": "2026-11-09",
+ "title": "Turns of the feedback loop (epochs), on the default field",
+ "design": {
+  "question": "Does OSO's lead grow with more turns of the feedback loop?",
+  "compare": "traditional, shared library, OSO α 0.8 and α 0.2 (rules decide sharing), and agents choosing at α 1 and α 0.2, by how often money follows earnings",
+  "fixed": "the default field, 12 agents, the total money and 120 rounds",
+  "measure": "targets solved",
+  "better": "higher",
+  "runs": "100 runs per row"
+ },
+ "answer": "Best: OSO, α 0.8, f = 0.5, every round (120), 0.6 (11 more tie). Best traditional: Traditional, equal (f = 0), 0.0. Clear difference.",
+ "table": [
+  {
+   "setting": "Traditional",
+   "money": "equal (f = 0)",
+   "targets solved": "0.0 ± 0.0",
+   "frontier": "0.0 ± 0.0",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.00 ± 0.00"
+  },
+  {
+   "setting": "Traditional",
+   "money": "f = 0.5, 1 epoch",
+   "targets solved": "0.0 ± 0.0",
+   "frontier": "0.0 ± 0.0",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.00 ± 0.00"
+  },
+  {
+   "setting": "Traditional",
+   "money": "f = 0.5, 5 epochs",
+   "targets solved": "0.0 ± 0.0",
+   "frontier": "0.0 ± 0.0",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.00 ± 0.00"
+  },
+  {
+   "setting": "Traditional",
+   "money": "f = 0.5, 20 epochs",
+   "targets solved": "0.0 ± 0.0",
+   "frontier": "0.0 ± 0.0",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.00 ± 0.00"
+  },
+  {
+   "setting": "Traditional",
+   "money": "f = 0.5, every round (120)",
+   "targets solved": "0.0 ± 0.0",
+   "frontier": "0.0 ± 0.0",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.00 ± 0.00"
+  },
+  {
+   "setting": "Shared library",
+   "money": "equal (f = 0)",
+   "targets solved": "0.5 ± 0.7",
+   "frontier": "5.3 ± 0.7",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.26 ± 0.40"
+  },
+  {
+   "setting": "Shared library",
+   "money": "f = 0.5, 1 epoch",
+   "targets solved": "0.5 ± 0.7",
+   "frontier": "5.3 ± 0.7",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.26 ± 0.40"
+  },
+  {
+   "setting": "Shared library",
+   "money": "f = 0.5, 5 epochs",
+   "targets solved": "0.5 ± 0.7",
+   "frontier": "5.3 ± 0.7",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.25 ± 0.40"
+  },
+  {
+   "setting": "Shared library",
+   "money": "f = 0.5, 20 epochs",
+   "targets solved": "0.5 ± 0.6",
+   "frontier": "5.4 ± 0.7",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.27 ± 0.37"
+  },
+  {
+   "setting": "Shared library",
+   "money": "f = 0.5, every round (120)",
+   "targets solved": "0.6 ± 0.7",
+   "frontier": "5.4 ± 0.8",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.32 ± 0.44"
+  },
+  {
+   "setting": "OSO, α 0.8",
+   "money": "equal (f = 0)",
+   "targets solved": "0.6 ± 0.7",
+   "frontier": "5.5 ± 0.7",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.33 ± 0.40"
+  },
+  {
+   "setting": "OSO, α 0.8",
+   "money": "f = 0.5, 1 epoch",
+   "targets solved": "0.6 ± 0.7",
+   "frontier": "5.5 ± 0.7",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.33 ± 0.40"
+  },
+  {
+   "setting": "OSO, α 0.8",
+   "money": "f = 0.5, 5 epochs",
+   "targets solved": "0.5 ± 0.7",
+   "frontier": "5.4 ± 0.7",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.28 ± 0.39"
+  },
+  {
+   "setting": "OSO, α 0.8",
+   "money": "f = 0.5, 20 epochs",
+   "targets solved": "0.6 ± 0.7",
+   "frontier": "5.5 ± 0.7",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.38 ± 0.57"
+  },
+  {
+   "setting": "OSO, α 0.8",
+   "money": "f = 0.5, every round (120)",
+   "targets solved": "0.6 ± 0.7",
+   "frontier": "5.5 ± 0.6",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.35 ± 0.43"
+  },
+  {
+   "setting": "OSO, α 0.2",
+   "money": "equal (f = 0)",
+   "targets solved": "0.6 ± 0.7",
+   "frontier": "5.4 ± 0.6",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.32 ± 0.42"
+  },
+  {
+   "setting": "OSO, α 0.2",
+   "money": "f = 0.5, 1 epoch",
+   "targets solved": "0.6 ± 0.7",
+   "frontier": "5.4 ± 0.6",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.32 ± 0.42"
+  },
+  {
+   "setting": "OSO, α 0.2",
+   "money": "f = 0.5, 5 epochs",
+   "targets solved": "0.6 ± 0.7",
+   "frontier": "5.5 ± 0.6",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.30 ± 0.38"
+  },
+  {
+   "setting": "OSO, α 0.2",
+   "money": "f = 0.5, 20 epochs",
+   "targets solved": "0.6 ± 0.7",
+   "frontier": "5.5 ± 0.6",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.31 ± 0.42"
+  },
+  {
+   "setting": "OSO, α 0.2",
+   "money": "f = 0.5, every round (120)",
+   "targets solved": "0.5 ± 0.7",
+   "frontier": "5.5 ± 0.6",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.30 ± 0.40"
+  },
+  {
+   "setting": "Agents choose, α 1",
+   "money": "equal (f = 0)",
+   "targets solved": "0.0 ± 0.0",
+   "frontier": "1.8 ± 1.2",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.00 ± 0.00"
+  },
+  {
+   "setting": "Agents choose, α 1",
+   "money": "f = 0.5, 1 epoch",
+   "targets solved": "0.0 ± 0.0",
+   "frontier": "1.8 ± 1.2",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.00 ± 0.00"
+  },
+  {
+   "setting": "Agents choose, α 1",
+   "money": "f = 0.5, 5 epochs",
+   "targets solved": "0.0 ± 0.3",
+   "frontier": "2.2 ± 1.5",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.03 ± 0.19"
+  },
+  {
+   "setting": "Agents choose, α 1",
+   "money": "f = 0.5, 20 epochs",
+   "targets solved": "0.0 ± 0.1",
+   "frontier": "2.4 ± 1.7",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.01 ± 0.07"
+  },
+  {
+   "setting": "Agents choose, α 1",
+   "money": "f = 0.5, every round (120)",
+   "targets solved": "0.0 ± 0.2",
+   "frontier": "2.6 ± 1.7",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.02 ± 0.14"
+  },
+  {
+   "setting": "Agents choose, α 0.2",
+   "money": "equal (f = 0)",
+   "targets solved": "0.1 ± 0.3",
+   "frontier": "4.2 ± 1.1",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.06 ± 0.17"
+  },
+  {
+   "setting": "Agents choose, α 0.2",
+   "money": "f = 0.5, 1 epoch",
+   "targets solved": "0.1 ± 0.3",
+   "frontier": "4.2 ± 1.1",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.06 ± 0.17"
+  },
+  {
+   "setting": "Agents choose, α 0.2",
+   "money": "f = 0.5, 5 epochs",
+   "targets solved": "0.1 ± 0.3",
+   "frontier": "4.2 ± 1.1",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.04 ± 0.17"
+  },
+  {
+   "setting": "Agents choose, α 0.2",
+   "money": "f = 0.5, 20 epochs",
+   "targets solved": "0.1 ± 0.4",
+   "frontier": "4.5 ± 1.1",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.08 ± 0.24"
+  },
+  {
+   "setting": "Agents choose, α 0.2",
+   "money": "f = 0.5, every round (120)",
+   "targets solved": "0.2 ± 0.4",
+   "frontier": "4.5 ± 1.2",
+   "reach L7": "0.00",
+   "ROI (value per spend)": "0.08 ± 0.21"
+  }
+ ],
+ "caveats": [
+  "A simulation with guessed parameters: it shows how the rules play out, not that they work."
+ ],
+ "page": "results/epochs/summary.md",
+ "ranAt": "2026-11-09T00:08:55.275Z",
+ "modelVersion": 6
+}

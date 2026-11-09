@@ -1,0 +1,876 @@
+{
+  "experiment": "epochs",
+  "date": "2026-11-09",
+  "commit": "a14577c",
+  "dirty": false,
+  "command": "npm run sim -- epochs --seeds 100 --save",
+  "seeds": 100,
+  "overrides": {},
+  "config": {
+    "experiment": {
+      "id": "epochs",
+      "title": "Turns of the feedback loop (epochs), on the default field",
+      "description": "Money follows earnings (half of each round's money by recent earnings) and the shares are reset E times in the run's 120 rounds: once (the loop never turns), 5 times, 20 times, or every round. Equal money (f = 0) is the control. Total money 250 (the default 1200 leaves every sharing setup at the ceiling). Same field, agents and total money in every row; each seed gives the same field and agents.",
+      "question": "Does OSO's lead grow with more turns of the feedback loop?",
+      "compare": "traditional, shared library, OSO α 0.8 and α 0.2 (rules decide sharing), and agents choosing at α 1 and α 0.2, by how often money follows earnings",
+      "fixed": "the default field, 12 agents, the total money and 120 rounds",
+      "measure": "targetsSolved",
+      "better": "higher",
+      "seeds": 100,
+      "set": {
+        "budget.X": 250
+      },
+      "factors": [
+        {
+          "name": "setting",
+          "levels": [
+            {
+              "label": "Traditional",
+              "preset": "traditional"
+            },
+            {
+              "label": "Shared library",
+              "preset": "sharingOnly"
+            },
+            {
+              "label": "OSO, α 0.8",
+              "preset": "oso"
+            },
+            {
+              "label": "OSO, α 0.2",
+              "preset": "oso",
+              "set": {
+                "rules.alpha": 0.2
+              }
+            },
+            {
+              "label": "Agents choose, α 1",
+              "preset": "traditionalChoice"
+            },
+            {
+              "label": "Agents choose, α 0.2",
+              "preset": "osoChoice",
+              "set": {
+                "rules.alpha": 0.2
+              }
+            }
+          ]
+        },
+        {
+          "name": "money",
+          "levels": [
+            {
+              "label": "equal (f = 0)",
+              "set": {
+                "budget.allocation.rho": 0
+              }
+            },
+            {
+              "label": "f = 0.5, 1 epoch",
+              "set": {
+                "budget.allocation.rho": 0.5,
+                "budget.allocation.epochs": 1
+              }
+            },
+            {
+              "label": "f = 0.5, 5 epochs",
+              "set": {
+                "budget.allocation.rho": 0.5,
+                "budget.allocation.epochs": 5
+              }
+            },
+            {
+              "label": "f = 0.5, 20 epochs",
+              "set": {
+                "budget.allocation.rho": 0.5,
+                "budget.allocation.epochs": 20
+              }
+            },
+            {
+              "label": "f = 0.5, every round (120)",
+              "set": {
+                "budget.allocation.rho": 0.5,
+                "budget.allocation.epochs": null
+              }
+            }
+          ]
+        }
+      ],
+      "columns": [
+        "frontier",
+        "targetsSolved",
+        "reachTarget",
+        "halfCost",
+        "sharing",
+        "waste",
+        "duplicates"
+      ]
+    },
+    "base": {
+      "world": {
+        "kind": "ideas",
+        "levels": 6,
+        "width": 8,
+        "parents": 2,
+        "skip": 0.2,
+        "length": 3,
+        "lengthGrowth": 2,
+        "levelTie": 1,
+        "composition": 0.7,
+        "newBits": 0,
+        "targets": 2,
+        "targetsFrom": 0,
+        "bountyBase": 4,
+        "bountyGrowth": 2,
+        "attemptLimit": 24
+      },
+      "success": {
+        "p0": 0.5,
+        "eta": 0.6,
+        "oracle": {
+          "kind": "chance"
+        }
+      },
+      "attribution": {
+        "noise": 0
+      },
+      "agents": {
+        "archetypes": {
+          "plain": {
+            "skill": 1,
+            "conjecture": 1,
+            "cost": 1,
+            "horizon": 1,
+            "risk": 0,
+            "reuse": 1,
+            "sharing": 0,
+            "gaming": 0,
+            "specialist": false
+          },
+          "foundation": {
+            "skill": 1,
+            "conjecture": 0.7,
+            "cost": 1,
+            "horizon": 0.98,
+            "risk": 0.2,
+            "reuse": 0.9,
+            "sharing": 0.5,
+            "gaming": 0,
+            "specialist": false
+          },
+          "racer": {
+            "skill": 1,
+            "conjecture": 0.5,
+            "cost": 1,
+            "horizon": 0.85,
+            "risk": -0.2,
+            "reuse": 0.6,
+            "sharing": 0,
+            "gaming": 0,
+            "specialist": false
+          },
+          "explorer": {
+            "skill": 0.5,
+            "conjecture": 0.3,
+            "cost": 0.3,
+            "horizon": 0.95,
+            "risk": 0,
+            "reuse": 0.8,
+            "sharing": 0.2,
+            "gaming": 0,
+            "specialist": false
+          },
+          "specialist": {
+            "skill": 1,
+            "conjecture": 0.6,
+            "cost": 1,
+            "horizon": 0.95,
+            "risk": 0,
+            "reuse": 0.8,
+            "sharing": 0.2,
+            "gaming": 0,
+            "specialist": true
+          },
+          "freeRider": {
+            "skill": 0.8,
+            "conjecture": 0.5,
+            "cost": 1,
+            "horizon": 0.9,
+            "risk": 0,
+            "reuse": 1,
+            "sharing": -1,
+            "gaming": 0,
+            "specialist": false
+          },
+          "gamer": {
+            "skill": 0.8,
+            "conjecture": 0.3,
+            "cost": 0.5,
+            "horizon": 0.9,
+            "risk": 0,
+            "reuse": 0.8,
+            "sharing": 0,
+            "gaming": 0.6,
+            "specialist": false
+          }
+        },
+        "mix": {
+          "foundation": 3,
+          "racer": 3,
+          "explorer": 2,
+          "specialist": 2,
+          "freeRider": 1,
+          "gamer": 1
+        },
+        "specialist": {
+          "boost": 1.6,
+          "penalty": 0.4
+        },
+        "deciders": {},
+        "groups": []
+      },
+      "rules": {
+        "alpha": 1,
+        "mint": 0,
+        "mintPerBit": 1,
+        "alpha0": null,
+        "screen": 0.5,
+        "publishFailures": false,
+        "visibility": {
+          "kind": "finished-only"
+        }
+      },
+      "knowledge": {
+        "absorbCost": 0,
+        "errorRate": 0
+      },
+      "budget": {
+        "X": 250,
+        "rounds": 120,
+        "perAgentPerRound": null,
+        "stopWhenSolved": true,
+        "stopAtShare": 1,
+        "allocation": {
+          "kind": "earnings-share",
+          "rho": 0.5,
+          "smoothing": 0.7,
+          "epochs": null
+        }
+      },
+      "behaviour": {
+        "decider": {
+          "kind": "formula"
+        },
+        "policy": {
+          "kind": "softmax",
+          "tau": 0.3,
+          "epsilon": 0.05
+        },
+        "perceptionNoise": 1,
+        "kappa": 1,
+        "psi": 0.5,
+        "roundsPerLevel": 5,
+        "rivals": "public"
+      },
+      "measures": {
+        "targetLevel": 7
+      }
+    },
+    "rows": [
+      {
+        "labels": {
+          "setting": "Traditional",
+          "money": "equal (f = 0)"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "Traditional",
+          "money": "f = 0.5, 1 epoch"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": 1
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "Traditional",
+          "money": "f = 0.5, 5 epochs"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": 5
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "Traditional",
+          "money": "f = 0.5, 20 epochs"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": 20
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "Traditional",
+          "money": "f = 0.5, every round (120)"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "finished-only"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": null
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "Shared library",
+          "money": "equal (f = 0)"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "immediate"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "Shared library",
+          "money": "f = 0.5, 1 epoch"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "immediate"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": 1
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "Shared library",
+          "money": "f = 0.5, 5 epochs"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "immediate"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": 5
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "Shared library",
+          "money": "f = 0.5, 20 epochs"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "immediate"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": 20
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "Shared library",
+          "money": "f = 0.5, every round (120)"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "immediate"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": null
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "OSO, α 0.8",
+          "money": "equal (f = 0)"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "immediate"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "OSO, α 0.8",
+          "money": "f = 0.5, 1 epoch"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "immediate"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": 1
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "OSO, α 0.8",
+          "money": "f = 0.5, 5 epochs"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "immediate"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": 5
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "OSO, α 0.8",
+          "money": "f = 0.5, 20 epochs"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "immediate"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": 20
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "OSO, α 0.8",
+          "money": "f = 0.5, every round (120)"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.8,
+            "visibility": {
+              "kind": "immediate"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": null
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "OSO, α 0.2",
+          "money": "equal (f = 0)"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "immediate"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "OSO, α 0.2",
+          "money": "f = 0.5, 1 epoch"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "immediate"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": 1
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "OSO, α 0.2",
+          "money": "f = 0.5, 5 epochs"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "immediate"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": 5
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "OSO, α 0.2",
+          "money": "f = 0.5, 20 epochs"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "immediate"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": 20
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "OSO, α 0.2",
+          "money": "f = 0.5, every round (120)"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "immediate"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": null
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "Agents choose, α 1",
+          "money": "equal (f = 0)"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "choice"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "Agents choose, α 1",
+          "money": "f = 0.5, 1 epoch"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "choice"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": 1
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "Agents choose, α 1",
+          "money": "f = 0.5, 5 epochs"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "choice"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": 5
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "Agents choose, α 1",
+          "money": "f = 0.5, 20 epochs"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "choice"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": 20
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "Agents choose, α 1",
+          "money": "f = 0.5, every round (120)"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 1,
+            "visibility": {
+              "kind": "choice"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": null
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "Agents choose, α 0.2",
+          "money": "equal (f = 0)"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "choice"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "Agents choose, α 0.2",
+          "money": "f = 0.5, 1 epoch"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "choice"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": 1
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "Agents choose, α 0.2",
+          "money": "f = 0.5, 5 epochs"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "choice"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": 5
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "Agents choose, α 0.2",
+          "money": "f = 0.5, 20 epochs"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "choice"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": 20
+            }
+          }
+        }
+      },
+      {
+        "labels": {
+          "setting": "Agents choose, α 0.2",
+          "money": "f = 0.5, every round (120)"
+        },
+        "overrides": {
+          "rules": {
+            "alpha": 0.2,
+            "visibility": {
+              "kind": "choice"
+            }
+          },
+          "budget": {
+            "allocation": {
+              "rho": 0.5,
+              "epochs": null
+            }
+          }
+        }
+      }
+    ]
+  }
+}

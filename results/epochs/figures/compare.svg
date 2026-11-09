@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="viz" viewBox="0 0 620 358" width="620" height="358" role="img" aria-label="Targets solved (best 11 of 30)">
+<style>
+  .viz { --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --grid: #e6e5e1;
+         --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --dead: #c9c7c0; }
+  @media (prefers-color-scheme: dark) {
+    .viz { --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --grid: #34332f;
+           --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --dead: #4a4945; }
+  }
+  .bg { fill: var(--surface); }
+  text { fill: var(--ink); font-family: Helvetica, Arial, sans-serif; }
+  .title { font-size: 16px; font-weight: 700; }
+  .sub, .tick, .axis { fill: var(--ink-2); font-size: 12px; }
+  .grid { stroke: var(--grid); stroke-width: 1; }
+  .base { stroke: var(--ink-2); stroke-width: 1; }
+  .line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .c1 { stroke: var(--s1); } .f1 { fill: var(--s1); }
+  .c2 { stroke: var(--s2); } .f2 { fill: var(--s2); }
+  .c3 { stroke: var(--s3); } .f3 { fill: var(--s3); }
+  .dot { stroke: var(--surface); stroke-width: 2; }
+  .label { font-size: 12px; font-weight: 700; }
+  .t1 { fill: var(--s1); } .t2 { fill: var(--s2); } .t3 { fill: var(--s3); }
+</style><rect class="bg" width="620" height="358" rx="8"/>
+<text class="title" x="16" y="26">Targets solved (best 11 of 30)</text>
+<rect x="16" y="38" width="12" height="10" rx="2" style="fill:var(--s2)"/><text class="label t2" x="33" y="47">OSO</text>
+<rect x="67" y="38" width="12" height="10" rx="2" style="fill:var(--s1)"/><text class="label t1" x="84" y="47">Traditional</text>
+<rect x="174" y="38" width="12" height="10" rx="2" style="fill:var(--dead)"/><text class="label " x="191" y="47">other</text>
+<text class="tick" x="222" y="73" text-anchor="end">OSO, α 0.8, f = 0.5, every round …</text>
+<rect x="230" y="62" width="320.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO, α 0.8, f = 0.5, every round (120): 0.62</title></rect>
+<text class="label t2" x="556" y="74">0.62</text>
+<text class="tick" x="222" y="99" text-anchor="end">OSO, α 0.8, f = 0.5, 20 epochs</text>
+<rect x="230" y="88" width="309.7" height="16" rx="3" style="fill:var(--s2)"><title>OSO, α 0.8, f = 0.5, 20 epochs: 0.6</title></rect>
+<text class="label t2" x="545.6774193548387" y="100">0.6</text>
+<text class="tick" x="222" y="125" text-anchor="end">OSO, α 0.8, equal (f = 0)</text>
+<rect x="230" y="114" width="299.4" height="16" rx="3" style="fill:var(--s2)"><title>OSO, α 0.8, equal (f = 0): 0.58</title></rect>
+<text class="label t2" x="535.3548387096773" y="126">0.58</text>
+<text class="tick" x="222" y="151" text-anchor="end">OSO, α 0.8, f = 0.5, 1 epoch</text>
+<rect x="230" y="140" width="299.4" height="16" rx="3" style="fill:var(--s2)"><title>OSO, α 0.8, f = 0.5, 1 epoch: 0.58</title></rect>
+<text class="label t2" x="535.3548387096773" y="152">0.58</text>
+<text class="tick" x="222" y="177" text-anchor="end">OSO, α 0.2, equal (f = 0)</text>
+<rect x="230" y="166" width="294.2" height="16" rx="3" style="fill:var(--s2)"><title>OSO, α 0.2, equal (f = 0): 0.57</title></rect>
+<text class="label t2" x="530.1935483870968" y="178">0.57</text>
+<text class="tick" x="222" y="203" text-anchor="end">OSO, α 0.2, f = 0.5, 1 epoch</text>
+<rect x="230" y="192" width="294.2" height="16" rx="3" style="fill:var(--s2)"><title>OSO, α 0.2, f = 0.5, 1 epoch: 0.57</title></rect>
+<text class="label t2" x="530.1935483870968" y="204">0.57</text>
+<text class="tick" x="222" y="229" text-anchor="end">OSO, α 0.2, f = 0.5, 5 epochs</text>
+<rect x="230" y="218" width="289.0" height="16" rx="3" style="fill:var(--s2)"><title>OSO, α 0.2, f = 0.5, 5 epochs: 0.56</title></rect>
+<text class="label t2" x="525.0322580645161" y="230">0.56</text>
+<text class="tick" x="222" y="255" text-anchor="end">Shared library, f = 0.5, every ro…</text>
+<rect x="230" y="244" width="283.9" height="16" rx="3" style="fill:var(--dead)"><title>Shared library, f = 0.5, every round (120): 0.55</title></rect>
+<text class="label " x="519.8709677419355" y="256">0.55</text>
+<text class="tick" x="222" y="281" text-anchor="end">OSO, α 0.2, f = 0.5, 20 epochs</text>
+<rect x="230" y="270" width="283.9" height="16" rx="3" style="fill:var(--s2)"><title>OSO, α 0.2, f = 0.5, 20 epochs: 0.55</title></rect>
+<text class="label t2" x="519.8709677419355" y="282">0.55</text>
+<text class="tick" x="222" y="307" text-anchor="end">OSO, α 0.2, f = 0.5, every round …</text>
+<rect x="230" y="296" width="278.7" height="16" rx="3" style="fill:var(--s2)"><title>OSO, α 0.2, f = 0.5, every round (120): 0.54</title></rect>
+<text class="label t2" x="514.7096774193549" y="308">0.54</text>
+<text class="tick" x="222" y="333" text-anchor="end">Traditional, equal (f = 0)</text>
+<rect x="230" y="322" width="2.0" height="16" rx="3" style="fill:var(--s1)"><title>Traditional, equal (f = 0): 0.0</title></rect>
+<text class="label t1" x="238" y="334">0.0</text>
+</svg>
