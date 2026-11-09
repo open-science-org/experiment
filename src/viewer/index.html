@@ -24,6 +24,7 @@
   .question:hover { border-color: var(--ink-3); }
   .question[aria-pressed="true"] { border-color: var(--s2); background: var(--surface); font-weight: 700; }
   .chart-tip { position: absolute; z-index: 2; pointer-events: none; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 6px 9px; font-size: 12px; line-height: 1.5; white-space: nowrap; }
+  .pilot-tag { font-size: 11px; font-weight: 700; color: var(--ink-2); border: 1px solid var(--ink-3); border-radius: 4px; padding: 0 5px; }
   .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; }
   .tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--s1); font-weight: 700; }
   main { padding: 16px 20px 40px; max-width: 1500px; min-width: 0; }
@@ -293,7 +294,7 @@
     <div class="pane" style="margin-bottom:12px"><h2 style="margin:0 0 6px;font-size:20px">Share work early, and credit what others build on: does research get further for the same money?</h2>
       <p class="muted" id="h-aim" style="margin:0"></p></div>
     <div class="home-grid">
-      <div class="pane"><h3 style="margin:0 0 8px;font-size:15px">Running now</h3><div id="h-running"><p class="muted">Loading…</p></div>
+      <div class="pane"><h3 style="margin:0 0 8px;font-size:15px">Running now</h3><div id="h-running"><p class="muted">Loading…</p></div><div id="h-pilot"></div>
         <h3 style="margin:16px 0 8px;font-size:15px">Money</h3><div id="h-money"><p class="muted">Loading…</p></div></div>
       <div class="pane"><h3 style="margin:0 0 8px;font-size:15px">Milestones <a href="#/roadmap" style="font-size:13px;font-weight:400">roadmap →</a></h3><div id="h-ms"><p class="muted">Loading…</p></div></div>
     </div>
@@ -2051,6 +2052,19 @@ $('pilot-load').onclick = loadPilot;
 // done, running or waiting, the benchmark checks, and the credit left. Refreshes itself every 15 s.
 const PG = { data: null, poll: null };
 // OSO orange, traditional blue; the baselines are inks with their own dash, so no line is told apart by colour alone.
+const PILOT_NAMES = { 'hard-check': 'Difficulty check of the harder targets' };
+/** The pilot difficulty check, all its passes added up: for each candidate target, proved alone and with its lemmas. */
+function pilotCheck(pilots) {
+  const runs = pilots.filter((r) => /^hard-check-\d+$/.test(r.id));
+  if (!runs.length) return '';
+  const sum = {}; for (const r of runs) for (const [t, by] of Object.entries(r.proved)) for (const [c, [ok, n]] of Object.entries(by)) { const v = ((sum[t] ??= {})[c] ??= [0, 0]); v[0] += ok; v[1] += n; }
+  const planned = runs.reduce((a, r) => a + (r.planned ?? 0), 0), done = runs.reduce((a, r) => a + r.recorded, 0), spent = runs.reduce((a, r) => a + r.spent, 0);
+  const cell = (v) => (v ? `${v[0]} of ${v[1]}` : '<span class="muted">none yet</span>');
+  const verdict = (x) => (x.alone?.[1] === 4 && x.library?.[1] === 4 ? (x.alone[0] <= 1 && x.library[0] >= 2 ? 'keep' : x.alone[0] > 1 ? 'too easy' : 'too hard') : '<span class="muted">not all in</span>');
+  return `<div class="pane" style="margin-top:12px"><h3 style="margin:0 0 4px;font-size:15px"><span class="pilot-tag">Pilot</span> Difficulty check of the harder targets</h3>
+    <p class="muted" style="font-size:12px;margin:0 0 8px">One model alone (DeepSeek V4.1 Flash) on each candidate target, with no library and with the lemmas it rests on. Not a community run. ${done} of ${planned} attempts, ${money(spent)}. Keep a target if it is proved at most 1 of 4 times alone and at least 2 of 4 with the lemmas; a rough screen.</p>
+    <table class="agents"><thead><tr><th>Target</th><th>Alone</th><th>With its lemmas</th><th>Rule</th></tr></thead><tbody>${Object.keys(sum).sort().map((t) => `<tr><td>${esc(t)}</td><td>${cell(sum[t].alone)}</td><td>${cell(sum[t].library)}</td><td>${verdict(sum[t])}</td></tr>`).join('')}</tbody></table></div>`;
+}
 const P_STYLE = { traditional: ['var(--s1)', ''], oso: ['var(--s2)', ''], 'oso-0.2': ['var(--s2)', '6 4'], 'choose-1': ['var(--ink)', ''], 'choose-0.8': ['var(--s2)', ''], 'choose-0.2': ['var(--s2)', '6 4'], 'choose-off-1': ['var(--ink)', ''], 'choose-off-0.2': ['var(--s2)', '6 4'], single: ['var(--ink)', '2 4'], independent: ['var(--ink-2)', '8 4'], shared: ['var(--ink-3)', ''], planner: ['var(--ink-2)', '10 3 2 3'] };
 const ago = (ms) => { const m = Math.round(ms / 60000); return m < 1 ? 'just now' : m < 60 ? `${m} min ago` : `${Math.floor(m / 60)} h ${m % 60} min ago`; };
 // Money: every paid Lean run and benchmark, as charged, refreshed every minute.
@@ -2063,9 +2077,16 @@ async function drawHome() {
     $('h-ms').innerHTML = r.milestones.map((m) => `<div class="ms"><span class="id">${esc(m.id)}</span><span>${esc(m.title)}</span><span class="chip ${cls(m.status)}">${esc(m.status || 'planned')}</span>${m.question ? `<span class="q">${esc(m.question)}</span>` : ''}</div>`).join('') || '<p class="muted">No roadmap found.</p>';
   }).catch((e) => { $('h-ms').textContent = e.message; });
   api('/api/doc?path=docs/findings.md').then((d) => { $('h-findings').innerHTML = d.html; }).catch((e) => { $('h-findings').textContent = e.message; });
-  api('/api/progress').then((p) => {
+  Promise.all([api('/api/progress'), api('/api/pilot/runs')]).then(([p, pilots]) => {
     const live = p.experiments.filter((e) => !e.test && e.runs.some((r) => r.status === 'running'));
-    $('h-running').innerHTML = !live.length ? '<p class="muted" style="margin:0">Nothing is running. <a href="#/lean">See the experiments →</a></p>' : live.map((e) => {
+    // Pilot runs: one model alone on single theorems, not a community of labs.
+    const pilotLive = pilots.filter((r) => r.running);
+    const pilotHtml = pilotLive.map((r) => { const name = PILOT_NAMES[r.id.replace(/-\d+$/, '')] ?? r.id, pct = r.planned ? Math.min(100, (100 * r.recorded) / r.planned) : 0;
+      return `<div style="margin-bottom:10px"><span class="pilot-tag">Pilot</span> <b>${esc(name)}</b> <span class="muted" style="font-size:12px">(${esc(r.id)}: one model alone, not a community run)</span>
+        <div style="height:8px;background:var(--line);border-radius:4px;margin:4px 0"><div style="height:8px;width:${pct}%;background:var(--ink-2);border-radius:4px"></div></div>
+        <span class="muted" style="font-size:12px">${r.recorded}${r.planned ? ` of ${r.planned}` : ''} attempts finished · ${money(r.spent)} spent · ${esc(r.model)}</span></div>`; }).join('');
+    $('h-pilot').innerHTML = pilotCheck(pilots);
+    $('h-running').innerHTML = !live.length && !pilotLive.length ? '<p class="muted" style="margin:0">Nothing is running. <a href="#/lean">See the experiments →</a></p>' : pilotHtml + live.map((e) => {
       // Runs finished out of runs planned (money spent would mislead when labs may stop early).
       const n = Math.max(e.runs.length, (e.plan?.repeats ?? 0) * (e.plan?.societies?.length ?? 0)), done = e.runs.filter((r) => r.status === 'done').length;
       const spent = e.runs.reduce((a, r) => a + (r.spent ?? 0), 0), offered = e.runs.reduce((a, r) => a + (r.budget ?? 0), 0);

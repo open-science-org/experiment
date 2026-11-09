@@ -186,7 +186,13 @@ function pilotRuns() {
     const opts = JSON.parse(readFileSync(join(dir, d, 'options.json'), 'utf8'));
     const files = ['attempts.jsonl', 'events.jsonl'].map((f) => join(dir, d, f)).filter(existsSync);
     const modified = Math.max(0, ...files.map((f) => statSync(f).mtimeMs));
-    return { id: d, model: opts.model?.model ?? '?', provider: opts.model?.provider ?? 'anthropic', recorded: jsonl(join(dir, d, 'attempts.jsonl')).length, modified, live: Date.now() - modified < 5 * 60_000 };
+    const attempts = jsonl(join(dir, d, 'attempts.jsonl'));
+    // How many attempts the run plans, when it names its targets; a run whose failing attempts are slow still counts as running.
+    const planned = opts.only?.length ? opts.only.length * (opts.conditions?.length ?? 1) * (opts.attempts ?? 1) : null;
+    const running = planned !== null ? attempts.length < planned && Date.now() - modified < 20 * 60_000 : Date.now() - modified < 5 * 60_000;
+    const proved: Record<string, Record<string, [number, number]>> = {};
+    for (const a of attempts) { const c = ((proved[a.publicId] ??= {})[a.condition] ??= [0, 0]); c[1]++; if (a.ok) c[0]++; }
+    return { id: d, model: opts.model?.model ?? '?', provider: opts.model?.provider ?? 'anthropic', recorded: attempts.length, modified, live: Date.now() - modified < 5 * 60_000, planned, running, spent: attempts.reduce((v, a) => v + (a.usage?.cost ?? 0), 0), proved };
   }).sort((a, b) => b.modified - a.modified);
 }
 
