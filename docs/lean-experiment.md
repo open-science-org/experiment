@@ -89,13 +89,26 @@ Mint and knowledge reward flow back by α, like a bounty. Any setup is one point
 | **OSO, α 0.8** | at once | 0.8 | 0 | 0 | 0 | |
 | **OSO, α 0.2** | at once | 0.2 | 0 | 0 | 0 | |
 | **Pay per lemma** | at once | 1 | 1 | 0 | 0 | |
-| **Planner** | at once | 1 | 0 | 0 | 0 | lab 1 assigns the work and proves nothing |
+| **Planner with hints** | at once | 1 | 0 | 0 | 0 | lab 1 assigns the work and proves nothing; lab 1 also gets strategy advice and failure reports |
+| **Plain planner** | at once | 1 | 0 | 0 | 0 | lab 1 assigns the work and proves nothing; same information as the labs |
 | **Independent labs** | never | 1 | 0 | 0 | 0 | |
 | **Single agent** | never | 1 | 0 | 0 | 0 | one lab with all the money |
 | **Labs choose, α 1, 0.8 or 0.2** | the lab chooses | as named | 0 | by proof size | 0 | |
 | **Labs choose, reward off, α 1 or 0.2** | the lab chooses | as named | 0 | 0 | 0 | |
 
 Runs before 2026-11-06 paid m = 1 in every setup. The values a run really used are shown in the app (Labs & setups) and in its summary.
+
+### The advantages of the planner with hints
+
+The planner as first built gets more than the role. Compare it with care:
+
+| What lab 1 gets | Other setups |
+| --- | --- |
+| **Strategy advice we wrote:** "A good plan splits each hard target into lemmas, gives different labs different lemmas so no work is done twice, and assigns a target once the lemmas it needs are in the library" | no lab is told this |
+| **Failure reports:** what each lab tried last round, and why it failed | no lab sees this, not even for its own past turns |
+| **A team goal:** prove the targets for as little money as possible | each lab is told to earn as much as it can |
+
+These favour the planner. If OSO is cheaper anyway, that is a strong result. If the planner is cheaper, it may be the hints and not the coordination. The **plain planner** has the same information as the labs, and only the role and the team goal differ, so it shows what coordination alone is worth. Both planners spend money on lab 1's calls, and only three labs prove.
 
 Value flowing back is split among the results a proof used by **graph weights**, as in the simulation: each cited result's share is the lines it saves divided by the lines all of that proof's cited results save, so the shares add to 1. A cited result saves writing out its proof, so its saving is its own proof's length in symbols. Value keeps flowing down the tree the same way.
 - **Since 2026-11-08** (runs after Labs choose what to publish). The runs before split by the money spent proving each result, which was an error; what it changed is in [the correction](ai-agent-results.md#correction-the-graph-weights-for-flow-back-were-wrong-found-2026-11-08).

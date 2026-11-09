@@ -3,7 +3,7 @@
 
 export const EXPERIMENT_NAMES: Record<string, string> = {
   'lean-hard': 'Pilot: harder targets, stage 1, 4 setups × 2 runs, $0.20 a lab (Nov 9), left out',
-  'lean-hard-2': 'Harder targets: money to reach them, 4 setups × 5 runs, $0.40 a lab (Nov 9)',
+  'lean-hard-2': 'Harder targets: money to reach them, 5 runs per setup, $0.40 a lab (Nov 9)',
   'lean-part-a': 'May quit: labs may stop early, 4 setups × 10 runs, $0.15 a lab (Nov 7)',
   'm3-smoke': 'Labs choose what to publish: smoke test, 1 run at α 0.2, $0.05 a lab (Nov 7)',
   'lean-m3': 'Labs choose what to publish: α 1, 0.8, 0.2 × 10 runs, $0.15 a lab (Nov 8)',

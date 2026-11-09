@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { banned, checkFile, parseAxioms, parseErrors } from '../src/lean/checker.ts';
 import { extractProof } from '../src/lean/agent.ts';
 import { leanAvailable } from '../src/lean/tasks.ts';
-import { LEAN_REWARDS, parseReply, progress, proofBody, spendTo, type CommunityResult } from '../src/lean/community.ts';
+import { Community, LEAN_REWARDS, parseReply, progress, proofBody, spendTo, type CommunityOptions, type CommunityResult } from '../src/lean/community.ts';
 import { medianDiff, medianRange, reachK } from '../src/lean/societies.ts';
 import { MODEL_VERSION } from '../src/engine/version.ts';
 
@@ -184,6 +184,17 @@ test('with the knowledge reward off, a new result earns nothing and the prompt s
     const off = new Community({ ...base, rules, knowledge: 'off' }).systemPrompt(1), old = new Community({ ...base, rules }).systemPrompt(1);
     assert.doesNotMatch(off, /mint/, rules);
     assert.match(old, /mint of 1/, rules);
+  }
+});
+
+test('the plain planner gets no strategy advice and no failure reports', () => {
+  const base = { agents: ['a', 'b', 'c', 'd'], budget: 1, rounds: 5, repairs: 2, rules: 'planner', alpha: 1, mint: 1, knowledge: 'off', split: 'lines-saved', effort: 'medium', mayStop: false, counted: [] } as unknown as CommunityOptions;
+  const failed = { round: 1, agent: 1, kind: 'lemma', ok: false, reason: 'not accepted', name: 'x', turns: 1, usage: {}, transcript: [], t: 1 } as never;
+  for (const [plain, has] of [[false, true], [true, false]] as const) {
+    const com = new Community({ ...base, plainPlanner: plain });
+    com.actions.push(failed);
+    assert.equal(com.plannerSystem().includes('A good plan'), has);
+    assert.equal(com.plannerPrompt(2).includes('Last round'), has);
   }
 });
 

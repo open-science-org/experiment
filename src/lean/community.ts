@@ -100,6 +100,8 @@ export interface CommunityOptions {
   follow?: number;
   /** May a lab stop early by passing (default yes)? No: every lab works until its money or the rounds run out,
    *  so setups are compared at the same money spent; a pass then only skips that turn. */
+  /** Planner rules: the planner gets no strategy advice and no report of what failed, so it has the same information as the labs. */
+  plainPlanner?: boolean;
   mayStop?: boolean;
   effort: 'low' | 'medium' | 'high';
   /** Allow grind (only for the stand-in agents, whose reference proofs use it). */
@@ -389,7 +391,7 @@ Take one action.`;
     const o = this.opts;
     return `You are the planner of a research community of ${o.agents.length - 1} labs proving theorems in Lean 4 (version 4.35.0, core library only, no Mathlib). You do not prove anything yourself. Each round you give every lab one assignment, so that together they prove the posted targets for as little money as possible: every model call costs budget, yours included.
 
-Results are published at once and every lab can cite them. A good plan splits each hard target into lemmas, gives different labs different lemmas so no work is done twice, and assigns a target once the lemmas it needs are in the library.
+Results are published at once and every lab can cite them.${o.plainPlanner ? '' : ' A good plan splits each hard target into lemmas, gives different labs different lemmas so no work is done twice, and assigns a target once the lemmas it needs are in the library.'}
 
 The definitions:
 
@@ -416,7 +418,7 @@ ${targets.join('\n')}
 Library (everyone can cite):
 ${pub.length ? '```lean\n' + pub.map((e) => `theorem ${e.ns === 'OSO' ? '' : e.ns.replace(/^OSO\./, '') + '.'}${e.name} ${e.signature}   -- lab ${e.author + 1}`).join('\n') + '\n```' : '(empty)'}
 
-${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still working its assignment.`;
+${last.length && !this.opts.plainPlanner ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still working its assignment.`;
   }
 
   /** Planner rules: one planning call, charged to lab 1; it sets this round's assignments. */

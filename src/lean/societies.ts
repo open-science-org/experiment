@@ -10,14 +10,17 @@ import { RESULTS_DIR } from '../paths.ts';
 import { loadTasks } from './tasks.ts';
 import { experimentName } from './names.ts';
 
-export interface Society { /** Labs choose what to publish, with the knowledge reward by proof size (roadmap M3). */ choose?: boolean; /** With `choose`: 'off' pays no reward for publishing, so keeping a result costs nothing. */ knowledge?: 'off' | 'flat-mint'; name: string; /** The setup in OSO settings: when others see a result, α, who decides the work. */ rules: Rules; alpha?: number; /** One lab with everyone's budget. */ single?: boolean; colour: string; slot: 1 | 2 | 3 }
+export interface Society { /** Planner rules: no strategy advice and no failure reports for the planner. */ plain?: boolean; /** Labs choose what to publish, with the knowledge reward by proof size (roadmap M3). */ choose?: boolean; /** With `choose`: 'off' pays no reward for publishing, so keeping a result costs nothing. */ knowledge?: 'off' | 'flat-mint'; name: string; /** The setup in OSO settings: when others see a result, α, who decides the work. */ rules: Rules; alpha?: number; /** One lab with everyone's budget. */ single?: boolean; colour: string; slot: 1 | 2 | 3 }
 
 /** OSO is orange, traditional blue; the baselines are greys. */
 export const SOCIETIES: Record<string, Society> = {
   single: { name: 'Single agent', rules: 'independent', single: true, colour: '#5f5e5a', slot: 3 },
   independent: { name: 'Independent labs', rules: 'independent', colour: '#8a8984', slot: 3 },
   shared: { name: 'Shared library', rules: 'shared', colour: '#b3b1aa', slot: 3 },
-  planner: { name: 'Planner', rules: 'planner', colour: '#33322f', slot: 3 },
+  // The planner as first built: its prompt also has strategy advice and a report of what failed last round.
+  planner: { name: 'Planner with hints', rules: 'planner', colour: '#33322f', slot: 3 },
+  // The same role with the same information as the labs: what coordination alone is worth.
+  'planner-plain': { name: 'Plain planner', rules: 'planner', plain: true, colour: '#8f8d86', slot: 3 },
   // New results pay their authors a flat amount and nothing flows back: credit without the dependency graph.
   'pay-lemma': { name: 'Pay per lemma', rules: 'oso', alpha: 1, knowledge: 'flat-mint', colour: '#6f6e69', slot: 3 },
   traditional: { name: 'Traditional', rules: 'traditional', colour: '#2a78d6', slot: 1 },
@@ -36,7 +39,7 @@ export const SOCIETIES: Record<string, Society> = {
 export function osoParams(o: CommunityOptions) {
   const when = o.publishing === 'choose' ? 'labs choose when to publish' : o.rules === 'traditional' ? 'public when a target is proved' : o.rules === 'independent' ? 'never shared' : 'public at once';
   const parts = [when, `α ${o.rules === 'oso' ? o.alpha : 1}`, `m ${mintOf(o)}`, `m_bit ${o.knowledge === 'proof-size' ? 'by proof size' : 0}`, `f ${o.follow ?? 0}`];
-  if (o.rules === 'planner') parts.push('lab 1 plans, the others prove');
+  if (o.rules === 'planner') parts.push(o.plainPlanner ? 'lab 1 plans, the others prove; same information as the labs' : 'lab 1 plans, the others prove; lab 1 also gets strategy advice and reports of what failed');
   if (o.agents.length === 1) parts.push('one lab, all the money');
   return parts.join(' · ');
 }
@@ -45,7 +48,7 @@ export function osoParams(o: CommunityOptions) {
 export function societyOptions(key: string, base: CommunityOptions): CommunityOptions {
   const s = SOCIETIES[key];
   if (!s) throw new Error(`unknown society ${key}; known: ${Object.keys(SOCIETIES).join(', ')}`);
-  const o: CommunityOptions = { ...base, rules: s.rules, alpha: s.alpha ?? base.alpha, ...(s.choose ? { publishing: 'choose' as const, knowledge: s.knowledge ?? ('proof-size' as const) } : s.knowledge ? { knowledge: s.knowledge } : {}) };
+  const o: CommunityOptions = { ...base, rules: s.rules, alpha: s.alpha ?? base.alpha, ...(s.plain ? { plainPlanner: true } : {}), ...(s.choose ? { publishing: 'choose' as const, knowledge: s.knowledge ?? ('proof-size' as const) } : s.knowledge ? { knowledge: s.knowledge } : {}) };
   if (!s.single) return o;
   const one = <T>(xs?: T[]) => (xs ? xs.slice(0, 1) : undefined);
   // One action per round: the single agent gets as many rounds as all the labs' actions, so money is the only limit.
@@ -211,7 +214,8 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
       ...(() => { const gaps = LEAN_REWARDS.gaps(o); return gaps.length ? [`Rewards differ from the current simulation model: ${gaps.join('; ')}.`] : []; })(),
       ...(local ? ['Models on this machine cost nothing; dollars price their tokens as a cheap open model would be served. A test of the setup, not a cost result.'] : []),
       moneyMeasure ? 'Money to a count is all labs together, to the end of the round that reached it. Medians have ranges of at least 95% from the sorted runs; differences of medians have 95% ranges from resampling the runs; runs are not paired. Other table values are mean ± standard deviation.' : 'Table values are mean ± standard deviation over runs. Above: means with 95% ranges (Student t), and differences between setups with their 95% ranges; runs are not paired.',
-      ...(keys.includes('planner') ? ['In the planner setup lab 1 only plans, so three labs prove and most of its money stays unspent; it is also told to save the team money and how to split the work.'] : []),
+      ...(keys.includes('planner') ? ['Planner with hints has advantages the other setups lack: its prompt says how to split the work, and it sees what each lab tried last round and why it failed. A win for it may come from these hints rather than from coordination. Lab 1 only plans, so three labs prove and most of its money stays unspent.'] : []),
+      ...(keys.includes('planner-plain') ? ['The plain planner has the same information as the labs (no strategy advice, no failure reports). Lab 1 only plans, so three labs prove.'] : []),
       ...(runs.some((r) => r.result.stopped) ? [`Some runs stopped early (${[...new Set(runs.map((r) => r.result.stopped).filter(Boolean))].join(', ')}); their money counts as spent up to the stop.`] : []),
     ],
     cost: stub ? '$0 (stand-in agents; dollars are a fixed $0.01 a call)' : local ? '$0 (local models)' : `$${f2(runs.reduce((a, r) => a + stats(r.result).spent, 0))} ${priced}`,
