@@ -328,7 +328,7 @@ function leanData(exp: string) {
   };
 }
 
-/** One run turn by turn, for the Lean results graph: after each turn, the money spent, round, turn number, targets
+/** One run turn by turn, for the Lean results graph: after each turn, the money spent, round, proof tries so far, targets
  *  proved, bounty value of those targets, lemmas proved, results built on another lab's work, and which targets are
  *  proved (bit n = the n-th posted target). */
 function seriesOf(r: CommunityResult, posted: { id: string; bounty: number; depth: number }[]) {
@@ -336,16 +336,17 @@ function seriesOf(r: CommunityResult, posted: { id: string; bounty: number; dept
   const solved = new Set<string>(), cited = new Set<string>();
   // Repeat proofs of a statement do not count as building on others; only first proofs of real lemmas can be cited groundwork.
   const first = firstProofs(r.library), firstNames = new Set(first.map((e) => e.name)), groundwork = new Set(first.filter((e) => !e.target && !e.conjecture && !e.trivial).map((e) => `${e.ns}.${e.name}`));
-  let spent = 0, lemmas = 0, built = 0;
+  let spent = 0, lemmas = 0, built = 0, tries = 0;
   const rows: number[][] = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
-  acts.forEach((a, n) => {
+  acts.forEach((a) => {
     spent += a.cost ?? a.listCost ?? 0;
+    if (a.kind === 'target' || a.kind === 'lemma' || a.kind === 'conjecture') tries += a.turns; // one model reply is one proof attempt
     if (a.ok && a.kind === 'target' && a.target) solved.add(a.target);
     if (a.ok && a.kind === 'lemma' && !/trivial/.test(a.reason ?? '')) lemmas++;
     if (a.ok && (!a.entry || firstNames.has(a.entry)) && (a.uses ?? []).some((u) => { const e = byName.get(u); return e && e.author !== a.agent; })) built++;
     if (a.ok) for (const u of a.uses ?? []) if (groundwork.has(u)) cited.add(u);
     const mask = posted.reduce((m, t, k) => (solved.has(t.id) ? m | (1 << k) : m), 0);
-    rows.push([Math.round(spent * 1e4) / 1e4, a.round, n + 1, solved.size, posted.reduce((v, t) => v + (solved.has(t.id) ? t.bounty : 0), 0), lemmas, built, mask, Math.max(0, ...posted.filter((t) => solved.has(t.id)).map((t) => t.depth)), cited.size]);
+    rows.push([Math.round(spent * 1e4) / 1e4, a.round, tries, solved.size, posted.reduce((v, t) => v + (solved.has(t.id) ? t.bounty : 0), 0), lemmas, built, mask, Math.max(0, ...posted.filter((t) => solved.has(t.id)).map((t) => t.depth)), cited.size]);
   });
   return rows;
 }

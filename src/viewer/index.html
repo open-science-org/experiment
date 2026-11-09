@@ -2291,7 +2291,7 @@ function leanPrompts(d) {
 // What the Lean results graph can show: columns of the server's per-turn rows (see seriesOf in server.ts).
 // The 95% range of a mean from n runs: ± t × standard error, with t from Student's t for n − 1 (about 2 for many runs).
 const T95 = (n) => (n < 2 ? 0 : [12.71, 4.30, 3.18, 2.78, 2.57, 2.45, 2.36, 2.31, 2.26, 2.23, 2.20, 2.18, 2.16, 2.14, 2.13, 2.12, 2.11, 2.10, 2.09][n - 2] ?? (n < 40 ? 2.05 : 2));
-const LX = [{ id: 0, name: 'Money spent so far, per community ($)' }, { id: 1, name: 'Round' }, { id: 2, name: 'Turns taken (all labs)' }];
+const LX = [{ id: 0, name: 'Money spent so far, per community ($)' }, { id: 1, name: 'Round' }, { id: 2, name: 'Tries (all labs)' }];
 const LY = (d) => [
   { id: 'targets', group: 'Progress', name: `Targets proved (of ${d.targets.length})`, col: 3 },
   { id: 'deepest', group: 'Progress', name: 'Deepest target proved (its depth)', col: 8 },
@@ -2304,7 +2304,8 @@ const LY = (d) => [
 // The main questions: clicking one sets the graph.
 const LQ = (d) => [
   { text: 'Which setup proves the most targets for the money?', y: 'targets', x: 0, read: 'Higher line: more targets for the same money.' },
-  { text: 'Which setup gets there in the fewest rounds?', y: 'targets', x: 1, read: 'Higher line: more targets by that round. In a round, every lab still working picks one task and gets up to 3 tries.' },
+  { text: 'Which setup gets there in the fewest tries?', y: 'targets', x: 2, read: 'Higher line: more targets for the same number of proof attempts, all labs together. Tries do not depend on prices.' },
+  { text: 'Which setup gets there soonest, with labs working at once?', y: 'targets', x: 1, read: 'Higher line: more targets by that round. In a round, every lab still working picks one task and gets up to 3 tries.' },
   { text: 'How deep does each setup get for the money?', y: 'deepest', x: 0, read: 'Higher line: a deeper target for the same money. Depth is not the same as difficulty on these problems: some deep targets are proved almost at once.' },
   ...(d.targets.some((t) => t.id === 'B5') ? [{ text: 'How often is the hard target B5 proved?', y: 'TB5', x: 0, read: 'Higher line: more runs have proved B5 by that money.' }] : []),
   { text: 'Does flow-back bring more groundwork?', y: 'lemmas', x: 0, read: 'Higher line: more lemmas proved for the same money. Many are never used: see the next question.' },
@@ -2406,7 +2407,7 @@ function leanResults(d) {
       if (px < l || px > l + pw) { cross.style.display = 'none'; tip.hidden = true; return; }
       let k = 0; grid.forEach((g, n) => { if (Math.abs(sx(g) - px) < Math.abs(sx(grid[k]) - px)) k = n; });
       cross.setAttribute('x1', sx(grid[k])); cross.setAttribute('x2', sx(grid[k])); cross.style.display = '';
-      tip.innerHTML = `<b>${esc(fmtx(grid[k]))}${xi === 1 ? ' (round)' : ''}</b>` + [...lines].sort((a, b) => b.m[k] - a.m[k]).map((L) => `<div><span class="swatch" style="background:${L.s.colour}"></span>${esc(L.s.name)}: <b>${fmt(L.m[k])}</b> <span class="muted">(${fmt(Math.max(0, L.m[k] - 2 * L.se[k]))}–${fmt(L.m[k] + 2 * L.se[k])})</span></div>`).join('');
+      tip.innerHTML = `<b>${esc(fmtx(grid[k]))}${xi === 1 ? ' (round)' : xi === 2 ? ' tries' : ''}</b>` + [...lines].sort((a, b) => b.m[k] - a.m[k]).map((L) => `<div><span class="swatch" style="background:${L.s.colour}"></span>${esc(L.s.name)}: <b>${fmt(L.m[k])}</b> <span class="muted">(${fmt(Math.max(0, L.m[k] - 2 * L.se[k]))}–${fmt(L.m[k] + 2 * L.se[k])})</span></div>`).join('');
       tip.hidden = false;
       const wrap = $('l-chart').getBoundingClientRect(), x = (sx(grid[k]) * box.width) / W, right = x + 14 + tip.offsetWidth > wrap.width;
       tip.style.left = `${right ? x - 14 - tip.offsetWidth : x + 14}px`; tip.style.top = `${((top + 8) * box.height) / H}px`;
@@ -2421,12 +2422,12 @@ function leanResults(d) {
     const cellOf = (xs, f) => { const [m, lo, hi] = medianRange(xs); return m === Infinity ? (lo === Infinity ? 'not reached' : `not reached <span class="muted">(from ${f(lo)})</span>`) : `${f(m)} <span class="muted">(${f(lo)} to ${hi === Infinity ? 'not reached' : f(hi)})</span>`; };
     return sets.map((s) => {
       const at = s.series.map((r) => r.find((row) => row[3] >= k)), hit = at.filter(Boolean).length, [lo, hi] = wilson(hit, at.length);
-      return `<tr><td><span class="swatch" style="background:${s.colour}"></span>${esc(s.name)}</td><td>${hit} of ${at.length} <span class="muted">(${Math.round(lo * 100)}–${Math.round(hi * 100)}%)</span></td><td>${cellOf(at.map((row) => row?.[0] ?? Infinity), usd)}</td><td>${cellOf(at.map((row) => row?.[1] ?? Infinity), rnd)}</td></tr>`;
+      return `<tr><td><span class="swatch" style="background:${s.colour}"></span>${esc(s.name)}</td><td>${hit} of ${at.length} <span class="muted">(${Math.round(lo * 100)}–${Math.round(hi * 100)}%)</span></td><td>${cellOf(at.map((row) => row?.[0] ?? Infinity), usd)}</td><td>${cellOf(at.map((row) => row?.[2] ?? Infinity), rnd)}</td><td>${cellOf(at.map((row) => row?.[1] ?? Infinity), rnd)}</td></tr>`;
     }).join('');
   };
   const drawReach = (k) => { $('l-reach-rows').innerHTML = reach(k); };
   $('l-reach').innerHTML = `<div class="pane" style="overflow-x:auto;margin-bottom:12px"><h3 style="margin:0 0 8px;font-size:15px"><label>Cost to reach <select id="l-k">${Array.from({ length: nTargets }, (_, n) => `<option value="${n + 1}"${n + 1 === kv ? ' selected' : ''}>${n + 1}</option>`).join('')}</select> targets</label></h3>
-    <table class="agents"><thead><tr><th>Setup</th><th>Runs that reached it</th><th>Median money, all labs</th><th>Median round</th></tr></thead><tbody id="l-reach-rows"></tbody></table>
+    <table class="agents"><thead><tr><th>Setup</th><th>Runs that reached it</th><th>Median money, all labs</th><th>Median tries, all labs</th><th>Median round</th></tr></thead><tbody id="l-reach-rows"></tbody></table>
     <p class="muted" style="font-size:12px;margin:8px 0 0">Every run counts: a run that never got there is "not reached", so no setup is flattered by leaving it out. Ranges cover at least 95%. For runs up to 2026-11-08 this was looked at after the results, so read it as a lead.</p></div>`;
   drawReach(kv);
   $('l-k').onchange = () => { const p = params(); p.set('tab', 'results'); p.set('exp', d.id); p.set('k', $('l-k').value); history.replaceState(null, '', '#/lean?' + p); drawReach(Number($('l-k').value)); };
