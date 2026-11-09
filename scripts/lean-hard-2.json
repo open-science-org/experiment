@@ -1,6 +1,6 @@
 {
   "agents": ["deepseek/deepseek-v4.1-flash", "deepseek/deepseek-v4.1-flash", "deepseek/deepseek-v4.1-flash", "deepseek/deepseek-v4.1-flash"],
-  "societies": ["oso-0.2", "shared", "planner", "planner-plain", "pay-lemma"],
+  "societies": ["oso-0.2", "shared", "planner", "planner-plain", "pay-lemma", "traditional"],
   "budget": 0.4,
   "rounds": 60,
   "repairs": 2,
