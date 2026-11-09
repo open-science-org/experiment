@@ -1,0 +1,45 @@
+{
+ "chart": "results/lean-tree-choice-matched-off/figures/compare.svg",
+ "id": "lean-tree-choice-matched-off",
+ "kind": "simulation",
+ "date": "2026-11-09",
+ "title": "Agents choosing what to publish on the Lean tree, matched to the Lean runs, knowledge reward off, by α",
+ "design": {
+  "question": "Set up like the Lean runs, with no reward for publishing, does flow-back make agents choose to share?",
+  "compare": "α 1, 0.8 and 0.2, agents choosing what to publish, knowledge reward off",
+  "fixed": "the Lean tree, 4 identical agents, equal money, no knowledge reward",
+  "measure": "share of ideas published at once",
+  "better": "higher",
+  "runs": "100 runs per row"
+ },
+ "answer": "Best: α 0.2, 0.9.",
+ "table": [
+  {
+   "α": 1,
+   "sharing": "0.16 ± 0.04",
+   "frontier": "1.5 ± 0.5",
+   "targets solved": "1.2 ± 0.6",
+   "ROI (value per spend)": "0.05 ± 0.03"
+  },
+  {
+   "α": 0.8,
+   "sharing": "0.16 ± 0.05",
+   "frontier": "1.5 ± 0.5",
+   "targets solved": "1.3 ± 0.6",
+   "ROI (value per spend)": "0.05 ± 0.03"
+  },
+  {
+   "α": 0.2,
+   "sharing": "0.93 ± 0.04",
+   "frontier": "5.1 ± 0.8",
+   "targets solved": "2.8 ± 1.0",
+   "ROI (value per spend)": "0.31 ± 0.22"
+  }
+ ],
+ "caveats": [
+  "A simulation with guessed parameters: it shows how the rules play out, not that they work."
+ ],
+ "page": "results/lean-tree-choice-matched-off/summary.md",
+ "ranAt": "2026-11-09T04:19:17.787Z",
+ "modelVersion": 6
+}

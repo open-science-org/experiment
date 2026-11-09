@@ -307,7 +307,7 @@ export class Community {
       ? 'Lemmas you prove stay private to you; other labs cannot see or use them, and you cannot see theirs. When you prove a posted target, it is published together with every lemma it rests on.'
       : 'Every result you prove is published at once, and every lab can build on it immediately.';
     const flow = o.rules === 'oso' && o.alpha < 1
-      ? `When value reaches a result (a target's bounty, or value flowing back from later work), its author keeps ${o.alpha * 100}% and the rest flows back to the results it used, split by how much of its proof each one saves (the length of its own proof), and on down.`
+      ? `When value reaches a result (a target's bounty, or value flowing back from later work), its author keeps ${o.alpha * 100}% and the rest flows back to the results it used, and on down.`
       : "A target's bounty goes to the lab that proves it. Nothing flows back to the results it used.";
     const own = o.knowledge === 'proof-size'
       ? `When a result is published, it earns up to ${PROOF_CAP}, more for a longer proof, if it is new: no lab has published it, or a result that proves it in one step, before${o.rules === 'oso' && o.alpha < 1 ? '. This flows back in the same way' : '. Its author keeps it'}.`

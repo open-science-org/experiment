@@ -9,7 +9,7 @@ Checked after every run; last checked 2026-11-08, after Labs choose (M3).
 - **Lemmas help weak models.** DeepSeek proves 4 of 16 targets alone, 12 of 16 with the lemmas they need.
 - **Sharing lets labs build on each other** (Spend all: 2.2 results a run in the shared library, 0.4 under traditional), but it has not raised targets proved. A plain shared library gets this too, so it is not unique to OSO. **Repeated work is not a general result:** traditional labs proved the same lemma about 20 times a run in the small cheap race (5 runs), but only 0.4 times in Spend all (20 runs per setup; shared library 0.2).
 - **Flow-back (OSO's own rule): no clear gain in targets proved yet.** Against the shared library, OSO α 0.2 proved about the same: +0.4 (Spend all), +0.5 (Fair-prompt check), +0.0 (May quit), all with ranges that include zero.
-- **Flow-back goes with more lemmas in most experiments** (about twice as many with fair prompts), but over half are never used, and in Labs choose α 1 labs proved as many once publishing paid a small reward.
+- **Flow-back goes with more lemmas in most experiments** (about twice as many with fair prompts), and more of them get used: lemmas a later proof cites rose by 1 to 5 a run at α 0.2 (section 4d). About half of all lemmas are never cited, and in Labs choose α 1 labs proved as many once publishing paid a small reward.
 - **Lead, not a finding:** the hardest target, B5, comes up more at low α, but the gap shrank with fair prompts and B5 was picked after looking.
 - **Against OSO:** labs did not share more with flow-back (they published nearly everything at every α), and did not clearly keep working longer (α 0.8: about 2 rounds longer; α 0.2: no clear change).
 - **Why the tests may be blind:** five of the 8 targets are nearly always proved, so "targets proved" barely moves. Flow-back should matter most on deep problems, not tested yet.
@@ -108,18 +108,18 @@ Money to reach 2 counted targets, run by run (OSO / traditional): $0.25 / never,
 
 **A known flaw:** the setups' prompts differed by more than the rules. The shared library's had an extra line, "Other results earn nothing by themselves", and the OSO prompts explained flow-back at length. Some of any difference between setups could come from the wording. New runs use one template, where only the rule lines differ.
 
-### The answer: no clear difference
+### The answer: about the same
 
-Targets proved by the end, of 8 (the measure fixed in advance):
+Targets proved by the end, of 8 (the measure fixed in advance), means with 95% ranges:
 
-| Setup | Mean | Spread | Against the shared library |
+| Setup | Targets proved | Spread | Minus the shared library |
 | --- | --- | --- | --- |
-| Traditional | 5.80 | 4–7 | (reference) |
-| Shared library (α 1) | 5.85 | 4–7 | |
-| OSO, α 0.8 | 5.80 | 4–8 | −0.05 (not clear) |
-| OSO, α 0.2 | 6.25 | 5–8 | +0.40 (not clear: 1.6 standard errors; clear needs 2) |
+| Traditional | 5.80 (5.44–6.16) | 4–7 | −0.05 (−0.50 to +0.40) |
+| Shared library (α 1) | 5.85 (5.58–6.12) | 4–7 | |
+| OSO, α 0.8 | 5.80 (5.33–6.27) | 4–8 | −0.05 (−0.59 to +0.49) |
+| OSO, α 0.2 | 6.25 (5.80–6.70) | 5–8 | +0.40 (−0.13 to +0.93) |
 
-By the rule fixed in advance, neither OSO setting is clearly ahead of the shared library. Against traditional (secondary): OSO α 0.2 +0.45 (1.6 standard errors, not clear), OSO α 0.8 0.00, shared library +0.05. Sharing alone did not raise the number of targets: the shared library proved no more than traditional. Runs varied less than in the pilot (about ±0.8 targets against ±1.4), so the test was sharper than planned.
+The plan's rule, a difference of two standard errors, put neither OSO setting ahead of the shared library. Sharing alone did not raise the number of targets: the shared library proved about as many as traditional. Runs varied less than in the pilot (about ±0.8 targets against ±1.4).
 
 ### What changed: which targets, and how labs worked (exploratory)
 
@@ -224,6 +224,19 @@ Means with 95% ranges (Student t; for differences, degrees of freedom from the s
 - Compared with Spend all's OSO setups (everything published by rule, no new-result reward), labs here proved more lemmas (about 20 against 11–14 a run). The rules and prompts differ, so this is not a clean comparison.
 
 **What it means for the next step:** with a reward paid on publication, AI labs share by default, so this setup cannot show flow-back raising sharing. To test that, the incentive to keep has to be real: run the same setups with the new-result reward off (then keeping costs nothing at α 1). Not yet run.
+
+## 4d. Lemmas a later proof cites (looked at after the results)
+
+Lemmas count as useful groundwork only if another result's proof used them. First proofs only, trivial lemmas left out. Means with 95% ranges (`scripts/lean-estimates.py`).
+
+| Experiment | Shared library (or α 1) | OSO α 0.8 | OSO α 0.2 | α 0.2 minus shared (or α 1) |
+| --- | --- | --- | --- | --- |
+| Spend all | 2.2 (1.3–3.1) | 4.4 (2.8–6.1) | 6.3 (4.0–8.5) | +4.1 (+1.6 to +6.5) |
+| Fair-prompt check | 3.3 (0.9–5.7) | not run | 8.4 (5.1–11.7) | +5.1 (+1.0 to +9.2) |
+| May quit | 0.0 | 2.1 (1.5–2.7) | 1.1 (0.6–1.6) | +1.1 (+0.6 to +1.6) |
+| Labs choose (against α 1) | 8.8 (5.2–12.4) | 8.8 (5.4–12.2) | 10.5 (7.5–13.5) | +1.7 (−3.0 to +6.4) |
+
+With flow-back, labs proved more lemmas that others went on to use, except in Labs choose, where publishing paid at every α. About half of all lemmas are not cited by any later proof.
 
 ## 5. Is the test setup sound? (harness checks)
 

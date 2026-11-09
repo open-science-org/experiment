@@ -9,7 +9,9 @@ Definitions:
 - lemmas: accepted lemma actions, without those the checker marked trivial (they earn nothing);
 - rounds a lab worked: the last round in which it took an action that was not a pass and not empty;
 - built on another lab: results whose proof used another lab's result, counting only the first proof of each statement;
-- never passed: share of labs that did not pass in the run.
+- never passed: share of labs that did not pass in the run;
+- lemmas cited later: first proofs of lemmas, not trivial, that some other result's proof used;
+- median lemma size: symbols in a lemma's proof, median over the run (to spot padding; runs from M3 on).
 """
 import glob, json, math, re, statistics as st, sys
 
@@ -48,11 +50,16 @@ def run(path):
     worked = [max([a['round'] for a in acts if a['agent'] == i and a['kind'] not in ('pass', 'none')] or [0]) for i in labs]
     passed = [any(a['agent'] == i and a['kind'] == 'pass' for a in acts) for i in labs]
     spent = sum(a.get('cost') or 0 for a in acts)
+    cited = {u for e in lib for u in e.get('uses', [])}
+    own = [e for e in first_proofs(lib) if not e.get('target') and not e.get('conjecture') and not e.get('trivial')]
+    sizes = [e['size'] for e in own if e.get('size')]
     targets = {e['target'] for e in lib if e.get('target')}
     return {
         'targets': len(targets), 'spent': spent, 'per $': len(targets) / spent if spent else 0,
         'lemmas': sum(1 for a in acts if a['kind'] == 'lemma' and a.get('ok') and 'trivial' not in (a.get('reason') or '')),
         'built on another lab': sum(1 for e in first_proofs(lib) if any(u in by and by[u]['author'] != e['author'] for u in e.get('uses', []))),
+        'lemmas cited later': sum(1 for e in own if f"{e['ns']}.{e['name']}" in cited),
+        'median lemma size': st.median(sizes) if sizes else None,
         'rounds a lab worked': st.mean(worked), 'never passed': 1 - sum(passed) / len(labs),
         'B5': 'B5' in targets, 'A5': 'A5' in targets,
     }
@@ -67,7 +74,8 @@ if __name__ == '__main__':
     base = sys.argv[3] if len(sys.argv) > 3 else 'shared'
     data = {s: load(exp, s) for s in setups}
     data = {s: v for s, v in data.items() if v}
-    keys = ['targets', 'spent', 'per $', 'lemmas', 'built on another lab', 'rounds a lab worked', 'never passed']
+    keys = ['targets', 'spent', 'per $', 'lemmas', 'lemmas cited later', 'median lemma size', 'built on another lab', 'rounds a lab worked', 'never passed']
+    keys = [k for k in keys if all(x[k] is not None for v in data.values() for x in v)]
     for s, v in data.items():
         print(f'\n{s} ({len(v)} runs)')
         for k in keys:

@@ -40,7 +40,7 @@ The mixed corners separate the gain from sharing from the gain from credit. When
 | --- | --- | --- |
 | Ideas | coin-toss sequences in a generated graph (or the Lean graph) | Lean theorems; agents may state their own lemmas |
 | Does an attempt work? | chance $2^{-\text{bits left}}$ | Lean checks the proof |
-| Link weights | each parent's share of the child's bits (Shapley) | which theorems a proof uses (exact); how much each helped, for now by the money spent proving it |
+| Link weights | each parent's share of the child's bits (Shapley) | which theorems a proof uses (exact); how much each helped, for now by each one's proof length |
 | Agents | formula agents with set traits | AI models; behaviour from model and prompt |
 | Cost | money units, free to run | real money per call |
 
@@ -104,7 +104,7 @@ What the design defines but the tests measure only with a stand-in. Add to this 
 
 | What | Used now | How to measure it |
 | --- | --- | --- |
-| **Link weights in the AI tests** | the money spent proving each used idea | re-prove the child without each parent and measure the extra work |
+| **Link weights in the AI tests** | the proof length of each used idea (the money spent proving it until 2026-11-08) | re-prove the child without each parent and measure the extra work |
 | **How real agents respond to credit** | formula agents; in AI tests publishing is set by the rules | AI tests where agents choose what to publish, at several α |
 | **Scoop risk ψ and agent traits** | guesses; ψ matters most | from AI tests: how often a published idea helps a rival win |
 | **Knowledge in real research** | the simulation knows every idea's true bits; the AI tests pay no knowledge reward (off since 2026-11-06) | a proxy, such as the proof length a lemma saves in Lean ([the knowledge reward in Lean](#the-knowledge-reward-in-lean)) |
