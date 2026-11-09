@@ -59,20 +59,30 @@ export interface Allocation {
   update: (roundEarnings: Float64Array) => void;
 }
 
-export const allocations = new Registry<Record<string, unknown>, (n: number) => Allocation>('allocation');
+export const allocations = new Registry<Record<string, unknown>, (n: number, rounds?: number) => Allocation>('allocation');
 
-allocations.register<{ rho: number; smoothing: number }>('earnings-share', {
-  description: 'A share 1 − rho split equally, a share rho in proportion to smoothed recent earnings',
-  defaults: { rho: 0.5, smoothing: 0.7 },
-  create: ({ rho, smoothing }) => (n) => {
-    const ebar = new Float64Array(n);
+allocations.register<{ rho: number; smoothing: number; epochs: number | null }>('earnings-share', {
+  description: 'A share 1 − rho split equally, a share rho in proportion to smoothed recent earnings; shares recomputed once per epoch',
+  defaults: { rho: 0.5, smoothing: 0.7, epochs: null },
+  create: ({ rho, smoothing, epochs }) => (n, rounds = 1) => {
+    // Epochs (turns of the feedback loop): the run's rounds fall into `epochs` equal blocks, and shares are set at the
+    // start of each block from the earnings of the block before (smoothed across blocks). null: every round is an
+    // epoch (the rule before 2026-11-08). 1: shares set once, before anyone has earned, so the loop never turns.
+    const every = epochs ? Math.max(1, Math.round(rounds / epochs)) : 1;
+    const ebar = new Float64Array(n), sinceLast = new Float64Array(n);
+    let shares: number[] | null = null, round = 0;
     return {
       budgets: (perRound) => {
-        const total = ebar.reduce((a, b) => a + b, 0);
-        return Array.from(ebar, (e) => perRound * ((1 - rho) / n + rho * (total > 0 ? e / total : 1 / n)));
+        if (shares === null || round % every === 0) {
+          if (round > 0) for (let i = 0; i < n; i++) { ebar[i] = smoothing * ebar[i] + (1 - smoothing) * sinceLast[i]; sinceLast[i] = 0; }
+          const total = ebar.reduce((a, b) => a + b, 0);
+          shares = Array.from(ebar, (e) => (1 - rho) / n + rho * (total > 0 ? e / total : 1 / n));
+        }
+        return shares.map((x) => perRound * x);
       },
       update: (earned) => {
-        for (let i = 0; i < n; i++) ebar[i] = smoothing * ebar[i] + (1 - smoothing) * earned[i];
+        for (let i = 0; i < n; i++) sinceLast[i] += earned[i];
+        round++;
       },
     };
   },

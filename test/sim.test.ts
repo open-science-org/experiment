@@ -561,3 +561,19 @@ test('old settings files with c (the share of the mint passed on) still load', (
   const old = loadScenario(null, { rules: { alpha: 0.8, c: 0.15, mint: 1, mintPerBit: 0 } });
   assert.ok(!('c' in old.rules));
 });
+
+test('money by earnings, in epochs: shares change only at epoch boundaries, from the earnings since the last one', async () => {
+  const { allocations } = await import('../src/engine/rules.ts');
+  const make = (epochs: number | null) => allocations.create({ kind: 'earnings-share', rho: 1, smoothing: 0, epochs }, 'test')(2, 4);
+  const play = (a: ReturnType<typeof make>) => {
+    const out: number[][] = [];
+    for (let r = 0; r < 4; r++) { out.push(a.budgets(1)); a.update(Float64Array.from(r === 0 ? [3, 1] : [0, 0])); }
+    return out;
+  };
+  // Every round an epoch: round 2 already follows round 1's earnings (3 : 1); then nothing was earned, so equal again.
+  assert.deepEqual(play(make(null)), [[0.5, 0.5], [0.75, 0.25], [0.5, 0.5], [0.5, 0.5]]);
+  // Two epochs of 2 rounds: shares set at round 1 (equal) and round 3 (earnings of rounds 1 and 2).
+  assert.deepEqual(play(make(2)), [[0.5, 0.5], [0.5, 0.5], [0.75, 0.25], [0.75, 0.25]]);
+  // One epoch: the loop never turns.
+  assert.deepEqual(play(make(1)), [[0.5, 0.5], [0.5, 0.5], [0.5, 0.5], [0.5, 0.5]]);
+});

@@ -76,6 +76,8 @@ budget:
     kind: earnings-share # half equal, half by recent earnings when rho = 0.5
     rho: 0.5
     smoothing: 0.7
+    epochs: null         # turns of the loop: shares reset at the start of each of E equal blocks of rounds,
+                         # from the earnings of the block before (1: never; null: every round)
 
 behaviour:
   decider:

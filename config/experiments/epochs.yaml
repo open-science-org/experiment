@@ -1,0 +1,31 @@
+id: epochs
+title: Turns of the feedback loop (epochs), on the default field
+description: >-
+  Money follows earnings (half of each round's money by recent earnings) and the shares are reset E times in
+  the run's 120 rounds: once (the loop never turns), 5 times, 20 times, or every round. Equal money (f = 0)
+  is the control. Total money 250 (the default 1200 leaves every sharing setup at the ceiling). Same field, agents and total money in every row; each seed gives the same field and agents.
+question: "Does OSO's lead grow with more turns of the feedback loop?"
+compare: "traditional, shared library, OSO α 0.8 and α 0.2 (rules decide sharing), and agents choosing at α 1 and α 0.2, by how often money follows earnings"
+fixed: "the default field, 12 agents, the total money and 120 rounds"
+measure: targetsSolved
+better: higher
+seeds: 100
+set:
+  budget.X: 250        # tight: with the default 1200 every sharing setup solves both targets, so nothing can differ
+factors:
+  - name: setting
+    levels:
+      - { label: Traditional, preset: traditional }
+      - { label: Shared library, preset: sharingOnly }
+      - { label: 'OSO, α 0.8', preset: oso }
+      - { label: 'OSO, α 0.2', preset: oso, set: { rules.alpha: 0.2 } }
+      - { label: 'Agents choose, α 1', preset: traditionalChoice }
+      - { label: 'Agents choose, α 0.2', preset: osoChoice, set: { rules.alpha: 0.2 } }
+  - name: money
+    levels:
+      - { label: 'equal (f = 0)', set: { budget.allocation.rho: 0 } }
+      - { label: 'f = 0.5, 1 epoch', set: { budget.allocation.rho: 0.5, budget.allocation.epochs: 1 } }
+      - { label: 'f = 0.5, 5 epochs', set: { budget.allocation.rho: 0.5, budget.allocation.epochs: 5 } }
+      - { label: 'f = 0.5, 20 epochs', set: { budget.allocation.rho: 0.5, budget.allocation.epochs: 20 } }
+      - { label: 'f = 0.5, every round (120)', set: { budget.allocation.rho: 0.5, budget.allocation.epochs: null } }
+columns: [frontier, targetsSolved, reachTarget, halfCost, sharing, waste, duplicates]

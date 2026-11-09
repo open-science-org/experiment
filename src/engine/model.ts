@@ -344,7 +344,6 @@ export function run(sc: Scenario, seed: number, record?: { events: TraceEvent[];
     trace: record?.events,
   };
   record?.onStart(world, agents);
-  const allocation = allocations.create(sc.budget.allocation, 'budget.allocation')(N);
   // One decider per kind; an archetype may override the default (agents.deciders).
   const built = new Map<string, Decider>();
   const deciderFor = agents.map((a) => {
@@ -357,6 +356,7 @@ export function run(sc: Scenario, seed: number, record?: { events: TraceEvent[];
   const { X, perAgentPerRound } = sc.budget;
   const T = perAgentPerRound ? Math.round(X / (N * perAgentPerRound)) : sc.budget.rounds;
   if (!T || T < 1) throw new Error('scenario: set budget.rounds or budget.perAgentPerRound');
+  const allocation = allocations.create(sc.budget.allocation, 'budget.allocation')(N, T);
   if (!['public', 'all'].includes(sc.behaviour.rivals)) throw new Error(`scenario: behaviour.rivals must be public or all, not ${sc.behaviour.rivals}`);
   const curve: RunResult['curve'] = [];
   const perRound = X / T;

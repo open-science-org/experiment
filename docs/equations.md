@@ -259,6 +259,8 @@ $E_i$ is what agent $i$ earned this round, plus a fading share of earlier rounds
 
 *Example* ($f = 0.5$): an agent that earned nothing gets $10 \times 0.5 / 12 \approx 0.42$; one that earned half of all earnings gets $0.42 + 10 \times 0.5 \times 0.5 \approx 2.9$.
 
+**Epochs** (optional, since 2026-11-08): the shares can be reset less often than every round. The run's rounds fall into $E$ equal blocks. At the start of each block, every agent's share is set from what it earned during the block before, smoothed across blocks the same way, and it stays fixed for the whole block. $E = 1$ sets the shares once, before anyone has earned, so the loop never turns. Not set: every round is an epoch, as above.
+
 ## 6. The mint
 
 **Since model v5 the flat mint is off ($m = 0$) and the knowledge reward below replaces it.** The flat mint is kept as an option: every new idea mints $m$ tokens, which flow back like the knowledge reward below: its author keeps $m_x = \alpha_0\,m$ and the rest passes to its parents (section 7, with $\alpha_0$ in place of $\alpha$). A root keeps all of $m$. (Before 2026-11-07 the mint had its own cited share $c$, the part passed to the parents; one absorption rate now serves both of a new idea's own rewards.)
