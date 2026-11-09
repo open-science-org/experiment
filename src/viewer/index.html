@@ -2385,7 +2385,10 @@ function leanResults(d) {
   const qBtn = (x, n) => `<button type="button" class="question" data-q="${n}">${esc(x.text)}</button>`;
   // The answer first: targets proved at the end, by setup.
   const ends = sets.map((s) => ({ s, a: fin(s, 3), r: rangeOf(fin(s, 3)) }));
-  $('l-body').innerHTML = `<div class="pane" style="margin-bottom:12px">
+  // While runs are going, the ones done first are not a fair sample: a run ends early when it has proved every target.
+  const allRuns = d.setups.reduce((n, x) => n + x.runs, 0), doneRuns = d.setups.reduce((n, x) => n + x.done, 0), waiting = d.setups.filter((x) => !x.series.length);
+  const partial = doneRuns < allRuns ? `<div class="pane" style="margin-bottom:12px;border-left:4px solid var(--ink-2)"><b>Partial results: ${doneRuns} of ${allRuns} runs finished.</b> Do not compare setups yet. The runs that finish first tend to be the lucky ones that proved every target, so these medians are too low.${waiting.length ? ` No finished run yet: ${waiting.map((x) => esc(x.name)).join(', ')}.` : ''}</div>` : '';
+  $('l-body').innerHTML = `${partial}<div class="pane" style="margin-bottom:12px">
     <h3 style="margin:0 0 6px;font-size:15px">Main questions</h3>
     <div id="l-qs"><div class="questions">${qs.slice(0, MAIN_Q).map((x, n) => qBtn(x, n)).join('')}</div>
     <details id="l-more-q" style="margin-top:6px;font-size:13px"><summary style="cursor:pointer">More questions: speed, depth, groundwork, building on others</summary><div class="questions" style="margin-top:6px">${qs.slice(MAIN_Q).map((x, n) => qBtn(x, n + MAIN_Q)).join('')}</div></details></div>
