@@ -10,6 +10,7 @@ Checked after every run; last checked 2026-11-08, after Labs choose (M3).
 - **Sharing lets labs build on each other** (Spend all: 2.2 results a run in the shared library, 0.4 under traditional), but it has not raised targets proved. A plain shared library gets this too, so it is not unique to OSO. **Repeated work is not a general result:** traditional labs proved the same lemma about 20 times a run in the small cheap race (5 runs), but only 0.4 times in Spend all (20 runs per setup; shared library 0.2).
 - **Flow-back (OSO's own rule): no clear gain in targets proved yet.** Against the shared library, OSO α 0.2 proved about the same: +0.4 (Spend all), +0.5 (Fair-prompt check), +0.0 (May quit), all with ranges that include zero.
 - **Flow-back goes with more lemmas in most experiments** (about twice as many with fair prompts), and more of them get used: lemmas a later proof cites rose by 1 to 5 a run at α 0.2 (section 4d). About half of all lemmas are never cited, and in Labs choose α 1 labs proved as many once publishing paid a small reward.
+- **Lead, not a finding: low α gets there sooner.** OSO α 0.2 reached 5 of the 8 targets for the least money in all four experiments (section 4e), but most ranges overlap, and the count of 5 was picked after looking.
 - **Lead, not a finding:** the hardest target, B5, comes up more at low α, but the gap shrank with fair prompts and B5 was picked after looking.
 - **Against OSO:** labs did not share more with flow-back (they published nearly everything at every α), and did not clearly keep working longer (α 0.8: about 2 rounds longer; α 0.2: no clear change).
 - **Why the tests may be blind:** five of the 8 targets are nearly always proved, so "targets proved" barely moves. Flow-back should matter most on deep problems, not tested yet.
@@ -237,6 +238,25 @@ Lemmas count as useful groundwork only if another result's proof used them. Firs
 | Labs choose (against α 1) | 8.8 (5.2–12.4) | 8.8 (5.4–12.2) | 10.5 (7.5–13.5) | +1.7 (−3.0 to +6.4) |
 
 With flow-back, labs proved more lemmas that others went on to use, except in Labs choose, where publishing paid at every α. About half of all lemmas are not cited by any later proof.
+
+## 4e. How soon setups reach the targets (looked at after the results)
+
+Every run records each action's round and cost, so this comes from the saved runs. `npm run speed -- <experiment id>` makes these graphs and tables for any experiment. Money is what all labs together had spent when the proof came in. Runs that never got there count as "not reached", so no setup is flattered by leaving them out. Details per experiment: [Spend all](../results/community/lean-main-b/speed.md), [Fair-prompt check](../results/community/lean-b5/speed.md), [May quit](../results/community/lean-part-a/speed.md), [Labs choose](../results/community/lean-m3/speed.md).
+
+![Targets proved for the money, Spend all](../results/community/lean-main-b/figures/speed-money.svg)
+
+![Targets proved by round, Spend all](../results/community/lean-main-b/figures/speed-rounds.svg)
+
+Median money to reach 5 of the 8 targets (range covering at least 95%):
+
+| Experiment | Traditional | Shared library (or α 1) | OSO α 0.8 | OSO α 0.2 |
+| --- | --- | --- | --- | --- |
+| Spend all | $0.228 (0.149–0.288) | $0.250 (0.170–0.318) | $0.216 (0.150–0.283) | $0.148 (0.106–0.174) |
+| Fair-prompt check | not run | $0.273 (0.144–0.382) | not run | $0.182 (0.151–0.289) |
+| May quit | $0.220 (0.112 to not reached) | $0.208 (0.168 to not reached) | $0.262 (0.182 to not reached) | $0.169 (0.116–0.319) |
+| Labs choose (against α 1) | not run | $0.223 (0.165–0.355) | $0.217 (0.139–0.265) | $0.117 (0.089–0.217) |
+
+**What it suggests:** OSO α 0.2 reached 5 targets for the least money in all four experiments, about 20–50% less than the shared library or α 1, though most ranges overlap. It does not hold at every count: at 4 targets the order varies, and at 6 targets Spend all's shared library was cheapest ($0.300, against $0.358 for OSO α 0.2). A lead: the count of 5 was picked after looking. At 7 targets, more OSO α 0.2 runs got there in Spend all (10 of 20, against 1 of 20 in the shared library) and Labs choose (7 of 10, against 4 of 10).
 
 ## 5. Is the test setup sound? (harness checks)
 
