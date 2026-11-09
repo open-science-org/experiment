@@ -14,6 +14,7 @@
     "sync-ledger": "scripts/sync-ledger.sh",
     "pilot": "node --env-file-if-exists=.env src/lean/cli.ts",
     "speed": "node scripts/lean-speed.ts",
+    "site": "node scripts/export-site.ts",
     "viewer": "node --env-file-if-exists=.env src/viewer/server.ts",
     "bench": "node --env-file-if-exists=.env src/bench/run.ts",
     "bench-sample": "node src/bench/sample.ts",

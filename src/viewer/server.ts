@@ -307,12 +307,12 @@ function problemSpace(set: Problems) {
   const label = new Map(tasks.map((t) => [t.name, t.posted ? t.publicId : t.short]));
   const needed = new Set(tasks.filter((t) => t.posted).flatMap((t) => [t.name, ...below(t.name)]));
   // Community results from the largest run on the main set; for the harder targets, the difficulty check (one model alone, a pilot).
-  const main = leanData('lean-main-b'), community = Object.fromEntries(main.targets.map((t: { id: string }) => [t.id, [main.setups.reduce((a: number, s: { proved: Record<string, number> }) => a + s.proved[t.id], 0), main.setups.reduce((a: number, s: { done: number }) => a + s.done, 0)]]));
+  const main = leanData('lean-main-b'), community = !main ? {} : Object.fromEntries(main.targets.map((t: { id: string }) => [t.id, [main.setups.reduce((a: number, s: { proved: Record<string, number> }) => a + s.proved[t.id], 0), main.setups.reduce((a: number, s: { done: number }) => a + s.done, 0)]]));
   const check: Record<string, Record<string, [number, number]>> = {};
   for (const run of ['hard-check-1', 'hard-check-2']) for (const a of jsonl(join(LEAN_DIR, 'runs', run, 'attempts.jsonl'))) { const c = ((check[a.publicId] ??= {})[a.condition] ??= [0, 0]); c[1]++; if (a.ok) c[0]++; }
   const shown = tasks.filter((t) => needed.has(t.name));
   return {
-    set, experiment: main.name, areas: AREAS,
+    set, experiment: main?.name ?? '', areas: AREAS,
     theorems: shown.map((t) => ({ id: label.get(t.name), name: t.short, plain: t.posted ? PLAIN[t.publicId] ?? '' : '', depth: t.depth, area: t.area, posted: t.posted ? t.publicId : null, statement: t.signature, uses: t.uses.map((u) => label.get(u)) })),
     targets: shown.filter((t) => t.posted).map((t) => ({ id: t.publicId, name: t.short, area: t.area, depth: t.depth, bounty: 4 * 2 ** (t.depth - 1), plain: PLAIN[t.publicId] ?? '', statement: t.signature, uses: t.uses.map((u) => label.get(u)), below: below(t.name).size, community: community[t.publicId] ?? null, alone: check[t.publicId]?.alone ?? null, lemmas: check[t.publicId]?.library ?? null })),
   };
@@ -341,6 +341,7 @@ function leanData(exp: string) {
     return Array.isArray(j) ? { prompts: j, rebuilt: null } : { prompts: j.prompts, rebuilt: j.rebuilt };
   };
   const ids = [...runs.keys()].sort((a, b) => Number(isTest(a)) - Number(isTest(b)) || statSync(join(dir, `${b}-r1-${runs.get(b)![0].key}`)).mtimeMs - statSync(join(dir, `${a}-r1-${runs.get(a)![0].key}`)).mtimeMs);
+  if (!ids.length) return null; // a fresh copy of the repository has no runs
   const experiments = ids.map((x) => ({ id: x, name: experimentName(x), test: isTest(x) }));
   // By default the newest experiment with a finished run, so the page opens on results, not an empty table.
   const id = runs.has(exp) ? exp : ids.find((x) => !isTest(x) && runs.get(x)!.some((r) => r.done)) ?? ids[0];

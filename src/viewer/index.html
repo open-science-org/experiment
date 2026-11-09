@@ -83,6 +83,8 @@
   pre.err { border-color: var(--bad); }
   .hidden { display: none !important; }
   .app { display: grid; grid-template-columns: 210px minmax(0, 1fr); min-height: calc(100vh - 53px); }
+  body.static .app { grid-template-columns: minmax(0, 1fr); }
+  body.static nav.side, body.static a[data-tab="runs"] { display: none; }
   @media (max-width: 800px) { .app { grid-template-columns: minmax(0, 1fr); } }
   nav.side { background: var(--surface); border-right: 1px solid var(--line); padding: 14px 10px; position: sticky; top: 0; align-self: start; height: calc(100vh - 53px); overflow: auto; }
   nav.side a { display: block; padding: 7px 10px; border-radius: 6px; color: var(--ink-2); text-decoration: none; font-size: 14px; }
@@ -503,7 +505,10 @@ function shortLabel(s, max) {
   const t = s.replace(/\s*\(([^)]*)\)/g, (_, inner) => { const keep = inner.split(',').map((x) => x.trim()).filter((x) => x.includes('=')); return keep.length ? ` (${keep.join(', ')})` : ''; }).trim();
   return t.length <= max ? t : t.slice(0, max - 1).replace(/\s+\S*$/, '') + '…';
 }
-const api = (path) => fetch(path).then(async (r) => { const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText); return j; });
+// The public copy has no server: each call reads a saved file (scripts/export-site.ts).
+const STATIC = document.body.classList.contains('static');
+const staticPath = (path) => { const [p, q] = path.split('?'), u = new URLSearchParams(q ?? ''); return p === '/api/lean' ? `data/lean/${u.get('exp') || 'default'}.json` : p === '/api/problems' ? `data/problems-${u.get('set')}.json` : `data/doc/${(u.get('path') ?? '').replace(/\W/g, '_')}.json`; };
+const api = (path) => fetch(STATIC ? staticPath(path) : path).then(async (r) => { const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText); return j; });
 const money = (x) => '$' + (x < 0.1 ? x.toFixed(3) : x.toFixed(2));
 
 const LN = { data: null, run: null, at: 0, poll: null }; // the Lean experiment page's data
@@ -531,6 +536,7 @@ async function route() {
   // Leaving a page stops its replays and polling.
   if (path !== route.last) { route.last = path; stopC(); stopSim(); stopPilot(); clearInterval(liveTimer); for (const t of [C.poll, pilot.poll, LN.poll, PG.home]) clearTimeout(t); }
   const top = '/' + (path.split('/')[1] ?? '');
+  if (STATIC && top !== '/lean') { location.hash = '#/lean'; return; }
   // Which menu item this page belongs to.
   const navOf = () => {
     if (path === '/' || top === '/home') return '#/home';
@@ -563,6 +569,11 @@ async function route() {
   if (path === '/how') { show('view-doc'); return openDoc('docs/README.md'); }
   if (path === '/equations') { show('view-doc'); return openDoc(params().get('m') === 'full' ? 'docs/equations.md' : params().get('m') === 'steps' ? 'docs/equations-steps.md' : 'docs/equations-simple.md'); }
   show('view-overview'); drawResults();
+}
+// The public copy links its documents to the repository, where everything is.
+if (STATIC) {
+  document.querySelector('header').insertAdjacentHTML('beforeend', '<a href="https://github.com/open-science-org/experiment" style="margin-left:auto;font-size:13px">Code, proofs and data on GitHub</a>');
+  document.addEventListener('click', (e) => { const a = e.target.closest?.('a[href^="#/doc/"]'); if (!a) return; e.preventDefault(); window.open('https://github.com/open-science-org/experiment/blob/master/' + a.getAttribute('href').slice(6).split('?')[0], '_blank'); });
 }
 window.addEventListener('hashchange', route);
 
@@ -2231,7 +2242,7 @@ async function drawLean() {
   if (!LN.data || (exp && LN.data.id !== exp) || Date.now() - LN.at > 15000) {
     if (!LN.data || (exp && LN.data.id !== exp)) $('l-body').innerHTML = '<p class="muted">Loading…</p>';
     try { LN.data = await api('/api/lean?exp=' + encodeURIComponent(exp)); LN.at = Date.now(); } catch (e) { $('l-body').textContent = `Could not read the Lean experiment: ${e.message}`; return; }
-    if (!LN.data) { $('l-body').textContent = 'The Lean problem set is not available here.'; return; }
+    if (!LN.data) { $('l-body').textContent = 'No Lean runs on this machine.'; return; }
   }
   const d = LN.data;
   // A finished experiment opens on its results; one with no finished run yet, on its problems.
