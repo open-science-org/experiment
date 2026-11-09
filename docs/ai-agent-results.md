@@ -1,6 +1,6 @@
 # AI agents on the Lean problems: results so far
 
-Last updated: 2026-11-07. Every result here has its own page under `results/` (the links), with its design, caveats and logs. This page only gathers them.
+Last updated: 2026-11-08. Every result here has its own page under `results/` (the links), with its design, caveats and logs. This page only gathers them.
 
 **In short:** with help (lemmas), weak models prove targets they cannot prove alone. In five paired races with one cheap model, OSO reached 2 hard targets in every run and for about half the money; traditional reached them in 3 of 5. In the Spend all experiment (20 runs per setup), OSO did **not** prove clearly more targets than a plain shared library. Looked for afterwards: with more value flowing back, labs proved more lemmas and built on each other more, and OSO α 0.2 proved a hard target (B5) in 11 of 20 runs, the shared library in none. That is a lead, not a finding: it was not the measure fixed in advance, and the setups' prompts differed by more than the rules. The test setup itself checks out.
 
@@ -226,8 +226,8 @@ Faults found and fixed on the way: wrong error labels, proofs without a code blo
 
 ## 6. What is still open
 
-1. **Does flow-back open hard targets?** Spend all's lead (B5: 0, 5 and 11 runs of 20), tested with fair prompts and a measure fixed in advance.
-2. **Does flow-back keep labs working?** May quit, where labs may stop early.
-3. **The knowledge reward in Lean:** off for now; how to measure it later is in [design.md](design.md#the-knowledge-reward-in-lean).
-4. **Agents choosing what to publish:** in every test so far the rules set sharing. In the simulation, flow-back matters most when agents choose.
+1. **Does flow-back make labs choose to share?** Labs choose found no answer: labs published nearly everything at every α, to collect the new-result reward. Next: the same setups with that reward off, α 1 against α 0.2, so keeping costs nothing at α 1.
+2. **Does flow-back open hard targets?** B5 keeps coming up at low α (Spend all, Labs choose), but the fair-prompt check gave a much smaller gap. Next: B5 as the measure fixed in advance.
+3. **Does flow-back keep labs working?** May quit says no: labs stopped after 5 to 8 rounds in every setup. Settled for this setup.
+4. **More groundwork, same targets:** flow-back raised lemmas and building on others in every experiment, but not targets proved. Whether the extra groundwork pays off on harder problems is open (roadmap M4b, M5).
 5. **One model, one small problem set (42 theorems).** Results may not carry over to other models or harder mathematics.
