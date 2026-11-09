@@ -2248,6 +2248,8 @@ async function drawLean() {
   // A finished experiment opens on its results; one with no finished run yet, on its problems.
   const tab = params().get('tab') ?? (d.setups.some((x) => x.series.length) ? 'results' : 'problems');
   for (const a of $('l-tabs').querySelectorAll('a')) { if (a.dataset.tab === tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); }
+  // Saved numbers, not run files: there are no transcripts to open.
+  $('l-tabs').querySelector('a[data-tab="runs"]').style.display = d.saved ? 'none' : '';
   $('l-exp').innerHTML = expOptions(d.experiments, d.id);
   $('l-exp').onchange = () => { const q = params(); q.set('exp', $('l-exp').value); q.delete('rep'); q.delete('setup'); location.hash = '#/lean?' + q; };
   $('l-bar').classList.toggle('hidden', tab === 'problems');
@@ -2395,7 +2397,7 @@ function leanResults(d) {
   const kDefault = Math.max(1, ...d.targets.map((_, j) => j + 1).filter((k) => sets.every((s) => s.series.filter((r) => r.some((row) => row[3] >= k)).length * 2 > s.series.length)));
   const qBtn = (x, n) => `<button type="button" class="question" data-q="${n}">${esc(x.text)}</button>`;
   // The answer first: targets proved at the end, by setup.
-  const ends = sets.map((s) => ({ s, a: fin(s, 3), r: rangeOf(fin(s, 3)) }));
+  const ends = sets.map((s) => ({ s, a: fin(s, 3), r: rangeOf(fin(s, 3))?.map((v) => Math.min(d.targets.length, v)) }));
   // While runs are going, the ones done first are not a fair sample: a run ends early when it has proved every target.
   const allRuns = d.setups.reduce((n, x) => n + x.runs, 0), doneRuns = d.setups.reduce((n, x) => n + x.done, 0), waiting = d.setups.filter((x) => !x.series.length);
   const partial = doneRuns < allRuns ? `<div class="pane" style="margin-bottom:12px;border-left:4px solid var(--ink-2)"><b>Partial results: ${doneRuns} of ${allRuns} runs finished.</b> Do not compare setups yet. The runs that finish first tend to be the lucky ones that proved every target, so these medians are too low.${waiting.length ? ` No finished run yet: ${waiting.map((x) => esc(x.name)).join(', ')}.` : ''}</div>` : '';

@@ -300,6 +300,11 @@ async function models() {
  * The Progress page: every society experiment (runs done, running, waiting, with the money-vs-targets
  * curve of each), every Phase 0 benchmark run, and the credit left. No transcripts or proofs.
  */
+/** A copy of the repository has no run files; the numbers behind the graphs are saved in site/data (npm run site). */
+const hasRuns = () => existsSync(join(LEAN_DIR, 'runs'));
+const savedFile = (...parts: string[]) => { const f = join(ROOT, 'site', 'data', ...parts); return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : null; };
+const savedLean = (exp: string) => { const d = (/^[\w.-]+$/.test(exp) && savedFile('lean', `${exp}.json`)) || savedFile('lean', 'default.json'); return d && { ...d, saved: true }; };
+
 /** One problem set as a graph: only the theorems some target needs, with how hard each target has been so far. */
 function problemSpace(set: Problems) {
   const tasks = loadTasks(set), byName = new Map(tasks.map((t) => [t.name, t]));
@@ -551,8 +556,8 @@ const server = createServer(async (req, res) => {
     if (url.pathname === '/api/balance') return send(200, await balance());
     if (url.pathname === '/api/progress') return send(200, await progressData());
     if (url.pathname === '/api/costs') return send(200, await costData());
-    if (url.pathname === '/api/lean') return send(200, leanAvailable() ? leanData(url.searchParams.get('exp') ?? '') : null);
-    if (url.pathname === '/api/problems') return send(200, leanAvailable() ? problemSpace(url.searchParams.get('set') === 'hard' ? 'hard' : 'main') : null);
+    if (url.pathname === '/api/lean') return send(200, !hasRuns() ? savedLean(url.searchParams.get('exp') ?? '') : leanAvailable() ? leanData(url.searchParams.get('exp') ?? '') : null);
+    if (url.pathname === '/api/problems') { const set = url.searchParams.get('set') === 'hard' ? 'hard' : 'main'; return send(200, !hasRuns() ? savedFile(`problems-${set}.json`) : leanAvailable() ? problemSpace(set) : null); }
     if (url.pathname === '/api/lean/run') return send(200, leanRun(url.searchParams.get('id') ?? ''));
     if (url.pathname === '/api/design/field') return send(200, design.fieldValues(url.searchParams.get('id') ?? ''));
     if (url.pathname === '/api/jobs') return send(200, design.listJobs());

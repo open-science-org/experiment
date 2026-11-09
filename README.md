@@ -49,7 +49,7 @@ npm install
 npm run viewer        # then open http://127.0.0.1:8791
 ```
 
-Needs Node 22.18 or later. Simulations need nothing else. AI-model tests also need [Lean](https://lean-lang.org/install/), an `OPENROUTER_API_KEY` in `.env`, and the checker built once: `lake build axcheck` in `lean/`.
+Needs Node 22.18 or later. Simulations and the plots of finished Lean experiments need nothing else. AI-model tests also need [Lean](https://lean-lang.org/install/), an `OPENROUTER_API_KEY` in `.env`, and the checker built once: `lake build axcheck` in `lean/`.
 
 - **Runs:** every run (History), every result as a short card with interactive charts (Results), and any run replayed round by round (Live).
 - **New:** design a run. Simple model (only α and β vary) or full model (every setting; simulated agents or AI models).

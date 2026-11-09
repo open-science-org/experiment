@@ -2248,6 +2248,8 @@ async function drawLean() {
   // A finished experiment opens on its results; one with no finished run yet, on its problems.
   const tab = params().get('tab') ?? (d.setups.some((x) => x.series.length) ? 'results' : 'problems');
   for (const a of $('l-tabs').querySelectorAll('a')) { if (a.dataset.tab === tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); }
+  // Saved numbers, not run files: there are no transcripts to open.
+  $('l-tabs').querySelector('a[data-tab="runs"]').style.display = d.saved ? 'none' : '';
   $('l-exp').innerHTML = expOptions(d.experiments, d.id);
   $('l-exp').onchange = () => { const q = params(); q.set('exp', $('l-exp').value); q.delete('rep'); q.delete('setup'); location.hash = '#/lean?' + q; };
   $('l-bar').classList.toggle('hidden', tab === 'problems');
