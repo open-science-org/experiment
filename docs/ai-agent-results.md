@@ -241,11 +241,9 @@ With flow-back, labs proved more lemmas that others went on to use, except in La
 
 ## 4e. How soon setups reach the targets (looked at after the results)
 
-Every run records each action's round and cost, so this comes from the saved runs. `npm run speed -- <experiment id>` makes these graphs and tables for any experiment. Money is what all labs together had spent when the proof came in. Runs that never got there count as "not reached", so no setup is flattered by leaving them out. Details per experiment: [Spend all](../results/community/lean-main-b/speed.md), [Fair-prompt check](../results/community/lean-b5/speed.md), [May quit](../results/community/lean-part-a/speed.md), [Labs choose](../results/community/lean-m3/speed.md).
+Every run records each action's round and cost, so this comes from the saved runs. `npm run speed -- <experiment id>` writes the tables for any experiment. Money is what all labs together had spent when the proof came in. Runs that never got there count as "not reached", so no setup is flattered by leaving them out. Details per experiment: [Spend all](../results/community/lean-main-b/speed.md), [Fair-prompt check](../results/community/lean-b5/speed.md), [May quit](../results/community/lean-part-a/speed.md), [Labs choose](../results/community/lean-m3/speed.md).
 
-![Targets proved for the money, Spend all](../results/community/lean-main-b/figures/speed-money.svg)
-
-![Targets proved by round, Spend all](../results/community/lean-main-b/figures/speed-rounds.svg)
+**The graphs are in the app:** Experiments → Results, for each experiment. Click a main question, and the graph changes to answer it.
 
 Median money to reach 5 of the 8 targets (range covering at least 95%):
 

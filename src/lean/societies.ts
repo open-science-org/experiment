@@ -64,7 +64,7 @@ const diff = (a: number[], b: number[], fmt = f2) => {
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 
 /** Counted targets solved once `x` dollars were spent: the step curve, held at its end after the run stops. */
-export function solvedAt(pts: [number, number][], x: number) {
+function solvedAt(pts: [number, number][], x: number) {
   let y = 0;
   for (const [px, py] of pts) { if (px > x) break; y = py; }
   return y;

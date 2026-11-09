@@ -2,9 +2,7 @@
 
 From the saved runs by `npm run speed`. Looked at after the results, so these are leads. Money is what all labs together had spent when the proof came in. Medians use every run; "not reached" means a run that never got there, and each range covers at least 95%.
 
-![Targets proved for the money](figures/speed-money.svg)
-
-![Targets proved by round](figures/speed-rounds.svg)
+The graphs are on the app's Experiments → Results page for this experiment.
 
 ## Reaching 4 targets
 

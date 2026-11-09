@@ -15,7 +15,7 @@ import { MEASURE_NAMES, VALUES } from '../engine/measures.ts';
 import { loadSpace, spaceIds, withCalibratedBudget, type Space } from '../spaces/spaces.ts';
 import { AREAS, LEAN_DIR, PLAIN, definitions, leanAvailable, loadTasks } from '../lean/tasks.ts';
 import * as design from './design.ts';
-import { Community, LEAN_REWARDS, progress, type CommunityResult } from '../lean/community.ts';
+import { Community, LEAN_REWARDS, firstProofs, progress, type CommunityResult } from '../lean/community.ts';
 import { SOCIETIES } from '../lean/societies.ts';
 import { experimentName, isTest } from '../lean/names.ts';
 import { creditLeft, keyUsage } from '../lean/agent.ts';
@@ -306,7 +306,7 @@ function leanData(exp: string) {
   // By default the newest experiment with a finished run, so the page opens on results, not an empty table.
   const id = runs.has(exp) ? exp : ids.find((x) => !isTest(x) && runs.get(x)!.some((r) => r.done)) ?? ids[0];
   const mine = runs.get(id) ?? [];
-  const posted = tasks.filter((t) => t.posted).map((t) => ({ id: t.publicId, bounty: 4 * 2 ** (t.depth - 1) }));
+  const posted = tasks.filter((t) => t.posted).map((t) => ({ id: t.publicId, bounty: 4 * 2 ** (t.depth - 1), depth: t.depth }));
   const setups = [...new Set(mine.map((r) => r.key))].sort((a, b) => Object.keys(SOCIETIES).indexOf(a) - Object.keys(SOCIETIES).indexOf(b)).map((key) => {
     const first = mine.filter((r) => r.key === key).sort((a, b) => a.rep - b.rep)[0];
     const options = JSON.parse(readFileSync(join(dir, `${id}-r${first.rep}-${key}`, 'options.json'), 'utf8'));
@@ -331,18 +331,21 @@ function leanData(exp: string) {
 /** One run turn by turn, for the Lean results graph: after each turn, the money spent, round, turn number, targets
  *  proved, bounty value of those targets, lemmas proved, results built on another lab's work, and which targets are
  *  proved (bit n = the n-th posted target). */
-function seriesOf(r: CommunityResult, posted: { id: string; bounty: number }[]) {
+function seriesOf(r: CommunityResult, posted: { id: string; bounty: number; depth: number }[]) {
   const acts = [...r.actions].sort((a, b) => a.t - b.t), byName = new Map(r.library.map((e) => [`${e.ns}.${e.name}`, e]));
-  const solved = new Set<string>();
+  const solved = new Set<string>(), cited = new Set<string>();
+  // Repeat proofs of a statement do not count as building on others; only first proofs of real lemmas can be cited groundwork.
+  const first = firstProofs(r.library), firstNames = new Set(first.map((e) => e.name)), groundwork = new Set(first.filter((e) => !e.target && !e.conjecture && !e.trivial).map((e) => `${e.ns}.${e.name}`));
   let spent = 0, lemmas = 0, built = 0;
-  const rows: number[][] = [[0, 0, 0, 0, 0, 0, 0, 0]];
+  const rows: number[][] = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
   acts.forEach((a, n) => {
     spent += a.cost ?? a.listCost ?? 0;
     if (a.ok && a.kind === 'target' && a.target) solved.add(a.target);
     if (a.ok && a.kind === 'lemma' && !/trivial/.test(a.reason ?? '')) lemmas++;
-    if (a.ok && (a.uses ?? []).some((u) => { const e = byName.get(u); return e && e.author !== a.agent; })) built++;
+    if (a.ok && (!a.entry || firstNames.has(a.entry)) && (a.uses ?? []).some((u) => { const e = byName.get(u); return e && e.author !== a.agent; })) built++;
+    if (a.ok) for (const u of a.uses ?? []) if (groundwork.has(u)) cited.add(u);
     const mask = posted.reduce((m, t, k) => (solved.has(t.id) ? m | (1 << k) : m), 0);
-    rows.push([Math.round(spent * 1e4) / 1e4, a.round, n + 1, solved.size, posted.reduce((v, t) => v + (solved.has(t.id) ? t.bounty : 0), 0), lemmas, built, mask]);
+    rows.push([Math.round(spent * 1e4) / 1e4, a.round, n + 1, solved.size, posted.reduce((v, t) => v + (solved.has(t.id) ? t.bounty : 0), 0), lemmas, built, mask, Math.max(0, ...posted.filter((t) => solved.has(t.id)).map((t) => t.depth)), cited.size]);
   });
   return rows;
 }

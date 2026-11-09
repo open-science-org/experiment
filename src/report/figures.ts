@@ -34,11 +34,7 @@ export interface Series {
   slot: 1 | 2 | 3;
   /** A colour of its own instead of the slot's, for ordered series (shades of one hue). */
   colour?: string;
-  /** Dashes for a line that needs telling apart from another of its hue, e.g. '6 4'. */
-  dash?: string;
   points: [number, number][];
-  /** A shaded range around the line: [x, low, high]. */
-  band?: [number, number, number][];
 }
 
 export interface LineChart {
@@ -78,7 +74,7 @@ export function lineChart(c: LineChart): string {
   let lx = left;
   for (const s of c.series) {
     // The legend is in each series' colour, like its line.
-    out.push(`<line class="line c${s.slot}"${stroke(s)} ${s.dash ? ` stroke-dasharray="${s.dash}"` : ''} x1="${lx}" y1="70" x2="${lx + 18}" y2="70"/><text class="label t${s.slot}"${fill(s)} x="${lx + 24}" y="74">${esc(s.name)}</text>`);
+    out.push(`<line class="line c${s.slot}"${stroke(s)} x1="${lx}" y1="70" x2="${lx + 18}" y2="70"/><text class="label t${s.slot}"${fill(s)} x="${lx + 24}" y="74">${esc(s.name)}</text>`);
     lx += 34 + s.name.length * 6.6;
   }
   for (const t of c.yTicks) {
@@ -91,17 +87,12 @@ export function lineChart(c: LineChart): string {
   }
   out.push(`<text class="axis" x="${left + pw / 2}" y="${H - 12}" text-anchor="middle">${esc(c.xLabel)}</text>`);
   out.push(`<text class="axis" transform="translate(16 ${top + ph / 2}) rotate(-90)" text-anchor="middle">${esc(c.yLabel)}</text>`);
-  for (const s of c.series) {
-    if (!s.band?.length) continue;
-    const d = [...s.band.map(([x, lo]) => [x, lo]), ...[...s.band].reverse().map(([x, , hi]) => [x, hi])].map(([x, y], i) => `${i ? 'L' : 'M'}${sx(x).toFixed(1)} ${sy(y).toFixed(1)}`).join(' ') + ' Z';
-    out.push(`<path class="f${s.slot}"${fill(s)} fill-opacity="0.12" stroke="none" d="${d}"/>`);
-  }
   // Lines, then points with tooltips.
   const ends: { y: number; s: Series; last: [number, number] }[] = [];
   for (const s of c.series) {
     if (!s.points.length) continue;
     const d = s.points.map(([x, y], i) => `${i ? 'L' : 'M'}${sx(x).toFixed(1)} ${sy(y).toFixed(1)}`).join(' ');
-    out.push(`<path class="line c${s.slot}"${stroke(s)}${s.dash ? ` stroke-dasharray="${s.dash}"` : ''} d="${d}"/>`);
+    out.push(`<path class="line c${s.slot}"${stroke(s)} d="${d}"/>`);
     const shown = c.markers ? s.points : [s.points[s.points.length - 1]];
     for (const [x, y] of shown) {
       out.push(`<circle class="dot f${s.slot}"${fill(s)} cx="${sx(x).toFixed(1)}" cy="${sy(y).toFixed(1)}" r="4.5"><title>${esc(`${s.name}: ${fy(y)} at ${c.xLabel.toLowerCase()} ${fx(x)}`)}</title></circle>`);
