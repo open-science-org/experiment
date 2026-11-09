@@ -44,6 +44,15 @@ export function osoParams(o: CommunityOptions) {
   return parts.join(' · ');
 }
 
+/** A setup's name with its OSO parameters, short enough for a graph's legend. m_bit and f are shown only when not 0. */
+export function osoLabel(name: string, o: CommunityOptions) {
+  const when = o.publishing === 'choose' ? 'lab chooses' : o.rules === 'traditional' ? 'at target' : o.rules === 'independent' ? 'never' : 'at once';
+  const parts = [when, `α=${o.rules === 'oso' ? o.alpha : 1}`, `m=${mintOf(o)}`];
+  if (o.knowledge === 'proof-size') parts.push('m_bit=by size');
+  if (o.follow) parts.push(`f=${o.follow}`);
+  return `${name.replace(/, α [\d.]+$/, '')} (${parts.join(', ')})`;
+}
+
 /** A society's options from the common ones: the same total money in every society. */
 export function societyOptions(key: string, base: CommunityOptions): CommunityOptions {
   const s = SOCIETIES[key];

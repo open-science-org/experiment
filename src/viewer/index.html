@@ -2189,7 +2189,7 @@ function renderProgress() {
   // The graph: money spent against counted targets, one line per society, for the chosen run.
   const lines = keys.map((k) => ({ k, r: run(k, rep) })).filter((x) => x.r);
   const yMax = Math.max(2, ...e.runs.map((r) => r.counted ?? r.solved), ...lines.map((x) => x.r.solved));
-  const W = 760, H = 320, l = 46, rgt = 190, top = 34, bot = 42, pw = W - l - rgt, ph = H - top - bot;
+  const W = 760, H = 320, l = 46, rgt = Math.max(190, 40 + 6 * Math.max(...keys.map((k) => `${d.societies[k]?.label ?? k}: 11, $0.00 …`.length))), top = 34, bot = 42, pw = W - l - rgt, ph = H - top - bot;
   const sx = (x) => l + (x / budget) * pw, sy = (y) => top + ph - (y / yMax) * ph;
   let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="Counted targets verified by money spent, run ${rep}"><text x="${l}" y="18" font-size="14" font-weight="700" fill="var(--ink)">Targets verified by Lean, by money spent (run ${rep})</text>`;
   for (let y = 0; y <= yMax; y++) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"/><text x="${l - 8}" y="${sy(y) + 4}" text-anchor="end" font-size="11" fill="var(--ink-2)">${y}</text>`;
@@ -2202,7 +2202,7 @@ function renderProgress() {
     let path = ''; r.points.forEach(([x, y], i) => { path += i ? ` H${sx(x).toFixed(1)} V${sy(y).toFixed(1)}` : `M${sx(x).toFixed(1)} ${sy(y).toFixed(1)}`; });
     const [lx, ly] = r.points.at(-1);
     svg += `<path d="${path}" fill="none" stroke="${colour}" stroke-width="2" stroke-dasharray="${dash}" stroke-linejoin="round"><title>${esc(d.societies[k]?.name ?? k)}</title></path><circle cx="${sx(lx)}" cy="${sy(ly)}" r="4" fill="${colour}" stroke="var(--surface)" stroke-width="2"/>`;
-    ends.push([sy(ly), `${d.societies[k]?.name ?? k}: ${ly}, $${lx.toFixed(2)}${r.status === 'running' ? ' …' : ''}`, colour, dash]);
+    ends.push([sy(ly), `${d.societies[k]?.label ?? k}: ${ly}, $${lx.toFixed(2)}${r.status === 'running' ? ' …' : ''}`, colour, dash]);
   }
   ends.sort((a, b) => a[0] - b[0]); for (let i = 1; i < ends.length; i++) if (ends[i][0] - ends[i - 1][0] < 15) ends[i][0] = ends[i - 1][0] + 15;
   for (const [y, t, colour, dash] of ends) svg += `<line x1="${l + pw + 8}" x2="${l + pw + 26}" y1="${y}" y2="${y}" stroke="${colour}" stroke-width="2" stroke-dasharray="${dash}"/><text x="${l + pw + 30}" y="${y + 4}" font-size="11" fill="var(--ink)">${esc(t)}</text>`;
@@ -2404,6 +2404,7 @@ function leanResults(d) {
       <label><input type="checkbox" id="l-each"${q.get('each') === '0' ? '' : ' checked'}> single runs</label>
       </div></details>
     </div><div id="l-chart" style="position:relative"></div><p class="muted" id="l-cnote" style="font-size:12px;margin:6px 0 0"></p>
+    <p class="muted" style="font-size:12px;margin:4px 0 0">In brackets, each setup's OSO parameters: when results go public (at once, at target, lab chooses, never), α, the mint m. The knowledge reward m_bit and money share f are 0 unless shown.</p>
     <p class="muted" style="font-size:12px;margin:4px 0 0">Targets proved by the end of a run: ${ends.map((e) => `${esc(e.s.name)} ${mean(e.a).toFixed(1)}${e.r ? ` (${e.r[0].toFixed(1)} to ${e.r[1].toFixed(1)})` : ''}`).join(' · ')}.</p>
     <details style="font-size:13px;margin:8px 0 0"><summary style="cursor:pointer">Read the values without hovering</summary>
       <label style="display:block;margin:6px 0"><span id="l-at-txt"></span> <input type="range" id="l-at" min="0" step="1" style="width:min(100%,360px);vertical-align:middle" aria-label="Position on the graph"></label>
@@ -2439,7 +2440,7 @@ function leanResults(d) {
     const yMin = logy ? Math.max(1e-3, Math.min(yTop, ...lines.flatMap((L) => L.drawn.map((p) => p.m))) / 1.5) : 0;
     const W = Math.min(820, Math.max(480, Math.round($('l-chart').clientWidth) || 820)), H = 420, l = 64, top = 16, ph = H - top - 54, Lg = Math.log10;
     // Room on the right for the longest end label.
-    const pw = W - l - Math.max(170, 40 + 6 * Math.max(...sets.map((s) => `${s.name}: $0.000 at ${n}`.length)));
+    const pw = W - l - Math.max(170, 40 + 6 * Math.max(...sets.map((s) => `${s.label}: $0.000 at ${n}`.length)));
     const sx = (k) => l + ((k - 0.5) / n) * pw, sy = (y) => top + ph - (logy ? (Lg(Math.max(y, yMin)) - Lg(yMin)) / (Lg(yTop) - Lg(yMin) || 1) : y / yTop) * ph;
     let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:auto;touch-action:pan-y" role="img" aria-label="Median money to reach each number of targets">`;
     for (const y of ticks(yMin, yTop, logy, false)) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"/><text x="${l - 8}" y="${sy(y) + 4}" text-anchor="end" font-size="11" fill="var(--ink-2)">$${y < 0.01 ? y.toFixed(3) : y.toFixed(2)}</text>`;
@@ -2454,7 +2455,7 @@ function leanResults(d) {
       if (L.drawn.length) svg += `<path d="${L.drawn.map((p, j) => `${j ? 'L' : 'M'}${sx(p.k).toFixed(1)} ${sy(p.m).toFixed(1)}`).join(' ')}" fill="none" stroke="${L.s.colour}" stroke-width="2.5" stroke-dasharray="${dash}" stroke-linejoin="round"><title>${esc(L.s.name)}</title></path>`;
       for (const p of L.drawn) svg += `<circle cx="${sx(p.k).toFixed(1)}" cy="${sy(p.m).toFixed(1)}" r="4" fill="${L.s.colour}" stroke="var(--surface)" stroke-width="2"/>`;
       const last = L.drawn.at(-1);
-      ends.push([last ? sy(last.m) : top + ph, last ? `${L.s.name}: ${usd(last.m)} at ${last.k}` : `${L.s.name}: not reached`, L.s.colour, dash]);
+      ends.push([last ? sy(last.m) : top + ph, last ? `${L.s.label}: ${usd(last.m)} at ${last.k}` : `${L.s.label}: not reached`, L.s.colour, dash]);
     }
     ends.sort((a, b) => a[0] - b[0]); for (let j = 1; j < ends.length; j++) ends[j][0] = Math.max(ends[j][0], ends[j - 1][0] + 15);
     for (const [y, t, c, dash] of ends) svg += `<line x1="${l + pw + 6}" x2="${l + pw + 22}" y1="${y}" y2="${y}" stroke="${c}" stroke-width="2.5" stroke-dasharray="${dash}"/><text x="${l + pw + 26}" y="${y + 4}" font-size="11" fill="var(--ink)">${esc(t)}</text>`;
@@ -2464,7 +2465,7 @@ function leanResults(d) {
     const rangeTxt = (p) => (p.m === Infinity ? '' : p.lo === null ? 'too few runs for a range' : `${usd(p.lo)} to ${end(p.hi)}`);
     const writeVals = (j) => {
       $('l-at').value = j; $('l-at-txt').textContent = `At ${ks[j]} target${ks[j] === 1 ? '' : 's'}`;
-      $('l-vals').innerHTML = lines.map((L) => { const p = L.pts[j]; return `<tr><td><span class="swatch" style="background:${L.s.colour}"></span>${esc(L.s.name)}</td><td>${end(p.m)} <span class="muted">(${p.hit} of ${p.runs} runs got there)</span></td><td>${rangeTxt(p)}</td></tr>`; }).join('');
+      $('l-vals').innerHTML = lines.map((L) => { const p = L.pts[j]; return `<tr><td><span class="swatch" style="background:${L.s.colour}"></span>${esc(L.s.label)}</td><td>${end(p.m)} <span class="muted">(${p.hit} of ${p.runs} runs got there)</span></td><td>${rangeTxt(p)}</td></tr>`; }).join('');
     };
     $('l-at').max = n - 1; $('l-at').oninput = () => writeVals(Number($('l-at').value)); writeVals(Math.max(0, Math.min(n, Number($('l-k')?.value) || kDefault) - 1));
     el.onpointermove = (ev) => {
@@ -2473,7 +2474,7 @@ function leanResults(d) {
       const j = Math.max(0, Math.min(n - 1, Math.round(((px - l) / pw) * n - 0.5)));
       cross.setAttribute('x1', sx(ks[j])); cross.setAttribute('x2', sx(ks[j])); cross.style.display = '';
       writeVals(j);
-      tip.innerHTML = `<b>${ks[j]} target${ks[j] === 1 ? '' : 's'}</b>` + [...lines].sort((a, b) => a.pts[j].m - b.pts[j].m).map((L) => { const p = L.pts[j]; return `<div><span class="swatch" style="background:${L.s.colour}"></span>${esc(L.s.name)}: <b>${end(p.m)}</b> <span class="muted">(${p.hit} of ${p.runs} runs)</span></div>`; }).join('');
+      tip.innerHTML = `<b>${ks[j]} target${ks[j] === 1 ? '' : 's'}</b>` + [...lines].sort((a, b) => a.pts[j].m - b.pts[j].m).map((L) => { const p = L.pts[j]; return `<div><span class="swatch" style="background:${L.s.colour}"></span>${esc(L.s.label)}: <b>${end(p.m)}</b> <span class="muted">(${p.hit} of ${p.runs} runs)</span></div>`; }).join('');
       tip.hidden = false;
       const wrap = $('l-chart').getBoundingClientRect(), x = (sx(ks[j]) * box.width) / W, right = x + 14 + tip.offsetWidth > wrap.width;
       tip.style.left = `${right ? x - 14 - tip.offsetWidth : x + 14}px`; tip.style.top = `${((top + 8) * box.height) / H}px`;
@@ -2512,7 +2513,8 @@ function leanResults(d) {
     });
     const yTop = share ? 100 : Math.max(1, ...lines.flatMap((L) => L.hi), ...($('l-each').checked ? sets.flatMap((s) => s.series.map((r) => val(r.at(-1)))) : []));
     const yPos = lines.flatMap((L) => L.m).filter((v) => v > 0), yMin = logy ? Math.max(share ? 1 : 0.1, Math.min(...yPos, yTop) / 1.5) : 0;
-    const W = Math.min(820, Math.max(480, Math.round($('l-chart').clientWidth) || 820)), H = 420, l = 64, top = 16, pw = W - l - 170, ph = H - top - 54, Lg = Math.log10;
+    const W = Math.min(820, Math.max(480, Math.round($('l-chart').clientWidth) || 820)), H = 420, l = 64, top = 16, ph = H - top - 54, Lg = Math.log10;
+    const pw = W - l - Math.max(170, 40 + 6 * Math.max(...sets.map((s) => `${s.label}: 0.00`.length)));
     const sx = (x) => l + (logx ? (Lg(Math.max(x, xMin)) - Lg(xMin)) / (Lg(xMax) - Lg(xMin) || 1) : (x - xMin) / (xMax - xMin || 1)) * pw;
     const sy = (y) => top + ph - (logy ? (Lg(Math.max(y, yMin)) - Lg(yMin)) / (Lg(yTop) - Lg(yMin) || 1) : y / yTop) * ph;
     const fmtx = (v) => (xi === 0 ? (v === 0 ? '$0' : '$' + (v < 0.01 ? v.toFixed(3) : v.toFixed(2))) : String(Math.round(v)));
@@ -2531,7 +2533,7 @@ function leanResults(d) {
       if ($('l-band').checked && L.n > 1) { const up = grid.map((g, k) => `${sx(g).toFixed(1)} ${sy(Math.min(yTop, L.hi[k])).toFixed(1)}`), dn = grid.map((g, k) => `${sx(g).toFixed(1)} ${sy(Math.max(logy ? yMin : 0, L.lo[k])).toFixed(1)}`).reverse();
         svg += `<path d="M${up.join(' L')} L${dn.join(' L')} Z" fill="${L.s.colour}" fill-opacity="0.13" stroke="none"/>`; }
       svg += `<path d="${L.m.map((v, k) => `${k ? 'L' : 'M'}${sx(grid[k]).toFixed(1)} ${sy(v).toFixed(1)}`).join(' ')}" fill="none" stroke="${L.s.colour}" stroke-width="2.5" stroke-dasharray="${P_STYLE[L.s.key]?.[1] ?? ''}" stroke-linejoin="round"><title>${esc(L.s.name)}</title></path>`;
-      ends.push([sy(L.m.at(-1)), `${L.s.name}: ${share ? Math.round(L.m.at(-1)) + '%' : L.m.at(-1).toFixed(2)}`, L.s.colour, P_STYLE[L.s.key]?.[1] ?? '']);
+      ends.push([sy(L.m.at(-1)), `${L.s.label}: ${share ? Math.round(L.m.at(-1)) + '%' : L.m.at(-1).toFixed(2)}`, L.s.colour, P_STYLE[L.s.key]?.[1] ?? '']);
     }
     ends.sort((a, b) => a[0] - b[0]); for (let n = 1; n < ends.length; n++) ends[n][0] = Math.max(ends[n][0], ends[n - 1][0] + 15);
     for (const [y, t, c, dash] of ends) svg += `<line x1="${l + pw + 6}" x2="${l + pw + 22}" y1="${y}" y2="${y}" stroke="${c}" stroke-width="2.5" stroke-dasharray="${dash}"/><text x="${l + pw + 26}" y="${y + 4}" font-size="11" fill="var(--ink)">${esc(t)}</text>`;
@@ -2542,7 +2544,7 @@ function leanResults(d) {
     const atX = (k) => `${fmtx(grid[k])}${xi === 1 ? ' (round)' : xi === 2 ? ' tries' : ''}`;
     const writeVals = (k) => {
       $('l-at').value = k; $('l-at-txt').textContent = 'At ' + atX(k);
-      $('l-vals').innerHTML = lines.map((L) => `<tr><td><span class="swatch" style="background:${L.s.colour}"></span>${esc(L.s.name)}</td><td>${fmt(L.m[k])}</td><td>${L.n > 1 ? `${fmt(L.lo[k])} to ${fmt(L.hi[k])}` : 'one run: no range'}</td></tr>`).join('');
+      $('l-vals').innerHTML = lines.map((L) => `<tr><td><span class="swatch" style="background:${L.s.colour}"></span>${esc(L.s.label)}</td><td>${fmt(L.m[k])}</td><td>${L.n > 1 ? `${fmt(L.lo[k])} to ${fmt(L.hi[k])}` : 'one run: no range'}</td></tr>`).join('');
     };
     $('l-at').max = grid.length - 1; $('l-at').oninput = () => writeVals(Number($('l-at').value)); writeVals(grid.length - 1);
     el.onpointermove = (ev) => {
@@ -2551,7 +2553,7 @@ function leanResults(d) {
       let k = 0; grid.forEach((g, n) => { if (Math.abs(sx(g) - px) < Math.abs(sx(grid[k]) - px)) k = n; });
       cross.setAttribute('x1', sx(grid[k])); cross.setAttribute('x2', sx(grid[k])); cross.style.display = '';
       writeVals(k);
-      tip.innerHTML = `<b>${esc(atX(k))}</b>` + [...lines].sort((a, b) => b.m[k] - a.m[k]).map((L) => `<div><span class="swatch" style="background:${L.s.colour}"></span>${esc(L.s.name)}: <b>${fmt(L.m[k])}</b>${L.n > 1 ? ` <span class="muted">(${fmt(L.lo[k])}–${fmt(L.hi[k])})</span>` : ''}</div>`).join('');
+      tip.innerHTML = `<b>${esc(atX(k))}</b>` + [...lines].sort((a, b) => b.m[k] - a.m[k]).map((L) => `<div><span class="swatch" style="background:${L.s.colour}"></span>${esc(L.s.label)}: <b>${fmt(L.m[k])}</b>${L.n > 1 ? ` <span class="muted">(${fmt(L.lo[k])}–${fmt(L.hi[k])})</span>` : ''}</div>`).join('');
       tip.hidden = false;
       const wrap = $('l-chart').getBoundingClientRect(), x = (sx(grid[k]) * box.width) / W, right = x + 14 + tip.offsetWidth > wrap.width;
       tip.style.left = `${right ? x - 14 - tip.offsetWidth : x + 14}px`; tip.style.top = `${((top + 8) * box.height) / H}px`;
@@ -2566,7 +2568,7 @@ function leanResults(d) {
     const cellOf = (xs, f) => { const [m, lo, hi] = medianRange(xs); if (lo === null) return `${m === Infinity ? 'not reached' : f(m)} <span class="muted">(too few runs for a range)</span>`; return m === Infinity ? (lo === Infinity ? 'not reached' : `not reached <span class="muted">(from ${f(lo)})</span>`) : `${f(m)} <span class="muted">(${f(lo)} to ${hi === Infinity ? 'not reached' : f(hi)})</span>`; };
     return sets.map((s) => {
       const at = s.series.map((r) => r.find((row) => row[3] >= k)), hit = at.filter(Boolean).length, [lo, hi] = wilson(hit, at.length);
-      return `<tr><td><span class="swatch" style="background:${s.colour}"></span>${esc(s.name)}</td><td>${hit} of ${at.length} <span class="muted">(${Math.round(lo * 100)}–${Math.round(hi * 100)}%)</span></td><td>${cellOf(at.map((row) => row?.[0] ?? Infinity), usd)}</td><td>${cellOf(at.map((row) => row?.[2] ?? Infinity), rnd)}</td><td>${cellOf(at.map((row) => row?.[1] ?? Infinity), rnd)}</td><td>${cellOf(at.map((row) => row?.[10] ?? Infinity), rnd)}</td></tr>`;
+      return `<tr><td><span class="swatch" style="background:${s.colour}"></span>${esc(s.label)}</td><td>${hit} of ${at.length} <span class="muted">(${Math.round(lo * 100)}–${Math.round(hi * 100)}%)</span></td><td>${cellOf(at.map((row) => row?.[0] ?? Infinity), usd)}</td><td>${cellOf(at.map((row) => row?.[2] ?? Infinity), rnd)}</td><td>${cellOf(at.map((row) => row?.[1] ?? Infinity), rnd)}</td><td>${cellOf(at.map((row) => row?.[10] ?? Infinity), rnd)}</td></tr>`;
     }).join('');
   };
   // Whether the setups can be told apart at this count.
@@ -2583,7 +2585,7 @@ function leanResults(d) {
   drawReach(kv);
   $('l-k').onchange = () => { const p = params(); p.set('tab', 'results'); p.set('exp', d.id); p.set('k', $('l-k').value); history.replaceState(null, '', '#/lean?' + p); drawReach(Number($('l-k').value)); };
   const cell = (a) => { const r = rangeOf(a); return `${mean(a).toFixed(2)}${r ? ` <span class="muted">(${r[0].toFixed(2)}–${r[1].toFixed(2)})</span>` : ''}`; };
-  const rows = sets.map((s) => `<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${s.colour};margin-right:5px"></span>${esc(s.name)}</td><td>${s.series.length}</td>
+  const rows = sets.map((s) => `<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${s.colour};margin-right:5px"></span>${esc(s.label)}</td><td>${s.series.length}</td>
     <td>${cell(fin(s, 3))}</td><td>${cell(fin(s, 5))}</td><td>${cell(fin(s, 9))}</td><td>${cell(fin(s, 6))}</td><td>$${mean(fin(s, 0)).toFixed(2)}</td>
     <td>${d.targets.map((t) => `${t.id} ${s.proved[t.id]}`).join(' · ')}</td></tr>`).join('');
   $('l-table').innerHTML = `<div class="pane" style="overflow-x:auto"><table class="agents"><thead><tr><th>Setup</th><th>Runs</th><th>Targets proved</th><th>Lemmas proved</th><th>Lemmas cited later</th><th>Built on another lab</th><th>Spent</th><th>Runs that proved each target</th></tr></thead><tbody>${rows}</tbody></table>
