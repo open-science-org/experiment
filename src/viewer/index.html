@@ -2348,7 +2348,7 @@ const LY = (d) => [
 ];
 // The main questions: clicking one sets the graph.
 const LQ = (d) => [
-  { text: 'Which setup proves the most targets for the money?', y: 'targets', x: 0, read: 'Higher line: more targets for the same money.' },
+  { text: 'Does OSO reach the same verified results for less money?', y: 'targets', x: 0, read: 'Read across at one height: the line further left got there for less money. Every target counted was checked by Lean.' },
   { text: 'Which setup gets there in the fewest tries?', y: 'targets', x: 2, read: 'Higher line: more targets for the same number of proofs Lean checked, all labs together. Tries do not depend on prices.' },
   { text: 'Which setup gets there soonest, with labs working at once?', y: 'targets', x: 1, read: 'Higher line: more targets by that round. In a round, every lab still working picks one task and gets up to 3 tries.' },
   { text: 'How deep does each setup get for the money?', y: 'deepest', x: 0, read: 'Higher line: a deeper target for the same money.' },
@@ -2377,11 +2377,12 @@ function leanResults(d) {
   // The answer first: targets proved at the end, by setup.
   const ends = sets.map((s) => ({ s, a: fin(s, 3), r: rangeOf(fin(s, 3)) }));
   const nRuns = [...new Set(sets.map((s) => s.series.length))];
-  const overlap = ends.every((e) => e.r) ? (Math.max(...ends.map((e) => e.r[0])) <= Math.min(...ends.map((e) => e.r[1])) ? ' All the ranges overlap, so no setup is clearly ahead on this measure.' : ' Not all the ranges overlap: see the graph and the run summary.') : '';
   $('l-body').innerHTML = `<div class="pane" style="margin-bottom:12px">
-    <h3 style="margin:0 0 8px;font-size:15px">Targets proved by the end of a run (of ${d.targets.length})</h3>
-    <div class="tiles">${ends.map((e) => `<div class="tile"><div class="k"><span class="swatch" style="background:${e.s.colour}"></span>${esc(e.s.name)}</div><div class="v">${mean(e.a).toFixed(1)}</div>${e.r ? `<div class="muted" style="font-size:12px">${e.r[0].toFixed(1)} to ${e.r[1].toFixed(1)}</div>` : ''}</div>`).join('')}</div>
-    <p class="muted" style="font-size:12px;margin:8px 0 0">${nRuns.length === 1 ? `${nRuns[0]} run${nRuns[0] === 1 ? '' : 's'} per setup` : `${sets.map((s) => `${esc(s.name)} ${s.series.length}`).join(', ')} runs`}: ${ends.every((e) => !e.r) ? 'the result of that run; one run has no range.' : 'the mean, with a 95% range below it.'}${overlap} <a href="#/doc/results/community/${esc(d.id)}/summary.md">The run summary</a>.</p></div>
+    <h3 style="margin:0 0 4px;font-size:15px">Does OSO reach the same verified results for less money?</h3>
+    <p style="font-size:13px;margin:0 0 8px">Median money, all labs together, to reach <span id="l-a-k"></span> of the ${d.targets.length} targets, each checked by Lean:</p>
+    <div class="tiles" id="l-a-tiles"></div>
+    <p class="muted" style="font-size:12px;margin:8px 0 0">${nRuns.length === 1 ? `${nRuns[0]} run${nRuns[0] === 1 ? '' : 's'} per setup` : `${sets.map((s) => `${esc(s.name)} ${s.series.length}`).join(', ')} runs`}, with a range of at least 95% below each median.<span id="l-a-note"></span> Change the count of targets in the table below the graph. <a href="#/doc/results/community/${esc(d.id)}/summary.md">The run summary</a>.</p>
+    <p class="muted" style="font-size:12px;margin:4px 0 0">Targets proved by the end of a run: ${ends.map((e) => `${esc(e.s.name)} ${mean(e.a).toFixed(1)}${e.r ? ` (${e.r[0].toFixed(1)} to ${e.r[1].toFixed(1)})` : ''}`).join(' · ')}.</p></div>
     <div class="pane" style="margin-bottom:12px">
     <h3 style="margin:0 0 6px;font-size:15px">Main questions</h3>
     <div id="l-qs"><div class="questions">${qs.slice(0, MAIN_Q).map((x, n) => qBtn(x, n)).join('')}</div>
@@ -2503,7 +2504,15 @@ function leanResults(d) {
       return `<tr><td><span class="swatch" style="background:${s.colour}"></span>${esc(s.name)}</td><td>${hit} of ${at.length} <span class="muted">(${Math.round(lo * 100)}–${Math.round(hi * 100)}%)</span></td><td>${cellOf(at.map((row) => row?.[0] ?? Infinity), usd)}</td><td>${cellOf(at.map((row) => row?.[2] ?? Infinity), rnd)}</td><td>${cellOf(at.map((row) => row?.[1] ?? Infinity), rnd)}</td></tr>`;
     }).join('');
   };
-  const drawReach = (k) => { $('l-reach-rows').innerHTML = reach(k); };
+  // The answer at the top: money to reach k targets, for the k chosen in the table.
+  const drawAnswer = (k) => {
+    const rows = sets.map((s) => { const at = s.series.map((r) => r.find((row) => row[3] >= k)), [m, lo, hi] = medianRange(at.map((row) => row?.[0] ?? Infinity)); return { s, hit: at.filter(Boolean).length, n: at.length, m, lo, hi }; });
+    const usd = (x) => `$${x.toFixed(3)}`, end = (x) => (x === Infinity ? 'not reached' : usd(x));
+    $('l-a-k').textContent = k;
+    $('l-a-tiles').innerHTML = rows.map((r) => `<div class="tile"><div class="k"><span class="swatch" style="background:${r.s.colour}"></span>${esc(r.s.name)}</div><div class="v">${end(r.m)}</div>${r.lo === null ? '<div class="muted" style="font-size:12px">too few runs for a range</div>' : `<div class="muted" style="font-size:12px">${end(r.lo)} to ${end(r.hi)}</div>`}<div class="muted" style="font-size:12px">${r.hit} of ${r.n} runs got there</div></div>`).join('');
+    $('l-a-note').textContent = rows.some((r) => r.lo === null) ? '' : Math.max(...rows.map((r) => r.lo)) <= Math.min(...rows.map((r) => r.hi)) ? ' All the ranges overlap, so no setup is clearly cheaper.' : ' Not all the ranges overlap: see the table below the graph.';
+  };
+  const drawReach = (k) => { $('l-reach-rows').innerHTML = reach(k); drawAnswer(k); };
   $('l-reach').innerHTML = `<div class="pane" style="overflow-x:auto;margin-bottom:12px"><h3 style="margin:0 0 8px;font-size:15px"><label>Cost to reach <select id="l-k">${Array.from({ length: nTargets }, (_, n) => `<option value="${n + 1}"${n + 1 === kv ? ' selected' : ''}>${n + 1}</option>`).join('')}</select> targets</label></h3>
     <table class="agents"><thead><tr><th>Setup</th><th>Runs that reached it</th><th>Median money, all labs</th><th>Median tries, all labs</th><th>Median round</th></tr></thead><tbody id="l-reach-rows"></tbody></table>
     <p class="muted" style="font-size:12px;margin:8px 0 0">${d.setups[0].options?.counted?.length ? `<b>This table and the graph count all ${nTargets} posted targets; the Progress page counts only ${esc(d.setups[0].options.counted.join(', '))}.</b> ` : ''}Every run counts: a run that never got there is "not reached", so no setup is flattered by leaving it out. Ranges cover at least 95%; under 6 runs there are too few for one. For runs up to 2026-11-08 this was looked at after the results, so read it as a lead.</p></div>`;
