@@ -2244,7 +2244,7 @@ async function drawLean() {
   const runsAll = d.setups.reduce((a, x) => a + x.runs, 0), runsDone = d.setups.reduce((a, x) => a + x.done, 0);
   $('l-live').innerHTML = runsAll > runsDone ? `<a href="#/progress?id=${encodeURIComponent(d.id)}" style="display:flex;gap:8px;align-items:center;text-decoration:none;color:inherit"><span style="flex:1;height:10px;border-radius:5px;background:var(--line);overflow:hidden"><span style="display:block;height:100%;width:${(100 * runsDone / runsAll).toFixed(1)}%;background:var(--s1)"></span></span><span style="font-size:12px;white-space:nowrap">${runsDone} of ${runsAll} runs finished · <u>see progress</u></span></a>` : '';
   // Tab links keep the graph's settings.
-  const tabHref = (a) => { const u = new URLSearchParams({ tab: a.dataset.tab, exp: d.id }); for (const k of ['y', 'x', 'k', 'logy', 'logx', 'band', 'each']) if (params().has(k)) u.set(k, params().get(k)); return '#/lean?' + u; };
+  const tabHref = (a) => { const u = new URLSearchParams({ tab: a.dataset.tab, exp: d.id }); for (const k of ['y', 'x', 'k', 'logy', 'logx', 'band', 'each', 'set']) if (params().has(k)) u.set(k, params().get(k)); return '#/lean?' + u; };
   for (const a of $('l-tabs').querySelectorAll('a')) { a.href = tabHref(a); a.onclick = () => { a.href = tabHref(a); }; }
   if (runsAll > runsDone) LN.poll = setTimeout(pollLean, 30000);
   return tab === 'results' ? leanResults(d) : tab === 'labs' ? leanLabs(d) : tab === 'prompts' ? leanPrompts(d) : tab === 'runs' ? leanRuns(d) : leanProblems(d);
@@ -2258,24 +2258,26 @@ async function pollLean() {
   LN.poll = setTimeout(pollLean, 30000);
 }
 
-function leanProblems(d) {
-  const counts = d.setups.length ? `<th>Proved in: ${esc(d.name)}<br><span class="muted" style="font-weight:400">${d.setups.map((x) => esc(x.name)).join(' · ')} (runs out of each setup's finished runs)</span></th>` : '';
-  const rows = d.targets.map((t) => `<tr><td><b>${esc(t.id)}</b></td><td>${esc(t.plain)}<br><code style="font-size:12px">theorem ${esc(t.name)} ${esc(t.statement)}</code></td>
-    <td>${esc(t.area)}</td><td>${t.depth}</td><td>${t.bounty}</td><td>${t.uses.map(esc).join(', ') || '—'}<br><span class="muted">${t.below} in all below it</span></td>
-    ${d.setups.length ? `<td>${d.setups.map((x) => `${x.proved[t.id]}/${x.done}`).join(' · ')}</td>` : ''}</tr>`).join('');
-  $('l-body').innerHTML = `
-    <div class="pane" style="margin-bottom:12px;overflow-x:auto"><h3 style="margin:0 0 6px;font-size:15px">The 8 targets</h3>
-      <p class="muted" style="margin:0 0 8px">Each lab sees these with their bounties and tries to prove them in Lean 4 (core library only). A target's <b>depth</b> is how many levels of lemmas sit under it in our reference proofs; its <b>bounty</b> is 4 · 2^(depth − 1). The lemmas listed are what our own proof uses; labs may find other routes, and must state and prove their own lemmas.</p>
-      <table class="agents"><thead><tr><th>Target</th><th>What it says</th><th>Area</th><th>Depth</th><th>Bounty</th><th>Lemmas in our proof</th>${counts}</tr></thead><tbody>${rows}</tbody></table></div>
-    <div class="pane" style="margin-bottom:12px;overflow-x:auto"><h3 style="margin:0 0 6px;font-size:15px">All 42 theorems in our reference proofs</h3>
-      <p class="muted" style="margin:0 0 8px">Left to right by depth; an arrow means "is used by". Targets are dark. Colours are the areas below. Hover for the statement. The labs do not see this graph: they see only the targets and what has been published.</p>${leanGraph(d)}
-      <dl class="muted" style="font-size:13px;margin:8px 0 0">${Object.entries(d.areas).map(([k, v]) => `<dt style="display:inline;font-weight:700">${esc(k)}</dt> <dd style="display:inline;margin:0 14px 0 4px">${esc(v)}</dd>`).join('')}</dl></div>
+async function leanProblems(d) {
+  const set = params().get('set') === 'hard' ? 'hard' : 'main';
+  let P; try { P = await api('/api/problems?set=' + set); } catch (e) { $('l-body').textContent = e.message; return; }
+  const hard = (t) => (t.community ? `${t.community[0]} of ${t.community[1]} runs` : t.alone ? `Alone ${t.alone[0]} of ${t.alone[1]}, with lemmas ${t.lemmas[0]} of ${t.lemmas[1]}` : '—');
+  const link = (v, text) => `<a class="btn" href="#/lean?tab=problems&exp=${encodeURIComponent(d.id)}&set=${v}"${v === set ? ' aria-pressed="true"' : ''}>${text}</a>`;
+  const rows = P.targets.map((t) => `<tr><td><b>${esc(t.id)}</b></td><td>${esc(t.plain)}<br><code style="font-size:12px">theorem ${esc(t.name)} ${esc(t.statement)}</code></td>
+    <td>${esc(t.area)}</td><td>${t.depth}</td><td>${t.bounty}</td><td>${t.uses.map(esc).join(', ') || '—'}<br><span class="muted">${t.below} in all below it</span></td><td>${hard(t)}</td></tr>`).join('');
+  $('l-body').innerHTML = `<div class="chips" style="margin:0 0 10px">${link('main', 'Main set: 8 targets')}${link('hard', 'Harder set: 11 targets')}</div>
+    <div class="pane" style="margin-bottom:12px;overflow-x:auto"><h3 style="margin:0 0 6px;font-size:15px">The problem space: ${P.theorems.length} theorems, ${P.targets.length} targets</h3>
+      <p class="muted" style="margin:0 0 8px">Left to right by depth; a line means "is used by". Targets are dark, with how often they have been proved. Colours are the areas below. Hover for the statement. The labs do not see this graph: they see only the targets and what has been published.</p>${leanGraph(P)}
+      <dl class="muted" style="font-size:13px;margin:8px 0 0">${Object.entries(P.areas).map(([k, v]) => `<dt style="display:inline;font-weight:700">${esc(k)}</dt> <dd style="display:inline;margin:0 14px 0 4px">${esc(v)}</dd>`).join('')}</dl></div>
+    <div class="pane" style="margin-bottom:12px;overflow-x:auto"><h3 style="margin:0 0 6px;font-size:15px">The ${P.targets.length} targets</h3>
+      <p class="muted" style="margin:0 0 8px">Each lab sees these with their bounties and tries to prove them in Lean 4 (core library only). A target's <b>depth</b> is how many levels of lemmas sit under it in our reference proofs; its <b>bounty</b> is 4 · 2^(depth − 1). The lemmas listed are what our own proof uses; labs may find other routes, and must state and prove their own lemmas.${set === 'hard' ? ' No community run has used the harder set yet.' : ''}</p>
+      <table class="agents"><thead><tr><th>Target</th><th>What it says</th><th>Area</th><th>Depth</th><th>Bounty</th><th>Lemmas in our proof</th><th>How hard so far<br><span class="muted" style="font-weight:400">Proved in “${esc(P.experiment)}”, all setups; new targets: the pilot difficulty check</span></th></tr></thead><tbody>${rows}</tbody></table></div>
     <details class="pane"><summary style="cursor:pointer;font-weight:700">The definitions every lab is given (Lean)</summary><pre style="font-size:12px;overflow-x:auto">${esc(d.definitions)}</pre></details>`;
 }
 
 function leanGraph(d) {
   const by = {}; for (const t of d.theorems) (by[t.depth] ??= []).push(t);
-  const depths = Object.keys(by).map(Number).sort((a, b) => a - b), colW = 175, boxW = 158, rowH = 30, top = 24;
+  const depths = Object.keys(by).map(Number).sort((a, b) => a - b), colW = 195, boxW = 178, rowH = 30, top = 24;
   const H = top + rowH * Math.max(...depths.map((k) => by[k].length)) + 8, W = 20 + colW * depths.length;
   const pos = {}; for (const k of depths) by[k].sort((a, b) => a.area.localeCompare(b.area) || a.id.localeCompare(b.id)).forEach((t, j) => { pos[t.id] = [20 + colW * (k - 1), top + j * rowH]; });
   const fill = { A: 'var(--s1-soft)', B: '#e9e2f7', C: '#e2f2e2', cross: '#f4e8d6' };
@@ -2286,9 +2288,11 @@ function leanGraph(d) {
   }
   for (const t of d.theorems) {
     const [x, y] = pos[t.id];
-    const text = t.posted ? `${t.id} · ${t.name}` : t.id;
+    const T = d.targets.find((x) => x.id === t.id);
+    // A target shows how often it has been proved: in community runs, or for a new target in the pilot.
+    const text = !t.posted ? t.id : T?.community ? `${t.id} · ${Math.round((100 * T.community[0]) / T.community[1])}% of runs` : T?.alone ? `${t.id} · alone ${T.alone[0]}/${T.alone[1]}, lemmas ${T.lemmas[0]}/${T.lemmas[1]}` : `${t.id} · ${t.name}`;
     svg += `<g><title>${esc(text)} (area ${esc(t.area)}, depth ${t.depth})${t.plain ? '\n' + esc(t.plain) : ''}\n${esc(t.statement)}</title><rect x="${x}" y="${y}" width="${boxW}" height="20" rx="4" fill="${t.posted ? '#33322f' : fill[t.area] ?? '#eee'}" stroke="currentColor" stroke-opacity="0.25"/>
-      <text x="${x + 6}" y="${y + 14}" font-size="11" fill="${t.posted ? '#fff' : '#222'}" font-weight="${t.posted ? 700 : 400}">${esc(text.length > 24 ? text.slice(0, 23) + '…' : text)}</text></g>`;
+      <text x="${x + 6}" y="${y + 14}" font-size="11" fill="${t.posted ? '#fff' : '#222'}" font-weight="${t.posted ? 700 : 400}">${esc(text.length > 29 ? text.slice(0, 28) + '…' : text)}</text></g>`;
   }
   return `<svg viewBox="0 0 ${W} ${H}" width="${W}" style="max-width:none;color:var(--ink,#222)">${svg}</svg>`;
 }

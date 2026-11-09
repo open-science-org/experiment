@@ -13,7 +13,7 @@ import { traceRun } from '../engine/model.ts';
 import { expand, loadExperiment, OUTCOMES, PROGRESS, PROGRESS_POINTS, preset } from '../experiments/experiment.ts';
 import { MEASURE_NAMES, VALUES } from '../engine/measures.ts';
 import { loadSpace, spaceIds, withCalibratedBudget, type Space } from '../spaces/spaces.ts';
-import { AREAS, LEAN_DIR, PLAIN, definitions, leanAvailable, loadTasks } from '../lean/tasks.ts';
+import { AREAS, LEAN_DIR, PLAIN, definitions, leanAvailable, loadTasks, type Problems } from '../lean/tasks.ts';
 import * as design from './design.ts';
 import { Community, LEAN_REWARDS, firstProofs, progress, type CommunityResult } from '../lean/community.ts';
 import { SOCIETIES } from '../lean/societies.ts';
@@ -300,6 +300,24 @@ async function models() {
  * The Progress page: every society experiment (runs done, running, waiting, with the money-vs-targets
  * curve of each), every Phase 0 benchmark run, and the credit left. No transcripts or proofs.
  */
+/** One problem set as a graph: only the theorems some target needs, with how hard each target has been so far. */
+function problemSpace(set: Problems) {
+  const tasks = loadTasks(set), byName = new Map(tasks.map((t) => [t.name, t]));
+  const below = (name: string, seen = new Set<string>()): Set<string> => { for (const u of byName.get(name)?.uses ?? []) if (!seen.has(u)) { seen.add(u); below(u, seen); } return seen; };
+  const label = new Map(tasks.map((t) => [t.name, t.posted ? t.publicId : t.short]));
+  const needed = new Set(tasks.filter((t) => t.posted).flatMap((t) => [t.name, ...below(t.name)]));
+  // Community results from the largest run on the main set; for the harder targets, the difficulty check (one model alone, a pilot).
+  const main = leanData('lean-main-b'), community = Object.fromEntries(main.targets.map((t: { id: string }) => [t.id, [main.setups.reduce((a: number, s: { proved: Record<string, number> }) => a + s.proved[t.id], 0), main.setups.reduce((a: number, s: { done: number }) => a + s.done, 0)]]));
+  const check: Record<string, Record<string, [number, number]>> = {};
+  for (const run of ['hard-check-1', 'hard-check-2']) for (const a of jsonl(join(LEAN_DIR, 'runs', run, 'attempts.jsonl'))) { const c = ((check[a.publicId] ??= {})[a.condition] ??= [0, 0]); c[1]++; if (a.ok) c[0]++; }
+  const shown = tasks.filter((t) => needed.has(t.name));
+  return {
+    set, experiment: main.name, areas: AREAS,
+    theorems: shown.map((t) => ({ id: label.get(t.name), name: t.short, plain: t.posted ? PLAIN[t.publicId] ?? '' : '', depth: t.depth, area: t.area, posted: t.posted ? t.publicId : null, statement: t.signature, uses: t.uses.map((u) => label.get(u)) })),
+    targets: shown.filter((t) => t.posted).map((t) => ({ id: t.publicId, name: t.short, area: t.area, depth: t.depth, bounty: 4 * 2 ** (t.depth - 1), plain: PLAIN[t.publicId] ?? '', statement: t.signature, uses: t.uses.map((u) => label.get(u)), below: below(t.name).size, community: community[t.publicId] ?? null, alone: check[t.publicId]?.alone ?? null, lemmas: check[t.publicId]?.library ?? null })),
+  };
+}
+
 /** The Lean experiment explained: the problems, the society experiments, each setup's labs and exact prompts. */
 function leanData(exp: string) {
   let tasks = loadTasks('main');
@@ -531,6 +549,7 @@ const server = createServer(async (req, res) => {
     if (url.pathname === '/api/progress') return send(200, await progressData());
     if (url.pathname === '/api/costs') return send(200, await costData());
     if (url.pathname === '/api/lean') return send(200, leanAvailable() ? leanData(url.searchParams.get('exp') ?? '') : null);
+    if (url.pathname === '/api/problems') return send(200, leanAvailable() ? problemSpace(url.searchParams.get('set') === 'hard' ? 'hard' : 'main') : null);
     if (url.pathname === '/api/lean/run') return send(200, leanRun(url.searchParams.get('id') ?? ''));
     if (url.pathname === '/api/design/field') return send(200, design.fieldValues(url.searchParams.get('id') ?? ''));
     if (url.pathname === '/api/jobs') return send(200, design.listJobs());
