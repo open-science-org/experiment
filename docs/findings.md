@@ -4,7 +4,7 @@ Last updated: 2026-11-08. Plain summaries; each links to its full result. **Find
 
 ## Simulation
 
-- **Finding: sharing at once is the big saving.** To solve half the targets, traditional research needs 3.5× to 5.7× the money OSO needs, across five difficulties, mostly because work is repeated. [Overview](../README.md)
+- **Finding: sharing at once is the big saving.** To solve half the targets, traditional research needs 3.5× to 5.7× the money OSO needs, across five difficulties, mostly because work is repeated (no range computed on this ratio). [Overview](../README.md)
 - **Finding: flow-back makes agents choose to share.** When agents decide whether to publish, they share 24% of their ideas at α 1 and 66% at α 0.2. With the rules deciding, α changes little. [Overview](../README.md)
 - **Lead: the knowledge reward matters once agents choose and money follows earnings** (α 0.8: 1.8 of 2 targets with it, 0.4 without). [Result](../results/knowledge-reward-by-step/summary.md)
 

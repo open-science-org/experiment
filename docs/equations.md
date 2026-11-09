@@ -147,7 +147,7 @@ The ideas and how they help each other form the **idea graph** of a problem spac
 
 **Parents.** $y$ is a **parent** of $x$, written $y \to x$, if knowing $y$ lowers the work for $x$: $W_x(K \cup \{y\}) < W_x(K)$. A parent can be **required** (without it $x$ cannot be attempted: the work is infinite) or just **helpful**. An idea **before** $x$ is a parent, a parent's parent, and so on; an idea **after** $x$ is one built on $x$. A **root** has no parents.
 
-**Contribution** of parent $y$ to $x$: the work $y$ saves. When parents overlap (either one would do, or they help more together), each one's saving is averaged over every order in which $x$'s parents could become known (the **Shapley value**), so the savings add up exactly to what all parents save together:
+**Contribution** of parent $y$ to $x$: its intellectual contribution to $x$, measured as the work $y$ saves, in the unit each model uses. When parents overlap (either one would do, or they help more together), each one's saving is averaged over every order in which $x$'s parents could become known (the **Shapley value**), so the savings add up exactly to what all parents save together:
 
 $$\phi_{y \to x} = \frac{1}{|\text{orders}|} \sum_{\text{orders}} \Big( W_x(\text{parents known before } y) - W_x(\text{those} \cup \{y\}) \Big)$$
 
@@ -186,7 +186,7 @@ $$p_x(K) = 2^{-\,|\text{bits}(x) \,\setminus\, \text{bits resolved by } K|} \qqu
 
 Any idea can be attempted at any time: parents are **helpful, not required**. Knowing a parent resolves the bits the child took from it.
 
-**Link weight:** the bits each parent resolves inside the child. A bit that several parents contain is split equally among them, which is exactly the Shapley value for this case:
+**Link weight:** a parent's relative intellectual contribution, here counted in bits (the log of attempts, not attempts): the bits each parent resolves inside the child. A bit that several parents contain is split equally among them, which is exactly the Shapley value for this case:
 
 $$\phi_{y \to x} = \sum_{b \,\in\, \text{bits}(x) \cap \text{bits}(y)} \frac{1}{\big|\{y' \to x : b \in \text{bits}(y')\}\big|} \qquad w_{y \to x} = \frac{\phi_{y \to x}}{\sum_{y' \to x} \phi_{y' \to x}}$$
 

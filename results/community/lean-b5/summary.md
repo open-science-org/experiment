@@ -13,6 +13,8 @@
 
 **Design** (fixed before the run): compared OSO, α 0.2, Shared library · held the same: the same 4 agents (the single agent: the first, with all the money), $0.80 in all, Lean checks every proof · measure: targets proved by the end of a run, of 8; money to reach 3 targets is shown beside it, higher is better · 10 runs per setup, not paired. Cost: $16.11 as charged.
 
+**Correction (2026-11-08):** the design line above is the page's generated default. The plan's main measure was how often B5 was proved, and it fixed 10 runs per setup first.
+
 **Caveats:**
 - Labs could not stop early: each worked until its money or the rounds ran out, so setups are compared at the same money spent.
 - Rewards differ from the current simulation model: the knowledge reward is off (the simulation pays 1 per new bit since v5): Lean has no agreed measure of a result's new knowledge yet, see docs/design.md; value flowing back is still split by the money spent proving each parent, not by the work a parent saves (1/p) as in the simulation.
@@ -20,7 +22,7 @@
 
 <details><summary>Details</summary>
 
-Fair-prompt check (fixed before the runs in notes/lean-main-experiment.md, 2026-11-07): with one prompt template, how often does OSO α 0.2 prove B5 (merge sort = insertion sort) compared with the shared library? $0.20 a lab, labs cannot stop early, 20 runs per setup in two batches of 10; reported as an estimate.
+Fair-prompt check (fixed before the runs in notes/lean-main-experiment.md, 2026-11-07): with one prompt template, how often does OSO α 0.2 prove B5 (merge sort = insertion sort) compared with the shared library? $0.20 a lab, labs cannot stop early, 10 runs per setup first, and 10 more only if the estimate was too rough to read (the extra 10 were not run); reported as an estimate.
 
 ![Verified targets for the money](figures/progress.svg)
 

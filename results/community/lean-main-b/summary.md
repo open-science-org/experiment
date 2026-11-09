@@ -15,6 +15,8 @@
 
 **Design** (fixed before the run): compared OSO, α 0.8, OSO, α 0.2, Shared library, Traditional · held the same: the same 4 agents (the single agent: the first, with all the money), $0.60 in all, Lean checks every proof · measure: targets proved by the end of a run, of 8; money to reach 3 targets is shown beside it, higher is better · 20 runs per setup, not paired. Cost: $48.68 as charged.
 
+**Correction (2026-11-08):** the design line above is the page's generated text. Traditional was not fixed before the run: it was added after the other three setups had run 19 of their 20 runs, as a reference point.
+
 **Caveats:**
 - Labs could not stop early: each worked until its money or the rounds ran out, so setups are compared at the same money spent.
 - Rewards differ from the current simulation model: the knowledge reward is off (the simulation pays 1 per new bit since v5): Lean has no agreed measure of a result's new knowledge yet, see docs/design.md; value flowing back is still split by the money spent proving each parent, not by the work a parent saves (1/p) as in the simulation.

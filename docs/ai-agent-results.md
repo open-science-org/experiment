@@ -7,7 +7,7 @@ Last updated: 2026-11-08. Every result here has its own page under `results/` (t
 Checked after every run; last checked 2026-11-08, after Labs choose (M3).
 
 - **Lemmas help weak models.** DeepSeek proves 4 of 16 targets alone, 12 of 16 with the lemmas they need.
-- **Sharing at once stops repeated work.** Traditional labs proved the same lemma about 20 times a run; with sharing, almost never. A plain shared library gets this too, so it is not unique to OSO.
+- **Sharing lets labs build on each other** (Spend all: 2.2 results a run in the shared library, 0.4 under traditional), but it has not raised targets proved. A plain shared library gets this too, so it is not unique to OSO. **Repeated work is not a general result:** traditional labs proved the same lemma about 20 times a run in the small cheap race (5 runs), but only 0.4 times in Spend all (20 runs per setup; shared library 0.2).
 - **Flow-back (OSO's own rule): no clear gain in targets proved yet.** Against the shared library, OSO α 0.2 proved about the same: +0.4 (Spend all), +0.5 (Fair-prompt check), +0.0 (May quit), all with ranges that include zero.
 - **Flow-back goes with more lemmas in most experiments** (about twice as many with fair prompts), but over half are never used, and in Labs choose α 1 labs proved as many once publishing paid a small reward.
 - **Lead, not a finding:** the hardest target, B5, comes up more at low α, but the gap shrank with fair prompts and B5 was picked after looking.
@@ -71,7 +71,7 @@ Where a proof cited two or more results, the split between them was often quite 
 | Money to reach 2, when reached | $0.24 | **$0.13** |
 | Lemmas and conjectures proved twice | 20.0 | 0 |
 | Targets proved twice (two labs in the same round) | 0.4 | 2.4 |
-| Used another lab's result | 0 | 6.4 |
+| Used another lab's result | 0 | 5.2 |
 
 Money to reach 2 counted targets, run by run (OSO / traditional): $0.25 / never, $0.11 / never, $0.07 / $0.18, $0.13 / $0.26, $0.11 / $0.28. OSO was cheaper in every run. The spend measure was chosen after the run (exploratory); budgets were at list prices, and OpenRouter charged about 5.6× more on both sides.
 
@@ -100,11 +100,11 @@ Money to reach 2 counted targets, run by run (OSO / traditional): $0.25 / never,
 
 **The planner setup works:** in a [trial](../results/community/planner-trial-2/summary.md), DeepSeek labs followed their assignment 10 times out of 12. GPT-OSS-120B labs gave up at once, so it is not used as a lab model.
 
-**Choosing the lab model.** A lab model must keep working and gain from lemmas. DeepSeek V4.1 Flash is the cheapest tested model that does both. GPT-OSS-120B is cheaper but gave up as a lab. It has not been tried in the lemma panel or a plain race, so it may have failed only in the planner trial's setup. The strong Claude models prove every target alone, so they cannot show what sharing is worth.
+**Choosing the lab model.** A lab model must keep working and gain from lemmas. DeepSeek V4.1 Flash is the cheapest tested model that does both. GPT-OSS-120B is cheaper but gave up as a lab. In the [lemma panel](../results/pilot/panel-gpt-oss-120b/summary.md) it gained a little (2 of 16 alone, 7 with lemmas). It has not been tried in a plain race, so it may have failed only in the planner trial's setup. The strong Claude models prove every target alone, so they cannot show what sharing is worth.
 
 ## 4. Spend all: labs must spend all their money (2026-11-07)
 
-**Question, fixed in advance** (the design is in the local notes, `notes/lean-main-experiment.md`): at the same money **spent**, does a community prove more when value flows back (OSO) than when results are only shared (a shared library)? 4 DeepSeek V4.1 Flash labs, $0.15 each; labs could not stop early, so every run spent its money (about $0.61); 20 runs per setup; knowledge reward off; bounties 4 · 2^(depth − 1). Results: [lean-main-b](../results/community/lean-main-b/summary.md). Traditional (20 runs) was added afterwards as a reference point; its runs came after the others'. Full design: [the Lean experiment](lean-experiment.md).
+**Question, fixed in advance** (the design is in the local notes, `notes/lean-main-experiment.md`): at the same money **spent**, does a community prove more when value flows back (OSO) than when results are only shared (a shared library)? 4 DeepSeek V4.1 Flash labs, $0.15 each; labs could not stop early, so nearly every run spent its money (about $0.61; one OSO α 0.8 run proved all 8 targets by round 13 and ended at $0.45); 20 runs per setup; knowledge reward off; bounties 4 · 2^(depth − 1). Results: [lean-main-b](../results/community/lean-main-b/summary.md). Traditional (20 runs) was added afterwards as a reference point; its runs came after the others'. Full design: [the Lean experiment](lean-experiment.md).
 
 **A known flaw:** the setups' prompts differed by more than the rules. The shared library's had an extra line, "Other results earn nothing by themselves", and the OSO prompts explained flow-back at length. Some of any difference between setups could come from the wording. New runs use one template, where only the rule lines differ.
 
@@ -138,15 +138,15 @@ Looked for after seeing the results, so these are leads, not findings.
 
 | Setup | Lemmas proved | Results built on another lab's work | Lemmas proved twice | Targets proved twice |
 | --- | --- | --- | --- | --- |
-| Traditional | 7.2 | 0.6 | 0.4 | 2.6 |
-| Shared library | 7.2 | 2.6 | 0.2 | 3.6 |
-| OSO, α 0.8 | 10.7 | 4.3 | 0.2 | 3.0 |
-| OSO, α 0.2 | 13.8 | 6.6 | 0.2 | 2.9 |
+| Traditional | 7.2 | 0.4 | 0.4 | 2.6 |
+| Shared library | 7.2 | 2.2 | 0.2 | 3.6 |
+| OSO, α 0.8 | 10.7 | 3.6 | 0.2 | 3.0 |
+| OSO, α 0.2 | 13.8 | 5.8 | 0.2 | 2.9 |
 
-A target is proved twice when two labs prove it in the same round. (An earlier version of this table counted both kinds together as "lemmas proved twice".)
+A target is proved twice when a lab proves it after another lab already has: nearly always in the same round (2 later cases in all, both under traditional). "Built on another lab", here and below, counts only the first proof of each statement (recounted 2026-11-08; the pages under `results/` still show the older, higher counts). (An earlier version of this table counted both kinds together as "lemmas proved twice".)
 
 **What it suggests:**
-- **Sharing changes how labs work:** labs built on each other's results 2.6 times a run in the shared library, against 0.6 under traditional.
+- **Sharing changes how labs work:** labs built on each other's results 2.2 times a run in the shared library, against 0.4 under traditional.
 - **Flow-back goes with more groundwork:** traditional and the shared library proved the same number of lemmas (7.2 a run); OSO proved more, and more the lower the α (10.7 at α 0.8, 13.8 at α 0.2). Labs also built on each other more.
 - **And with B5:** the hard target that needs the most lemmas was proved more often the more value flowed back (0, 5 and 11 runs of 20).
 - **The total barely moves,** because the measure fixed in advance counts every target the same.
@@ -162,9 +162,9 @@ A target is proved twice when two labs prove it in the same round. (An earlier v
 
 | Setup | B5 proved | Targets proved (of 8) | Lemmas proved | Built on another lab | Rounds a lab worked |
 | --- | --- | --- | --- | --- | --- |
-| Shared library | 3 of 10 (0.11–0.60) | 6.1 (5.6–6.6) | 8.5 (4.6–12.4) | 3.4 (1.6–5.2) | 16.9 (16.0–17.7) |
-| OSO, α 0.2 | 4 of 10 (0.17–0.69) | 6.6 (5.9–7.3) | 17.2 (13.6–20.8) | 8.4 (6.0–10.8) | 19.6 (18.0–21.1) |
-| OSO minus shared | +0.10 (−0.28 to +0.45) | +0.5 (−0.4 to +1.4) | +8.7 (+3.4 to +14.0) | +5.0 (+2.0 to +8.0) | +2.7 (+0.9 to +4.4) |
+| Shared library | 3 of 10 (0.11–0.60) | 6.1 (5.6–6.6) | 8.5 (4.6–12.4) | 3.1 (1.2–5.1) | 16.9 (16.0–17.7) |
+| OSO, α 0.2 | 4 of 10 (0.17–0.69) | 6.6 (5.9–7.3) | 17.2 (13.6–20.8) | 7.0 (4.7–9.3) | 19.6 (18.0–21.1) |
+| OSO minus shared | +0.10 (−0.28 to +0.45) | +0.5 (−0.4 to +1.4) | +8.7 (+3.4 to +14.0) | +3.9 (+0.9 to +6.9) | +2.7 (+0.9 to +4.4) |
 
 **B5:** much closer than in Spend all (11 of 20 against 0 of 20, a gap of 0.55). The range here (−0.28 to +0.45) leaves room for a gap of up to about 0.45, so the B5 question is still open, and we cannot say whether the fair prompts or the extra money closed the gap. We did not add the 10 extra runs the plan allowed: May quit and M3 were already using the provider, and the lemma result was what bore on M3.
 
@@ -182,22 +182,22 @@ A target is proved twice when two labs prove it in the same round. (An earlier v
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Traditional | 5.0 (4.4–5.6) | 19.0 (15.8–22.3) | $0.27 (0.23–0.31) | 5.5 (4.8–6.2) | 2 of 40 | 1.0 (0.1–1.9) | 0.2 (0.0–0.5) |
 | Shared library | 5.0 (4.3–5.7) | 17.9 (14.5–21.4) | $0.29 (0.24–0.34) | 5.6 (4.8–6.4) | 2 of 40 | 0.3 (0.0–0.7) | 0.7 (0.1–1.3) |
-| OSO, α 0.8 | 5.1 (4.5–5.7) | 16.3 (12.8–19.8) | $0.34 (0.27–0.40) | 7.7 (6.4–9.0) | 5 of 40 | 3.7 (2.1–5.3) | 2.7 (1.5–3.9) |
-| OSO, α 0.2 | 5.0 (4.5–5.5) | 17.8 (14.9–20.7) | $0.29 (0.24–0.35) | 6.4 (5.4–7.4) | 1 of 40 | 2.5 (1.8–3.2) | 1.5 (0.7–2.3) |
+| OSO, α 0.8 | 5.1 (4.5–5.7) | 16.3 (12.8–19.8) | $0.34 (0.27–0.40) | 7.7 (6.4–9.0) | 5 of 40 | 3.7 (2.1–5.3) | 1.4 (0.5–2.3) |
+| OSO, α 0.2 | 5.0 (4.5–5.5) | 17.8 (14.9–20.7) | $0.29 (0.24–0.35) | 6.4 (5.4–7.4) | 1 of 40 | 2.5 (1.8–3.2) | 1.1 (0.5–1.7) |
 
 Against the shared library, with 95% ranges:
 
 | | Targets | Targets per dollar | Money spent | Rounds a lab worked | Lemmas | Built on another lab |
 | --- | --- | --- | --- | --- | --- | --- |
-| OSO α 0.2 | +0.0 (−0.8 to +0.8) | −0.2 (−4.6 to +4.3) | +$0.00 (−0.07 to +0.07) | +0.8 (−0.5 to +2.1) | +2.2 (+1.4 to +3.0) | +0.8 (−0.2 to +1.8) |
-| OSO α 0.8 | +0.1 (−0.8 to +1.0) | −1.7 (−6.6 to +3.2) | +$0.04 (−0.04 to +0.13) | +2.1 (+0.6 to +3.6) | +3.4 (+1.8 to +5.0) | +2.0 (+0.7 to +3.3) |
+| OSO α 0.2 | +0.0 (−0.8 to +0.8) | −0.2 (−4.6 to +4.3) | +$0.00 (−0.07 to +0.07) | +0.8 (−0.5 to +2.1) | +2.2 (+1.4 to +3.0) | +0.4 (−0.5 to +1.3) |
+| OSO α 0.8 | +0.1 (−0.8 to +1.0) | −1.7 (−6.6 to +3.2) | +$0.04 (−0.04 to +0.13) | +2.1 (+0.6 to +3.6) | +3.4 (+1.8 to +5.0) | +0.7 (−0.4 to +1.8) |
 
 Means with 95% ranges (Student t; for differences, degrees of freedom from the smaller group, slightly wider than usual). B5 and A5: proved in no May quit run. Definitions and the script: `scripts/lean-estimates.py` ("rounds a lab worked" leaves out passes and turns with no valid action; lemmas leave out those the checker marked trivial).
 
 **What it shows:**
 - **Targets: about the same in every setup** (about 5 of 8), and the ranges allow at most about one target either way.
 - **Labs stopped early everywhere,** after 5 to 8 rounds, with about half their money unspent.
-- **With flow-back, labs proved more lemmas** (α 0.2: +2.2 a run). At α 0.8 they also worked about two rounds longer and built on each other more. The plan's warning sign, spending more for the same targets, fits α 0.8 weakly (+$0.04, range −0.04 to +0.13, for the same targets); at α 0.2 money spent was the same.
+- **With flow-back, labs proved more lemmas** (α 0.2: +2.2 a run). At α 0.8 they also worked about two rounds longer. Building on each other: +0.7 a run at α 0.8 and +0.4 at α 0.2, with ranges that include zero. The plan's warning sign, spending more for the same targets, fits α 0.8 weakly (+$0.04, range −0.04 to +0.13, for the same targets); at α 0.2 money spent was the same.
 - **Against Spend all** (labs could not stop, so they spent all their money): May quit proved 0.7 to 1.25 fewer targets per setup (shared library −0.85, range −1.6 to −0.1; OSO α 0.2 −1.25, range −1.9 to −0.6) for about half the money. The prompts differ too (Spend all used the older wording), so this is not only the effect of stopping.
 
 ## 4c. Labs choose what to publish (2026-11-08, roadmap M3)
@@ -214,7 +214,7 @@ Means with 95% ranges (Student t; for differences, degrees of freedom from the s
 
 α 0.2 minus α 1: share published +1 point (−1 to +2); targets +0.4 (−0.6 to +1.4); B5 +0.4 (−0.02 to +0.67).
 
-**The answer: labs published nearly everything at every α** (596 of 602 lemmas; 6 kept, 1 with no PUBLISH line). This is the outcome the plan named as "against": the share published does not rise with flow-back, because it is already at the top. The simulation predicted that agents at α 1 keep most lemmas, to avoid helping rivals to the next bounty.
+**The answer: labs published nearly everything at every α** (599 of 606 lemmas published at once, 6 kept, 1 with no PUBLISH line; without trivial lemmas, 589 of 596). This is the outcome the plan named as "against": the share published does not rise with flow-back, because it is already at the top. The simulation predicted that agents at α 1 keep most lemmas, to avoid helping rivals to the next bounty.
 
 **Why, from the labs' thinking:** they publish to collect the new-result reward, which a kept lemma loses ("Publishing now gives up to 4"; "Keeping private doesn't earn unless used in a solved target"). They rarely weigh the risk that publishing helps a rival win the next target. In the simulation the same reward exists, but agents weigh that risk. So with this reward, keeping costs an AI lab more than it gains, at any α.
 
@@ -231,7 +231,7 @@ Means with 95% ranges (Student t; for differences, degrees of freedom from the s
 | --- | --- |
 | [Proof checker stress test](../results/bench/stress/summary.md) | 32 of 32 cases right; one cheat found and closed (faking Lean's report on which axioms a proof uses) |
 | Fault tests | server errors, stuck models, no credit, missing costs, the budget limit and replies cut off partway are all handled (9 tests) |
-| [Public benchmark](../results/bench/or-gptoss120b-50x4/summary.md) (FormalMATH-Lite, 50 problems, GPT-OSS-120B) | 13 of 50 with one try, 17 with any of 4, for $0.15; **no proof lost by our harness**; 2 benchmark statements look broken |
+| [Public benchmark](../results/bench/or-gptoss120b-50x4/summary.md) (FormalMATH-Lite, 50 problems, GPT-OSS-120B) | 12 of 50 with one try, 17 with any of 4, for $0.10; **no proof lost by our harness**; 2 benchmark statements look broken |
 
 Faults found and fixed on the way: wrong error labels, proofs without a code block, planner lines dropped, dotted lemma names, replies cut off partway, and runs spoiled by the laptop sleeping. Budgets count the actual charge since 2026-10-21.
 

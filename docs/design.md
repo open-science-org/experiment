@@ -50,7 +50,7 @@ The mixed corners separate the gain from sharing from the gain from credit. When
 
 - **Many runs per setting,** with their spread; settings compared on the same seeds, so on the same graphs and agents.
 - **Only the rules differ** between compared settings: same agents, budget, graph and prompts.
-- **Every result is judged on all measures,** with the bar for a clear difference raised for that.
+- **Estimates with 95% ranges,** one range per measure. Nothing is adjusted for looking at many measures, so a single range that clears zero is a lead.
 - **Every result records the model version** it ran on ([model versions](model-versions.md)).
 - **For AI models:** check targets are not memorized, check deep targets need their lemmas, and count the real cost of every call.
 - **What would count against OSO:** flow-back adds nothing beyond sharing, or OSO's lead comes only from trivial ideas.
