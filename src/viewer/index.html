@@ -217,6 +217,7 @@
   .note { font-size: 12px; color: var(--ink-2); margin: 0 0 12px; }
   .info { color: var(--ink-3); cursor: help; font-size: 12px; }
   #l-bar label { display: flex; align-items: center; gap: 6px; max-width: 100%; } #l-exp { min-width: 0; } #l-body select { max-width: 100%; }
+  .l-two { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 16px; align-items: start; } @media (max-width: 1050px) { .l-two { grid-template-columns: minmax(0, 1fr); } }
   .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
   .tabs .btn[aria-selected="true"], .tabs .btn[aria-current="page"] { background: var(--s1); color: #fff; border-color: var(--s1); }
   h3.section { font-size: 14px; margin: 16px 0 6px; }
@@ -2123,7 +2124,7 @@ async function drawMoney() {
   const s = c.series, W = 760, H = 230, l = 56, top = 12, pw = W - l - 20, ph = H - top - 42;
   const t0 = s[0]?.[0] ?? Date.now(), t1 = Math.max(Date.now(), s.at(-1)?.[0] ?? t0), yMax = Math.max(1, Math.ceil((s.at(-1)?.[1] ?? 1) / 20) * 20);
   const sx = (t) => l + ((t - t0) / (t1 - t0 || 1)) * pw, sy = (y) => top + ph - (y / yMax) * ph;
-  let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:auto;touch-action:pan-y" role="img" aria-label="Money spent so far, by date">`;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;touch-action:pan-y" role="img" aria-label="Money spent so far, by date">`;
   for (let y = 0; y <= yMax; y += yMax / 4) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"/><text x="${l - 6}" y="${sy(y) + 4}" text-anchor="end" font-size="11" fill="var(--ink-2)">$${y}</text>`;
   const days = Math.max(1, Math.round((t1 - t0) / 86400_000)), step = Math.max(1, Math.ceil(days / 6));
   for (let t = new Date(t0).setHours(0, 0, 0, 0) + 86400_000; t <= t1; t += step * 86400_000) svg += `<text x="${sx(t)}" y="${top + ph + 16}" text-anchor="middle" font-size="11" fill="var(--ink-2)">${day(t)}</text>`;
@@ -2398,7 +2399,7 @@ function leanResults(d) {
       <label><input type="checkbox" id="l-band"${q.get('band') === '0' ? '' : ' checked'}> 95% range of the mean</label>
       <label><input type="checkbox" id="l-each"${q.get('each') === '0' ? '' : ' checked'}> single runs</label>
       </div></details>
-    </div><div id="l-chart" style="position:relative"></div><p class="muted" id="l-cnote" style="font-size:12px;margin:6px 0 0"></p>
+    </div><div class="l-two"><div id="l-chart" style="position:relative"></div><div><div id="l-cdf" style="position:relative"></div><div id="l-cdf-note" style="font-size:12px;margin-top:4px"></div></div></div><p class="muted" id="l-cnote" style="font-size:12px;margin:6px 0 0"></p>
     <details style="font-size:13px;margin:8px 0 0"><summary style="cursor:pointer">Read the values without hovering</summary>
       <label style="display:block;margin:6px 0"><span id="l-at-txt"></span> <input type="range" id="l-at" min="0" step="1" style="width:min(100%,360px);vertical-align:middle" aria-label="Position on the graph"></label>
       <table class="agents"><thead><tr><th>Setup</th><th>Value</th><th>95% range</th></tr></thead><tbody id="l-vals"></tbody></table></details></div><div id="l-reach"></div><div id="l-table"></div>`;
@@ -2415,6 +2416,47 @@ function leanResults(d) {
     $('l-y').value = Q.y; $('l-x').value = String(Q.x);
     p.set('tab', 'results'); p.set('exp', d.id); p.set('y', Q.y); p.set('x', String(Q.x)); history.replaceState(null, '', '#/lean?' + p); draw();
   };
+  const ticks = (lo, hi, log, int) => {
+    if (log) { const t = []; for (let e = Math.floor(Math.log10(lo)); e <= Math.ceil(Math.log10(hi)); e++) for (const k of [1, 2, 5]) { const v = k * 10 ** e; if (v >= lo * 0.999 && v <= hi * 1.001) t.push(v); } return t; }
+    const raw = (hi - lo) / 5, mag = 10 ** Math.floor(Math.log10(raw || 1)), step = Math.max(int ? 1 : 0, [1, 2, 2.5, 5, 10].map((k) => k * mag).find((k) => k >= raw) ?? mag * 10);
+    const t = []; for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) t.push(+v.toFixed(6)); return t;
+  };
+  // The share of runs that have reached k targets, by money (or whatever the left graph's x-axis is); runs that never get there keep it below 100%.
+  function drawCdf(k) {
+    const xi = Number($('l-x').value), X = LX[xi], logx = $('l-logx').checked, showBand = $('l-band').checked;
+    const xMax = Math.max(...sets.flatMap((s) => s.series.map((r) => r.at(-1)[xi]))), xMin = logx ? (xi === 0 ? Math.max(1e-3, xMax / 200) : 1) : 0;
+    const W = Math.max(300, Math.round($('l-cdf').clientWidth) || 380), H = 400, l = 56, r = 14, top = 16, pw = W - l - r, ph = H - top - 54;
+    const Lg = Math.log10, sx = (x) => l + (logx ? (Lg(Math.max(x, xMin)) - Lg(xMin)) / (Lg(xMax) - Lg(xMin) || 1) : (x - xMin) / (xMax - xMin || 1)) * pw, sy = (y) => top + ph - (y / 100) * ph;
+    const fmtx = (v) => (xi === 0 ? (v === 0 ? '$0' : '$' + (v < 0.01 ? v.toFixed(3) : v.toFixed(2))) : String(Math.round(v)));
+    const grid = Array.from({ length: 121 }, (_, n) => xMin + ((xMax - xMin) * n) / 120);
+    const curves = sets.map((s) => { const n = s.series.length, ts = s.series.map((r) => r.find((row) => row[3] >= k)?.[xi]).filter((t) => t !== undefined).sort((a, b) => a - b); return { s, n, ts, hit: grid.map((g) => ts.filter((t) => t <= g).length) }; });
+    const yLabel = `Runs that have reached ${k} target${k === 1 ? '' : 's'} (%)`;
+    let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;touch-action:pan-y" role="img" aria-label="${esc(yLabel)} by ${esc(X.name)}">`;
+    for (const y of [0, 25, 50, 75, 100]) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"/><text x="${l - 8}" y="${sy(y) + 4}" text-anchor="end" font-size="11" fill="var(--ink-2)">${y}%</text>`;
+    for (const x of ticks(xMin, xMax, logx, xi !== 0)) svg += `<line x1="${sx(x)}" x2="${sx(x)}" y1="${top + ph}" y2="${top + ph + 4}" stroke="var(--ink-3)"/><text x="${sx(x)}" y="${top + ph + 18}" text-anchor="middle" font-size="11" fill="var(--ink-2)">${fmtx(x)}</text>`;
+    svg += `<line x1="${l}" x2="${l + pw}" y1="${top + ph}" y2="${top + ph}" stroke="var(--ink-3)"/><line x1="${l}" x2="${l}" y1="${top}" y2="${top + ph}" stroke="var(--ink-3)"/>`;
+    svg += `<text x="${l + pw / 2}" y="${H - 8}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">${esc(X.name)}${logx ? ' (log scale)' : ''}</text><text transform="translate(14 ${top + ph / 2}) rotate(-90)" text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink)">${esc(yLabel)}</text>`;
+    for (const c of curves) {
+      if (showBand && c.n > 1) { const w = c.hit.map((h) => wilson(h, c.n).map((x) => x * 100)), up = grid.map((g, j) => `${sx(g).toFixed(1)} ${sy(w[j][1]).toFixed(1)}`), dn = grid.map((g, j) => `${sx(g).toFixed(1)} ${sy(w[j][0]).toFixed(1)}`).reverse(); svg += `<path d="M${up.join(' L')} L${dn.join(' L')} Z" fill="${c.s.colour}" fill-opacity="0.1" stroke="none"/>`; }
+      let d = `M${sx(xMin).toFixed(1)} ${sy(0).toFixed(1)}`; c.ts.forEach((t, j) => { d += ` H${sx(t).toFixed(1)} V${sy((100 * (j + 1)) / c.n).toFixed(1)}`; }); d += ` H${sx(xMax).toFixed(1)}`;
+      svg += `<path d="${d}" fill="none" stroke="${c.s.colour}" stroke-width="2.5" stroke-dasharray="${P_STYLE[c.s.key]?.[1] ?? ''}" stroke-linejoin="round"><title>${esc(c.s.name)}</title></path>`;
+    }
+    svg += `<line id="l-cdf-cross" y1="${top}" y2="${top + ph}" stroke="var(--ink-3)" stroke-width="1" style="display:none"/></svg><div class="chart-tip" id="l-cdf-tip" hidden></div>`;
+    $('l-cdf').innerHTML = svg;
+    $('l-cdf-note').innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:4px 12px">${curves.map((c) => `<span><svg width="20" height="8" style="vertical-align:middle;margin-right:4px" aria-hidden="true"><line x1="0" x2="20" y1="4" y2="4" stroke="${c.s.colour}" stroke-width="2.5" stroke-dasharray="${P_STYLE[c.s.key]?.[1] ?? ''}"/></svg>${esc(c.s.name)}</span>`).join('')}</div><p class="muted" style="margin:4px 0 0">A line further left gets there for less. A line that stops below 100%: the other runs never got there.${showBand ? ' Shaded: a 95% range (Wilson).' : ''} Follows the number of targets chosen at the top.</p>`;
+    const el = $('l-cdf').querySelector('svg'), cross = $('l-cdf-cross'), tip = $('l-cdf-tip');
+    el.onpointermove = (ev) => {
+      const box = el.getBoundingClientRect(), px = ((ev.clientX - box.left) * W) / box.width;
+      if (px < l || px > l + pw) { cross.style.display = 'none'; tip.hidden = true; return; }
+      let j = 0; grid.forEach((g, n) => { if (Math.abs(sx(g) - px) < Math.abs(sx(grid[j]) - px)) j = n; });
+      cross.setAttribute('x1', sx(grid[j])); cross.setAttribute('x2', sx(grid[j])); cross.style.display = '';
+      tip.innerHTML = `<b>${esc(fmtx(grid[j]))}${xi === 1 ? ' (round)' : xi === 2 ? ' tries' : ''}</b>` + [...curves].sort((a, b) => b.hit[j] - a.hit[j]).map((c) => { const [a, b] = wilson(c.hit[j], c.n); return `<div><span class="swatch" style="background:${c.s.colour}"></span>${esc(c.s.name)}: <b>${c.hit[j]} of ${c.n}</b>${c.n > 1 ? ` <span class="muted">(${Math.round(a * 100)}–${Math.round(b * 100)}%)</span>` : ''}</div>`; }).join('');
+      tip.hidden = false;
+      const wrap = $('l-cdf').getBoundingClientRect(), x = (sx(grid[j]) * box.width) / W, right = x + 14 + tip.offsetWidth > wrap.width;
+      tip.style.left = `${right ? Math.max(0, x - 14 - tip.offsetWidth) : x + 14}px`; tip.style.top = `${((top + 8) * box.height) / H}px`;
+    };
+    el.onpointerleave = () => { cross.style.display = 'none'; tip.hidden = true; };
+  }
   const draw = () => {
     const Y = ys.find((y) => y.id === $('l-y').value), xi = Number($('l-x').value), X = LX[xi];
     const asked = qs.find((x) => x.y === Y.id && x.x === xi);
@@ -2442,14 +2484,9 @@ function leanResults(d) {
     });
     const yTop = share ? 100 : Math.max(1, ...lines.flatMap((L) => L.hi), ...($('l-each').checked ? sets.flatMap((s) => s.series.map((r) => val(r.at(-1)))) : []));
     const yPos = lines.flatMap((L) => L.m).filter((v) => v > 0), yMin = logy ? Math.max(share ? 1 : 0.1, Math.min(...yPos, yTop) / 1.5) : 0;
-    const W = 820, H = 420, l = 64, top = 16, pw = W - l - 170, ph = H - top - 54, Lg = Math.log10;
+    const W = Math.max(480, Math.round($('l-chart').clientWidth) || 820), H = 400, l = 64, top = 16, pw = W - l - 170, ph = H - top - 54, Lg = Math.log10;
     const sx = (x) => l + (logx ? (Lg(Math.max(x, xMin)) - Lg(xMin)) / (Lg(xMax) - Lg(xMin) || 1) : (x - xMin) / (xMax - xMin || 1)) * pw;
     const sy = (y) => top + ph - (logy ? (Lg(Math.max(y, yMin)) - Lg(yMin)) / (Lg(yTop) - Lg(yMin) || 1) : y / yTop) * ph;
-    const ticks = (lo, hi, log, int) => {
-      if (log) { const t = []; for (let e = Math.floor(Lg(lo)); e <= Math.ceil(Lg(hi)); e++) for (const k of [1, 2, 5]) { const v = k * 10 ** e; if (v >= lo * 0.999 && v <= hi * 1.001) t.push(v); } return t; }
-      const raw = (hi - lo) / 5, mag = 10 ** Math.floor(Lg(raw || 1)), step = Math.max(int ? 1 : 0, [1, 2, 2.5, 5, 10].map((k) => k * mag).find((k) => k >= raw) ?? mag * 10);
-      const t = []; for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) t.push(+v.toFixed(6)); return t;
-    };
     const fmtx = (v) => (xi === 0 ? (v === 0 ? '$0' : '$' + (v < 0.01 ? v.toFixed(3) : v.toFixed(2))) : String(Math.round(v)));
     let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:auto" role="img" aria-label="${esc(Y.name)} by ${esc(X.name)}">`;
     for (const y of ticks(yMin, yTop, logy, !share && Y.col !== undefined && yTop > 5)) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"/><text x="${l - 8}" y="${sy(y) + 4}" text-anchor="end" font-size="11" fill="var(--ink-2)">${share ? y + '%' : +y.toFixed(2)}</text>`;
@@ -2492,6 +2529,7 @@ function leanResults(d) {
       tip.style.left = `${right ? x - 14 - tip.offsetWidth : x + 14}px`; tip.style.top = `${((top + 8) * box.height) / H}px`;
     };
     el.onpointerleave = () => { cross.style.display = 'none'; tip.hidden = true; };
+    if ($('l-k').value) drawCdf(Number($('l-k').value));
     $('l-cnote').textContent = `Thick lines: the mean of every finished run of “${d.name}” (${sets.map((s) => `${s.name} ${s.series.length}`).join(', ')})${share ? '; the share of runs that had proved it by then' : ''}.${$('l-band').checked ? (share ? ' Shaded: a 95% range for the share of runs (Wilson).' : ' Shaded: a 95% range of the mean (± t standard errors; wider when there are few runs).') : ''}${$('l-band').checked && sets.some((s) => s.series.length < 2) ? ' A setup with one run has no range.' : ''}${$('l-each').checked && !share ? ' Thin lines: single runs.' : ''}${logx || logy ? ' On a log scale, zero cannot be drawn: values below the axis sit on it.' : ''}`;
   };
   draw();
@@ -2511,7 +2549,7 @@ function leanResults(d) {
     $('l-a-tiles').innerHTML = rows.map((r) => `<div class="tile"><div class="k"><span class="swatch" style="background:${r.s.colour}"></span>${esc(r.s.name)}</div><div class="v">${end(r.m)}</div>${r.lo === null ? '<div class="muted" style="font-size:12px">too few runs for a range</div>' : r.lo === Infinity ? '' : `<div class="muted" style="font-size:12px">${end(r.lo)} to ${end(r.hi)}</div>`}<div class="muted" style="font-size:12px">${r.hit} of ${r.n} runs got there</div></div>`).join('');
     $('l-a-note').textContent = rows.some((r) => r.lo === null) ? '' : Math.max(...rows.map((r) => r.lo)) <= Math.min(...rows.map((r) => r.hi)) ? ' All the ranges overlap, so no setup is clearly cheaper.' : ' Not all the ranges overlap: see the table below the graph.';
   };
-  const drawReach = (k) => { $('l-reach-k').textContent = k; $('l-reach-rows').innerHTML = reach(k); drawAnswer(k); };
+  const drawReach = (k) => { $('l-reach-k').textContent = k; $('l-reach-rows').innerHTML = reach(k); drawAnswer(k); drawCdf(k); };
   $('l-reach').innerHTML = `<div class="pane" style="overflow-x:auto;margin-bottom:12px"><h3 style="margin:0 0 8px;font-size:15px">Cost to reach <span id="l-reach-k"></span> targets</h3>
     <table class="agents"><thead><tr><th>Setup</th><th>Runs that reached it</th><th>Median money, all labs</th><th>Median tries, all labs</th><th>Median round</th></tr></thead><tbody id="l-reach-rows"></tbody></table>
     <p class="muted" style="font-size:12px;margin:8px 0 0">${d.setups[0].options?.counted?.length ? `<b>This table and the graph count all ${nTargets} posted targets; the Progress page counts only ${esc(d.setups[0].options.counted.join(', '))}.</b> ` : ''}Every run counts: a run that never got there is "not reached", so no setup is flattered by leaving it out. Ranges cover at least 95%; under 6 runs there are too few for one. For runs up to 2026-11-08 this was looked at after the results, so read it as a lead.</p></div>`;
