@@ -39,6 +39,14 @@ function publicPath(path: string): string | null {
   return existsSync(full) ? full : null;
 }
 
+// Raw HTML in a document: comments and the few tags our documents use are kept; anything else is shown as text.
+const SAFE_HTML = new marked.Renderer();
+SAFE_HTML.html = ({ text }: { text: string }) => {
+  const tags = [...text.replace(/<!--[\s\S]*?-->/g, '').matchAll(/<\/?([a-zA-Z][\w-]*)/g)].map((m) => m[1].toLowerCase());
+  const safe = tags.every((t) => ['details', 'summary', 'img', 'br', 'sub', 'sup'].includes(t)) && !/\son\w+\s*=|javascript:/i.test(text);
+  return safe ? text : text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+};
+
 /** A Markdown document rendered to HTML, with images and links pointing back into the viewer. */
 function doc(path: string): { path: string; title: string; html: string } {
   const full = publicPath(path);
@@ -55,7 +63,8 @@ function doc(path: string): { path: string; title: string; html: string } {
     md = md.replace(/^\$\$([\s\S]+?)\$\$$/gm, (_, t) => keep(t, true)).replace(/\$([^$\n]+?)\$/g, (_, t) => keep(t, false));
   }
   const resolve = (href: string) => normalize(join(base, href));
-  let html = marked.parse(md, { async: false }) as string;
+  let html = marked.parse(md, { async: false, renderer: SAFE_HTML }) as string;
+  html = html.replace(/(href|src)="\s*(?:javascript|vbscript|data):[^"]*"/gi, '$1="#"');
   html = html.replace(/MATH(\d+)END/g, (_, k) => maths[Number(k)]);
   html = html.replace(/(src|href)="([^"#:]+?)(#[^"]*)?"/g, (m, attr, href, hash = '') => {
     if (/^(https?:|mailto:|\/)/.test(href)) return m;
@@ -177,23 +186,29 @@ function sim(id: string, setting: string, seed: number) {
   };
 }
 
-const jsonl = (f: string) => (existsSync(f) ? readFileSync(f, 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l)) : []);
+/** A JSON-lines file; a running job may be part-way through writing the last line, so that one may be skipped. */
+const jsonl = (f: string) => {
+  if (!existsSync(f)) return [];
+  const lines = readFileSync(f, 'utf8').split('\n').filter(Boolean);
+  return lines.flatMap((l, k) => { try { return [JSON.parse(l)]; } catch (e) { if (k < lines.length - 1) throw e; return []; } });
+};
 
 function pilotRuns() {
   const dir = join(LEAN_DIR, 'runs');
   if (!existsSync(dir)) return [];
-  return readdirSync(dir).filter((d) => existsSync(join(dir, d, 'attempts.jsonl')) && !d.startsWith('stub-')).map((d) => {
+  return readdirSync(dir).filter((d) => existsSync(join(dir, d, 'attempts.jsonl')) && !d.startsWith('stub-')).flatMap((d) => { try {
     const opts = JSON.parse(readFileSync(join(dir, d, 'options.json'), 'utf8'));
     const files = ['attempts.jsonl', 'events.jsonl'].map((f) => join(dir, d, f)).filter(existsSync);
     const modified = Math.max(0, ...files.map((f) => statSync(f).mtimeMs));
     const attempts = jsonl(join(dir, d, 'attempts.jsonl'));
     // How many attempts the run plans, when it names its targets; a run whose failing attempts are slow still counts as running.
     const planned = opts.only?.length ? opts.only.length * (opts.conditions?.length ?? 1) * (opts.attempts ?? 1) : null;
-    const running = planned !== null ? attempts.length < planned && Date.now() - modified < 20 * 60_000 : Date.now() - modified < 5 * 60_000;
+    const quiet = Date.now() - modified;
+    const status = planned !== null && attempts.length >= planned ? 'finished' : quiet < (planned !== null ? 20 : 5) * 60_000 ? 'running' : planned !== null ? 'stopped' : 'unknown';
     const proved: Record<string, Record<string, [number, number]>> = {};
     for (const a of attempts) { const c = ((proved[a.publicId] ??= {})[a.condition] ??= [0, 0]); c[1]++; if (a.ok) c[0]++; }
-    return { id: d, model: opts.model?.model ?? '?', provider: opts.model?.provider ?? 'anthropic', recorded: attempts.length, modified, live: Date.now() - modified < 5 * 60_000, planned, running, spent: attempts.reduce((v, a) => v + (a.usage?.cost ?? 0), 0), proved };
-  }).sort((a, b) => b.modified - a.modified);
+    return [{ id: d, model: opts.model?.model ?? '?', provider: opts.model?.provider ?? 'anthropic', recorded: attempts.length, modified, live: Date.now() - modified < 5 * 60_000, planned, status, running: status === 'running', spent: attempts.reduce((v, a) => v + (a.usage?.cost ?? 0), 0), proved }];
+  } catch { return []; } }).sort((a, b) => b.modified - a.modified);
 }
 
 /** Community runs: pairs of `<id>-traditional` and `<id>-oso` folders in lean/runs/. */
@@ -334,6 +349,11 @@ function leanData(exp: string) {
   };
 }
 
+/** One reply a task's chance was spent on, counted as a try only if Lean checked a proof: replies without a proof, or
+ *  turned away by the format checks before Lean, do not count. Runs without saved replies count every reply. */
+const NOT_CHECKED = /^(Start with ACTION|There is no|That is a posted|Lemma names|Give the whole|the proof must|.* is already proved)/;
+const triesOf = (a: CommunityResult['actions'][number]) => (a.transcript ? a.transcript.filter((t) => t.proof && !NOT_CHECKED.test(t.errors[0] ?? '')).length : a.turns ?? 0);
+
 /** One run turn by turn, for the Lean results graph: after each turn, the money spent, round, proof tries so far, targets
  *  proved, bounty value of those targets, lemmas proved, results built on another lab's work, and which targets are
  *  proved (bit n = the n-th posted target). */
@@ -346,7 +366,7 @@ function seriesOf(r: CommunityResult, posted: { id: string; bounty: number; dept
   const rows: number[][] = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
   acts.forEach((a) => {
     spent += a.cost ?? a.listCost ?? 0;
-    if (a.kind === 'target' || a.kind === 'lemma' || a.kind === 'conjecture') tries += a.turns; // one model reply is one proof attempt
+    tries += triesOf(a);
     if (a.ok && a.kind === 'target' && a.target) solved.add(a.target);
     if (a.ok && a.kind === 'lemma' && !/trivial/.test(a.reason ?? '')) lemmas++;
     if (a.ok && (!a.entry || firstNames.has(a.entry)) && (a.uses ?? []).some((u) => { const e = byName.get(u); return e && e.author !== a.agent; })) built++;

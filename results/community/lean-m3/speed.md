@@ -8,33 +8,33 @@ The graphs are on the app's Experiments → Results page for this experiment.
 
 | Setup | Runs that reached it | Median money | Median round |
 | --- | --- | --- | --- |
-| Labs choose, α 1 | 10 of 10 (72–100%) | $0.102 ($0.081 to $0.107) | 4 (4 to 4) |
-| Labs choose, α 0.8 | 10 of 10 (72–100%) | $0.106 ($0.056 to $0.119) | 4 (4 to 5) |
-| Labs choose, α 0.2 | 10 of 10 (72–100%) | $0.082 ($0.060 to $0.107) | 4 (4 to 5) |
+| Labs choose, α 1 | 10 of 10 (72–100%) | $0.102 ($0.066 to $0.108) | 4 (3 to 5) |
+| Labs choose, α 0.8 | 10 of 10 (72–100%) | $0.106 ($0.051 to $0.145) | 4 (3 to 6) |
+| Labs choose, α 0.2 | 10 of 10 (72–100%) | $0.082 ($0.056 to $0.137) | 4 (4 to 5) |
 
 ## Reaching 5 targets
 
 | Setup | Runs that reached it | Median money | Median round |
 | --- | --- | --- | --- |
-| Labs choose, α 1 | 10 of 10 (72–100%) | $0.223 ($0.165 to $0.355) | 7 (6 to 10) |
-| Labs choose, α 0.8 | 10 of 10 (72–100%) | $0.217 ($0.139 to $0.265) | 7.5 (5 to 9) |
-| Labs choose, α 0.2 | 10 of 10 (72–100%) | $0.117 ($0.089 to $0.217) | 5 (5 to 7) |
+| Labs choose, α 1 | 10 of 10 (72–100%) | $0.223 ($0.095 to $0.376) | 7 (5 to 10) |
+| Labs choose, α 0.8 | 10 of 10 (72–100%) | $0.217 ($0.099 to $0.335) | 7.5 (5 to 9) |
+| Labs choose, α 0.2 | 10 of 10 (72–100%) | $0.117 ($0.076 to $0.224) | 5 (4 to 8) |
 
 ## Reaching 6 targets
 
 | Setup | Runs that reached it | Median money | Median round |
 | --- | --- | --- | --- |
-| Labs choose, α 1 | 8 of 10 (49–94%) | $0.434 ($0.221 to $0.557) | 13 (8 to 15) |
-| Labs choose, α 0.8 | 6 of 10 (31–83%) | $0.460 ($0.277 to not reached) | 13.5 (8 to not reached) |
-| Labs choose, α 0.2 | 8 of 10 (49–94%) | $0.224 ($0.128 to $0.564) | 7.5 (6 to 14) |
+| Labs choose, α 1 | 8 of 10 (49–94%) | $0.434 ($0.198 to not reached) | 13 (7 to not reached) |
+| Labs choose, α 0.8 | 6 of 10 (31–83%) | $0.460 ($0.181 to not reached) | 13.5 (7 to not reached) |
+| Labs choose, α 0.2 | 8 of 10 (49–94%) | $0.224 ($0.125 to not reached) | 7.5 (6 to not reached) |
 
 ## Reaching 7 targets
 
 | Setup | Runs that reached it | Median money | Median round |
 | --- | --- | --- | --- |
-| Labs choose, α 1 | 4 of 10 (17–69%) | not reached (from $0.486) | not reached (from 16) |
-| Labs choose, α 0.8 | 4 of 10 (17–69%) | not reached (from $0.491) | not reached (from 15) |
-| Labs choose, α 0.2 | 7 of 10 (40–89%) | $0.463 ($0.352 to not reached) | 14 (13 to not reached) |
+| Labs choose, α 1 | 4 of 10 (17–69%) | not reached (from $0.361) | not reached (from 14) |
+| Labs choose, α 0.8 | 4 of 10 (17–69%) | not reached (from $0.450) | not reached (from 15) |
+| Labs choose, α 0.2 | 7 of 10 (40–89%) | $0.463 ($0.271 to not reached) | 14 (11 to not reached) |
 
 ## Each target
 

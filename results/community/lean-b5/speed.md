@@ -8,29 +8,29 @@ The graphs are on the app's Experiments → Results page for this experiment.
 
 | Setup | Runs that reached it | Median money | Median round |
 | --- | --- | --- | --- |
-| Shared library | 10 of 10 (72–100%) | $0.109 ($0.047 to $0.273) | 3.5 (3 to 7) |
-| OSO, α 0.2 | 10 of 10 (72–100%) | $0.080 ($0.071 to $0.110) | 4 (3 to 4) |
+| Shared library | 10 of 10 (72–100%) | $0.109 ($0.039 to $0.306) | 3.5 (2 to 7) |
+| OSO, α 0.2 | 10 of 10 (72–100%) | $0.080 ($0.052 to $0.115) | 4 (3 to 5) |
 
 ## Reaching 5 targets
 
 | Setup | Runs that reached it | Median money | Median round |
 | --- | --- | --- | --- |
-| Shared library | 10 of 10 (72–100%) | $0.273 ($0.144 to $0.382) | 6.5 (5 to 8) |
-| OSO, α 0.2 | 10 of 10 (72–100%) | $0.182 ($0.151 to $0.289) | 6 (5 to 7) |
+| Shared library | 10 of 10 (72–100%) | $0.273 ($0.126 to $0.398) | 6.5 (4 to 9) |
+| OSO, α 0.2 | 10 of 10 (72–100%) | $0.182 ($0.132 to $0.304) | 6 (5 to 8) |
 
 ## Reaching 6 targets
 
 | Setup | Runs that reached it | Median money | Median round |
 | --- | --- | --- | --- |
-| Shared library | 8 of 10 (49–94%) | $0.528 ($0.445 to $0.730) | 11.5 (9 to 15) |
-| OSO, α 0.2 | 9 of 10 (60–98%) | $0.527 ($0.361 to $0.604) | 12 (9 to 14) |
+| Shared library | 8 of 10 (49–94%) | $0.528 ($0.324 to not reached) | 11.5 (8 to not reached) |
+| OSO, α 0.2 | 9 of 10 (60–98%) | $0.527 ($0.349 to $0.719) | 12 (8 to 16) |
 
 ## Reaching 7 targets
 
 | Setup | Runs that reached it | Median money | Median round |
 | --- | --- | --- | --- |
-| Shared library | 3 of 10 (11–60%) | not reached (from $0.704) | not reached (from 17) |
-| OSO, α 0.2 | 5 of 10 (24–76%) | not reached (from $0.487) | not reached (from 14) |
+| Shared library | 3 of 10 (11–60%) | not reached (from $0.563) | not reached (from 13) |
+| OSO, α 0.2 | 5 of 10 (24–76%) | not reached (from $0.486) | not reached (from 12) |
 
 ## Each target
 

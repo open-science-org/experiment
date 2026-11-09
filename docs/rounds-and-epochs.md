@@ -28,7 +28,7 @@ A run is made of epochs, and an epoch of rounds. In each round, every lab still 
 ```
 
 - **Round:** a column, one step of time. Every lab still working picks one task, all at once: prove a target, prove a lemma or, where allowed, pass.
-- **Try:** one proof attempt checked by Lean (✓ accepted, ✗ rejected). A task gets 1 to 3 tries: the first attempt and up to 2 repairs after seeing Lean's errors.
+- **Try:** one proof attempt checked by Lean (✓ accepted, ✗ rejected). A task gets up to 3 replies from the model: the first attempt and up to 2 repairs after seeing the errors. A reply with no proof, or one turned away for its format before Lean sees it, uses up a reply but is not a try.
 
 This example is made up. L1 is published at once under the shared library and OSO. Under traditional rules it stays private until its author proves a target that rests on it.
 

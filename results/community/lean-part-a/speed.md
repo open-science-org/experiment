@@ -8,28 +8,28 @@ The graphs are on the app's Experiments → Results page for this experiment.
 
 | Setup | Runs that reached it | Median money | Median round |
 | --- | --- | --- | --- |
-| Shared library | 10 of 10 (72–100%) | $0.062 ($0.055 to $0.114) | 3 (3 to 4) |
-| Traditional | 10 of 10 (72–100%) | $0.072 ($0.059 to $0.131) | 3 (3 to 4) |
-| OSO, α 0.8 | 10 of 10 (72–100%) | $0.118 ($0.090 to $0.179) | 4 (4 to 6) |
-| OSO, α 0.2 | 10 of 10 (72–100%) | $0.089 ($0.048 to $0.113) | 3 (2 to 4) |
+| Shared library | 10 of 10 (72–100%) | $0.062 ($0.053 to $0.122) | 3 (3 to 4) |
+| Traditional | 10 of 10 (72–100%) | $0.072 ($0.053 to $0.155) | 3 (3 to 4) |
+| OSO, α 0.8 | 10 of 10 (72–100%) | $0.118 ($0.084 to $0.185) | 4 (4 to 6) |
+| OSO, α 0.2 | 10 of 10 (72–100%) | $0.089 ($0.034 to $0.133) | 3 (2 to 4) |
 
 ## Reaching 5 targets
 
 | Setup | Runs that reached it | Median money | Median round |
 | --- | --- | --- | --- |
-| Shared library | 6 of 10 (31–83%) | $0.208 ($0.168 to not reached) | 6 (5 to not reached) |
-| Traditional | 7 of 10 (40–89%) | $0.220 ($0.112 to not reached) | 7 (4 to not reached) |
-| OSO, α 0.8 | 7 of 10 (40–89%) | $0.262 ($0.182 to not reached) | 7.5 (6 to not reached) |
-| OSO, α 0.2 | 8 of 10 (49–94%) | $0.169 ($0.116 to $0.319) | 5.5 (4 to 10) |
+| Shared library | 6 of 10 (31–83%) | $0.208 ($0.160 to not reached) | 6 (5 to not reached) |
+| Traditional | 7 of 10 (40–89%) | $0.220 ($0.065 to not reached) | 7 (3 to not reached) |
+| OSO, α 0.8 | 7 of 10 (40–89%) | $0.262 ($0.139 to not reached) | 7.5 (6 to not reached) |
+| OSO, α 0.2 | 8 of 10 (49–94%) | $0.169 ($0.079 to not reached) | 5.5 (4 to not reached) |
 
 ## Reaching 6 targets
 
 | Setup | Runs that reached it | Median money | Median round |
 | --- | --- | --- | --- |
-| Shared library | 4 of 10 (17–69%) | not reached (from $0.264) | not reached (from 7) |
-| Traditional | 3 of 10 (11–60%) | not reached (from $0.323) | not reached (from 12) |
-| OSO, α 0.8 | 4 of 10 (17–69%) | not reached (from $0.274) | not reached (from 7) |
-| OSO, α 0.2 | 2 of 10 (6–51%) | not reached | not reached |
+| Shared library | 4 of 10 (17–69%) | not reached (from $0.210) | not reached (from 6) |
+| Traditional | 3 of 10 (11–60%) | not reached (from $0.223) | not reached (from 10) |
+| OSO, α 0.8 | 4 of 10 (17–69%) | not reached (from $0.232) | not reached (from 7) |
+| OSO, α 0.2 | 2 of 10 (6–51%) | not reached (from $0.277) | not reached (from 8) |
 
 ## Reaching 7 targets
 

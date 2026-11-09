@@ -83,12 +83,12 @@
   pre.err { border-color: var(--bad); }
   .hidden { display: none !important; }
   .app { display: grid; grid-template-columns: 210px minmax(0, 1fr); min-height: calc(100vh - 53px); }
-  @media (max-width: 800px) { .app { grid-template-columns: 1fr; } nav.side { position: static; display: flex; flex-wrap: wrap; border-right: 0; border-bottom: 1px solid var(--line); } }
+  @media (max-width: 800px) { .app { grid-template-columns: minmax(0, 1fr); } }
   nav.side { background: var(--surface); border-right: 1px solid var(--line); padding: 14px 10px; position: sticky; top: 0; align-self: start; height: calc(100vh - 53px); overflow: auto; }
   nav.side a { display: block; padding: 7px 10px; border-radius: 6px; color: var(--ink-2); text-decoration: none; font-size: 14px; }
   nav.side a.sub { padding-left: 22px; font-size: 13px; }
   nav.side .navhead { margin: 14px 4px 6px; padding: 14px 6px 0; border-top: 1px solid var(--line); font-size: 14px; font-weight: 700; color: var(--ink); }
-  @media (max-width: 800px) { nav.side .navhead { width: 100%; margin: 6px 0 0; padding: 8px 10px 2px; } }
+  @media (max-width: 800px) { nav.side { position: static; display: flex; flex-wrap: wrap; height: auto; overflow: visible; border-right: 0; border-bottom: 1px solid var(--line); } nav.side .navhead { width: 100%; margin: 6px 0 0; padding: 8px 10px 2px; } }
   .tiles { display: flex; flex-wrap: wrap; gap: 12px 28px; }
   .tile .k { font-size: 12px; color: var(--ink-2); } .tile .v { font-size: 24px; font-weight: 700; }
   .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } @media (max-width: 1000px) { .home-grid { grid-template-columns: 1fr; } }
@@ -216,8 +216,9 @@
   .setting-note { display: block; font-size: 11.5px; color: var(--ink-3); margin-left: 22px; }
   .note { font-size: 12px; color: var(--ink-2); margin: 0 0 12px; }
   .info { color: var(--ink-3); cursor: help; font-size: 12px; }
-  .tabs { display: flex; gap: 8px; margin-bottom: 12px; }
-  .tabs .btn[aria-selected="true"] { background: var(--s1); color: #fff; border-color: var(--s1); }
+  #l-bar label { display: flex; align-items: center; gap: 6px; max-width: 100%; } #l-exp { min-width: 0; } #l-body select { max-width: 100%; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .tabs .btn[aria-selected="true"], .tabs .btn[aria-current="page"] { background: var(--s1); color: #fff; border-color: var(--s1); }
   h3.section { font-size: 14px; margin: 16px 0 6px; }
   .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 12px; }
   .chips .btn[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
@@ -250,7 +251,7 @@
   <a href="#/runs">Experiments</a>
   <a href="#/new">New experiment</a>
   <div class="navhead">AI agents (Lean)</div>
-  <a href="#/doc/docs/ai-agent-results.md">Results</a>
+  <a href="#/doc/docs/ai-agent-results.md">Findings</a>
   <a href="#/lean">Experiments</a>
   <a href="#/progress">Running now</a>
   <a href="#/money">Money</a>
@@ -278,13 +279,13 @@
   <!-- New: one form for both kinds -->
   <!-- Lean experiment: what the AI labs are asked to do, by whom, under which rules, and every turn of every run -->
   <section id="view-lean" class="hidden">
-    <div class="tabs" role="tablist" id="l-tabs" aria-label="Lean experiment">
-      <a class="btn" role="tab" href="#/lean" data-tab="problems">Problems</a>
-      <a class="btn" role="tab" href="#/lean?tab=labs" data-tab="labs">Labs &amp; setups</a>
-      <a class="btn" role="tab" href="#/lean?tab=prompts" data-tab="prompts">Prompts</a>
-      <a class="btn" role="tab" href="#/lean?tab=results" data-tab="results">Results</a>
-      <a class="btn" role="tab" href="#/lean?tab=runs" data-tab="runs">Runs</a>
-    </div>
+    <nav class="tabs" id="l-tabs" aria-label="Lean experiment">
+      <a class="btn" href="#/lean?tab=results" data-tab="results">Explore results</a>
+      <a class="btn" href="#/lean?tab=problems" data-tab="problems">Problems</a>
+      <a class="btn" href="#/lean?tab=labs" data-tab="labs">Labs &amp; setups</a>
+      <a class="btn" href="#/lean?tab=prompts" data-tab="prompts">Prompts</a>
+      <a class="btn" href="#/lean?tab=runs" data-tab="runs">Runs</a>
+    </nav>
     <div class="pane" style="margin:10px 0 12px"><b>The question.</b> For the same money, does a community of AI labs proving Lean theorems prove more when value flows back to the results a proof used (OSO) than when results are only shared (a shared library), or kept private until a target is proved (traditional)? The full design (how the targets were chosen, why this model, the setups, measures): <a href="#/doc/docs/lean-experiment.md">the Lean experiment design</a>. Results so far: <a href="#/doc/docs/ai-agent-results.md">AI agents on the Lean problems</a>.</div>
     <div class="bar" id="l-bar"><label>Experiment <select id="l-exp"></select></label><span id="l-live" style="flex:1;min-width:220px"></span></div>
     <div id="l-body"></div>
@@ -505,7 +506,7 @@ function shortLabel(s, max) {
 const api = (path) => fetch(path).then(async (r) => { const j = await r.json(); if (!r.ok) throw new Error(j.error || r.statusText); return j; });
 const money = (x) => '$' + (x < 0.1 ? x.toFixed(3) : x.toFixed(2));
 
-const LN = { data: null, run: null }; // the Lean experiment page's data
+const LN = { data: null, run: null, at: 0, poll: null }; // the Lean experiment page's data
 // Experiment choices by readable name; pipeline tests (stand-in agents) in their own group at the end.
 const expOptions = (list, chosen, suffix = () => '') => { const opt = (e) => `<option value="${esc(e.id)}"${e.id === chosen ? ' selected' : ''}>${esc(e.name)}${suffix(e)}</option>`;
   return `<optgroup label="Experiments">${list.filter((e) => !e.test).map(opt).join('')}</optgroup>${list.some((e) => e.test) ? `<optgroup label="Pipeline tests (no model)">${list.filter((e) => e.test).map(opt).join('')}</optgroup>` : ''}`; };
@@ -527,6 +528,8 @@ async function route() {
   // Old links still work.
   const old = { '/runs/history': '/runs', '/history': '/runs', '/runs/live': '/live', '/design': '/new', '/community': '/live?tab=ai', '/replay': '/live?tab=sim', '/pilot': '/live?tab=attempts', '/experiments': '/' };
   if (old[path]) { const q = location.hash.split('?')[1]; location.hash = '#' + old[path] + (q ? (old[path].includes('?') ? '&' : '?') + q : ''); return; }
+  // Leaving a page stops its replays and polling.
+  if (path !== route.last) { route.last = path; stopC(); stopSim(); stopPilot(); clearInterval(liveTimer); for (const t of [C.poll, pilot.poll, LN.poll, PG.home]) clearTimeout(t); }
   const top = '/' + (path.split('/')[1] ?? '');
   // Which menu item this page belongs to.
   const navOf = () => {
@@ -2050,7 +2053,7 @@ $('pilot-load').onclick = loadPilot;
 // ---------------------------------------------------------------------------- Progress
 // Paid runs going now: one line per society (money against counted targets Lean verified), which runs are
 // done, running or waiting, the benchmark checks, and the credit left. Refreshes itself every 15 s.
-const PG = { data: null, poll: null };
+const PG = { data: null, poll: null, home: null };
 // OSO orange, traditional blue; the baselines are inks with their own dash, so no line is told apart by colour alone.
 const PILOT_NAMES = { 'hard-check': 'Difficulty check of the harder targets' };
 /** The pilot difficulty check, all its passes added up: for each candidate target, proved alone and with its lemmas. */
@@ -2060,12 +2063,13 @@ function pilotCheck(pilots) {
   const sum = {}; for (const r of runs) for (const [t, by] of Object.entries(r.proved)) for (const [c, [ok, n]] of Object.entries(by)) { const v = ((sum[t] ??= {})[c] ??= [0, 0]); v[0] += ok; v[1] += n; }
   const planned = runs.reduce((a, r) => a + (r.planned ?? 0), 0), done = runs.reduce((a, r) => a + r.recorded, 0), spent = runs.reduce((a, r) => a + r.spent, 0);
   const cell = (v) => (v ? `${v[0]} of ${v[1]}` : '<span class="muted">none yet</span>');
-  const verdict = (x) => (x.alone?.[1] === 4 && x.library?.[1] === 4 ? (x.alone[0] <= 1 && x.library[0] >= 2 ? 'keep' : x.alone[0] > 1 ? 'too easy' : 'too hard') : '<span class="muted">not all in</span>');
+  const verdict = (x) => (x.alone?.[1] > 4 || x.library?.[1] > 4 ? '<span class="muted">more than 4 tries: the rule is for 4</span>' : x.alone?.[1] === 4 && x.library?.[1] === 4 ? (x.alone[0] <= 1 && x.library[0] >= 2 ? 'keep' : x.alone[0] > 1 ? 'too easy' : 'too hard') : '<span class="muted">not all in</span>');
+  const stopped = runs.filter((r) => r.status === 'stopped').map((r) => ` <b>${esc(r.id)} stopped before finishing, at ${r.recorded} of ${r.planned}.</b>`).join('');
   return `<div class="pane" style="margin-top:12px"><h3 style="margin:0 0 4px;font-size:15px"><span class="pilot-tag">Pilot</span> Difficulty check of the harder targets</h3>
-    <p class="muted" style="font-size:12px;margin:0 0 8px">One model alone (DeepSeek V4.1 Flash) on each candidate target, with no library and with the lemmas it rests on. Not a community run. ${done} of ${planned} attempts, ${money(spent)}. Keep a target if it is proved at most 1 of 4 times alone and at least 2 of 4 with the lemmas; a rough screen.</p>
+    <p class="muted" style="font-size:12px;margin:0 0 8px">One model alone (DeepSeek V4.1 Flash) on each candidate target, with no library and with the lemmas it rests on. Not a community run. ${done} of ${planned} attempts, ${money(spent)}. Keep a target if it is proved at most 1 of 4 times alone and at least 2 of 4 with the lemmas; a rough screen.${stopped}</p>
     <table class="agents"><thead><tr><th>Target</th><th>Alone</th><th>With its lemmas</th><th>Rule</th></tr></thead><tbody>${Object.keys(sum).sort().map((t) => `<tr><td>${esc(t)}</td><td>${cell(sum[t].alone)}</td><td>${cell(sum[t].library)}</td><td>${verdict(sum[t])}</td></tr>`).join('')}</tbody></table></div>`;
 }
-const P_STYLE = { traditional: ['var(--s1)', ''], oso: ['var(--s2)', ''], 'oso-0.2': ['var(--s2)', '6 4'], 'choose-1': ['var(--ink)', ''], 'choose-0.8': ['var(--s2)', ''], 'choose-0.2': ['var(--s2)', '6 4'], 'choose-off-1': ['var(--ink)', ''], 'choose-off-0.2': ['var(--s2)', '6 4'], single: ['var(--ink)', '2 4'], independent: ['var(--ink-2)', '8 4'], shared: ['var(--ink-3)', ''], planner: ['var(--ink-2)', '10 3 2 3'] };
+const P_STYLE = { traditional: ['var(--s1)', ''], oso: ['var(--s2)', ''], 'oso-0.2': ['var(--s2)', '6 4'], 'choose-1': ['var(--ink)', ''], 'choose-0.8': ['var(--s2)', ''], 'choose-0.2': ['var(--s2)', '6 4'], 'choose-off-1': ['var(--ink)', '2 3'], 'choose-off-0.2': ['var(--s2)', '2 3'], single: ['var(--ink)', '2 4'], independent: ['var(--ink-2)', '8 4'], shared: ['var(--ink-3)', ''], planner: ['var(--ink-2)', '10 3 2 3'] };
 const ago = (ms) => { const m = Math.round(ms / 60000); return m < 1 ? 'just now' : m < 60 ? `${m} min ago` : `${Math.floor(m / 60)} h ${m % 60} min ago`; };
 // Money: every paid Lean run and benchmark, as charged, refreshed every minute.
 /** Home: the question, what is running, money, the milestones and the findings, each linking to its page. */
@@ -2074,28 +2078,10 @@ async function drawHome() {
   api('/api/roadmap').then((r) => {
     $('h-aim').textContent = r.aim ? 'The claim we want to be able to make: ' + r.aim.replace(/"/g, '') : '';
     const cls = (st) => /running|review/i.test(st) ? 'run' : /done/i.test(st) ? 'done' : '';
-    $('h-ms').innerHTML = r.milestones.map((m) => `<div class="ms"><span class="id">${esc(m.id)}</span><span>${esc(m.title)}</span><span class="chip ${cls(m.status)}">${esc(m.status || 'planned')}</span>${m.question ? `<span class="q">${esc(m.question)}</span>` : ''}</div>`).join('') || '<p class="muted">No roadmap found.</p>';
+    $('h-ms').innerHTML = r.milestones.map((m) => { const st = /^((?:first runs )?done(?: [\d-]+)?|planned|running)[:\s]*(.*)$/i.exec(m.status || 'planned'), chip = st ? st[1] : m.status, more = st ? st[2] : ''; return `<div class="ms"><span class="id">${esc(m.id)}</span><span>${esc(m.title)}</span><span class="chip ${cls(m.status)}">${esc(chip)}</span>${more ? `<span class="q">${esc(more)}</span>` : ''}${m.question ? `<span class="q">${esc(m.question)}</span>` : ''}</div>`; }).join('') || '<p class="muted">No roadmap found.</p>';
   }).catch((e) => { $('h-ms').textContent = e.message; });
   api('/api/doc?path=docs/findings.md').then((d) => { $('h-findings').innerHTML = d.html; }).catch((e) => { $('h-findings').textContent = e.message; });
-  Promise.all([api('/api/progress'), api('/api/pilot/runs')]).then(([p, pilots]) => {
-    const live = p.experiments.filter((e) => !e.test && e.runs.some((r) => r.status === 'running'));
-    // Pilot runs: one model alone on single theorems, not a community of labs.
-    const pilotLive = pilots.filter((r) => r.running);
-    const pilotHtml = pilotLive.map((r) => { const name = PILOT_NAMES[r.id.replace(/-\d+$/, '')] ?? r.id, pct = r.planned ? Math.min(100, (100 * r.recorded) / r.planned) : 0;
-      return `<div style="margin-bottom:10px"><span class="pilot-tag">Pilot</span> <b>${esc(name)}</b> <span class="muted" style="font-size:12px">(${esc(r.id)}: one model alone, not a community run)</span>
-        <div style="height:8px;background:var(--line);border-radius:4px;margin:4px 0"><div style="height:8px;width:${pct}%;background:var(--ink-2);border-radius:4px"></div></div>
-        <span class="muted" style="font-size:12px">${r.recorded}${r.planned ? ` of ${r.planned}` : ''} attempts finished · ${money(r.spent)} spent · ${esc(r.model)}</span></div>`; }).join('');
-    $('h-pilot').innerHTML = pilotCheck(pilots);
-    $('h-running').innerHTML = !live.length && !pilotLive.length ? '<p class="muted" style="margin:0">Nothing is running. <a href="#/lean">See the experiments →</a></p>' : pilotHtml + live.map((e) => {
-      // Runs finished out of runs planned (money spent would mislead when labs may stop early).
-      const n = Math.max(e.runs.length, (e.plan?.repeats ?? 0) * (e.plan?.societies?.length ?? 0)), done = e.runs.filter((r) => r.status === 'done').length;
-      const spent = e.runs.reduce((a, r) => a + (r.spent ?? 0), 0), offered = e.runs.reduce((a, r) => a + (r.budget ?? 0), 0);
-      const pct = Math.min(100, (100 * done) / (n || 1));
-      return `<div style="margin-bottom:10px"><a href="#/progress?exp=${encodeURIComponent(e.id)}">${esc(e.name)}</a>
-        <div style="height:8px;background:var(--line);border-radius:4px;margin:4px 0"><div style="height:8px;width:${pct}%;background:var(--ink-2);border-radius:4px"></div></div>
-        <span class="muted" style="font-size:12px">${done} of ${n} runs finished · ${money(spent)} spent of at most ${money(offered)}</span></div>`;
-    }).join('');
-  }).catch((e) => { $('h-running').textContent = e.message; });
+  drawHomeRunning();
   api('/api/costs').then((c) => {
     const cut = new Date().setHours(0, 0, 0, 0), before = c.series.filter(([t]) => t < cut).at(-1)?.[1] ?? 0;
     $('h-money').innerHTML = `<div class="tiles"><div class="tile"><div class="k">Spent so far</div><div class="v">${money(c.total)}</div></div>
@@ -2103,6 +2089,30 @@ async function drawHome() {
       ${c.credit != null ? `<div class="tile"><div class="k">Credit left</div><div class="v">${money(c.credit)}</div></div>` : ''}</div>
       <p style="margin:6px 0 0;font-size:13px"><a href="#/money">Cost per experiment →</a></p>`;
   }).catch((e) => { $('h-money').textContent = e.message; });
+}
+/** Home's running panel and pilot table, refreshed while Home is open. */
+function drawHomeRunning() {
+  const money = (x) => '$' + x.toFixed(2);
+  clearTimeout(PG.home);
+  Promise.all([api('/api/progress'), api('/api/pilot/runs')]).then(([p, pilots]) => {
+    const live = p.experiments.filter((e) => !e.test && e.runs.some((r) => r.status === 'running'));
+    // Pilot runs: one model alone on single theorems, not a community of labs.
+    const pilotLive = pilots.filter((r) => r.running);
+    const pilotHtml = pilotLive.map((r) => { const name = PILOT_NAMES[r.id.replace(/-\d+$/, '')] ?? r.id, pct = r.planned ? Math.min(100, (100 * r.recorded) / r.planned) : 0;
+      return `<div style="margin-bottom:10px"><span class="pilot-tag">Pilot</span> <b>${esc(name)}</b> <span class="muted" style="font-size:12px">(${esc(r.id)}: one model alone, not a community run)</span>
+        <div style="height:8px;background:var(--line);border-radius:4px;margin:4px 0"><div style="height:8px;width:${pct}%;background:var(--ink-2);border-radius:4px"></div></div>
+        <span class="muted" style="font-size:12px">${r.recorded}${r.planned ? ` of ${r.planned}` : ''} attempts finished · ${money(r.spent)} spent · ${esc(r.model)} · last activity ${ago(Date.now() - r.modified)}</span></div>`; }).join('');
+    $('h-pilot').innerHTML = pilotCheck(pilots);
+    $('h-running').innerHTML = !live.length && !pilotLive.length ? '<p class="muted" style="margin:0">Nothing is running. <a href="#/lean">See the experiments →</a></p>' : pilotHtml + live.map((e) => {
+      // Runs finished out of runs planned (money spent would mislead when labs may stop early).
+      const n = Math.max(e.runs.length, (e.plan?.repeats ?? 0) * (e.plan?.societies?.length ?? 0)), done = e.runs.filter((r) => r.status === 'done').length;
+      const spent = e.runs.reduce((a, r) => a + (r.spent ?? 0), 0), offered = e.runs.reduce((a, r) => a + (r.budget ?? 0), 0);
+      const pct = Math.min(100, (100 * done) / (n || 1));
+      return `<div style="margin-bottom:10px"><a href="#/progress?id=${encodeURIComponent(e.id)}">${esc(e.name)}</a>
+        <div style="height:8px;background:var(--line);border-radius:4px;margin:4px 0"><div style="height:8px;width:${pct}%;background:var(--ink-2);border-radius:4px"></div></div>
+        <span class="muted" style="font-size:12px">${done} of ${n} runs finished · ${money(spent)} spent of at most ${money(offered)}</span></div>`;
+    }).join('');
+  }).catch((e) => { $('h-running').textContent = e.message; }).finally(() => { if (['', '#/', '#/home'].includes(location.hash.split('?')[0])) PG.home = setTimeout(drawHomeRunning, 20000); });
 }
 
 async function drawMoney() {
@@ -2113,7 +2123,7 @@ async function drawMoney() {
   const s = c.series, W = 760, H = 230, l = 56, top = 12, pw = W - l - 20, ph = H - top - 42;
   const t0 = s[0]?.[0] ?? Date.now(), t1 = Math.max(Date.now(), s.at(-1)?.[0] ?? t0), yMax = Math.max(1, Math.ceil((s.at(-1)?.[1] ?? 1) / 20) * 20);
   const sx = (t) => l + ((t - t0) / (t1 - t0 || 1)) * pw, sy = (y) => top + ph - (y / yMax) * ph;
-  let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:auto" role="img" aria-label="Money spent so far, by date">`;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:auto;touch-action:pan-y" role="img" aria-label="Money spent so far, by date">`;
   for (let y = 0; y <= yMax; y += yMax / 4) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"/><text x="${l - 6}" y="${sy(y) + 4}" text-anchor="end" font-size="11" fill="var(--ink-2)">$${y}</text>`;
   const days = Math.max(1, Math.round((t1 - t0) / 86400_000)), step = Math.max(1, Math.ceil(days / 6));
   for (let t = new Date(t0).setHours(0, 0, 0, 0) + 86400_000; t <= t1; t += step * 86400_000) svg += `<text x="${sx(t)}" y="${top + ph + 16}" text-anchor="middle" font-size="11" fill="var(--ink-2)">${day(t)}</text>`;
@@ -2138,10 +2148,10 @@ async function drawProgress() {
   clearTimeout(PG.poll);
   try { PG.data = await api('/api/progress'); } catch (e) { $('p-head').textContent = `Could not read the runs: ${e.message}`; return; }
   const d = PG.data;
-  const sel = $('p-exp'), keep = sel.value || params().get('id');
+  const sel = $('p-exp'), keep = params().get('id') || sel.value;
   sel.innerHTML = expOptions(d.experiments, null, (e) => (e.runs.some((r) => r.status === 'running') ? ' · running' : ''));
   if (keep && d.experiments.some((e) => e.id === keep)) sel.value = keep;
-  sel.onchange = () => { $('p-rep').value = ''; renderProgress(); };
+  sel.onchange = () => { $('p-rep').value = ''; history.replaceState(null, '', '#/progress?id=' + encodeURIComponent(sel.value)); renderProgress(); };
   $('p-credit').innerHTML = d.credit === null ? '' : `<b>$${d.credit.toFixed(2)}</b> <span class="muted">credit left</span>`;
   $('p-updated').textContent = `updated ${new Date(d.now).toLocaleTimeString()}, every 15 s`;
   renderProgress();
@@ -2215,23 +2225,37 @@ route();
 
 /* ------------------------------------------------------------------ Lean experiment: problems, labs, prompts, runs */
 async function drawLean() {
-  const tab = params().get('tab') ?? 'problems';
-  for (const a of $('l-tabs').querySelectorAll('a')) a.setAttribute('aria-selected', a.dataset.tab === tab);
   const exp = params().get('exp') ?? LN.data?.id ?? '';
-  if (!LN.data || (exp && LN.data.id !== exp)) {
-    $('l-body').innerHTML = '<p class="muted">Loading…</p>';
-    try { LN.data = await api('/api/lean?exp=' + encodeURIComponent(exp)); } catch (e) { $('l-body').textContent = `Could not read the Lean experiment: ${e.message}`; return; }
+  clearTimeout(LN.poll);
+  // Fresh data on coming back to the page; switching tabs within a few seconds reuses it.
+  if (!LN.data || (exp && LN.data.id !== exp) || Date.now() - LN.at > 15000) {
+    if (!LN.data || (exp && LN.data.id !== exp)) $('l-body').innerHTML = '<p class="muted">Loading…</p>';
+    try { LN.data = await api('/api/lean?exp=' + encodeURIComponent(exp)); LN.at = Date.now(); } catch (e) { $('l-body').textContent = `Could not read the Lean experiment: ${e.message}`; return; }
     if (!LN.data) { $('l-body').textContent = 'The Lean problem set is not available here.'; return; }
   }
   const d = LN.data;
+  // A finished experiment opens on its results; one with no finished run yet, on its problems.
+  const tab = params().get('tab') ?? (d.setups.some((x) => x.series.length) ? 'results' : 'problems');
+  for (const a of $('l-tabs').querySelectorAll('a')) { if (a.dataset.tab === tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); }
   $('l-exp').innerHTML = expOptions(d.experiments, d.id);
   $('l-exp').onchange = () => { const q = params(); q.set('exp', $('l-exp').value); q.delete('rep'); q.delete('setup'); location.hash = '#/lean?' + q; };
   $('l-bar').classList.toggle('hidden', tab === 'problems');
   // Still running: how many runs have finished, with a link to the Progress page.
   const runsAll = d.setups.reduce((a, x) => a + x.runs, 0), runsDone = d.setups.reduce((a, x) => a + x.done, 0);
   $('l-live').innerHTML = runsAll > runsDone ? `<a href="#/progress?id=${encodeURIComponent(d.id)}" style="display:flex;gap:8px;align-items:center;text-decoration:none;color:inherit"><span style="flex:1;height:10px;border-radius:5px;background:var(--line);overflow:hidden"><span style="display:block;height:100%;width:${(100 * runsDone / runsAll).toFixed(1)}%;background:var(--s1)"></span></span><span style="font-size:12px;white-space:nowrap">${runsDone} of ${runsAll} runs finished · <u>see progress</u></span></a>` : '';
-  for (const a of $('l-tabs').querySelectorAll('a')) a.href = '#/lean?tab=' + a.dataset.tab + '&exp=' + encodeURIComponent(d.id);
+  // Tab links keep the graph's settings.
+  const tabHref = (a) => { const u = new URLSearchParams({ tab: a.dataset.tab, exp: d.id }); for (const k of ['y', 'x', 'k', 'logy', 'logx', 'band', 'each']) if (params().has(k)) u.set(k, params().get(k)); return '#/lean?' + u; };
+  for (const a of $('l-tabs').querySelectorAll('a')) { a.href = tabHref(a); a.onclick = () => { a.href = tabHref(a); }; }
+  if (runsAll > runsDone) LN.poll = setTimeout(pollLean, 30000);
   return tab === 'results' ? leanResults(d) : tab === 'labs' ? leanLabs(d) : tab === 'prompts' ? leanPrompts(d) : tab === 'runs' ? leanRuns(d) : leanProblems(d);
+}
+
+/** While runs are going: redraw when another one has finished, except on the Runs tab, where a redraw would lose the open run. */
+async function pollLean() {
+  if (!location.hash.startsWith('#/lean') || !LN.data) return;
+  const was = LN.data, count = (x) => x.setups.map((s) => `${s.runs}/${s.done}`).join(), fresh = await api('/api/lean?exp=' + encodeURIComponent(was.id)).catch(() => null);
+  if (fresh && LN.data === was && count(fresh) !== count(was) && params().get('tab') !== 'runs') { LN.data = fresh; LN.at = Date.now(); return drawLean(); }
+  LN.poll = setTimeout(pollLean, 30000);
 }
 
 function leanProblems(d) {
@@ -2315,49 +2339,68 @@ const T95 = (n) => (n < 2 ? 0 : [12.71, 4.30, 3.18, 2.78, 2.57, 2.45, 2.36, 2.31
 const LX = [{ id: 0, name: 'Money spent so far, per community ($)' }, { id: 1, name: 'Round' }, { id: 2, name: 'Tries (all labs)' }];
 const LY = (d) => [
   { id: 'targets', group: 'Progress', name: `Targets proved (of ${d.targets.length})`, col: 3 },
-  { id: 'deepest', group: 'Progress', name: 'Deepest target proved (its depth)', col: 8 },
+  { id: 'deepest', group: 'Progress', name: 'Deepest target proved (its depth)', col: 8, note: 'Depth is how many levels of lemmas sit under a target. It is not the same as difficulty on these problems: some deep targets are proved almost at once.' },
   { id: 'bounty', group: 'Progress', name: 'Bounty value of the targets proved', col: 4 },
-  { id: 'lemmas', group: 'Groundwork', name: 'Lemmas proved', col: 5 },
-  { id: 'cited', group: 'Groundwork', name: 'Lemmas a later proof cites', col: 9 },
-  { id: 'built', group: 'Groundwork', name: "Results built on another lab's work", col: 6 },
+  { id: 'lemmas', group: 'Groundwork', name: 'Lemmas proved', col: 5, note: 'Every accepted lemma counts, including a second proof of a statement already proved. Trivial lemmas are left out.' },
+  { id: 'cited', group: 'Groundwork', name: 'Lemmas a later proof cites', col: 9, note: 'Each lemma counts once: the first proof of a statement, once a later proof uses it. Trivial lemmas are left out.' },
+  { id: 'built', group: 'Groundwork', name: "Results built on another lab's work", col: 6, note: "Accepted proofs that use another lab's result. A second proof of the same statement does not count." },
   ...d.targets.map((t, k) => ({ id: 'T' + t.id, group: 'One target', name: `Runs that have proved ${t.id} (${t.name}), %`, bit: k })),
 ];
 // The main questions: clicking one sets the graph.
 const LQ = (d) => [
   { text: 'Which setup proves the most targets for the money?', y: 'targets', x: 0, read: 'Higher line: more targets for the same money.' },
-  { text: 'Which setup gets there in the fewest tries?', y: 'targets', x: 2, read: 'Higher line: more targets for the same number of proof attempts, all labs together. Tries do not depend on prices.' },
+  { text: 'Which setup gets there in the fewest tries?', y: 'targets', x: 2, read: 'Higher line: more targets for the same number of proofs Lean checked, all labs together. Tries do not depend on prices.' },
   { text: 'Which setup gets there soonest, with labs working at once?', y: 'targets', x: 1, read: 'Higher line: more targets by that round. In a round, every lab still working picks one task and gets up to 3 tries.' },
-  { text: 'How deep does each setup get for the money?', y: 'deepest', x: 0, read: 'Higher line: a deeper target for the same money. Depth is not the same as difficulty on these problems: some deep targets are proved almost at once.' },
+  { text: 'How deep does each setup get for the money?', y: 'deepest', x: 0, read: 'Higher line: a deeper target for the same money.' },
   ...(d.targets.some((t) => t.id === 'B5') ? [{ text: 'How often is the hard target B5 proved?', y: 'TB5', x: 0, read: 'Higher line: more runs have proved B5 by that money.' }] : []),
   { text: 'Does flow-back bring more groundwork?', y: 'lemmas', x: 0, read: 'Higher line: more lemmas proved for the same money. Many are never used: see the next question.' },
   { text: 'Is that groundwork used?', y: 'cited', x: 0, read: 'Higher line: more lemmas that a later proof went on to cite.' },
   { text: 'Do labs build on each other?', y: 'built', x: 0, read: "Higher line: more results that used another lab's work." },
 ];
 const wilson = (k, n, z = 1.96) => { const p = k / n, c = (p + z * z / 2 / n) / (1 + z * z / n), h = z * Math.sqrt(p * (1 - p) / n + z * z / 4 / n / n) / (1 + z * z / n); return [Math.max(0, c - h), Math.min(1, c + h)]; };
-/** The median and a range of at least 95% from the sorted runs themselves; Infinity is "not reached". */
+/** The median and a range of at least 95% from the sorted runs themselves (under 6 runs: no range, null); Infinity is "not reached". */
 const medianRange = (xs) => {
-  const s = [...xs].sort((a, b) => a - b), n = s.length; let cum = 0, c = 1, r = 0;
-  for (let k = 0; k < n; k++) { cum += c / 2 ** n; if (cum > 0.025) break; r = k + 1; c = c * (n - k) / (k + 1); }
-  return [n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2, s[r], s[n - 1 - r]];
+  const s = [...xs].sort((a, b) => a - b), n = s.length; let cum = 0, c = 1, r = -1;
+  for (let k = 0; k < n; k++) { cum += c / 2 ** n; if (cum > 0.025) break; r = k; c = c * (n - k) / (k + 1); }
+  const mid = n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2;
+  return r < 0 ? [mid, null, null] : [mid, s[r], s[n - 1 - r]];
 };
 function leanResults(d) {
   const sets = d.setups.filter((x) => x.series.length);
   if (!sets.length) { $('l-body').innerHTML = '<p class="muted">No finished runs yet.</p>'; return; }
-  const q = params(), ys = LY(d), qs = LQ(d);
-  const yv = ys.some((y) => y.id === q.get('y')) ? q.get('y') : 'targets', xv = Number(q.get('x') ?? 0);
+  const q = params(), ys = LY(d), qs = LQ(d), MAIN_Q = 3;
+  const yv = ys.some((y) => y.id === q.get('y')) ? q.get('y') : 'targets', xv = LX.some((x) => String(x.id) === q.get('x')) ? Number(q.get('x')) : 0;
+  const fin = (s, col) => s.series.map((r) => r.at(-1)[col]), mean = (a) => a.reduce((p, q) => p + q, 0) / a.length;
+  const se = (a) => (a.length > 1 ? Math.sqrt(a.reduce((p, q) => p + (q - mean(a)) ** 2, 0) / (a.length - 1) / a.length) : 0);
+  const rangeOf = (a) => (a.length < 2 ? null : [Math.max(0, mean(a) - T95(a.length) * se(a)), mean(a) + T95(a.length) * se(a)]);
+  const qBtn = (x, n) => `<button type="button" class="question" data-q="${n}">${esc(x.text)}</button>`;
+  // The answer first: targets proved at the end, by setup.
+  const ends = sets.map((s) => ({ s, a: fin(s, 3), r: rangeOf(fin(s, 3)) }));
+  const nRuns = [...new Set(sets.map((s) => s.series.length))];
+  const overlap = ends.every((e) => e.r) ? (Math.max(...ends.map((e) => e.r[0])) <= Math.min(...ends.map((e) => e.r[1])) ? ' All the ranges overlap, so no setup is clearly ahead on this measure.' : ' Not all the ranges overlap: see the graph and the run summary.') : '';
   $('l-body').innerHTML = `<div class="pane" style="margin-bottom:12px">
+    <h3 style="margin:0 0 8px;font-size:15px">Targets proved by the end of a run (of ${d.targets.length})</h3>
+    <div class="tiles">${ends.map((e) => `<div class="tile"><div class="k"><span class="swatch" style="background:${e.s.colour}"></span>${esc(e.s.name)}</div><div class="v">${mean(e.a).toFixed(1)}</div>${e.r ? `<div class="muted" style="font-size:12px">${e.r[0].toFixed(1)} to ${e.r[1].toFixed(1)}</div>` : ''}</div>`).join('')}</div>
+    <p class="muted" style="font-size:12px;margin:8px 0 0">${nRuns.length === 1 ? `${nRuns[0]} run${nRuns[0] === 1 ? '' : 's'} per setup` : `${sets.map((s) => `${esc(s.name)} ${s.series.length}`).join(', ')} runs`}: ${ends.every((e) => !e.r) ? 'the result of that run; one run has no range.' : 'the mean, with a 95% range below it.'}${overlap} <a href="#/doc/results/community/${esc(d.id)}/summary.md">The run summary</a>.</p></div>
+    <div class="pane" style="margin-bottom:12px">
     <h3 style="margin:0 0 6px;font-size:15px">Main questions</h3>
-    <div class="questions" id="l-qs">${qs.map((x, n) => `<button type="button" class="question" data-q="${n}">${esc(x.text)}</button>`).join('')}</div>
+    <div id="l-qs"><div class="questions">${qs.slice(0, MAIN_Q).map((x, n) => qBtn(x, n)).join('')}</div>
+    <details id="l-more-q" style="margin-top:6px;font-size:13px"><summary style="cursor:pointer">More questions: depth, groundwork, building on others</summary><div class="questions" style="margin-top:6px">${qs.slice(MAIN_Q).map((x, n) => qBtn(x, n + MAIN_Q)).join('')}</div></details></div>
     <p id="l-qread" style="font-size:13px;margin:8px 0"></p>
     <details id="l-terms" style="margin:0 0 10px;font-size:13px"><summary style="cursor:pointer">What do round, try and epoch mean?</summary><div class="doc home-doc" id="l-terms-doc" style="max-width:none;border:0;background:none;padding:6px 0 0;margin:0"><p class="muted">Loading…</p></div></details>
     <div class="row" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px">
       <label><b>Show</b> <select id="l-y">${[...new Set(ys.map((y) => y.group))].map((g) => `<optgroup label="${esc(g)}">${ys.filter((y) => y.group === g).map((y) => `<option value="${y.id}"${y.id === yv ? ' selected' : ''}>${esc(y.name)}</option>`).join('')}</optgroup>`).join('')}</select></label>
       <label><b>against</b> <select id="l-x">${LX.map((x) => `<option value="${x.id}"${x.id === xv ? ' selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label>
+      <details id="l-opts"${q.get('logy') || q.get('logx') || q.get('band') === '0' || q.get('each') === '0' ? ' open' : ''}><summary style="cursor:pointer;font-size:13px">Graph options</summary><div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">
       <label><input type="checkbox" id="l-logy"${q.get('logy') ? ' checked' : ''}> log y</label>
       <label><input type="checkbox" id="l-logx"${q.get('logx') ? ' checked' : ''}> log x</label>
       <label><input type="checkbox" id="l-band"${q.get('band') === '0' ? '' : ' checked'}> 95% range of the mean</label>
       <label><input type="checkbox" id="l-each"${q.get('each') === '0' ? '' : ' checked'}> single runs</label>
-    </div><div id="l-chart" style="position:relative"></div><p class="muted" id="l-cnote" style="font-size:12px;margin:6px 0 0"></p></div><div id="l-reach"></div><div id="l-table"></div>`;
+      </div></details>
+    </div><div id="l-chart" style="position:relative"></div><p class="muted" id="l-cnote" style="font-size:12px;margin:6px 0 0"></p>
+    <details style="font-size:13px;margin:8px 0 0"><summary style="cursor:pointer">Read the values without hovering</summary>
+      <label style="display:block;margin:6px 0"><span id="l-at-txt"></span> <input type="range" id="l-at" min="0" step="1" style="width:min(100%,360px);vertical-align:middle" aria-label="Position on the graph"></label>
+      <table class="agents"><thead><tr><th>Setup</th><th>Value</th><th>95% range</th></tr></thead><tbody id="l-vals"></tbody></table></details></div><div id="l-reach"></div><div id="l-table"></div>`;
   const set = (k, v) => { const p = params(); p.set('tab', 'results'); p.set('exp', d.id); if (v === null) p.delete(k); else p.set(k, v); history.replaceState(null, '', '#/lean?' + p); draw(); };
   $('l-terms').ontoggle = () => { if ($('l-terms').open && !$('l-terms').dataset.done) { $('l-terms').dataset.done = '1'; api('/api/doc?path=docs/rounds-and-epochs.md').then((x) => { $('l-terms-doc').innerHTML = x.html; }).catch((e) => { $('l-terms-doc').textContent = e.message; }); } };
   $('l-y').onchange = () => set('y', $('l-y').value);
@@ -2375,7 +2418,8 @@ function leanResults(d) {
     const Y = ys.find((y) => y.id === $('l-y').value), xi = Number($('l-x').value), X = LX[xi];
     const asked = qs.find((x) => x.y === Y.id && x.x === xi);
     for (const b of $('l-qs').querySelectorAll('button')) b.setAttribute('aria-pressed', String(qs[Number(b.dataset.q)] === asked));
-    $('l-qread').textContent = asked ? asked.read : 'Your own choice of graph.';
+    $('l-qread').textContent = (asked ? asked.read : 'Your own choice of graph.') + (Y.note ? ' ' + Y.note : '');
+    if (asked && qs.indexOf(asked) >= MAIN_Q) $('l-more-q').open = true;
     const logy = $('l-logy').checked, logx = $('l-logx').checked, share = Y.bit !== undefined;
     const val = (row) => (share ? ((row[7] >> Y.bit) & 1) * 100 : row[Y.col]);
     // A run's value at x: its last row at or before x (a finished run keeps its last value).
@@ -2386,10 +2430,16 @@ function leanResults(d) {
     const lines = sets.map((s) => {
       const per = grid.map((g) => s.series.map((r) => at(r, g)));
       const m = per.map((v) => v.reduce((a, b) => a + b, 0) / v.length);
-      const se = per.map((v, k) => (v.length > 1 ? Math.sqrt(v.reduce((a, b) => a + (b - m[k]) ** 2, 0) / (v.length - 1) / v.length) : 0));
-      return { s, m, se: se.map((x) => (x * T95(s.series.length)) / 2) };
+      // One run has no range. A share of runs uses the Wilson range, which stays within 0–100%.
+      const n = s.series.length, ranges = per.map((v, k) => {
+        if (n < 2) return [m[k], m[k]];
+        if (share) return wilson(Math.round((m[k] * n) / 100), n).map((x) => x * 100);
+        const h = T95(n) * Math.sqrt(v.reduce((a, b) => a + (b - m[k]) ** 2, 0) / (n - 1) / n);
+        return [Math.max(0, m[k] - h), m[k] + h];
+      });
+      return { s, m, n, lo: ranges.map((x) => x[0]), hi: ranges.map((x) => x[1]) };
     });
-    const yTop = share ? 100 : Math.max(1, ...lines.flatMap((L) => L.m.map((v, k) => v + 2 * L.se[k])), ...($('l-each').checked ? sets.flatMap((s) => s.series.map((r) => val(r.at(-1)))) : []));
+    const yTop = share ? 100 : Math.max(1, ...lines.flatMap((L) => L.hi), ...($('l-each').checked ? sets.flatMap((s) => s.series.map((r) => val(r.at(-1)))) : []));
     const yPos = lines.flatMap((L) => L.m).filter((v) => v > 0), yMin = logy ? Math.max(share ? 1 : 0.1, Math.min(...yPos, yTop) / 1.5) : 0;
     const W = 820, H = 420, l = 64, top = 16, pw = W - l - 170, ph = H - top - 54, Lg = Math.log10;
     const sx = (x) => l + (logx ? (Lg(Math.max(x, xMin)) - Lg(xMin)) / (Lg(xMax) - Lg(xMin) || 1) : (x - xMin) / (xMax - xMin || 1)) * pw;
@@ -2412,7 +2462,7 @@ function leanResults(d) {
     }
     const ends = [];
     for (const L of lines) {
-      if ($('l-band').checked) { const up = grid.map((g, k) => `${sx(g).toFixed(1)} ${sy(Math.min(yTop, L.m[k] + 2 * L.se[k])).toFixed(1)}`), dn = grid.map((g, k) => `${sx(g).toFixed(1)} ${sy(Math.max(logy ? yMin : 0, L.m[k] - 2 * L.se[k])).toFixed(1)}`).reverse();
+      if ($('l-band').checked && L.n > 1) { const up = grid.map((g, k) => `${sx(g).toFixed(1)} ${sy(Math.min(yTop, L.hi[k])).toFixed(1)}`), dn = grid.map((g, k) => `${sx(g).toFixed(1)} ${sy(Math.max(logy ? yMin : 0, L.lo[k])).toFixed(1)}`).reverse();
         svg += `<path d="M${up.join(' L')} L${dn.join(' L')} Z" fill="${L.s.colour}" fill-opacity="0.13" stroke="none"/>`; }
       svg += `<path d="${L.m.map((v, k) => `${k ? 'L' : 'M'}${sx(grid[k]).toFixed(1)} ${sy(v).toFixed(1)}`).join(' ')}" fill="none" stroke="${L.s.colour}" stroke-width="2.5" stroke-dasharray="${P_STYLE[L.s.key]?.[1] ?? ''}" stroke-linejoin="round"><title>${esc(L.s.name)}</title></path>`;
       ends.push([sy(L.m.at(-1)), `${L.s.name}: ${share ? Math.round(L.m.at(-1)) + '%' : L.m.at(-1).toFixed(2)}`, L.s.colour, P_STYLE[L.s.key]?.[1] ?? '']);
@@ -2423,24 +2473,31 @@ function leanResults(d) {
     $('l-chart').innerHTML = svg + '</svg><div class="chart-tip" id="l-tip" hidden></div>';
     const el = $('l-chart').querySelector('svg'), cross = $('l-cross'), tip = $('l-tip');
     const fmt = (v) => (share ? `${Math.round(v)}%` : v.toFixed(1));
+    const atX = (k) => `${fmtx(grid[k])}${xi === 1 ? ' (round)' : xi === 2 ? ' tries' : ''}`;
+    const writeVals = (k) => {
+      $('l-at').value = k; $('l-at-txt').textContent = 'At ' + atX(k);
+      $('l-vals').innerHTML = lines.map((L) => `<tr><td><span class="swatch" style="background:${L.s.colour}"></span>${esc(L.s.name)}</td><td>${fmt(L.m[k])}</td><td>${L.n > 1 ? `${fmt(L.lo[k])} to ${fmt(L.hi[k])}` : 'one run: no range'}</td></tr>`).join('');
+    };
+    $('l-at').max = grid.length - 1; $('l-at').oninput = () => writeVals(Number($('l-at').value)); writeVals(grid.length - 1);
     el.onpointermove = (ev) => {
       const box = el.getBoundingClientRect(), px = ((ev.clientX - box.left) * W) / box.width;
       if (px < l || px > l + pw) { cross.style.display = 'none'; tip.hidden = true; return; }
       let k = 0; grid.forEach((g, n) => { if (Math.abs(sx(g) - px) < Math.abs(sx(grid[k]) - px)) k = n; });
       cross.setAttribute('x1', sx(grid[k])); cross.setAttribute('x2', sx(grid[k])); cross.style.display = '';
-      tip.innerHTML = `<b>${esc(fmtx(grid[k]))}${xi === 1 ? ' (round)' : xi === 2 ? ' tries' : ''}</b>` + [...lines].sort((a, b) => b.m[k] - a.m[k]).map((L) => `<div><span class="swatch" style="background:${L.s.colour}"></span>${esc(L.s.name)}: <b>${fmt(L.m[k])}</b> <span class="muted">(${fmt(Math.max(0, L.m[k] - 2 * L.se[k]))}–${fmt(L.m[k] + 2 * L.se[k])})</span></div>`).join('');
+      writeVals(k);
+      tip.innerHTML = `<b>${esc(atX(k))}</b>` + [...lines].sort((a, b) => b.m[k] - a.m[k]).map((L) => `<div><span class="swatch" style="background:${L.s.colour}"></span>${esc(L.s.name)}: <b>${fmt(L.m[k])}</b>${L.n > 1 ? ` <span class="muted">(${fmt(L.lo[k])}–${fmt(L.hi[k])})</span>` : ''}</div>`).join('');
       tip.hidden = false;
       const wrap = $('l-chart').getBoundingClientRect(), x = (sx(grid[k]) * box.width) / W, right = x + 14 + tip.offsetWidth > wrap.width;
       tip.style.left = `${right ? x - 14 - tip.offsetWidth : x + 14}px`; tip.style.top = `${((top + 8) * box.height) / H}px`;
     };
     el.onpointerleave = () => { cross.style.display = 'none'; tip.hidden = true; };
-    $('l-cnote').textContent = `Thick lines: the mean of every finished run of “${d.name}” (${sets.map((s) => `${s.name} ${s.series.length}`).join(', ')})${share ? '; the share of runs that had proved it by then' : ''}.${$('l-band').checked ? ' Shaded: a 95% range of the mean (± t standard errors; wider when there are few runs).' : ''}${$('l-each').checked && !share ? ' Thin lines: single runs.' : ''}${logx || logy ? ' On a log scale, zero cannot be drawn: values below the axis sit on it.' : ''}`;
+    $('l-cnote').textContent = `Thick lines: the mean of every finished run of “${d.name}” (${sets.map((s) => `${s.name} ${s.series.length}`).join(', ')})${share ? '; the share of runs that had proved it by then' : ''}.${$('l-band').checked ? (share ? ' Shaded: a 95% range for the share of runs (Wilson).' : ' Shaded: a 95% range of the mean (± t standard errors; wider when there are few runs).') : ''}${$('l-band').checked && sets.some((s) => s.series.length < 2) ? ' A setup with one run has no range.' : ''}${$('l-each').checked && !share ? ' Thin lines: single runs.' : ''}${logx || logy ? ' On a log scale, zero cannot be drawn: values below the axis sit on it.' : ''}`;
   };
   draw();
-  const nTargets = d.targets.length, kv = Math.min(nTargets, Math.max(1, Number(q.get('k') ?? Math.min(5, nTargets))));
+  const nTargets = d.targets.length, kAsked = Number(q.get('k')), kv = Number.isInteger(kAsked) && kAsked >= 1 && kAsked <= nTargets ? kAsked : Math.min(5, nTargets);
   const reach = (k) => {
     const usd = (x) => `$${x.toFixed(3)}`, rnd = (x) => (x % 1 ? x.toFixed(1) : String(x));
-    const cellOf = (xs, f) => { const [m, lo, hi] = medianRange(xs); return m === Infinity ? (lo === Infinity ? 'not reached' : `not reached <span class="muted">(from ${f(lo)})</span>`) : `${f(m)} <span class="muted">(${f(lo)} to ${hi === Infinity ? 'not reached' : f(hi)})</span>`; };
+    const cellOf = (xs, f) => { const [m, lo, hi] = medianRange(xs); if (lo === null) return `${m === Infinity ? 'not reached' : f(m)} <span class="muted">(too few runs for a range)</span>`; return m === Infinity ? (lo === Infinity ? 'not reached' : `not reached <span class="muted">(from ${f(lo)})</span>`) : `${f(m)} <span class="muted">(${f(lo)} to ${hi === Infinity ? 'not reached' : f(hi)})</span>`; };
     return sets.map((s) => {
       const at = s.series.map((r) => r.find((row) => row[3] >= k)), hit = at.filter(Boolean).length, [lo, hi] = wilson(hit, at.length);
       return `<tr><td><span class="swatch" style="background:${s.colour}"></span>${esc(s.name)}</td><td>${hit} of ${at.length} <span class="muted">(${Math.round(lo * 100)}–${Math.round(hi * 100)}%)</span></td><td>${cellOf(at.map((row) => row?.[0] ?? Infinity), usd)}</td><td>${cellOf(at.map((row) => row?.[2] ?? Infinity), rnd)}</td><td>${cellOf(at.map((row) => row?.[1] ?? Infinity), rnd)}</td></tr>`;
@@ -2449,12 +2506,10 @@ function leanResults(d) {
   const drawReach = (k) => { $('l-reach-rows').innerHTML = reach(k); };
   $('l-reach').innerHTML = `<div class="pane" style="overflow-x:auto;margin-bottom:12px"><h3 style="margin:0 0 8px;font-size:15px"><label>Cost to reach <select id="l-k">${Array.from({ length: nTargets }, (_, n) => `<option value="${n + 1}"${n + 1 === kv ? ' selected' : ''}>${n + 1}</option>`).join('')}</select> targets</label></h3>
     <table class="agents"><thead><tr><th>Setup</th><th>Runs that reached it</th><th>Median money, all labs</th><th>Median tries, all labs</th><th>Median round</th></tr></thead><tbody id="l-reach-rows"></tbody></table>
-    <p class="muted" style="font-size:12px;margin:8px 0 0">Every run counts: a run that never got there is "not reached", so no setup is flattered by leaving it out. Ranges cover at least 95%. For runs up to 2026-11-08 this was looked at after the results, so read it as a lead.</p></div>`;
+    <p class="muted" style="font-size:12px;margin:8px 0 0">${d.setups[0].options?.counted?.length ? `<b>This table and the graph count all ${nTargets} posted targets; the Progress page counts only ${esc(d.setups[0].options.counted.join(', '))}.</b> ` : ''}Every run counts: a run that never got there is "not reached", so no setup is flattered by leaving it out. Ranges cover at least 95%; under 6 runs there are too few for one. For runs up to 2026-11-08 this was looked at after the results, so read it as a lead.</p></div>`;
   drawReach(kv);
   $('l-k').onchange = () => { const p = params(); p.set('tab', 'results'); p.set('exp', d.id); p.set('k', $('l-k').value); history.replaceState(null, '', '#/lean?' + p); drawReach(Number($('l-k').value)); };
-  const fin = (s, col) => s.series.map((r) => r.at(-1)[col]), mean = (a) => a.reduce((p, q) => p + q, 0) / a.length;
-  const se = (a) => (a.length > 1 ? Math.sqrt(a.reduce((p, q) => p + (q - mean(a)) ** 2, 0) / (a.length - 1) / a.length) : 0);
-  const cell = (a) => `${mean(a).toFixed(2)} <span class="muted">(${(mean(a) - T95(a.length) * se(a)).toFixed(2)}–${(mean(a) + T95(a.length) * se(a)).toFixed(2)})</span>`;
+  const cell = (a) => { const r = rangeOf(a); return `${mean(a).toFixed(2)}${r ? ` <span class="muted">(${r[0].toFixed(2)}–${r[1].toFixed(2)})</span>` : ''}`; };
   const rows = sets.map((s) => `<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${s.colour};margin-right:5px"></span>${esc(s.name)}</td><td>${s.series.length}</td>
     <td>${cell(fin(s, 3))}</td><td>${cell(fin(s, 5))}</td><td>${cell(fin(s, 9))}</td><td>${cell(fin(s, 6))}</td><td>$${mean(fin(s, 0)).toFixed(2)}</td>
     <td>${d.targets.map((t) => `${t.id} ${s.proved[t.id]}`).join(' · ')}</td></tr>`).join('');

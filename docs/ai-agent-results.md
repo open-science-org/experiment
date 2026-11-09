@@ -247,12 +247,14 @@ Every run records each action's round and cost, so this comes from the saved run
 
 Median money to reach 5 of the 8 targets (range covering at least 95%):
 
+*Corrected 2026-11-08: an off-by-one made the ranges in the first version too narrow (they covered about 88–89%, not 95%). The medians did not change.*
+
 | Experiment | Traditional | Shared library (or α 1) | OSO α 0.8 | OSO α 0.2 |
 | --- | --- | --- | --- | --- |
-| Spend all | $0.228 (0.149–0.288) | $0.250 (0.170–0.318) | $0.216 (0.150–0.283) | $0.148 (0.106–0.174) |
-| Fair-prompt check | not run | $0.273 (0.144–0.382) | not run | $0.182 (0.151–0.289) |
-| May quit | $0.220 (0.112 to not reached) | $0.208 (0.168 to not reached) | $0.262 (0.182 to not reached) | $0.169 (0.116–0.319) |
-| Labs choose (against α 1) | not run | $0.223 (0.165–0.355) | $0.217 (0.139–0.265) | $0.117 (0.089–0.217) |
+| Spend all | $0.228 (0.149–0.300) | $0.250 (0.168–0.352) | $0.216 (0.145–0.295) | $0.148 (0.104–0.202) |
+| Fair-prompt check | not run | $0.273 (0.126–0.398) | not run | $0.182 (0.132–0.304) |
+| May quit | $0.220 (0.065 to not reached) | $0.208 (0.160 to not reached) | $0.262 (0.139 to not reached) | $0.169 (0.079 to not reached) |
+| Labs choose (against α 1) | not run | $0.223 (0.095–0.376) | $0.217 (0.099–0.335) | $0.117 (0.076–0.224) |
 
 **What it suggests:** OSO α 0.2 reached 5 targets for the least money in all four experiments, about 20–50% less than the shared library or α 1, though most ranges overlap. It does not hold at every count: at 4 targets the order varies, and at 6 targets Spend all's shared library was cheapest ($0.300, against $0.358 for OSO α 0.2). A lead: the count of 5 was picked after looking. At 7 targets, more OSO α 0.2 runs got there in Spend all (10 of 20, against 1 of 20 in the shared library) and Labs choose (7 of 10, against 4 of 10).
 
