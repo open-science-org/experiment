@@ -2055,7 +2055,7 @@ $('pilot-load').onclick = loadPilot;
 // done, running or waiting, the benchmark checks, and the credit left. Refreshes itself every 15 s.
 const PG = { data: null, poll: null, home: null };
 // OSO orange, traditional blue; the baselines are inks with their own dash, so no line is told apart by colour alone.
-const PILOT_NAMES = { 'hard-check': 'Difficulty check of the harder targets' };
+const PILOT_NAMES = { 'hard-check': 'Difficulty check of the harder targets', 'effort-medium': 'Medium-effort test' };
 /** The pilot difficulty check, all its passes added up: for each candidate target, proved alone and with its lemmas. */
 function pilotCheck(pilots) {
   const runs = pilots.filter((r) => /^hard-check-\d+$/.test(r.id));
@@ -2380,14 +2380,7 @@ function leanResults(d) {
   const qBtn = (x, n) => `<button type="button" class="question" data-q="${n}">${esc(x.text)}</button>`;
   // The answer first: targets proved at the end, by setup.
   const ends = sets.map((s) => ({ s, a: fin(s, 3), r: rangeOf(fin(s, 3)) }));
-  const nRuns = [...new Set(sets.map((s) => s.series.length))];
   $('l-body').innerHTML = `<div class="pane" style="margin-bottom:12px">
-    <h3 style="margin:0 0 8px;font-size:15px"><label>Money spent to reach <select id="l-k"></select> of the ${d.targets.length} targets</label></h3>
-    <p style="font-size:13px;margin:0 0 8px">Median, all labs together:</p>
-    <div class="tiles" id="l-a-tiles"></div>
-    <p class="muted" style="font-size:12px;margin:8px 0 0">${nRuns.length === 1 ? `${nRuns[0]} run${nRuns[0] === 1 ? '' : 's'} per setup` : `${sets.map((s) => `${esc(s.name)} ${s.series.length}`).join(', ')} runs`}, with a range of at least 95% below each median.<span id="l-a-note"></span> The page opens on the highest count that more than half the runs of every setup reach. This measure was chosen after the runs up to 2026-11-08, so read those as a lead. <a href="#/doc/results/community/${esc(d.id)}/summary.md">The run summary</a>.</p>
-    <p class="muted" style="font-size:12px;margin:4px 0 0">Targets proved by the end of a run: ${ends.map((e) => `${esc(e.s.name)} ${mean(e.a).toFixed(1)}${e.r ? ` (${e.r[0].toFixed(1)} to ${e.r[1].toFixed(1)})` : ''}`).join(' · ')}.</p></div>
-    <div class="pane" style="margin-bottom:12px">
     <h3 style="margin:0 0 6px;font-size:15px">Main questions</h3>
     <div id="l-qs"><div class="questions">${qs.slice(0, MAIN_Q).map((x, n) => qBtn(x, n)).join('')}</div>
     <details id="l-more-q" style="margin-top:6px;font-size:13px"><summary style="cursor:pointer">More questions: speed, depth, groundwork, building on others</summary><div class="questions" style="margin-top:6px">${qs.slice(MAIN_Q).map((x, n) => qBtn(x, n + MAIN_Q)).join('')}</div></details></div>
@@ -2403,6 +2396,7 @@ function leanResults(d) {
       <label><input type="checkbox" id="l-each"${q.get('each') === '0' ? '' : ' checked'}> single runs</label>
       </div></details>
     </div><div id="l-chart" style="position:relative"></div><p class="muted" id="l-cnote" style="font-size:12px;margin:6px 0 0"></p>
+    <p class="muted" style="font-size:12px;margin:4px 0 0">Targets proved by the end of a run: ${ends.map((e) => `${esc(e.s.name)} ${mean(e.a).toFixed(1)}${e.r ? ` (${e.r[0].toFixed(1)} to ${e.r[1].toFixed(1)})` : ''}`).join(' · ')}.</p>
     <details style="font-size:13px;margin:8px 0 0"><summary style="cursor:pointer">Read the values without hovering</summary>
       <label style="display:block;margin:6px 0"><span id="l-at-txt"></span> <input type="range" id="l-at" min="0" step="1" style="width:min(100%,360px);vertical-align:middle" aria-label="Position on the graph"></label>
       <table class="agents"><thead><tr><th>Setup</th><th>Value</th><th>95% range</th></tr></thead><tbody id="l-vals"></tbody></table></details></div><div id="l-reach"></div><div id="l-table"></div>`;
@@ -2464,7 +2458,7 @@ function leanResults(d) {
       $('l-at').value = j; $('l-at-txt').textContent = `At ${ks[j]} target${ks[j] === 1 ? '' : 's'}`;
       $('l-vals').innerHTML = lines.map((L) => { const p = L.pts[j]; return `<tr><td><span class="swatch" style="background:${L.s.colour}"></span>${esc(L.s.name)}</td><td>${end(p.m)} <span class="muted">(${p.hit} of ${p.runs} runs got there)</span></td><td>${rangeTxt(p)}</td></tr>`; }).join('');
     };
-    $('l-at').max = n - 1; $('l-at').oninput = () => writeVals(Number($('l-at').value)); writeVals(Math.max(0, Math.min(n, Number($('l-k').value) || kDefault) - 1));
+    $('l-at').max = n - 1; $('l-at').oninput = () => writeVals(Number($('l-at').value)); writeVals(Math.max(0, Math.min(n, Number($('l-k')?.value) || kDefault) - 1));
     el.onpointermove = (ev) => {
       const box = el.getBoundingClientRect(), px = ((ev.clientX - box.left) * W) / box.width;
       if (px < l || px > l + pw) { cross.style.display = 'none'; tip.hidden = true; return; }
@@ -2567,17 +2561,16 @@ function leanResults(d) {
       return `<tr><td><span class="swatch" style="background:${s.colour}"></span>${esc(s.name)}</td><td>${hit} of ${at.length} <span class="muted">(${Math.round(lo * 100)}–${Math.round(hi * 100)}%)</span></td><td>${cellOf(at.map((row) => row?.[0] ?? Infinity), usd)}</td><td>${cellOf(at.map((row) => row?.[2] ?? Infinity), rnd)}</td><td>${cellOf(at.map((row) => row?.[1] ?? Infinity), rnd)}</td><td>${cellOf(at.map((row) => row?.[10] ?? Infinity), rnd)}</td></tr>`;
     }).join('');
   };
-  // The answer at the top: money to reach k targets, for the k chosen in the table.
-  const drawAnswer = (k) => {
-    const rows = sets.map((s) => { const at = s.series.map((r) => r.find((row) => row[3] >= k)), [m, lo, hi] = medianRange(at.map((row) => row?.[0] ?? Infinity)); return { s, hit: at.filter(Boolean).length, n: at.length, m, lo, hi }; });
-    const usd = (x) => `$${x.toFixed(3)}`, end = (x) => (x === Infinity ? 'not reached' : usd(x));
-    $('l-a-tiles').innerHTML = rows.map((r) => `<div class="tile"><div class="k"><span class="swatch" style="background:${r.s.colour}"></span>${esc(r.s.name)}</div><div class="v">${end(r.m)}</div>${r.lo === null ? '<div class="muted" style="font-size:12px">too few runs for a range</div>' : r.lo === Infinity ? '' : `<div class="muted" style="font-size:12px">${end(r.lo)} to ${end(r.hi)}</div>`}<div class="muted" style="font-size:12px">${r.hit} of ${r.n} runs got there</div></div>`).join('');
-    $('l-a-note').textContent = rows.some((r) => r.lo === null) ? '' : rows.every((r) => r.m === Infinity) ? ' No setup has a median here: half or more of the runs of each never got there.' : Math.max(...rows.map((r) => r.lo)) <= Math.min(...rows.map((r) => r.hi)) ? ' All the ranges overlap, so no setup is clearly cheaper.' : ' Not all the ranges overlap: see the table below the graph.';
+  // Whether the setups can be told apart at this count.
+  const drawNote = (k) => {
+    const rows = sets.map((s) => { const [m, lo, hi] = medianRange(s.series.map((r) => r.find((row) => row[3] >= k)?.[0] ?? Infinity)); return { m, lo, hi }; });
+    $('l-a-note').textContent = rows.some((r) => r.lo === null) ? '' : rows.every((r) => r.m === Infinity) ? 'No setup has a median here: half or more of the runs of each never got there.' : Math.max(...rows.map((r) => r.lo)) <= Math.min(...rows.map((r) => r.hi)) ? 'All the ranges of median money overlap, so no setup is clearly cheaper at this count.' : 'Not all the ranges of median money overlap at this count.';
   };
-  const drawReach = (k) => { $('l-reach-k').textContent = k; $('l-reach-rows').innerHTML = reach(k); drawAnswer(k); };
-  $('l-reach').innerHTML = `<div class="pane" style="overflow-x:auto;margin-bottom:12px"><h3 style="margin:0 0 8px;font-size:15px">Cost to reach <span id="l-reach-k"></span> targets</h3>
+  const drawReach = (k) => { $('l-reach-rows').innerHTML = reach(k); drawNote(k); };
+  $('l-reach').innerHTML = `<div class="pane" style="overflow-x:auto;margin-bottom:12px"><h3 style="margin:0 0 8px;font-size:15px"><label>Cost to reach <select id="l-k"></select> targets</label></h3>
+    <p style="font-size:13px;margin:0 0 8px" id="l-a-note"></p>
     <table class="agents"><thead><tr><th>Setup</th><th>Runs that reached it</th><th>Median money, all labs</th><th>Median tries, all labs</th><th>Median round</th><th>Median minutes</th></tr></thead><tbody id="l-reach-rows"></tbody></table>
-    <p class="muted" style="font-size:12px;margin:8px 0 0">${d.setups[0].options?.counted?.length ? `<b>This table and the graph count all ${nTargets} posted targets; the Progress page counts only ${esc(d.setups[0].options.counted.join(', '))}.</b> ` : ''}Every run counts: a run that never got there is "not reached", so no setup is flattered by leaving it out. Minutes depend partly on how fast the model provider answered. Ranges cover at least 95%; under 6 runs there are too few for one. For runs up to 2026-11-08 this was looked at after the results, so read it as a lead.</p></div>`;
+    <p class="muted" style="font-size:12px;margin:8px 0 0">${d.setups[0].options?.counted?.length ? `<b>This table and the graph count all ${nTargets} posted targets; the Progress page counts only ${esc(d.setups[0].options.counted.join(', '))}.</b> ` : ''}Every run counts: a run that never got there is "not reached", so no setup is flattered by leaving it out. Minutes depend partly on how fast the model provider answered. Ranges cover at least 95%; under 6 runs there are too few for one. The table opens on the highest count that more than half the runs of every setup reach. For runs up to 2026-11-08 this was looked at after the results, so read it as a lead.</p></div>`;
   $('l-k').innerHTML = Array.from({ length: nTargets }, (_, n) => `<option value="${n + 1}"${n + 1 === kv ? ' selected' : ''}>${n + 1}</option>`).join('');
   drawReach(kv);
   $('l-k').onchange = () => { const p = params(); p.set('tab', 'results'); p.set('exp', d.id); p.set('k', $('l-k').value); history.replaceState(null, '', '#/lean?' + p); drawReach(Number($('l-k').value)); };
