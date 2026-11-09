@@ -1,0 +1,71 @@
+{
+ "id": "lean-hard",
+ "kind": "race",
+ "date": "2026-11-09",
+ "title": "Pilot: harder targets, stage 1, 4 setups × 2 runs, $0.20 a lab (Nov 9), left out",
+ "ranAt": "2026-11-09T08:40:03.144Z",
+ "design": {
+  "question": "For the same agents and checker, how much money does each way of organizing the labs spend to reach the same number of targets?",
+  "compare": "OSO, α 0.2, Shared library, Planner, Pay per lemma",
+  "fixed": "the same 4 agents (the single agent: the first, with all the money), $0.80 in all, Lean checks every proof",
+  "measure": "median money, all labs together, to reach 5 of the 11 targets; 5 is the highest count that more than half the runs of every setup reached; a run that never got there counts as not reached",
+  "better": "lower",
+  "runs": "2 runs per setup, not paired"
+ },
+ "answer": "Median money, all labs together, to reach 5 of the 11 targets: OSO, α 0.2 $0.316; Shared library $0.593; Planner $0.223; Pay per lemma $0.607. OSO, α 0.2 minus Shared library: −$0.276. OSO, α 0.2 minus Planner: +$0.093. OSO, α 0.2 minus Pay per lemma: −$0.291.",
+ "table": [
+  {
+   "society": "OSO, α 0.2",
+   "settings": "shared at once · α 0.2",
+   "targets proved": "6.50 ± 0.71 of 11",
+   "median money to 5 targets": "$0.316 (2 of 2 got there)",
+   "spent": "$0.81",
+   "lemmas proved": "7.50",
+   "built on another lab": "4.00",
+   "lemmas proved twice": "0.00",
+   "targets proved twice": "3.00"
+  },
+  {
+   "society": "Shared library",
+   "settings": "shared at once · α 1",
+   "targets proved": "6.00 ± 1.41 of 11",
+   "median money to 5 targets": "$0.593 (2 of 2 got there)",
+   "spent": "$0.82",
+   "lemmas proved": "5.00",
+   "built on another lab": "2.50",
+   "lemmas proved twice": "0.50",
+   "targets proved twice": "3.00"
+  },
+  {
+   "society": "Planner",
+   "settings": "shared at once · α 1 · lab 1 assigns the work",
+   "targets proved": "6.50 ± 0.71 of 11",
+   "median money to 5 targets": "$0.223 (2 of 2 got there)",
+   "spent": "$0.64",
+   "lemmas proved": "9.00",
+   "built on another lab": "1.50",
+   "lemmas proved twice": "0.00",
+   "targets proved twice": "0.50"
+  },
+  {
+   "society": "Pay per lemma",
+   "settings": "shared at once · each new result pays its author · α 1",
+   "targets proved": "6.00 ± 1.41 of 11",
+   "median money to 5 targets": "$0.607 (2 of 2 got there)",
+   "spent": "$0.81",
+   "lemmas proved": "8.50",
+   "built on another lab": "4.50",
+   "lemmas proved twice": "0.00",
+   "targets proved twice": "3.00"
+  }
+ ],
+ "caveats": [
+  "Labs could not stop early: each worked until its money or the rounds ran out, so setups are compared at the same money spent.",
+  "Rewards differ from the current simulation model: the knowledge reward is off (the simulation pays 1 per new bit since v5): Lean has no agreed measure of a result's new knowledge yet, see docs/design.md; value flowing back is split by the lines each parent saves (its own proof's length in symbols), a stand-in for the work it saves (1/p) in the simulation.",
+  "Money to a count is all labs together, to the end of the round that reached it. Medians have ranges of at least 95% from the sorted runs; differences of medians have 95% ranges from resampling the runs; runs are not paired. Other table values are mean ± standard deviation.",
+  "In the planner setup lab 1 only plans, so three labs prove and most of its money stays unspent; it is also told to save the team money and how to split the work."
+ ],
+ "cost": "$6.16 as charged",
+ "page": "results/community/lean-hard/summary.md",
+ "chart": "results/community/lean-hard/figures/progress.svg"
+}

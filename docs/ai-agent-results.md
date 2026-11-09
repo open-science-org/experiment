@@ -4,7 +4,7 @@ Last updated: 2026-11-08. Every result here has its own page under `results/` (t
 
 ## TL;DR
 
-Checked after every run; last checked 2026-11-09, after recounting money to the end of each round.
+Checked after every run; last checked 2026-11-09, after stage 1 on the harder targets (a pilot, left out).
 
 - **Lemmas help weak models.** DeepSeek proves 4 of 16 targets alone, 12 of 16 with the lemmas they need.
 - **Sharing lets labs build on each other** (Spend all: 2.2 results a run in the shared library, 0.4 under traditional), but it has not raised targets proved. A plain shared library gets this too, so it is not unique to OSO. **Repeated work is not a general result:** traditional labs proved the same lemma about 20 times a run in the small cheap race (5 runs), but only 0.4 times in Spend all (20 runs per setup; shared library 0.2).
@@ -15,6 +15,7 @@ Checked after every run; last checked 2026-11-09, after recounting money to the 
 - **Against OSO:** labs did not share more with flow-back (they published nearly everything at every α), and did not clearly keep working longer (α 0.8: about 2 rounds longer; α 0.2: no clear change).
 - **Money was wasted in every run so far.** About 23% of model replies ran out of length while thinking and gave no answer, costing roughly 39% of the money (section 5). It affects all setups, more in the shared library (27%) than at α 0.2 (23%). In a small test, effort (high or medium) made no clear difference.
 - **Pilot: three harder targets kept.** Alone the model proved none of 6 candidates (0 of 24 attempts). With the lemmas, 3 passed the rule fixed in advance (H4 and H5 4 of 4, H6 3 of 4); 3 were still too hard (0 of 4 each). Four attempts each is a rough screen.
+- **Pilot: the harder targets were barely tried.** In stage 1 (8 runs, $6.16) labs spent nearly all their money before reaching them: H4 was never tried and H5 only in 1 run; neither was proved. H6 was proved in 7 of 8. The check fixed in advance failed, so these runs are left out. So we still do not know whether H4 and H5 are too hard in a community.
 - **Why the tests may be blind:** five of the 8 targets are nearly always proved, so "targets proved" barely moves. Flow-back should matter most on deep problems, not tested yet.
 - **The setup checks out** (proof checker, fault tests, public benchmark). Flow-back was split by money spent instead of lines saved until 2026-11-08; the counts stand (correction below).
 
@@ -261,6 +262,21 @@ Median money to reach 5 of the 8 targets (range covering at least 95%):
 | Labs choose (against α 1) | not run | $0.235 (0.124–0.403) | $0.248 (0.134–0.369) | $0.142 (0.102–0.257) |
 
 **What it suggests:** OSO α 0.2 reached 5 targets for the least money in all four experiments, about 20–40% less than the shared library or α 1, though most ranges overlap. It does not hold at every count: at 4 targets the order varies, and at 6 targets Spend all's shared library was cheapest ($0.336, against $0.382 for OSO α 0.2). A lead: the count of 5 was picked after looking. At 7 targets, more OSO α 0.2 runs got there in Spend all (10 of 20, against 1 of 20 in the shared library) and Labs choose (7 of 10, against 4 of 10).
+
+## 4f. Harder targets, stage 1 (pilot, 2026-11-09; left out)
+
+8 runs, 2 per setup, $0.20 a lab, $6.16 in all. The rule fixed in advance needed each of H4, H5 and H6 to be proved in some runs but not all, or at least two of them. Results pooled over the setups, so the check did not look at who was ahead.
+
+| Target | Runs that proved it (of 8) | Attempts, all runs | Money |
+| --- | --- | --- | --- |
+| H6 | 7 | 23 | $0.28 |
+| H5 | 0 | 5 (in 1 run) | $0.14 |
+| H4 | 0 | 0 | $0 |
+| B5 | 0 | 2 | $0.07 |
+| A5 | 0 | 2 | $0.07 |
+| X1 | 4 | 90 | $2.08 |
+
+Only H6 met the rule, so stage 2 was not started. Labs spent $0.77 of each run's $0.80, a third of all the money on X1 alone. Runs proved 5 to 7 targets. 28% of replies were empty (95% range 25–31%), above the 23% of earlier runs. With 2 runs per setup this says nothing about which setup is better.
 
 ## 5. Is the test setup sound? (harness checks)
 
