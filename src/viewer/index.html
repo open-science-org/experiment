@@ -2044,7 +2044,7 @@ $('pilot-load').onclick = loadPilot;
 // done, running or waiting, the benchmark checks, and the credit left. Refreshes itself every 15 s.
 const PG = { data: null, poll: null };
 // OSO orange, traditional blue; the baselines are inks with their own dash, so no line is told apart by colour alone.
-const P_STYLE = { traditional: ['var(--s1)', ''], oso: ['var(--s2)', ''], 'oso-0.2': ['var(--s2)', '6 4'], 'choose-1': ['var(--ink)', ''], 'choose-0.8': ['var(--s2)', ''], 'choose-0.2': ['var(--s2)', '6 4'], single: ['var(--ink)', '2 4'], independent: ['var(--ink-2)', '8 4'], shared: ['var(--ink-3)', ''], planner: ['var(--ink-2)', '10 3 2 3'] };
+const P_STYLE = { traditional: ['var(--s1)', ''], oso: ['var(--s2)', ''], 'oso-0.2': ['var(--s2)', '6 4'], 'choose-1': ['var(--ink)', ''], 'choose-0.8': ['var(--s2)', ''], 'choose-0.2': ['var(--s2)', '6 4'], 'choose-off-1': ['var(--ink)', ''], 'choose-off-0.2': ['var(--s2)', '6 4'], single: ['var(--ink)', '2 4'], independent: ['var(--ink-2)', '8 4'], shared: ['var(--ink-3)', ''], planner: ['var(--ink-2)', '10 3 2 3'] };
 const ago = (ms) => { const m = Math.round(ms / 60000); return m < 1 ? 'just now' : m < 60 ? `${m} min ago` : `${Math.floor(m / 60)} h ${m % 60} min ago`; };
 // Money: every paid Lean run and benchmark, as charged, refreshed every minute.
 /** Home: the question, what is running, money, the milestones and the findings, each linking to its page. */

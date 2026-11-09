@@ -8,7 +8,7 @@ from the smaller group, a cautious choice); rates with Wilson ranges and differe
 Definitions:
 - lemmas: accepted lemma actions, without those the checker marked trivial (they earn nothing);
 - rounds a lab worked: the last round in which it took an action that was not a pass and not empty;
-- built on another lab: results in the library whose proof used another lab's result;
+- built on another lab: results whose proof used another lab's result, counting only the first proof of each statement;
 - never passed: share of labs that did not pass in the run.
 """
 import glob, json, math, re, statistics as st, sys
@@ -32,6 +32,13 @@ def newcombe(k1, n1, k2, n2):
     l1, u1 = wilson(k1, n1); l2, u2 = wilson(k2, n2); p1, p2 = k1 / n1, k2 / n2; d = p1 - p2
     return d, d - math.sqrt((p1 - l1) ** 2 + (u2 - p2) ** 2), d + math.sqrt((u1 - p1) ** 2 + (p2 - l2) ** 2)
 
+def first_proofs(lib):
+    seen, out = set(), []
+    for e in lib:
+        k = ' '.join(e['signature'].split())
+        if k not in seen: seen.add(k); out.append(e)
+    return out
+
 def run(path):
     R = json.load(open(f'{path}/result.json'))
     acts = [json.loads(l) for l in open(f'{path}/actions.jsonl')]
@@ -45,7 +52,7 @@ def run(path):
     return {
         'targets': len(targets), 'spent': spent, 'per $': len(targets) / spent if spent else 0,
         'lemmas': sum(1 for a in acts if a['kind'] == 'lemma' and a.get('ok') and 'trivial' not in (a.get('reason') or '')),
-        'built on another lab': sum(1 for e in lib if any(u in by and by[u]['author'] != e['author'] for u in e.get('uses', []))),
+        'built on another lab': sum(1 for e in first_proofs(lib) if any(u in by and by[u]['author'] != e['author'] for u in e.get('uses', []))),
         'rounds a lab worked': st.mean(worked), 'never passed': 1 - sum(passed) / len(labs),
         'B5': 'B5' in targets, 'A5': 'A5' in targets,
     }

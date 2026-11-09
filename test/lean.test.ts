@@ -271,3 +271,19 @@ test('labs that may not stop lose only the turn they pass', async () => {
   assert.equal(r.actions.filter((a) => a.kind === 'pass').length, 0);
   assert.equal(r.actions.length, 6, 'both labs take a turn in each of the 3 rounds');
 });
+
+test('labs choose with the knowledge reward off: the setups set it, whatever the common options say', async () => {
+  const { Community, firstProofs } = await import('../src/lean/community.ts');
+  const { societyOptions } = await import('../src/lean/societies.ts');
+  const base = { rules: 'shared' as const, agents: ['a', 'b'], budget: 1, rounds: 1, repairs: 0, alpha: 1, mint: 1, effort: 'low' as const, knowledge: 'proof-size' as const };
+  for (const [key, alpha] of [['choose-off-1', 1], ['choose-off-0.2', 0.2]] as const) {
+    const o = societyOptions(key, base);
+    assert.equal(o.knowledge, 'off');
+    assert.equal(o.publishing, 'choose');
+    assert.equal(o.alpha, alpha);
+    assert.match(new Community(o).systemPrompt(0), /A new result earns nothing by itself/);
+  }
+  assert.equal(societyOptions('choose-1', { ...base, knowledge: 'off' }).knowledge, 'proof-size', 'the first labs-choose setups keep the reward');
+  const e = (name: string, signature: string) => ({ name, signature, ns: 'OSO', author: 0, public: true, round: 1, uses: [] });
+  assert.deepEqual(firstProofs([e('a', 'x :  1'), e('b', 'x : 1'), e('c', 'y')]).map((x) => x.name), ['a', 'c'], 'a repeat proof of a statement is left out');
+});

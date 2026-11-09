@@ -177,6 +177,8 @@ export async function listPrices(models: string[]): Promise<Record<string, { inp
 }
 
 const norm = (s: string) => s.replace(/\s+/g, ' ').trim();
+/** The first proof of each statement: proving a target or lemma again is work done twice, not building on others. */
+export const firstProofs = (library: Entry[]) => { const seen = new Set<string>(); return library.filter((e) => !seen.has(norm(e.signature)) && !!seen.add(norm(e.signature))); };
 
 /** Splits an agent's `theorem name signature := proof` into its parts. */
 export function parseLemma(code: string): { name: string; signature: string; proof: string } | null {
@@ -695,7 +697,7 @@ export function stats(r: CommunityResult) {
     noChoice: r.library.filter((e) => e.choice === 'none').length,
     /** The knowledge reward by proof size: mean proof size of accepted lemmas (to spot padding). */
     lemmaSize: (() => { const xs = r.library.filter((e) => !e.target && e.size); return xs.length ? xs.reduce((a, e) => a + e.size!, 0) / xs.length : null; })(),
-    builtOnOthers: r.library.filter((e) => e.uses.some((u) => { const x = r.library.find((y) => `${y.ns}.${y.name}` === u); return x && x.author !== e.author; })).length,
+    builtOnOthers: firstProofs(r.library).filter((e) => e.uses.some((u) => { const x = r.library.find((y) => `${y.ns}.${y.name}` === u); return x && x.author !== e.author; })).length,
     deepestTarget: deepest,
     /** Value gained: the prizes of the targets solved (4 at depth 1, doubling with each level). */
     value: [...solved].reduce((a, id) => a + 4 * 2 ** ((loadTasks().find((t) => t.publicId === id)?.depth ?? 1) - 1), 0),
