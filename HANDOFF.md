@@ -1,5 +1,33 @@
 # Handoff notes
 
+## 2026-11-08 17:32 · Lean M1–M3 done, app rework, flow-back fix, money follows earnings, epochs
+Session: 25a0cabb-cf52-4331-b873-073049b023d5 · branch master · last commit 6a71d76
+
+**Done**
+- App: menu grouped (Simulation, AI agents (Lean), About); Home page (question, running now, money, milestones, findings); Money page with cost per experiment (7fc60c9, 9d0e174, 3c4f3cd).
+- Lean "labs choose what to publish" (PUBLISH yes/no) and a proof-length knowledge reward, reviewed twice (170dadd, e245416, c972b30).
+- Experiments renamed: Spend all (lean-main-b), May quit (lean-part-a), Fair-prompt check (lean-b5), Labs choose what to publish (lean-m3) (3f7631b).
+- Results written up in docs/ai-agent-results.md 4a–4c with 95% ranges from scripts/lean-estimates.py (8da8dd8, afecc49).
+- Flow-back now split by graph weights from lines saved (361b9e7); the earlier money-spent split is documented as a correction, replayed by scripts/lean-resplit.ts (07e4d0e).
+- --follow f: money follows earnings in Lean (a0e8900). Simulation epochs setting and result results/epochs (a14577c, 6a71d76).
+- Pushed up to f24b640 only.
+
+**Decisions**
+- Estimates with 95% ranges, no clear/not-clear verdicts.
+- Lemma counts leave out trivial ones.
+- Labs choose: 99–100% published at every α, because the knowledge reward pays only on publishing.
+
+**Open threads**
+1. Core test: labs choose with the knowledge reward off, α 1 vs α 0.2, 10 each (~$12). Needs the user's go; write the plan in notes first.
+2. B5 at low α as a planned measure (~$16).
+3. M4b: weak OSO community vs one strong model, same money; check first that the problems are hard enough.
+4. Push the local commits since f24b640 when the user says.
+
+**Watch out**
+- Untracked results (bench, m3-smoke, pilot-societies-1, planner-trial-*) are not committed.
+- Credit is about $49.
+- The viewer runs on :8791 (node src/viewer/server.ts); restart it after server.ts or names.ts changes.
+
 ## 2026-10-25 19:29 · model v5, step by step, deep graphs, docs cut, UI fixes
 Session: 325534a2-fc59-4bd5-9a6c-c5af07c5d3b1 · branch master · last commit 5d5841f
 
@@ -34,3 +62,4 @@ Session: 325534a2-fc59-4bd5-9a6c-c5af07c5d3b1 · branch master · last commit 5d
 - Never use `rm` (denied); move files to the scratchpad instead.
 - The viewer server dies on restart from some shells; start it detached: `nohup caffeinate -i node --env-file-if-exists=.env src/viewer/server.ts > /tmp/claude-501/viewer.log 2>&1 & disown`.
 - Puppeteer checks: hash-only navigation does not reload the page; load `about:blank` first.
+
