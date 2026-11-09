@@ -20,4 +20,6 @@ Last updated: 2026-11-08. Plain summaries; each links to its full result. **Find
 
 **Correction (2026-11-08):** every Lean run so far split flow-back by money spent instead of by graph weights (lines saved). Only 1–5% of earnings would have gone elsewhere and the counted measures are unaffected, but labs saw slightly wrong earnings. [Details](ai-agent-results.md)
 
+**Harness (2026-11-08):** about 23% of model replies ran out of length and gave no answer, roughly 39% of the money spent, in every setup. [Details](ai-agent-results.md)
+
 **Not yet tested:** AI labs choosing when keeping is worth something (the new-result reward off), other models, and real mathematics designed by others. See the roadmap.

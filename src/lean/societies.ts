@@ -10,7 +10,7 @@ import { RESULTS_DIR } from '../paths.ts';
 import { loadTasks } from './tasks.ts';
 import { experimentName } from './names.ts';
 
-export interface Society { /** Labs choose what to publish, with the knowledge reward by proof size (roadmap M3). */ choose?: boolean; /** With `choose`: 'off' pays no reward for publishing, so keeping a result costs nothing. */ knowledge?: 'off'; name: string; /** The setup in OSO settings: when others see a result, α, who decides the work. */ params: string; rules: Rules; alpha?: number; /** One lab with everyone's budget. */ single?: boolean; colour: string; slot: 1 | 2 | 3 }
+export interface Society { /** Labs choose what to publish, with the knowledge reward by proof size (roadmap M3). */ choose?: boolean; /** With `choose`: 'off' pays no reward for publishing, so keeping a result costs nothing. */ knowledge?: 'off' | 'flat-mint'; name: string; /** The setup in OSO settings: when others see a result, α, who decides the work. */ params: string; rules: Rules; alpha?: number; /** One lab with everyone's budget. */ single?: boolean; colour: string; slot: 1 | 2 | 3 }
 
 /** OSO is orange, traditional blue; the baselines are greys. */
 export const SOCIETIES: Record<string, Society> = {
@@ -18,6 +18,8 @@ export const SOCIETIES: Record<string, Society> = {
   independent: { name: 'Independent labs', params: 'results never shared · α 1', rules: 'independent', colour: '#8a8984', slot: 3 },
   shared: { name: 'Shared library', params: 'shared at once · α 1', rules: 'shared', colour: '#b3b1aa', slot: 3 },
   planner: { name: 'Planner', params: 'shared at once · α 1 · lab 1 assigns the work', rules: 'planner', colour: '#33322f', slot: 3 },
+  // New results pay their authors a flat amount and nothing flows back: credit without the dependency graph.
+  'pay-lemma': { name: 'Pay per lemma', params: 'shared at once · each new result pays its author · α 1', rules: 'oso', alpha: 1, knowledge: 'flat-mint', colour: '#6f6e69', slot: 3 },
   traditional: { name: 'Traditional', params: 'shared when a target is proved · α 1', rules: 'traditional', colour: '#2a78d6', slot: 1 },
   oso: { name: 'OSO, α 0.8', params: 'shared at once · α 0.8', rules: 'oso', alpha: 0.8, colour: '#eb6834', slot: 2 },
   'oso-0.2': { name: 'OSO, α 0.2', params: 'shared at once · α 0.2', rules: 'oso', alpha: 0.2, colour: '#f2a07b', slot: 2 },
@@ -34,7 +36,7 @@ export const SOCIETIES: Record<string, Society> = {
 export function societyOptions(key: string, base: CommunityOptions): CommunityOptions {
   const s = SOCIETIES[key];
   if (!s) throw new Error(`unknown society ${key}; known: ${Object.keys(SOCIETIES).join(', ')}`);
-  const o: CommunityOptions = { ...base, rules: s.rules, alpha: s.alpha ?? base.alpha, ...(s.choose ? { publishing: 'choose' as const, knowledge: s.knowledge ?? ('proof-size' as const) } : {}) };
+  const o: CommunityOptions = { ...base, rules: s.rules, alpha: s.alpha ?? base.alpha, ...(s.choose ? { publishing: 'choose' as const, knowledge: s.knowledge ?? ('proof-size' as const) } : s.knowledge ? { knowledge: s.knowledge } : {}) };
   if (!s.single) return o;
   const one = <T>(xs?: T[]) => (xs ? xs.slice(0, 1) : undefined);
   // One action per round: the single agent gets as many rounds as all the labs' actions, so money is the only limit.
@@ -98,7 +100,7 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
 
   // The measure fixed in advance (main Lean experiment, 2026-11-07): targets proved by the end of a run, of all posted.
   // Money to reach k targets is kept beside it.
-  const nTargets = loadTasks().filter((t) => t.posted).length;
+  const nTargets = loadTasks(runs[0]?.result.opts.problems).filter((t) => t.posted).length;
   const rows = keys.map((key) => {
     const rs = runs.filter((r) => r.key === key).map((r) => r.result), st = rs.map(stats);
     const to = rs.map((r) => spendTo(r, k) ?? r.opts.budget * r.opts.agents.length);

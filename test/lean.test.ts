@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { banned, checkFile, parseAxioms, parseErrors } from '../src/lean/checker.ts';
 import { extractProof } from '../src/lean/agent.ts';
 import { leanAvailable } from '../src/lean/tasks.ts';
-import { LEAN_REWARDS } from '../src/lean/community.ts';
+import { LEAN_REWARDS, parseReply, proofBody } from '../src/lean/community.ts';
 import { MODEL_VERSION } from '../src/engine/version.ts';
 
 test('the screen rejects unsound, unsafe and banned proofs', () => {
@@ -20,6 +20,25 @@ test('the screen rejects unsound, unsafe and banned proofs', () => {
   assert.ok(banned(':= by exact?').length);
   assert.ok(banned('by simp').length, 'must start with := or |');
   assert.deepEqual(banned('  | 0 => rfl\n  | n + 1 => by simp'), []);
+});
+
+test('replies are read however the lab formats them, and the screen still applies', () => {
+  const fence = '```';
+  const proof = (t: string) => { const { code } = parseReply(t); return code && proofBody(code); };
+  assert.equal(proof(`ACTION: target C3\n${fence}lean\n:= by simp\n${fence}`), ':= by simp');
+  assert.equal(proof('ACTION: target C3\n:= by\n  simp'), ':= by\n  simp', 'no fence');
+  assert.equal(proof(`${fence}lean\nACTION: target C3\n:= by simp\n${fence}`), ':= by simp', 'action inside the fence');
+  assert.equal(proof(`ACTION: target C3\n${fence}lean\n:= by simp`), ':= by simp', 'fence never closed');
+  assert.equal(proof(`ACTION: target C3\n${fence}lean\nnamespace OSO\nnamespace M2\n\ntheorem attempt (x : M2) : x = x := by\n  rfl\n\nend M2\nend OSO\n${fence}`), ':= by\n  rfl', 'namespaces');
+  assert.equal(proof(`ACTION: target C3\n${fence}lean\nby simp\n${fence}`), ':= by simp', 'bare by');
+  assert.equal(proof(`ACTION: target C3\n${fence}lean\ntheorem foo (a : Nat) : a = a := by rfl\n${fence}`), ':= by rfl', 'another name');
+  assert.equal(parseReply('ACTION: lemma\ntheorem foo : 1 = 1 := rfl').code, 'theorem foo : 1 = 1 := rfl', 'lemma without a fence');
+  assert.equal(parseReply('I will think about it.').action, null);
+  assert.equal(parseReply('I will think about it.').code, null);
+  // Only matching outer namespace lines go; anything else reaches the screen as written.
+  assert.ok(banned(proof(`ACTION: target C3\n${fence}lean\nnamespace OSO\n:= by simp\nend Other\n${fence}`)!).length);
+  assert.ok(banned(proof(`ACTION: target C3\n${fence}lean\n:= by simp\n\ntheorem other : True := trivial\n${fence}`)!).length);
+  assert.ok(banned(proof('ACTION: target C3\n:= by sorry')!).length);
 });
 
 test("axioms and errors are read from Lean's output", () => {

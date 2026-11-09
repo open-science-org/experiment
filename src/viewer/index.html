@@ -2069,7 +2069,7 @@ function pilotCheck(pilots) {
     <p class="muted" style="font-size:12px;margin:0 0 8px">One model alone (DeepSeek V4.1 Flash) on each candidate target, with no library and with the lemmas it rests on. Not a community run. ${done} of ${planned} attempts, ${money(spent)}. Keep a target if it is proved at most 1 of 4 times alone and at least 2 of 4 with the lemmas; a rough screen.${stopped}</p>
     <table class="agents"><thead><tr><th>Target</th><th>Alone</th><th>With its lemmas</th><th>Rule</th></tr></thead><tbody>${Object.keys(sum).sort().map((t) => `<tr><td>${esc(t)}</td><td>${cell(sum[t].alone)}</td><td>${cell(sum[t].library)}</td><td>${verdict(sum[t])}</td></tr>`).join('')}</tbody></table></div>`;
 }
-const P_STYLE = { traditional: ['var(--s1)', ''], oso: ['var(--s2)', ''], 'oso-0.2': ['var(--s2)', '6 4'], 'choose-1': ['var(--ink)', ''], 'choose-0.8': ['var(--s2)', ''], 'choose-0.2': ['var(--s2)', '6 4'], 'choose-off-1': ['var(--ink)', '2 3'], 'choose-off-0.2': ['var(--s2)', '2 3'], single: ['var(--ink)', '2 4'], independent: ['var(--ink-2)', '8 4'], shared: ['var(--ink-3)', ''], planner: ['var(--ink-2)', '10 3 2 3'] };
+const P_STYLE = { traditional: ['var(--s1)', ''], oso: ['var(--s2)', ''], 'oso-0.2': ['var(--s2)', '6 4'], 'choose-1': ['var(--ink)', ''], 'choose-0.8': ['var(--s2)', ''], 'choose-0.2': ['var(--s2)', '6 4'], 'pay-lemma': ['var(--ink-2)', '2 4'], 'choose-off-1': ['var(--ink)', '2 3'], 'choose-off-0.2': ['var(--s2)', '2 3'], single: ['var(--ink)', '2 4'], independent: ['var(--ink-2)', '8 4'], shared: ['var(--ink-3)', ''], planner: ['var(--ink-2)', '10 3 2 3'] };
 const ago = (ms) => { const m = Math.round(ms / 60000); return m < 1 ? 'just now' : m < 60 ? `${m} min ago` : `${Math.floor(m / 60)} h ${m % 60} min ago`; };
 // Money: every paid Lean run and benchmark, as charged, refreshed every minute.
 /** Home: the question, what is running, money, the milestones and the findings, each linking to its page. */
@@ -2375,6 +2375,8 @@ function leanResults(d) {
   const fin = (s, col) => s.series.map((r) => r.at(-1)[col]), mean = (a) => a.reduce((p, q) => p + q, 0) / a.length;
   const se = (a) => (a.length > 1 ? Math.sqrt(a.reduce((p, q) => p + (q - mean(a)) ** 2, 0) / (a.length - 1) / a.length) : 0);
   const rangeOf = (a) => (a.length < 2 ? null : [Math.max(0, mean(a) - T95(a.length) * se(a)), mean(a) + T95(a.length) * se(a)]);
+  // The count the page opens on, by a rule that does not depend on which setup wins: the highest count more than half the runs of every setup reach.
+  const kDefault = Math.max(1, ...d.targets.map((_, j) => j + 1).filter((k) => sets.every((s) => s.series.filter((r) => r.some((row) => row[3] >= k)).length * 2 > s.series.length)));
   const qBtn = (x, n) => `<button type="button" class="question" data-q="${n}">${esc(x.text)}</button>`;
   // The answer first: targets proved at the end, by setup.
   const ends = sets.map((s) => ({ s, a: fin(s, 3), r: rangeOf(fin(s, 3)) }));
@@ -2383,7 +2385,7 @@ function leanResults(d) {
     <h3 style="margin:0 0 8px;font-size:15px"><label>Money spent to reach <select id="l-k"></select> of the ${d.targets.length} targets</label></h3>
     <p style="font-size:13px;margin:0 0 8px">Median, all labs together:</p>
     <div class="tiles" id="l-a-tiles"></div>
-    <p class="muted" style="font-size:12px;margin:8px 0 0">${nRuns.length === 1 ? `${nRuns[0]} run${nRuns[0] === 1 ? '' : 's'} per setup` : `${sets.map((s) => `${esc(s.name)} ${s.series.length}`).join(', ')} runs`}, with a range of at least 95% below each median.<span id="l-a-note"></span> This measure was chosen after the runs up to 2026-11-08, so read those as a lead. <a href="#/doc/results/community/${esc(d.id)}/summary.md">The run summary</a>.</p>
+    <p class="muted" style="font-size:12px;margin:8px 0 0">${nRuns.length === 1 ? `${nRuns[0]} run${nRuns[0] === 1 ? '' : 's'} per setup` : `${sets.map((s) => `${esc(s.name)} ${s.series.length}`).join(', ')} runs`}, with a range of at least 95% below each median.<span id="l-a-note"></span> The page opens on the highest count that more than half the runs of every setup reach. This measure was chosen after the runs up to 2026-11-08, so read those as a lead. <a href="#/doc/results/community/${esc(d.id)}/summary.md">The run summary</a>.</p>
     <p class="muted" style="font-size:12px;margin:4px 0 0">Targets proved by the end of a run: ${ends.map((e) => `${esc(e.s.name)} ${mean(e.a).toFixed(1)}${e.r ? ` (${e.r[0].toFixed(1)} to ${e.r[1].toFixed(1)})` : ''}`).join(' · ')}.</p></div>
     <div class="pane" style="margin-bottom:12px">
     <h3 style="margin:0 0 6px;font-size:15px">Main questions</h3>
@@ -2460,7 +2462,7 @@ function leanResults(d) {
       $('l-at').value = j; $('l-at-txt').textContent = `At ${ks[j]} target${ks[j] === 1 ? '' : 's'}`;
       $('l-vals').innerHTML = lines.map((L) => { const p = L.pts[j]; return `<tr><td><span class="swatch" style="background:${L.s.colour}"></span>${esc(L.s.name)}</td><td>${end(p.m)} <span class="muted">(${p.hit} of ${p.runs} runs got there)</span></td><td>${rangeTxt(p)}</td></tr>`; }).join('');
     };
-    $('l-at').max = n - 1; $('l-at').oninput = () => writeVals(Number($('l-at').value)); writeVals(Math.max(0, Math.min(n, Number($('l-k').value) || Math.min(5, n)) - 1));
+    $('l-at').max = n - 1; $('l-at').oninput = () => writeVals(Number($('l-at').value)); writeVals(Math.max(0, Math.min(n, Number($('l-k').value) || kDefault) - 1));
     el.onpointermove = (ev) => {
       const box = el.getBoundingClientRect(), px = ((ev.clientX - box.left) * W) / box.width;
       if (px < l || px > l + pw) { cross.style.display = 'none'; tip.hidden = true; return; }
@@ -2554,13 +2556,13 @@ function leanResults(d) {
     $('l-cnote').textContent = `Thick lines: the mean of every finished run of “${d.name}” (${sets.map((s) => `${s.name} ${s.series.length}`).join(', ')})${share ? '; the share of runs that had proved it by then' : ''}.${$('l-band').checked ? (share ? ' Shaded: a 95% range for the share of runs (Wilson).' : ' Shaded: a 95% range of the mean (± t standard errors; wider when there are few runs).') : ''}${$('l-band').checked && sets.some((s) => s.series.length < 2) ? ' A setup with one run has no range.' : ''}${$('l-each').checked && !share ? ' Thin lines: single runs.' : ''}${logx || logy ? ' On a log scale, zero cannot be drawn: values below the axis sit on it.' : ''}`;
   };
   draw();
-  const nTargets = d.targets.length, kAsked = Number(q.get('k')), kv = Number.isInteger(kAsked) && kAsked >= 1 && kAsked <= nTargets ? kAsked : Math.min(5, nTargets);
+  const nTargets = d.targets.length, kAsked = Number(q.get('k')), kv = Number.isInteger(kAsked) && kAsked >= 1 && kAsked <= nTargets ? kAsked : kDefault;
   const reach = (k) => {
     const usd = (x) => `$${x.toFixed(3)}`, rnd = (x) => (x % 1 ? x.toFixed(1) : String(x));
     const cellOf = (xs, f) => { const [m, lo, hi] = medianRange(xs); if (lo === null) return `${m === Infinity ? 'not reached' : f(m)} <span class="muted">(too few runs for a range)</span>`; return m === Infinity ? (lo === Infinity ? 'not reached' : `not reached <span class="muted">(from ${f(lo)})</span>`) : `${f(m)} <span class="muted">(${f(lo)} to ${hi === Infinity ? 'not reached' : f(hi)})</span>`; };
     return sets.map((s) => {
       const at = s.series.map((r) => r.find((row) => row[3] >= k)), hit = at.filter(Boolean).length, [lo, hi] = wilson(hit, at.length);
-      return `<tr><td><span class="swatch" style="background:${s.colour}"></span>${esc(s.name)}</td><td>${hit} of ${at.length} <span class="muted">(${Math.round(lo * 100)}–${Math.round(hi * 100)}%)</span></td><td>${cellOf(at.map((row) => row?.[0] ?? Infinity), usd)}</td><td>${cellOf(at.map((row) => row?.[2] ?? Infinity), rnd)}</td><td>${cellOf(at.map((row) => row?.[1] ?? Infinity), rnd)}</td></tr>`;
+      return `<tr><td><span class="swatch" style="background:${s.colour}"></span>${esc(s.name)}</td><td>${hit} of ${at.length} <span class="muted">(${Math.round(lo * 100)}–${Math.round(hi * 100)}%)</span></td><td>${cellOf(at.map((row) => row?.[0] ?? Infinity), usd)}</td><td>${cellOf(at.map((row) => row?.[2] ?? Infinity), rnd)}</td><td>${cellOf(at.map((row) => row?.[1] ?? Infinity), rnd)}</td><td>${cellOf(at.map((row) => row?.[10] ?? Infinity), rnd)}</td></tr>`;
     }).join('');
   };
   // The answer at the top: money to reach k targets, for the k chosen in the table.
@@ -2572,8 +2574,8 @@ function leanResults(d) {
   };
   const drawReach = (k) => { $('l-reach-k').textContent = k; $('l-reach-rows').innerHTML = reach(k); drawAnswer(k); };
   $('l-reach').innerHTML = `<div class="pane" style="overflow-x:auto;margin-bottom:12px"><h3 style="margin:0 0 8px;font-size:15px">Cost to reach <span id="l-reach-k"></span> targets</h3>
-    <table class="agents"><thead><tr><th>Setup</th><th>Runs that reached it</th><th>Median money, all labs</th><th>Median tries, all labs</th><th>Median round</th></tr></thead><tbody id="l-reach-rows"></tbody></table>
-    <p class="muted" style="font-size:12px;margin:8px 0 0">${d.setups[0].options?.counted?.length ? `<b>This table and the graph count all ${nTargets} posted targets; the Progress page counts only ${esc(d.setups[0].options.counted.join(', '))}.</b> ` : ''}Every run counts: a run that never got there is "not reached", so no setup is flattered by leaving it out. Ranges cover at least 95%; under 6 runs there are too few for one. For runs up to 2026-11-08 this was looked at after the results, so read it as a lead.</p></div>`;
+    <table class="agents"><thead><tr><th>Setup</th><th>Runs that reached it</th><th>Median money, all labs</th><th>Median tries, all labs</th><th>Median round</th><th>Median minutes</th></tr></thead><tbody id="l-reach-rows"></tbody></table>
+    <p class="muted" style="font-size:12px;margin:8px 0 0">${d.setups[0].options?.counted?.length ? `<b>This table and the graph count all ${nTargets} posted targets; the Progress page counts only ${esc(d.setups[0].options.counted.join(', '))}.</b> ` : ''}Every run counts: a run that never got there is "not reached", so no setup is flattered by leaving it out. Minutes depend partly on how fast the model provider answered. Ranges cover at least 95%; under 6 runs there are too few for one. For runs up to 2026-11-08 this was looked at after the results, so read it as a lead.</p></div>`;
   $('l-k').innerHTML = Array.from({ length: nTargets }, (_, n) => `<option value="${n + 1}"${n + 1 === kv ? ' selected' : ''}>${n + 1}</option>`).join('');
   drawReach(kv);
   $('l-k').onchange = () => { const p = params(); p.set('tab', 'results'); p.set('exp', d.id); p.set('k', $('l-k').value); history.replaceState(null, '', '#/lean?' + p); drawReach(Number($('l-k').value)); };

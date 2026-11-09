@@ -107,6 +107,7 @@ if (cmd === 'community') {
     conjectureBounty: Number(pick('conjectureBounty', '1')),
     mayStop: pick('may-stop', 'yes') !== 'no',
     counted: (cfg.counted as string[] | undefined) ?? (value('counted', '') ? value('counted', '').split(',') : []),
+    ...(pick('problems', process.env.OSO_PROBLEMS ?? '') === 'hard' ? { problems: 'hard' as const } : {}),
   };
   const rules = pick('rules', 'traditional,oso').split(',') as ('traditional' | 'oso')[];
   // The next experiment: several societies with the same agents and total money (src/lean/societies.ts).

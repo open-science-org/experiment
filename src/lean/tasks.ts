@@ -34,17 +34,18 @@ export interface Task {
 export const FREE = ['OSO.u_succ_succ'];
 
 // The harder targets are a separate set, so that the runs made on the main set keep their meaning.
-const HARD = process.env.OSO_PROBLEMS === 'hard';
-const FILES: [string, Task['area']][] = [['A', 'A'], ['B', 'B'], ['C', 'C'], ['Cross', 'cross'], ...(HARD ? [['Hard', 'cross'] as [string, Task['area']]] : [])];
+export type Problems = 'main' | 'hard';
+const DEFAULT_PROBLEMS: Problems = process.env.OSO_PROBLEMS === 'hard' ? 'hard' : 'main';
+const filesOf = (problems: Problems): [string, Task['area']][] => [['A', 'A'], ['B', 'B'], ['C', 'C'], ['Cross', 'cross'], ...(problems === 'hard' ? [['Hard', 'cross'] as [string, Task['area']]] : [])];
 
 export function leanAvailable(): boolean {
   return existsSync(join(LEAN_DIR, 'Reference', 'A.lean')) && existsSync(join(LEAN_DIR, 'reference-dag.md'));
 }
 
 /** Theorem statements and proofs from the reference sources. */
-export function parseReference(): Map<string, { ns: string; short: string; signature: string; reference: string }> {
+export function parseReference(problems: Problems = DEFAULT_PROBLEMS): Map<string, { ns: string; short: string; signature: string; reference: string }> {
   const out = new Map<string, { ns: string; short: string; signature: string; reference: string }>();
-  for (const [file] of FILES) {
+  for (const [file] of filesOf(problems)) {
     const lines = readFileSync(join(LEAN_DIR, 'Reference', `${file}.lean`), 'utf8').split('\n');
     let ns = '';
     for (let i = 0; i < lines.length; i++) {
@@ -68,10 +69,10 @@ export function parseReference(): Map<string, { ns: string; short: string; signa
 }
 
 /** All tasks, in depth order, with dependencies from reference-dag.md. */
-export function loadTasks(): Task[] {
-  const src = parseReference();
+export function loadTasks(problems: Problems = DEFAULT_PROBLEMS): Task[] {
+  const src = parseReference(problems);
   const rows: { depth: number; name: string; area: Task['area']; posted: string; uses: string[] }[] = [];
-  for (const line of ['reference-dag.md', ...(HARD ? ['reference-dag-hard.md'] : [])].flatMap((f) => readFileSync(join(LEAN_DIR, f), 'utf8').split('\n'))) {
+  for (const line of ['reference-dag.md', ...(problems === 'hard' ? ['reference-dag-hard.md'] : [])].flatMap((f) => readFileSync(join(LEAN_DIR, f), 'utf8').split('\n'))) {
     if (!/^\| \d/.test(line)) continue;
     const [depth, name, area, posted, uses] = line.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim());
     const q = (n: string) => `OSO.${n.replace(/`/g, '')}`;
@@ -122,6 +123,9 @@ export const PLAIN: Record<string, string> = {
   B5: 'Merge sort and insertion sort give exactly the same list, for any list of numbers.',
   X2: 'Sorting the first n terms of the sequence changes nothing: the sequence is already in increasing order.',
   A5: 'The greatest common divisor of two terms is the term at the gcd of their positions: gcd(u(m), u(n)) = u(gcd(m, n)).',
+  H4: 'Merging two merge-sorted lists gives the merge sort of the two lists joined together.',
+  H5: 'Merge sort leaves a list unchanged exactly when the list is already sorted.',
+  H6: 'A doubling formula: u(2n) is u(n) times the trace of the n-th power of the sequence\'s matrix.',
 };
 export const AREAS: Record<string, string> = {
   A: 'A number sequence: u(0) = 0, u(1) = 1, u(n+2) = 5·u(n+1) + 3·u(n), so 0, 1, 5, 28, 155, …',

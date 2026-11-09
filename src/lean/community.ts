@@ -19,7 +19,7 @@
 import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { check, type CheckOptions } from './checker.ts';
-import { definitions, FREE, LEAN_DIR, loadTasks, parseReference, type Task } from './tasks.ts';
+import { definitions, FREE, LEAN_DIR, loadTasks, parseReference, type Problems, type Task } from './tasks.ts';
 import { OPENROUTER_API, type Chat, type Usage } from './agent.ts';
 import { referenceProof } from './selftest.ts';
 import { lineChart } from '../report/figures.ts';
@@ -112,6 +112,8 @@ export interface CommunityOptions {
   conjectureBounty?: number;
   /** The targets the result is judged on (public ids); all if empty. */
   counted?: string[];
+  /** Which problem set: the main 8 targets (default) or those plus the harder targets (private files; see lean/reference-dag-hard.md). */
+  problems?: Problems;
   /** Enforced persona features, per lab: repairs per action, reasoning effort, and whether it sees others' results. */
   repairsByLab?: number[];
   effortByLab?: ('low' | 'medium' | 'high')[];
@@ -192,6 +194,25 @@ export function parseLemma(code: string): { name: string; signature: string; pro
   return { name: m[1], signature: rest.slice(0, cut).trim(), proof: rest.slice(cut).replace(/^\n/, '') };
 }
 
+/** A reply's action and its code. Labs often leave out the code fence, put the ACTION line inside it, or wrap the proof in
+ *  namespace lines; these are read the same way, and the code then goes through the same checks. */
+export function parseReply(text: string): { action: RegExpExecArray | null; code: string | null } {
+  const action = /ACTION:\s*(target|conjecture|lemma)\s*([A-Za-z0-9-]*)/i.exec(text);
+  const fenced = [...text.matchAll(/```(?:lean4?|)\s*\n([\s\S]*?)(?:```|$)/g)].map((m) => m[1]).pop();
+  const raw = fenced ?? (action ? text.slice(action.index).split('\n').slice(1).join('\n') : '');
+  let lines = raw.split('\n').filter((l) => !/^\s*ACTION:/i.test(l));
+  const trim = () => { while (lines.length && !lines[0].trim()) lines.shift(); while (lines.length && !lines.at(-1)!.trim()) lines.pop(); };
+  trim();
+  for (let open = /^\s*namespace\s+([\w.]+)\s*$/.exec(lines[0] ?? ''); open && new RegExp(`^\\s*end\\s+${open[1].replace(/\./g, '\\.')}\\s*$`).test(lines.at(-1) ?? ''); open = /^\s*namespace\s+([\w.]+)\s*$/.exec(lines[0] ?? '')) { lines = lines.slice(1, -1); trim(); }
+  return { action, code: lines.length ? lines.join('\n') : null };
+}
+
+/** A posted target's proof from a lab's code: any `theorem name statement` in front is dropped, and a bare `by` gets its `:=`. */
+export const proofBody = (code: string) => {
+  const body = code.replace(/^\s*(?:theorem|lemma)\s+[\w'.]+\b[\s\S]*?(?=:=|\n\s*\|)/, '');
+  return /^\s*by\b/.test(body) ? ':= ' + body.trimStart() : body;
+};
+
 export class Community {
   opts: CommunityOptions;
   targets: Task[];
@@ -213,7 +234,7 @@ export class Community {
 
   constructor(opts: CommunityOptions) {
     this.opts = opts;
-    const tasks = loadTasks();
+    const tasks = loadTasks(opts.problems);
     this.targets = tasks.filter((t) => t.posted);
     this.conjectures = (opts.conjectures ?? []).map((id, k) => {
       const t = tasks.find((x) => x.publicId === id);
@@ -224,7 +245,7 @@ export class Community {
     this.spent = opts.agents.map(() => 0);
     this.released = opts.agents.map(() => 0);
     this.recent = opts.agents.map(() => 0);
-    const ref = parseReference();
+    const ref = parseReference(opts.problems);
     this.free = FREE.map((name) => ({ name, ...ref.get(name)! }));
   }
 
@@ -328,7 +349,12 @@ ${definitions().trim()}
 
 Proof rules: core lemmas and tactics such as simp, omega, decide, induction, cases and rw may be used. Not allowed: sorry, admit, native_decide, grind, search tactics (exact?, apply?), commands and set_option. Cite library results by the names shown. A lemma that a single basic tactic proves (rfl, decide, simp, omega) counts as trivial: you may cite it${M ? ', but it earns no mint' : ''}.
 
-Each turn, take exactly one action, and reply with exactly one \`\`\`lean code block:
+Each turn, take exactly one action, and reply with exactly one \`\`\`lean code block. A reply looks like this:
+ACTION: target <ID>
+\`\`\`lean
+:= by
+  simp
+\`\`\`
 - To prove a posted target, start your reply with the line ACTION: target <ID>, and give the proof that completes \`theorem attempt <statement>\` (starting with := or with | match arms).
 ${this.conjectures.length ? `- To prove a posted conjecture, start your reply with the line ACTION: conjecture <ID>, and give the proof that completes \`theorem attempt <statement>\` (starting with := or with | match arms). A conjecture is an intermediate result the community wants; it earns a bounty of ${o.conjectureBounty ?? 1} when it is published, and can then be cited by the name shown.\n` : ''}- To state and prove a new lemma, start with ACTION: lemma, and give the whole declaration: \`theorem <name> <statement> := <proof>\`. Choose lemmas that bring a target within reach.
 ${o.mayStop === false ? '- You keep working until your budget or the rounds run out: you cannot stop early. Use every turn to prove something useful.' : '- If nothing seems worth your budget, reply ACTION: pass. You stop for the rest of the run and keep what you have not spent.'}${persona ? `\n\n${persona}` : ''}`;
@@ -431,11 +457,11 @@ ${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still w
         if (this.opts.mayStop === false) { reason = 'tried to pass, which is not allowed: turn skipped'; transcript.push({ ...(reply.reasoning ? { reasoning: reply.reasoning } : {}), text, proof: null, errors: [] }); break; }
         kind = 'pass'; reason = 'passed'; this.passed.add(i); transcript.push({ ...(reply.reasoning ? { reasoning: reply.reasoning } : {}), text, proof: null, errors: [] }); break;
       }
-      const action = /ACTION:\s*(target|conjecture|lemma)\s*([A-Za-z0-9-]*)/i.exec(text);
-      const code = [...text.matchAll(/```(?:lean4?|)\s*\n([\s\S]*?)```/g)].map((m) => m[1].replace(/\s+$/, '')).pop() ?? null;
+      const { action, code } = parseReply(text);
       let errors: string[] = [];
       if (reply.stop === 'refusal') { reason = 'declined'; transcript.push({ ...(reply.reasoning ? { reasoning: reply.reasoning } : {}), text, proof: null, errors: ['declined'] }); break; }
-      if (!action || !code) errors = ['Start with ACTION: target <ID> or ACTION: lemma, then one ```lean code block.'];
+      if (!text.trim()) errors = ['Your reply ran out of length before it gave an answer. Think for less, then give the ACTION line and the code block.'];
+      else if (!action || !code) errors = ['Start with ACTION: target <ID> or ACTION: lemma, then one ```lean code block.'];
       else if (action[1].toLowerCase() === 'conjecture') {
         kind = 'conjecture'; target = action[2].toUpperCase();
         const k = this.conjectures.find((x) => x.cid === target);
@@ -444,7 +470,7 @@ ${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still w
           const visibleDone = this.provedConjecture(k.cid);
           if (visibleDone && (visibleDone.public || visibleDone.author === i)) errors = [`${k.cid} is already proved: cite it as ${visibleDone.name}.`];
           else {
-            const r = await check(k, code.replace(/^\s*theorem\s+attempt\b[\s\S]*?(?=:=|\n\s*\|)/, ''), { library: this.checkLibrary(i), allowGrind: this.opts.allowGrind });
+            const r = await check(k, proofBody(code), { library: this.checkLibrary(i), allowGrind: this.opts.allowGrind });
             errors = r.errors;
             if (r.ok) {
               ok = true;
@@ -461,13 +487,13 @@ ${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still w
         const t = this.targets.find((x) => x.publicId === target);
         if (!t) errors = [`There is no target ${target}.`];
         else {
-          const r = await check(t, code.replace(/^\s*theorem\s+attempt\b[\s\S]*?(?=:=|\n\s*\|)/, ''), { library: this.checkLibrary(i), allowGrind: this.opts.allowGrind });
+          const r = await check(t, proofBody(code), { library: this.checkLibrary(i), allowGrind: this.opts.allowGrind });
           errors = r.errors;
           if (r.ok) {
             ok = true;
             const e: Entry = { name: this.uniqueName(`target_${t.publicId}`), ns: t.ns, signature: t.signature, author: i, target: t.publicId, public: false, round, uses: r.uses.filter((u) => !FREE.includes(u)) };
             const already = this.solved(t.publicId);
-            e.size = proofSize(code.replace(/^\s*theorem\s+attempt\b[\s\S]*?(?=:=|\n\s*\|)/, '').replace(/^\s*:=/, ''));
+            e.size = proofSize(proofBody(code).replace(/^\s*:=/, ''));
             this.library.push(e);
             if (already) reason = 'already solved by another lab: duplicate';
             else if (this.opts.rules === 'traditional' || this.opts.publishing === 'choose') this.publishBundle(e, round);
@@ -561,7 +587,7 @@ ${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still w
 
 /** A stand-in agent that plays from the reference proofs: tests the mechanics without a model. */
 export function referenceAgent(com: Community, i: number): Chat {
-  const tasks = loadTasks();
+  const tasks = loadTasks(com.opts.problems);
   const failed = new Set<string>();
   let last: Task | undefined;
   return async () => {
@@ -634,7 +660,7 @@ export async function runCommunity(opts: CommunityOptions, chatFor: (com: Commun
       }
       appendFileSync(file, JSON.stringify(a) + '\n');
       const solved = com.targets.filter((t) => com.solved(t.publicId)).length;
-      log(`  round ${round} · agent ${i + 1} (${a.model.split('/').pop()}): ${a.kind === 'target' ? `target ${a.target}` : a.kind === 'conjecture' ? `conjecture ${a.target}` : a.kind === 'lemma' ? `lemma ${a.name ?? '?'}` : a.kind === 'pass' ? 'passed' : 'no action'} ${a.ok ? 'accepted' : 'failed'}${a.reason ? ` (${a.reason})` : ''} · $${costOf(a).toFixed(3)} · ${solved}/8 targets solved`);
+      log(`  round ${round} · agent ${i + 1} (${a.model.split('/').pop()}): ${a.kind === 'target' ? `target ${a.target}` : a.kind === 'conjecture' ? `conjecture ${a.target}` : a.kind === 'lemma' ? `lemma ${a.name ?? '?'}` : a.kind === 'pass' ? 'passed' : 'no action'} ${a.ok ? 'accepted' : 'failed'}${a.reason ? ` (${a.reason})` : ''} · $${costOf(a).toFixed(3)} · ${solved}/${com.targets.length} targets solved`);
     }).catch((e) => {
       const msg = (e as Error).message;
       log(`  round ${round} · agent ${i + 1}: error ${msg}`);
@@ -662,7 +688,8 @@ export function readCommunity(runId: string): CommunityResult {
 
 /** Targets solved by community spend, in the order actions finished. */
 /** The targets a result is judged on. */
-export const countedOf = (r: CommunityResult) => (r.opts.counted?.length ? r.opts.counted : loadTasks().filter((t) => t.posted).map((t) => t.publicId));
+const postedCount = (r: CommunityResult) => loadTasks(r.opts.problems).filter((t) => t.posted).length;
+export const countedOf = (r: CommunityResult) => (r.opts.counted?.length ? r.opts.counted : loadTasks(r.opts.problems).filter((t) => t.posted).map((t) => t.publicId));
 
 export function progress(r: CommunityResult): [number, number][] {
   const counted = new Set(countedOf(r));
@@ -681,7 +708,7 @@ export function progress(r: CommunityResult): [number, number][] {
 export function stats(r: CommunityResult) {
   const lemmas = r.actions.filter((a) => a.kind === 'lemma');
   const solved = new Set(r.actions.filter((a) => a.kind === 'target' && a.ok).map((a) => a.target));
-  const deepest = Math.max(0, ...[...solved].map((id) => loadTasks().find((t) => t.publicId === id)?.depth ?? 0));
+  const deepest = Math.max(0, ...[...solved].map((id) => loadTasks(r.opts.problems).find((t) => t.publicId === id)?.depth ?? 0));
   return {
     rules: r.opts.rules,
     targetsSolved: solved.size,
@@ -700,7 +727,7 @@ export function stats(r: CommunityResult) {
     builtOnOthers: firstProofs(r.library).filter((e) => e.uses.some((u) => { const x = r.library.find((y) => `${y.ns}.${y.name}` === u); return x && x.author !== e.author; })).length,
     deepestTarget: deepest,
     /** Value gained: the prizes of the targets solved (4 at depth 1, doubling with each level). */
-    value: [...solved].reduce((a, id) => a + 4 * 2 ** ((loadTasks().find((t) => t.publicId === id)?.depth ?? 1) - 1), 0),
+    value: [...solved].reduce((a, id) => a + 4 * 2 ** ((loadTasks(r.opts.problems).find((t) => t.publicId === id)?.depth ?? 1) - 1), 0),
     spent: r.spent.reduce((a, b) => a + b, 0),
     budget: r.opts.budget * r.opts.agents.length,
     actions: r.actions.length,
@@ -742,7 +769,7 @@ export function writeCommunityComparison(id: string, runs: { runId: string; resu
   }));
   const o = runs[0].result.opts;
   const rows = curves.map((c) => ({
-    rules: label(c.result.opts.rules), 'targets solved': `${c.st.targetsSolved} of 8`, 'deepest target': c.st.deepestTarget,
+    rules: label(c.result.opts.rules), 'targets solved': `${c.st.targetsSolved} of ${postedCount(c.result)}`, 'deepest target': c.st.deepestTarget,
     spent: `$${c.st.spent.toFixed(2)} of $${c.st.budget.toFixed(2)}`, 'value gained': c.st.value, 'ROI (value per $)': c.st.spent > 0 ? Math.round(c.st.value / c.st.spent) : '–', actions: c.st.actions, 'lemmas accepted': c.st.lemmasAccepted,
     'lemmas proved twice': c.st.lemmasDuplicate, 'targets proved twice': c.st.targetsDuplicate, trivial: c.st.trivial, 'failed attempts': c.st.failed, 'never published': c.st.neverPublished,
   }));
@@ -856,7 +883,7 @@ export function writeRaceSeries(id: string, pairs: Pair[], designIn: string | Ra
   const ms = (xs: number[]) => `${f1(mean(xs))} ± ${f1(sd(xs))}`;
   const rows = [['traditional', T], ['oso', O]].map(([k, S]) => {
     const st = S as ReturnType<typeof stats>[];
-    return `| ${k === 'oso' ? 'OSO' : 'Traditional'} | ${ms(st.map((x) => x.countedSolved))} of ${counted.length} | ${ms(st.map((x) => x.targetsSolved))} of 8 | $${f2(m(st, 'spent'))} | ${ms(st.map((x) => x.conjecturesProved))} | ${ms(st.map((x) => x.lemmasDuplicate))} | ${ms(st.map((x) => x.builtOnOthers))} |`;
+    return `| ${k === 'oso' ? 'OSO' : 'Traditional'} | ${ms(st.map((x) => x.countedSolved))} of ${counted.length} | ${ms(st.map((x) => x.targetsSolved))} of ${postedCount(pairs[0].oso)} | $${f2(m(st, 'spent'))} | ${ms(st.map((x) => x.conjecturesProved))} | ${ms(st.map((x) => x.lemmasDuplicate))} | ${ms(st.map((x) => x.builtOnOthers))} |`;
   });
   const perRun = pairs.map((p, n) => `| ${p.rep} | ${T[n].countedSolved} | $${f2(T[n].spent)} | ${O[n].countedSolved} | $${f2(O[n].spent)} | ${T[n].lemmasDuplicate} | ${O[n].lemmasDuplicate} | ${O[n].builtOnOthers} |`);
   const o = pairs[0].oso.opts;

@@ -4,15 +4,17 @@ Last updated: 2026-11-08. Every result here has its own page under `results/` (t
 
 ## TL;DR
 
-Checked after every run; last checked 2026-11-08, after Labs choose (M3).
+Checked after every run; last checked 2026-11-08, after the difficulty check of the harder targets (a pilot).
 
 - **Lemmas help weak models.** DeepSeek proves 4 of 16 targets alone, 12 of 16 with the lemmas they need.
 - **Sharing lets labs build on each other** (Spend all: 2.2 results a run in the shared library, 0.4 under traditional), but it has not raised targets proved. A plain shared library gets this too, so it is not unique to OSO. **Repeated work is not a general result:** traditional labs proved the same lemma about 20 times a run in the small cheap race (5 runs), but only 0.4 times in Spend all (20 runs per setup; shared library 0.2).
 - **Flow-back (OSO's own rule): no clear gain in targets proved yet.** Against the shared library, OSO α 0.2 proved about the same: +0.4 (Spend all), +0.5 (Fair-prompt check), +0.0 (May quit), all with ranges that include zero.
 - **Flow-back goes with more lemmas in most experiments** (about twice as many with fair prompts), and more of them get used: lemmas a later proof cites rose by 1 to 5 a run at α 0.2 (section 4d). About half of all lemmas are never cited, and in Labs choose α 1 labs proved as many once publishing paid a small reward.
-- **Lead, not a finding: low α gets there sooner.** OSO α 0.2 reached 5 of the 8 targets for the least money in all four experiments (section 4e), but most ranges overlap, and the count of 5 was picked after looking.
+- **Lead, not a finding: low α gets there sooner.** OSO α 0.2 reached 5 of the 8 targets for the least money in all four experiments (section 4e), but most ranges overlap, and the count of 5 was picked after looking. At 4 and 6 targets the order is mixed: at 6 in Spend all the shared library was cheapest.
 - **Lead, not a finding:** the hardest target, B5, comes up more at low α, but the gap shrank with fair prompts and B5 was picked after looking.
 - **Against OSO:** labs did not share more with flow-back (they published nearly everything at every α), and did not clearly keep working longer (α 0.8: about 2 rounds longer; α 0.2: no clear change).
+- **Money was wasted in every run so far.** About 23% of model replies ran out of length while thinking and gave no answer, costing roughly 39% of the money (section 5). It affects all setups, more in the shared library (27%) than at α 0.2 (23%).
+- **Pilot: three harder targets kept.** Alone the model proved none of 6 candidates (0 of 24 attempts). With the lemmas, 3 passed the rule fixed in advance (H4 and H5 4 of 4, H6 3 of 4); 3 were still too hard (0 of 4 each). Four attempts each is a rough screen.
 - **Why the tests may be blind:** five of the 8 targets are nearly always proved, so "targets proved" barely moves. Flow-back should matter most on deep problems, not tested yet.
 - **The setup checks out** (proof checker, fault tests, public benchmark). Flow-back was split by money spent instead of lines saved until 2026-11-08; the counts stand (correction below).
 
@@ -267,6 +269,12 @@ Median money to reach 5 of the 8 targets (range covering at least 95%):
 | [Public benchmark](../results/bench/or-gptoss120b-50x4/summary.md) (FormalMATH-Lite, 50 problems, GPT-OSS-120B) | 12 of 50 with one try, 17 with any of 4, for $0.10; **no proof lost by our harness**; 2 benchmark statements look broken |
 
 Faults found and fixed on the way: wrong error labels, proofs without a code block, planner lines dropped, dotted lemma names, replies cut off partway, and runs spoiled by the laptop sleeping. Budgets count the actual charge since 2026-10-21.
+
+### Replies that gave no answer
+
+Each model reply may use up to 32,000 tokens, including its thinking. In the four main experiments 5,646 of 24,902 replies (23%) used all of them and gave no text at all. Each cost about $0.0066, so about $37 of the $94.63 spent. All setups are affected: 27% of replies in the shared library, 25% traditional, 22–23% OSO, 16–18% Labs choose. Costs on this page include this waste.
+
+A further 15% or so of replies had an answer that never reached Lean, because of its format. From 2026-11-08 these are read more tolerantly, and the prompt shows an example; the same checks still apply. Runs after that date are not directly comparable with earlier ones on cost.
 
 ## 6. What is still open
 

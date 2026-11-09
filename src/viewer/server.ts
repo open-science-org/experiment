@@ -272,7 +272,7 @@ function pilotRun(id: string) {
   if (!/^[\w.-]+$/.test(id)) throw new Error('bad run id');
   const dir = join(LEAN_DIR, 'runs', id);
   const opts = JSON.parse(readFileSync(join(dir, 'options.json'), 'utf8'));
-  const tasks = loadTasks();
+  const tasks = loadTasks(opts.problems ?? (id.startsWith('hard-check') ? 'hard' : 'main'));
   const pid = new Map(tasks.map((t) => [t.name, t.publicId]));
   return {
     id, options: opts,
@@ -302,8 +302,8 @@ async function models() {
  */
 /** The Lean experiment explained: the problems, the society experiments, each setup's labs and exact prompts. */
 function leanData(exp: string) {
-  const tasks = loadTasks();
-  const label = new Map(tasks.map((t) => [t.name, t.posted ? t.publicId : t.short]));
+  let tasks = loadTasks('main');
+  let label = new Map(tasks.map((t) => [t.name, t.posted ? t.publicId : t.short]));
   const below = (name: string, seen = new Set<string>()): Set<string> => {
     for (const u of tasks.find((t) => t.name === name)?.uses ?? []) if (!seen.has(u)) { seen.add(u); below(u, seen); }
     return seen;
@@ -327,6 +327,10 @@ function leanData(exp: string) {
   // By default the newest experiment with a finished run, so the page opens on results, not an empty table.
   const id = runs.has(exp) ? exp : ids.find((x) => !isTest(x) && runs.get(x)!.some((r) => r.done)) ?? ids[0];
   const mine = runs.get(id) ?? [];
+  // An experiment on the harder set has its own targets.
+  if (mine[0] && JSON.parse(readFileSync(join(dir, `${id}-r${mine[0].rep}-${mine[0].key}`, 'options.json'), 'utf8')).problems === 'hard') {
+    tasks = loadTasks('hard'); label = new Map(tasks.map((t) => [t.name, t.posted ? t.publicId : t.short]));
+  }
   const posted = tasks.filter((t) => t.posted).map((t) => ({ id: t.publicId, bounty: 4 * 2 ** (t.depth - 1), depth: t.depth }));
   const setups = [...new Set(mine.map((r) => r.key))].sort((a, b) => Object.keys(SOCIETIES).indexOf(a) - Object.keys(SOCIETIES).indexOf(b)).map((key) => {
     const first = mine.filter((r) => r.key === key).sort((a, b) => a.rep - b.rep)[0];
@@ -363,7 +367,7 @@ function seriesOf(r: CommunityResult, posted: { id: string; bounty: number; dept
   // Repeat proofs of a statement do not count as building on others; only first proofs of real lemmas can be cited groundwork.
   const first = firstProofs(r.library), firstNames = new Set(first.map((e) => e.name)), groundwork = new Set(first.filter((e) => !e.target && !e.conjecture && !e.trivial).map((e) => `${e.ns}.${e.name}`));
   let spent = 0, lemmas = 0, built = 0, tries = 0;
-  const rows: number[][] = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
+  const rows: number[][] = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
   acts.forEach((a) => {
     spent += a.cost ?? a.listCost ?? 0;
     tries += triesOf(a);
@@ -372,7 +376,7 @@ function seriesOf(r: CommunityResult, posted: { id: string; bounty: number; dept
     if (a.ok && (!a.entry || firstNames.has(a.entry)) && (a.uses ?? []).some((u) => { const e = byName.get(u); return e && e.author !== a.agent; })) built++;
     if (a.ok) for (const u of a.uses ?? []) if (groundwork.has(u)) cited.add(u);
     const mask = posted.reduce((m, t, k) => (solved.has(t.id) ? m | (1 << k) : m), 0);
-    rows.push([Math.round(spent * 1e4) / 1e4, a.round, tries, solved.size, posted.reduce((v, t) => v + (solved.has(t.id) ? t.bounty : 0), 0), lemmas, built, mask, Math.max(0, ...posted.filter((t) => solved.has(t.id)).map((t) => t.depth)), cited.size]);
+    rows.push([Math.round(spent * 1e4) / 1e4, a.round, tries, solved.size, posted.reduce((v, t) => v + (solved.has(t.id) ? t.bounty : 0), 0), lemmas, built, mask, Math.max(0, ...posted.filter((t) => solved.has(t.id)).map((t) => t.depth)), cited.size, Math.round(((a.t - acts[0].t) / 60000) * 10) / 10]);
   });
   return rows;
 }
