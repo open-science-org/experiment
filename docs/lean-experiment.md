@@ -130,6 +130,8 @@ f = 0 gives equal money each round, which is the control. f = 0.5 is the simulat
 
 ## Run settings
 
+What a round, a try and an epoch are, with figures: [Round, try and epoch](rounds-and-epochs.md).
+
 | | Spend all | May quit (planned) |
 | --- | --- | --- |
 | Money per lab | $0.15, as charged | $0.15 |

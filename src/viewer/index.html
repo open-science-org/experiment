@@ -128,6 +128,7 @@
   .doc blockquote { margin: 0; padding: 2px 14px; border-left: 3px solid var(--line); color: var(--ink-2); }
   .doc code { background: var(--bg); padding: 1px 4px; border-radius: 4px; font-size: 12.5px; }
   .doc pre code { padding: 0; background: none; }
+  .doc pre { white-space: pre; word-break: normal; line-height: 1.25; }
   .crumbs { font-size: 13px; color: var(--ink-2); margin-bottom: 10px; }
   .list a { display: block; padding: 8px 12px; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--ink); background: var(--surface); }
   .list a:hover { color: var(--s1); }
@@ -569,7 +570,7 @@ async function openDoc(path) {
     const fieldId = /^reports\/([^/]+)\//.exec(d.path)?.[1];
     const howDoc = /^(docs\/|README\.md|lean\/)/.test(d.path);
     const eqDoc = ['docs/equations.md', 'docs/equations-simple.md', 'docs/equations-steps.md'].includes(d.path);
-    $('doc-crumbs').innerHTML = eqDoc ? `<div class="tabs" role="tablist"><a class="btn" role="tab" href="#/equations?m=simple" aria-selected="${d.path.endsWith('simple.md')}">Simple model (α, β)</a><a class="btn" role="tab" href="#/equations?m=steps" aria-selected="${d.path.endsWith('steps.md')}">Step by step</a><a class="btn" role="tab" href="#/equations?m=full" aria-selected="${d.path === 'docs/equations.md'}">Full model</a></div>` : d.path === 'notes/roadmap.md' ? '<a href="#/home">← Home</a>' : d.path === 'docs/lean-experiment.md' || d.path === 'docs/ai-agent-results.md' ? '<a href="#/lean">← Lean experiments</a>' : howDoc ? (d.path === 'docs/README.md' ? '' : '<a href="#/how">← How it works</a>') : `<a href="#/runs/results">← Results</a>${fieldId ? ` · <a href="#/doc/reports/${fieldId}/report.md">Full report</a> · <a href="#/live?tab=sim&space=${fieldId}">Watch a simulation</a>` : ''}`;
+    $('doc-crumbs').innerHTML = eqDoc ? `<div class="tabs" role="tablist"><a class="btn" role="tab" href="#/equations?m=simple" aria-selected="${d.path.endsWith('simple.md')}">Simple model (α, β)</a><a class="btn" role="tab" href="#/equations?m=steps" aria-selected="${d.path.endsWith('steps.md')}">Step by step</a><a class="btn" role="tab" href="#/equations?m=full" aria-selected="${d.path === 'docs/equations.md'}">Full model</a></div>` : d.path === 'notes/roadmap.md' ? '<a href="#/home">← Home</a>' : d.path === 'docs/lean-experiment.md' || d.path === 'docs/ai-agent-results.md' || d.path === 'docs/rounds-and-epochs.md' ? '<a href="#/lean">← Lean experiments</a>' : howDoc ? (d.path === 'docs/README.md' ? '' : '<a href="#/how">← How it works</a>') : `<a href="#/runs/results">← Results</a>${fieldId ? ` · <a href="#/doc/reports/${fieldId}/report.md">Full report</a> · <a href="#/live?tab=sim&space=${fieldId}">Watch a simulation</a>` : ''}`;
     $('doc-body').innerHTML = d.html;
     for (const c of $('doc-body').querySelectorAll('td, th')) {
       const n = c.textContent.trim().length;
@@ -2303,7 +2304,7 @@ const LY = (d) => [
 // The main questions: clicking one sets the graph.
 const LQ = (d) => [
   { text: 'Which setup proves the most targets for the money?', y: 'targets', x: 0, read: 'Higher line: more targets for the same money.' },
-  { text: 'Which setup gets there in the fewest rounds?', y: 'targets', x: 1, read: 'Higher line: more targets by that round.' },
+  { text: 'Which setup gets there in the fewest rounds?', y: 'targets', x: 1, read: 'Higher line: more targets by that round. In a round, every lab still working picks one task and gets up to 3 tries.' },
   { text: 'How deep does each setup get for the money?', y: 'deepest', x: 0, read: 'Higher line: a deeper target for the same money. Depth is not the same as difficulty on these problems: some deep targets are proved almost at once.' },
   ...(d.targets.some((t) => t.id === 'B5') ? [{ text: 'How often is the hard target B5 proved?', y: 'TB5', x: 0, read: 'Higher line: more runs have proved B5 by that money.' }] : []),
   { text: 'Does flow-back bring more groundwork?', y: 'lemmas', x: 0, read: 'Higher line: more lemmas proved for the same money. Many are never used: see the next question.' },
@@ -2326,6 +2327,7 @@ function leanResults(d) {
     <h3 style="margin:0 0 6px;font-size:15px">Main questions</h3>
     <div class="questions" id="l-qs">${qs.map((x, n) => `<button type="button" class="question" data-q="${n}">${esc(x.text)}</button>`).join('')}</div>
     <p id="l-qread" style="font-size:13px;margin:8px 0"></p>
+    <details id="l-terms" style="margin:0 0 10px;font-size:13px"><summary style="cursor:pointer">What do round, try and epoch mean?</summary><div class="doc home-doc" id="l-terms-doc" style="max-width:none;border:0;background:none;padding:6px 0 0;margin:0"><p class="muted">Loading…</p></div></details>
     <div class="row" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px">
       <label><b>Show</b> <select id="l-y">${[...new Set(ys.map((y) => y.group))].map((g) => `<optgroup label="${esc(g)}">${ys.filter((y) => y.group === g).map((y) => `<option value="${y.id}"${y.id === yv ? ' selected' : ''}>${esc(y.name)}</option>`).join('')}</optgroup>`).join('')}</select></label>
       <label><b>against</b> <select id="l-x">${LX.map((x) => `<option value="${x.id}"${x.id === xv ? ' selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label>
@@ -2335,6 +2337,7 @@ function leanResults(d) {
       <label><input type="checkbox" id="l-each"${q.get('each') === '0' ? '' : ' checked'}> single runs</label>
     </div><div id="l-chart" style="position:relative"></div><p class="muted" id="l-cnote" style="font-size:12px;margin:6px 0 0"></p></div><div id="l-reach"></div><div id="l-table"></div>`;
   const set = (k, v) => { const p = params(); p.set('tab', 'results'); p.set('exp', d.id); if (v === null) p.delete(k); else p.set(k, v); history.replaceState(null, '', '#/lean?' + p); draw(); };
+  $('l-terms').ontoggle = () => { if ($('l-terms').open && !$('l-terms').dataset.done) { $('l-terms').dataset.done = '1'; api('/api/doc?path=docs/rounds-and-epochs.md').then((x) => { $('l-terms-doc').innerHTML = x.html; }).catch((e) => { $('l-terms-doc').textContent = e.message; }); } };
   $('l-y').onchange = () => set('y', $('l-y').value);
   $('l-x').onchange = () => set('x', $('l-x').value);
   $('l-logy').onchange = () => set('logy', $('l-logy').checked ? '1' : null);
