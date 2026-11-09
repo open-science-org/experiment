@@ -89,7 +89,7 @@ Mint and knowledge reward flow back by α, like a bounty. Any setup is one point
 | **OSO, α 0.8** | at once | 0.8 | 0 | 0 | 0 | |
 | **OSO, α 0.2** | at once | 0.2 | 0 | 0 | 0 | |
 | **Pay per lemma** | at once | 1 | 1 | 0 | 0 | |
-| **Planner with hints** | at once | 1 | 0 | 0 | 0 | lab 1 assigns the work and proves nothing; lab 1 also gets strategy advice and failure reports |
+| **Planner with a good strategy** | at once | 1 | 0 | 0 | 0 | lab 1 assigns the work and proves nothing; lab 1 also gets strategy advice and failure reports |
 | **Plain planner** | at once | 1 | 0 | 0 | 0 | lab 1 assigns the work and proves nothing; same information as the labs |
 | **Independent labs** | never | 1 | 0 | 0 | 0 | |
 | **Single agent** | never | 1 | 0 | 0 | 0 | one lab with all the money |
@@ -98,7 +98,7 @@ Mint and knowledge reward flow back by α, like a bounty. Any setup is one point
 
 Runs before 2026-11-06 paid m = 1 in every setup. The values a run really used are shown in the app (Labs & setups) and in its summary.
 
-### The advantages of the planner with hints
+### The advantages of the planner with a good strategy
 
 The planner as first built gets more than the role. Compare it with care:
 

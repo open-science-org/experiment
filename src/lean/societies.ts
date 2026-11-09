@@ -18,7 +18,7 @@ export const SOCIETIES: Record<string, Society> = {
   independent: { name: 'Independent labs', rules: 'independent', colour: '#8a8984', slot: 3 },
   shared: { name: 'Shared library', rules: 'shared', colour: '#b3b1aa', slot: 3 },
   // The planner as first built: its prompt also has strategy advice and a report of what failed last round.
-  planner: { name: 'Planner with hints', rules: 'planner', colour: '#33322f', slot: 3 },
+  planner: { name: 'Planner with a good strategy', rules: 'planner', colour: '#33322f', slot: 3 },
   // The same role with the same information as the labs: what coordination alone is worth.
   'planner-plain': { name: 'Plain planner', rules: 'planner', plain: true, colour: '#8f8d86', slot: 3 },
   // New results pay their authors a flat amount and nothing flows back: credit without the dependency graph.
@@ -214,7 +214,7 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
       ...(() => { const gaps = LEAN_REWARDS.gaps(o); return gaps.length ? [`Rewards differ from the current simulation model: ${gaps.join('; ')}.`] : []; })(),
       ...(local ? ['Models on this machine cost nothing; dollars price their tokens as a cheap open model would be served. A test of the setup, not a cost result.'] : []),
       moneyMeasure ? 'Money to a count is all labs together, to the end of the round that reached it. Medians have ranges of at least 95% from the sorted runs; differences of medians have 95% ranges from resampling the runs; runs are not paired. Other table values are mean ± standard deviation.' : 'Table values are mean ± standard deviation over runs. Above: means with 95% ranges (Student t), and differences between setups with their 95% ranges; runs are not paired.',
-      ...(keys.includes('planner') ? ['Planner with hints has advantages the other setups lack: its prompt says how to split the work, and it sees what each lab tried last round and why it failed. A win for it may come from these hints rather than from coordination. Lab 1 only plans, so three labs prove and most of its money stays unspent.'] : []),
+      ...(keys.includes('planner') ? ['Planner with a good strategy has advantages the other setups lack: its prompt says how to split the work, and it sees what each lab tried last round and why it failed. A win for it may come from these hints rather than from coordination. Lab 1 only plans, so three labs prove and most of its money stays unspent.'] : []),
       ...(keys.includes('planner-plain') ? ['The plain planner has the same information as the labs (no strategy advice, no failure reports). Lab 1 only plans, so three labs prove.'] : []),
       ...(runs.some((r) => r.result.stopped) ? [`Some runs stopped early (${[...new Set(runs.map((r) => r.result.stopped).filter(Boolean))].join(', ')}); their money counts as spent up to the stop.`] : []),
     ],

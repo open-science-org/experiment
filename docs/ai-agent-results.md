@@ -90,7 +90,7 @@ Money to reach 2 counted targets, run by run (OSO / traditional): $0.25 / never,
 | Single agent | never shared, one lab with all the money, α 1, m 1 | $0.04 | 4.0 |
 | Independent labs | never shared, α 1, m 1 | $0.03 | 3.0 |
 | Shared library | public at once, α 1, m 1 | $0.05 | 5.0 |
-| Planner (with hints) | public at once, α 1, m 1, lab 1 assigns the work; [it also gets strategy advice and failure reports](lean-experiment.md#the-advantages-of-the-planner-with-hints) | $0.12 | 3.5 |
+| Planner with a good strategy | public at once, α 1, m 1, lab 1 assigns the work; [it also gets strategy advice and failure reports](lean-experiment.md#the-advantages-of-the-planner-with-a-good-strategy) | $0.12 | 3.5 |
 | Traditional | public when a target is proved, α 1, m 1 | $0.07 | 3.5 |
 | OSO, α 0.8 | public at once, α 0.8, m 1 | $0.03 | 4.5 |
 | OSO, α 0.2 | public at once, α 0.2, m 1 | $0.02 | **6.0** |
@@ -273,7 +273,7 @@ Median money to reach 5 of the 8 targets (range covering at least 95%):
 
 ## 4f. Harder targets, stage 1 (pilot, 2026-11-09; left out)
 
-**Setups:** public at once in all: OSO α 0.2 (m 0), shared library (α 1, m 0), planner with hints (α 1, m 0; lab 1 assigns the work, and [gets strategy advice and failure reports the others do not](lean-experiment.md#the-advantages-of-the-planner-with-hints)), pay per lemma (α 1, m 1). m_bit 0, f 0.
+**Setups:** public at once in all: OSO α 0.2 (m 0), shared library (α 1, m 0), planner with a good strategy (α 1, m 0; lab 1 assigns the work, and [gets strategy advice and failure reports the others do not](lean-experiment.md#the-advantages-of-the-planner-with-a-good-strategy)), pay per lemma (α 1, m 1). m_bit 0, f 0.
 
 8 runs, 2 per setup, $0.20 a lab, $6.16 in all. The rule fixed in advance needed each of H4, H5 and H6 to be proved in some runs but not all, or at least two of them. Results pooled over the setups, so the check did not look at who was ahead.
 
