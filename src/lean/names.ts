@@ -2,6 +2,7 @@
 // An experiment without a name here shows its id; ids starting with "stub" are pipeline tests with stand-in agents.
 
 export const EXPERIMENT_NAMES: Record<string, string> = {
+  'lean-hard': 'Harder targets: money to reach them, 4 setups × 10 runs, $0.20 a lab (Nov 9)',
   'lean-part-a': 'May quit: labs may stop early, 4 setups × 10 runs, $0.15 a lab (Nov 7)',
   'm3-smoke': 'Labs choose what to publish: smoke test, 1 run at α 0.2, $0.05 a lab (Nov 7)',
   'lean-m3': 'Labs choose what to publish: α 1, 0.8, 0.2 × 10 runs, $0.15 a lab (Nov 8)',

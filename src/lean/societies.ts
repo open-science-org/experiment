@@ -65,6 +65,39 @@ const diff = (a: number[], b: number[], fmt = f2) => {
 };
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 
+/** The median and a range of at least 95% from the sorted runs themselves (under 6 runs: no range, null); Infinity is "not reached". */
+export function medianRange(xs: number[]): [number, number | null, number | null] {
+  const s = [...xs].sort((a, b) => a - b), n = s.length;
+  let cum = 0, c = 1, r = -1; // s[r] to s[n-1-r] misses the median with chance 2 P(X <= r), X binomial(n, 1/2); r: the largest with P(X <= r) <= 2.5%
+  for (let k = 0; k < n; k++) { cum += c / 2 ** n; if (cum > 0.025) break; r = k; c = c * (n - k) / (k + 1); }
+  const mid = n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2;
+  return r < 0 ? [mid, null, null] : [mid, s[r], s[n - 1 - r]];
+}
+
+/** The highest count that more than half the runs of every setup reach (0 if none). It does not look at who is cheapest. */
+export function reachK(groups: CommunityResult[][], n: number) {
+  for (let k = n; k >= 1; k--) if (groups.every((rs) => rs.filter((r) => spendTo(r, k) !== null).length > rs.length / 2)) return k;
+  return 0;
+}
+
+const usd3 = (x: number) => (x === Infinity ? 'not reached' : `$${x.toFixed(3)}`);
+const medianText = (xs: number[]) => {
+  const [m, lo, hi] = medianRange(xs);
+  return lo === null || hi === null ? usd3(m) : `${usd3(m)} (95% range ${usd3(lo)} to ${usd3(hi)})`;
+};
+
+/** The difference of two medians with a 95% range, by resampling each setup's runs (fixed seed, so a summary can be remade). Not reached is Infinity; both not reached counts as no difference. Under 6 runs a side: no range. */
+export function medianDiff(a: number[], b: number[]) {
+  const med = (xs: number[]) => medianRange(xs)[0], gap = (x: number, y: number) => (x === Infinity && y === Infinity ? 0 : x - y);
+  const d = gap(med(a), med(b)), money = (x: number) => (Number.isFinite(x) ? `${x < 0 ? '−' : '+'}$${Math.abs(x).toFixed(3)}` : x > 0 ? 'no upper limit' : 'no lower limit');
+  if (Math.min(a.length, b.length) < 6) return money(d);
+  let seed = 20261109;
+  const rand = () => { seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  const draw = (xs: number[]) => xs.map(() => xs[Math.floor(rand() * xs.length)]), N = 4000;
+  const ds = Array.from({ length: N }, () => gap(med(draw(a)), med(draw(b)))).sort((x, y) => (x < y ? -1 : x > y ? 1 : 0));
+  return `${money(d)} (95% range ${money(ds[Math.floor(0.025 * N)])} to ${money(ds[Math.ceil(0.975 * N) - 1])})`;
+}
+
 /** Counted targets solved once `x` dollars were spent: the step curve, held at its end after the run stops. */
 function solvedAt(pts: [number, number][], x: number) {
   let y = 0;
@@ -101,19 +134,23 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
   // The measure fixed in advance (main Lean experiment, 2026-11-07): targets proved by the end of a run, of all posted.
   // Money to reach k targets is kept beside it.
   const nTargets = loadTasks(runs[0]?.result.opts.problems).filter((t) => t.posted).length;
+  // The experiment on the harder set (fixed 2026-11-09): median money to reach a count of targets, the count set by a rule that ignores who wins.
+  const moneyMeasure = runs[0]?.result.opts.problems === 'hard';
+  const K = moneyMeasure ? reachK(keys.map((key) => runs.filter((r) => r.key === key).map((r) => r.result)), nTargets) || k : k;
   const rows = keys.map((key) => {
     const rs = runs.filter((r) => r.key === key).map((r) => r.result), st = rs.map(stats);
-    const to = rs.map((r) => spendTo(r, k) ?? r.opts.budget * r.opts.agents.length);
+    const to = rs.map((r) => spendTo(r, K) ?? r.opts.budget * r.opts.agents.length);
+    const money = rs.map((r) => spendTo(r, K) ?? Infinity);
     const got = st.map((x) => x.targetsSolved);
     // Labs choosing what to publish: the share of lemmas published at once (explicit choices), per run.
     const share = st.map((x) => x.sharedOfChosen).filter((x): x is number => x !== null);
     return {
-      key, got, share,
+      key, got, share, money,
       row: {
         society: SOCIETIES[key].name,
         settings: SOCIETIES[key].params,
         'targets proved': `${f2(mean(got))} ± ${f2(sd(got))} of ${nTargets}`,
-        [`money to ${k} targets`]: `$${f2(mean(to))} (${rs.filter((r) => spendTo(r, k) !== null).length} of ${rs.length} got there)`,
+        [moneyMeasure ? `median money to ${K} targets` : `money to ${K} targets`]: `${moneyMeasure ? medianText(money) : `$${f2(mean(to))}`} (${rs.filter((r) => spendTo(r, K) !== null).length} of ${rs.length} got there)`,
         spent: `$${f2(mean(st.map((x) => x.spent)))}`,
         'lemmas proved': f2(mean(st.map((x) => x.lemmasAccepted))),
         'built on another lab': f2(mean(st.map((x) => x.builtOnOthers))),
@@ -141,19 +178,22 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
     ? `Lemmas published at once: ${rows.filter((r) => SOCIETIES[r.key].choose).map((r) => `${SOCIETIES[r.key].name} ${r.share.length ? range(r.share, pct) : '—'}`).join('; ')}. α 0.2 minus α 1: ${diff(lo.share, hi.share, pct)}.`
     : null;
   const osoRows = rows.filter((r) => r.key.startsWith('oso'));
+  const moneyAnswer = moneyMeasure
+    ? `Median money, all labs together, to reach ${K} of the ${nTargets} targets: ${rows.map((r) => `${SOCIETIES[r.key].name} ${medianText(r.money)}`).join('; ')}.${osoRows.flatMap((x) => rest.map((b) => ` ${SOCIETIES[x.key].name} minus ${SOCIETIES[b.key].name}: ${medianDiff(x.money, b.money)}.`)).join('')}`
+    : null;
   const best = [...rows].sort((a, b) => mean(b.got) - mean(a.got))[0];
-  const answer = chooseAnswer ? chooseAnswer : !osoRows.length || !base ? `Most targets proved: ${SOCIETIES[best.key].name}, ${f2(mean(best.got))} of ${nTargets}.`
+  const answer = chooseAnswer ? chooseAnswer : moneyAnswer ? moneyAnswer : !osoRows.length || !base ? `Most targets proved: ${SOCIETIES[best.key].name}, ${f2(mean(best.got))} of ${nTargets}.`
     : `${reps < 2 ? 'One run each, no verdict yet. ' : ''}${osoRows.map(verdict).join(' ')}`;
   const o = [...runs].sort((a, b) => b.result.opts.agents.length - a.result.opts.agents.length)[0].result.opts;
   writeCard(dir, {
     id, kind: 'race', date: new Date().toISOString().slice(0, 10), title: experimentName(id) === id ? `Societies compared: targets proved for the money (${id})` : experimentName(id),
     ranAt: new Date(Math.min(Date.now(), ...runs.flatMap((r) => r.result.actions.map((a) => a.t)).filter(Boolean))).toISOString(),
     design: {
-      question: 'For the same agents, checker and money, does a community prove more targets when value flows back (OSO) than when results are only shared, or kept private until a target is proved?',
+      question: moneyMeasure ? 'For the same agents and checker, how much money does each way of organizing the labs spend to reach the same number of targets?' : 'For the same agents, checker and money, does a community prove more targets when value flows back (OSO) than when results are only shared, or kept private until a target is proved?',
       compare: keys.map((x) => SOCIETIES[x].name).join(', '),
       fixed: `the same ${o.agents.length} agents (the single agent: the first, with all the money), $${f2(total)} in all, Lean checks every proof`,
-      measure: chooseAnswer ? 'the share of lemmas published at once (of those with a PUBLISH line), α 0.2 against α 1; targets proved beside it' : `targets proved by the end of a run, of ${nTargets}; money to reach ${k} targets is shown beside it`,
-      better: 'higher', runs: `${reps} run${reps > 1 ? 's' : ''} per setup, not paired`,
+      measure: chooseAnswer ? 'the share of lemmas published at once (of those with a PUBLISH line), α 0.2 against α 1; targets proved beside it' : `${moneyMeasure ? `median money, all labs together, to reach ${K} of the ${nTargets} targets; ${K} is the highest count that more than half the runs of every setup reached; a run that never got there counts as not reached` : `targets proved by the end of a run, of ${nTargets}; money to reach ${k} targets is shown beside it`}`,
+      better: moneyMeasure ? 'lower' : 'higher', runs: `${reps} run${reps > 1 ? 's' : ''} per setup, not paired`,
     },
     answer,
     table: rows.map((r) => r.row),
@@ -161,7 +201,8 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
       o.mayStop === false ? 'Labs could not stop early: each worked until its money or the rounds ran out, so setups are compared at the same money spent.' : 'Labs could stop early by passing, so setups are compared at the same money offered; money spent is shown beside each.',
       ...(() => { const gaps = LEAN_REWARDS.gaps(o); return gaps.length ? [`Rewards differ from the current simulation model: ${gaps.join('; ')}.`] : []; })(),
       ...(local ? ['Models on this machine cost nothing; dollars price their tokens as a cheap open model would be served. A test of the setup, not a cost result.'] : []),
-      'Table values are mean ± standard deviation over runs. Above: means with 95% ranges (Student t), and differences between setups with their 95% ranges; runs are not paired.',
+      moneyMeasure ? 'Money to a count is all labs together, to the end of the round that reached it. Medians have ranges of at least 95% from the sorted runs; differences of medians have 95% ranges from resampling the runs; runs are not paired. Other table values are mean ± standard deviation.' : 'Table values are mean ± standard deviation over runs. Above: means with 95% ranges (Student t), and differences between setups with their 95% ranges; runs are not paired.',
+      ...(keys.includes('planner') ? ['In the planner setup lab 1 only plans, so three labs prove and most of its money stays unspent; it is also told to save the team money and how to split the work.'] : []),
       ...(runs.some((r) => r.result.stopped) ? [`Some runs stopped early (${[...new Set(runs.map((r) => r.result.stopped).filter(Boolean))].join(', ')}); their money counts as spent up to the stop.`] : []),
     ],
     cost: stub ? '$0 (stand-in agents; dollars are a fixed $0.01 a call)' : local ? '$0 (local models)' : `$${f2(runs.reduce((a, r) => a + stats(r.result).spent, 0))} ${priced}`,
@@ -175,6 +216,6 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
 - **Agents:** ${o.agents.map((m) => `\`${m}\``).join(', ')}; up to ${o.rounds} rounds; up to ${o.repairs} repairs on Lean's errors per action.
 
 Transcripts, with every proof, are private.`);
-  writeFileSync(join(dir, 'data.json'), JSON.stringify({ id, k, counted, runs: runs.map((r) => ({ society: r.key, rep: r.rep, runId: r.runId, stats: stats(r.result) })) }, null, 1) + '\n');
+  writeFileSync(join(dir, 'data.json'), JSON.stringify({ id, k: K, counted, runs: runs.map((r) => ({ society: r.key, rep: r.rep, runId: r.runId, stats: stats(r.result) })) }, null, 1) + '\n');
   return dir;
 }

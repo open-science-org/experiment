@@ -6,7 +6,8 @@ import { join } from 'node:path';
 import { banned, checkFile, parseAxioms, parseErrors } from '../src/lean/checker.ts';
 import { extractProof } from '../src/lean/agent.ts';
 import { leanAvailable } from '../src/lean/tasks.ts';
-import { LEAN_REWARDS, parseReply, proofBody } from '../src/lean/community.ts';
+import { LEAN_REWARDS, parseReply, progress, proofBody, spendTo, type CommunityResult } from '../src/lean/community.ts';
+import { medianDiff, medianRange, reachK } from '../src/lean/societies.ts';
 import { MODEL_VERSION } from '../src/engine/version.ts';
 
 test('the screen rejects unsound, unsafe and banned proofs', () => {
@@ -20,6 +21,24 @@ test('the screen rejects unsound, unsafe and banned proofs', () => {
   assert.ok(banned(':= by exact?').length);
   assert.ok(banned('by simp').length, 'must start with := or |');
   assert.deepEqual(banned('  | 0 => rfl\n  | n + 1 => by simp'), []);
+});
+
+test('money to a count of targets includes the whole round that reached it', () => {
+  const act = (round: number, t: number, cost: number, target?: string) => ({ round, t, cost, kind: target ? 'target' : 'lemma', ok: true, target });
+  const run = { opts: { counted: ['A', 'B'] }, actions: [act(1, 1, 0.1, 'A'), act(1, 2, 0.3), act(2, 3, 0.2, 'B'), act(2, 4, 0.4)] } as unknown as CommunityResult;
+  assert.equal(Number(spendTo(run, 1)!.toFixed(3)), 0.4);
+  assert.equal(Number(spendTo(run, 2)!.toFixed(3)), 1);
+  assert.equal(spendTo(run, 3), null);
+  assert.deepEqual(progress(run).map(([, y]) => y), [0, 1, 1, 2, 2]);
+});
+
+test('the count of targets is the highest more than half the runs of every setup reach, and not reached stays not reached', () => {
+  const reach = (k: number) => ({ opts: { counted: ['A', 'B', 'C'] }, actions: ['A', 'B', 'C'].slice(0, k).map((target, n) => ({ round: n + 1, t: n, cost: 0.1, kind: 'target', ok: true, target })) }) as unknown as CommunityResult;
+  assert.equal(reachK([[reach(3), reach(3), reach(1)], [reach(2), reach(3), reach(3)]], 3), 3);
+  assert.equal(reachK([[reach(3), reach(1), reach(1)], [reach(2), reach(3), reach(3)]], 3), 1);
+  assert.equal(medianRange([1, 2, Infinity])[0], 2);
+  assert.equal(medianRange([1, Infinity, Infinity])[0], Infinity);
+  assert.match(medianDiff([1, 1, 1, 1, 1, 1], [2, 2, 2, 2, 2, 2]), /^−\$1\.000 \(95% range −\$1\.000 to −\$1\.000\)$/);
 });
 
 test('replies are read however the lab formats them, and the screen still applies', () => {

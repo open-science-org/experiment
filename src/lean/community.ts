@@ -293,7 +293,7 @@ export class Community {
     e.publishedRound = round;
     const used = e.uses.map((n) => this.library.find((x) => `${x.ns}.${x.name}` === n)).filter((x): x is Entry => !!x);
     // A new result's own reward flows back like a bounty (the simulation's α0, equal to α).
-    const mint = e.trivial ? 0 : mintOf(this.opts);
+    const mint = e.trivial || e.known ? 0 : mintOf(this.opts);
     if (mint) this.pay(e, mint);
     // The knowledge reward by proof size: only for what is new, so nothing if a lab published the same statement first.
     const first = !this.library.some((x) => x !== e && x.public && norm(x.signature) === norm(e.signature));
@@ -332,7 +332,7 @@ export class Community {
       : "A target's bounty goes to the lab that proves it. Nothing flows back to the results it used.";
     const own = o.knowledge === 'proof-size'
       ? `When a result is published, it earns up to ${PROOF_CAP}, more for a longer proof, if it is new: no lab has published it, or a result that proves it in one step, before${o.rules === 'oso' && o.alpha < 1 ? '. This flows back in the same way' : '. Its author keeps it'}.`
-      : M ? `A new result earns its author a mint of ${M}${o.rules === 'oso' && o.alpha < 1 ? ', which flows back in the same way' : ''}.` : 'A new result earns nothing by itself.';
+      : M ? `A new result earns its author a mint of ${M}${o.rules === 'oso' && o.alpha < 1 ? ', which flows back in the same way' : ''}. It is new if no lab has published it, or a result that proves it in one step, before.` : 'A new result earns nothing by itself.';
     const planner = o.rules === 'planner' ? '\n- Lab 1 is the planner: it does not prove anything; each round it gives every other lab an assignment, to bring the targets within reach together. Follow your assignment unless it is clearly impossible.' : '';
     const money = o.follow === undefined ? '' : `\n- Money: the funder releases the money round by round, $${((o.budget * o.agents.length) / o.rounds).toFixed(3)} a round for all labs: ${Math.round((1 - o.follow) * 100)}% split equally among the labs still working, ${Math.round(o.follow * 100)}% in proportion to what each earned recently. Unspent money carries over; a lab with no money left waits for the next round.`;
     const rules = `How this community works (${name}):${planner}\n- Seeing results: ${seeing}\n- Bounties: ${flow}\n- New results: ${own}${money}`;
@@ -512,6 +512,13 @@ ${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still w
             // The trivial-result screen: a statement one basic tactic proves earns nothing.
             let trivial = false;
             for (const tac of TRIVIAL) if ((await check({ ns: 'OSO', signature: lemma.signature }, tac, { library: [] })).ok) { trivial = true; break; }
+            // A restatement of a published result (renamed variables, say) is not new: one step from it proves it.
+            // Checked before the duplicate test and the name, so nothing waits between those and joining the library: two labs in one round must not take the same name.
+            let known = false;
+            if ((this.opts.knowledge === 'proof-size' || this.opts.knowledge === 'flat-mint') && !trivial) {
+              const pub = this.library.filter((x) => x.public && !x.trivial).map((x) => `${x.ns}.${x.name}`);
+              if (pub.length) known = (await check({ ns: 'OSO', signature: lemma.signature }, `:= by first ${pub.map((n) => `| (apply ${n} <;> assumption) | (apply ${n}; done)`).join(' ')}`, { library: this.checkLibrary(i) })).ok;
+            }
             const dup = this.visible(i).find((e) => norm(e.signature) === norm(lemma!.signature));
             if (dup) { reason = `duplicate of ${dup.name}, which you can already cite`; }
             else {
@@ -522,11 +529,7 @@ ${last.length ? `Last round:\n${last.join('\n')}\n\n` : ''}Give each lab still w
               if (hidden) reason = `duplicate of lab ${hidden.author + 1}'s ${hidden.public ? 'result' : 'private result'}`;
               const e: Entry = { name: this.uniqueName(lemma.name), ns: 'OSO', signature: lemma.signature, author: i, public: false, round, uses: r.uses.filter((u) => !FREE.includes(u)), ...(trivial ? { trivial } : {}) };
               e.size = proofSize(lemma.proof.replace(/^\s*:=/, ''));
-              if (this.opts.knowledge === 'proof-size' && !trivial) {
-                // A restatement of a published result (renamed variables, say) is not new: one step from it proves it.
-                const pub = this.library.filter((x) => x.public && !x.trivial).map((x) => `${x.ns}.${x.name}`);
-                if (pub.length) e.known = (await check({ ns: 'OSO', signature: lemma.signature }, `:= by first ${pub.map((n) => `| (apply ${n} <;> assumption) | (apply ${n}; done)`).join(' ')}`, { library: this.checkLibrary(i) })).ok;
-              }
+              if (known) e.known = true;
               this.library.push(e);
               if (this.opts.publishing === 'choose') {
                 // The lab's choice; without a PUBLISH line the lemma stays private (counted, and β is also given over explicit choices).
@@ -637,7 +640,7 @@ export async function runCommunity(opts: CommunityOptions, chatFor: (com: Commun
   let stopped: string | undefined;
   for (let round = 1; round <= opts.rounds && !com.done() && !stopped; round++) {
     com.fund();
-    const before = [...com.earnings];
+    const before = [...com.earnings], spentBefore = [...com.spent];
     if (opts.rules === 'planner') {
       com.plans = [];
       if (com.active(0)) await com.plan(round, chats[0], (u) => price(opts.agents[0], u), (a) => appendFileSync(file, JSON.stringify(a) + '\n')).catch((e) => {
@@ -665,7 +668,7 @@ export async function runCommunity(opts: CommunityOptions, chatFor: (com: Commun
       const msg = (e as Error).message;
       log(`  round ${round} · agent ${i + 1}: error ${msg}`);
       // Kept in the log, so a lost turn is counted, not silently missing.
-      const a: Action = { round, agent: i, model: opts.agents[i], kind: 'error', ok: false, reason: msg.slice(0, 500), turns: 0, usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, cost: 0, spentAfter: com.spent[i], transcript: [], t: Date.now() } as Action;
+      const a: Action = { round, agent: i, model: opts.agents[i], kind: 'error', ok: false, reason: msg.slice(0, 500), turns: 0, usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, cost: com.spent[i] - spentBefore[i], spentAfter: com.spent[i], transcript: [], t: Date.now() } as Action;
       com.actions.push(a);
       appendFileSync(file, JSON.stringify(a) + '\n');
       // Out of credit: every later call fails too, so the run would only look like labs giving up.
@@ -691,16 +694,22 @@ export function readCommunity(runId: string): CommunityResult {
 const postedCount = (r: CommunityResult) => loadTasks(r.opts.problems).filter((t) => t.posted).length;
 export const countedOf = (r: CommunityResult) => (r.opts.counted?.length ? r.opts.counted : loadTasks(r.opts.problems).filter((t) => t.posted).map((t) => t.publicId));
 
+/** Money all labs together had spent by the end of each round. Labs work at the same time, so a proof is counted with its whole round: otherwise the calls still running when it came in would be left out. */
+export function moneyByRound(actions: Action[]): Map<number, number> {
+  const inRound = new Map<number, number>();
+  for (const a of actions) inRound.set(a.round, (inRound.get(a.round) ?? 0) + costOf(a));
+  let total = 0;
+  return new Map([...inRound].sort(([x], [y]) => x - y).map(([round, m]) => [round, (total += m)] as [number, number]));
+}
+
 export function progress(r: CommunityResult): [number, number][] {
   const counted = new Set(countedOf(r));
   const acts = [...r.actions].sort((a, b) => a.t - b.t);
-  const solved = new Set<string>();
-  let spent = 0;
+  const solved = new Set<string>(), money = moneyByRound(r.actions);
   const pts: [number, number][] = [[0, 0]];
   for (const a of acts) {
-    spent += costOf(a);
     if (a.kind === 'target' && a.ok && a.target && counted.has(a.target)) solved.add(a.target);
-    pts.push([spent, solved.size]);
+    pts.push([money.get(a.round)!, solved.size]);
   }
   return pts;
 }

@@ -5,8 +5,8 @@
 // so a setup is not flattered by leaving out the runs that failed.
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { countedOf, type CommunityResult } from '../src/lean/community.ts';
-import { SOCIETIES } from '../src/lean/societies.ts';
+import { countedOf, moneyByRound, type CommunityResult } from '../src/lean/community.ts';
+import { SOCIETIES, medianRange } from '../src/lean/societies.ts';
 
 const [id, only] = process.argv.slice(2);
 if (!id) throw new Error('usage: npm run speed -- <experiment id> [setups, comma-separated]');
@@ -21,26 +21,16 @@ const ORDER = Object.keys(SOCIETIES);
 const keys = (only ? only.split(',') : [...groups.keys()]).filter((k) => groups.has(k)).sort((a, b) => ORDER.indexOf(a) - ORDER.indexOf(b));
 if (!keys.length) throw new Error(`no finished runs for ${id}`);
 
-/** The median and a range of at least 95% from the sorted runs themselves (under 6 runs: no range, null); Infinity is "not reached". */
-function medianRange(xs: number[]): [number, number | null, number | null] {
-  const s = [...xs].sort((a, b) => a - b), n = s.length;
-  let cum = 0, c = 1, r = -1; // s[r] to s[n-1-r] misses the median with chance 2 P(X <= r), X binomial(n, 1/2); r: the largest with P(X <= r) <= 2.5%
-  for (let k = 0; k < n; k++) { cum += c / 2 ** n; if (cum > 0.025) break; r = k; c = c * (n - k) / (k + 1); }
-  const mid = n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2;
-  return r < 0 ? [mid, null, null] : [mid, s[r], s[n - 1 - r]];
-}
 const wilson = (k: number, n: number, z = 1.96): [number, number] => {
   const p = k / n, c = (p + z * z / 2 / n) / (1 + z * z / n), h = z * Math.sqrt(p * (1 - p) / n + z * z / 4 / n / n) / (1 + z * z / n);
   return [Math.max(0, c - h), Math.min(1, c + h)];
 };
 
-/** Each counted target's first proof in a run: its round and the community's money spent by then. */
+/** Each counted target's first proof in a run: its round and the community's money spent by the end of that round. */
 function firstProofs(r: CommunityResult) {
-  const counted = new Set(countedOf(r)), out = new Map<string, { round: number; money: number }>();
-  let money = 0;
+  const counted = new Set(countedOf(r)), out = new Map<string, { round: number; money: number }>(), money = moneyByRound(r.actions);
   for (const a of [...r.actions].sort((x, y) => x.t - y.t)) {
-    money += a.cost ?? 0;
-    if (a.kind === 'target' && a.ok && a.target && counted.has(a.target) && !out.has(a.target)) out.set(a.target, { round: a.round, money });
+    if (a.kind === 'target' && a.ok && a.target && counted.has(a.target) && !out.has(a.target)) out.set(a.target, { round: a.round, money: money.get(a.round)! });
   }
   return out;
 }
@@ -52,7 +42,7 @@ const never = '–';
 const usd = (x: number) => (x === Infinity ? never : `$${x.toFixed(3)}`), rnd = (x: number) => (x === Infinity ? never : x % 1 ? x.toFixed(1) : String(x));
 const cell = (xs: number[], f: (x: number) => string) => { const [m, lo, hi] = medianRange(xs); if (lo === null || hi === null) return `${m === Infinity ? 'not reached' : f(m)} (too few runs for a range)`; return m === Infinity ? (lo === Infinity ? 'not reached' : `not reached (from ${f(lo)})`) : `${f(m)} (${f(lo)} to ${hi === Infinity ? 'not reached' : f(hi)})`; };
 const lines: string[] = [`# How soon each setup reaches the targets: ${id}`, '',
-  'From the saved runs by `npm run speed`. Looked at after the results, so these are leads. Money is what all labs together had spent when the proof came in. Medians use every run; "not reached" means a run that never got there, and each range covers at least 95%.', '',
+  'From the saved runs by `npm run speed`. Looked at after the results, so these are leads. Money is what all labs together had spent by the end of the round in which the proof came in. Medians use every run; "not reached" means a run that never got there, and each range covers at least 95%.', '',
   `The graphs are on the app's Experiments → Results page for this experiment.`, ''];
 const atK = (r: CommunityResult, k: number, f: 'round' | 'money') => { const xs = [...firstProofs(r).values()].sort((a, b) => a.money - b.money); return xs[k - 1]?.[f] ?? Infinity; };
 const table = (title: string, rowsOf: (k: string) => string[], head: string[]) => {

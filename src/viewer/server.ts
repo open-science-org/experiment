@@ -15,7 +15,7 @@ import { MEASURE_NAMES, VALUES } from '../engine/measures.ts';
 import { loadSpace, spaceIds, withCalibratedBudget, type Space } from '../spaces/spaces.ts';
 import { AREAS, LEAN_DIR, PLAIN, definitions, leanAvailable, loadTasks, type Problems } from '../lean/tasks.ts';
 import * as design from './design.ts';
-import { Community, LEAN_REWARDS, firstProofs, progress, type CommunityResult } from '../lean/community.ts';
+import { Community, LEAN_REWARDS, firstProofs, moneyByRound, progress, type CommunityResult } from '../lean/community.ts';
 import { SOCIETIES } from '../lean/societies.ts';
 import { experimentName, isTest } from '../lean/names.ts';
 import { creditLeft, keyUsage } from '../lean/agent.ts';
@@ -384,17 +384,19 @@ function seriesOf(r: CommunityResult, posted: { id: string; bounty: number; dept
   const solved = new Set<string>(), cited = new Set<string>();
   // Repeat proofs of a statement do not count as building on others; only first proofs of real lemmas can be cited groundwork.
   const first = firstProofs(r.library), firstNames = new Set(first.map((e) => e.name)), groundwork = new Set(first.filter((e) => !e.target && !e.conjecture && !e.trivial).map((e) => `${e.ns}.${e.name}`));
-  let spent = 0, lemmas = 0, built = 0, tries = 0;
+  let lemmas = 0, built = 0;
+  // Money and tries count the whole round: labs work at the same time.
+  const money = moneyByRound(r.actions), triesIn = new Map<number, number>();
+  for (const a of r.actions) triesIn.set(a.round, (triesIn.get(a.round) ?? 0) + triesOf(a));
+  const triesBy = (round: number) => [...triesIn].reduce((v, [k, n]) => (k <= round ? v + n : v), 0);
   const rows: number[][] = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
   acts.forEach((a) => {
-    spent += a.cost ?? a.listCost ?? 0;
-    tries += triesOf(a);
     if (a.ok && a.kind === 'target' && a.target) solved.add(a.target);
     if (a.ok && a.kind === 'lemma' && !/trivial/.test(a.reason ?? '')) lemmas++;
     if (a.ok && (!a.entry || firstNames.has(a.entry)) && (a.uses ?? []).some((u) => { const e = byName.get(u); return e && e.author !== a.agent; })) built++;
     if (a.ok) for (const u of a.uses ?? []) if (groundwork.has(u)) cited.add(u);
     const mask = posted.reduce((m, t, k) => (solved.has(t.id) ? m | (1 << k) : m), 0);
-    rows.push([Math.round(spent * 1e4) / 1e4, a.round, tries, solved.size, posted.reduce((v, t) => v + (solved.has(t.id) ? t.bounty : 0), 0), lemmas, built, mask, Math.max(0, ...posted.filter((t) => solved.has(t.id)).map((t) => t.depth)), cited.size, Math.round(((a.t - acts[0].t) / 60000) * 10) / 10]);
+    rows.push([Math.round(money.get(a.round)! * 1e4) / 1e4, a.round, triesBy(a.round), solved.size, posted.reduce((v, t) => v + (solved.has(t.id) ? t.bounty : 0), 0), lemmas, built, mask, Math.max(0, ...posted.filter((t) => solved.has(t.id)).map((t) => t.depth)), cited.size, Math.round(((a.t - acts[0].t) / 60000) * 10) / 10]);
   });
   return rows;
 }
