@@ -70,14 +70,32 @@ Four labs, all **DeepSeek V4.1 Flash** (through OpenRouter), with no personas. E
 
 ## The setups
 
-Only the rules differ between setups.
+Only the rules differ between setups. **Every setup is written in OSO's parameters**, wherever it is described: the names below are only short labels for these values.
 
-| Setup | Others see a result | Value flowing back |
-| --- | --- | --- |
-| **Traditional** | when its author proves a target (then the target and its lemmas are published) | none: the prover keeps the whole bounty |
-| **Shared library** | at once | none: the prover keeps the whole bounty |
-| **OSO, α 0.8** | at once | a result keeps 80% of what reaches it; 20% flows back to the results it used |
-| **OSO, α 0.2** | at once | a result keeps 20%; 80% flows back |
+| Parameter | What it sets |
+| --- | --- |
+| **Public** | when others see a result: at once, when a target is proved, when the lab chooses, or never |
+| **α** | the share of any value a result keeps; the rest, 1 − α, flows back to the results it used. α = 1: nothing flows back |
+| **m** | the flat mint: what a new result earns when it is published |
+| **m_bit** | the knowledge reward: what a new result earns for its new knowledge. In Lean, 0 or a stand-in by proof size (at most 4) |
+| **f** | the share of each round's money that follows earnings. 0: each lab has a fixed budget |
+
+Mint and knowledge reward flow back by α, like a bounty. Any setup is one point in this space:
+
+| Setup | Public | α | m | m_bit | f | Also |
+| --- | --- | --- | --- | --- | --- | --- |
+| **Traditional** | when a target is proved | 1 | 0 | 0 | 0 | |
+| **Shared library** | at once | 1 | 0 | 0 | 0 | |
+| **OSO, α 0.8** | at once | 0.8 | 0 | 0 | 0 | |
+| **OSO, α 0.2** | at once | 0.2 | 0 | 0 | 0 | |
+| **Pay per lemma** | at once | 1 | 1 | 0 | 0 | |
+| **Planner** | at once | 1 | 0 | 0 | 0 | lab 1 assigns the work and proves nothing |
+| **Independent labs** | never | 1 | 0 | 0 | 0 | |
+| **Single agent** | never | 1 | 0 | 0 | 0 | one lab with all the money |
+| **Labs choose, α 1, 0.8 or 0.2** | the lab chooses | as named | 0 | by proof size | 0 | |
+| **Labs choose, reward off, α 1 or 0.2** | the lab chooses | as named | 0 | 0 | 0 | |
+
+Runs before 2026-11-06 paid m = 1 in every setup. The values a run really used are shown in the app (Labs & setups) and in its summary.
 
 Value flowing back is split among the results a proof used by **graph weights**, as in the simulation: each cited result's share is the lines it saves divided by the lines all of that proof's cited results save, so the shares add to 1. A cited result saves writing out its proof, so its saving is its own proof's length in symbols. Value keeps flowing down the tree the same way.
 - **Since 2026-11-08** (runs after Labs choose what to publish). The runs before split by the money spent proving each result, which was an error; what it changed is in [the correction](ai-agent-results.md#correction-the-graph-weights-for-flow-back-were-wrong-found-2026-11-08).

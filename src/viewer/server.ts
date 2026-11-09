@@ -16,7 +16,7 @@ import { loadSpace, spaceIds, withCalibratedBudget, type Space } from '../spaces
 import { AREAS, LEAN_DIR, PLAIN, definitions, leanAvailable, loadTasks, type Problems } from '../lean/tasks.ts';
 import * as design from './design.ts';
 import { Community, LEAN_REWARDS, firstProofs, moneyByRound, progress, type CommunityResult } from '../lean/community.ts';
-import { SOCIETIES } from '../lean/societies.ts';
+import { SOCIETIES, osoParams } from '../lean/societies.ts';
 import { experimentName, isTest } from '../lean/names.ts';
 import { creditLeft, keyUsage } from '../lean/agent.ts';
 import { allCards } from '../card.ts';
@@ -357,7 +357,7 @@ function leanData(exp: string) {
     const lab = Math.min(1, options.agents.length - 1);
     const done = mine.filter((r) => r.key === key && r.done).map((r) => JSON.parse(readFileSync(join(dir, `${id}-r${r.rep}-${key}`, 'result.json'), 'utf8')) as CommunityResult);
     const proved = Object.fromEntries(tasks.filter((t) => t.posted).map((t) => [t.publicId, done.filter((r) => r.library.some((e) => e.target === t.publicId)).length]));
-    return { key, name: SOCIETIES[key].name, params: SOCIETIES[key].params, colour: SOCIETIES[key].colour, options, runs: mine.filter((r) => r.key === key).length, done: done.length, proved,
+    return { key, name: SOCIETIES[key].name, params: osoParams(options), colour: SOCIETIES[key].colour, options, runs: mine.filter((r) => r.key === key).length, done: done.length, proved,
       // Each finished run's targets proved by money spent, for the mean graph.
       series: done.map((r) => seriesOf(r, posted)),
       system: saved(`${id}-r${first.rep}-${key}`)?.prompts[lab] ?? com.systemPrompt(lab), promptFrom: saved(`${id}-r${first.rep}-${key}`)?.rebuilt ?? (saved(`${id}-r${first.rep}-${key}`) ? 'sent' : 'current'), turn: com.turnPrompt(lab, 1), lab: lab + 1 };
@@ -498,7 +498,7 @@ async function progressData() {
   const key = process.env.OPENROUTER_API_KEY;
   let credit: number | null = null;
   try { credit = key ? await creditLeft(key) : null; } catch { credit = null; }
-  return { now: Date.now(), credit, rewards: { current: MODEL_VERSION, gaps: LEAN_REWARDS.gaps({ knowledge: 'off' }) }, societies: Object.fromEntries(Object.entries(SOCIETIES).map(([k, v]) => [k, { name: v.name, params: v.params, colour: v.colour }])), experiments, bench };
+  return { now: Date.now(), credit, rewards: { current: MODEL_VERSION, gaps: LEAN_REWARDS.gaps({ knowledge: 'off' }) }, societies: Object.fromEntries(Object.entries(SOCIETIES).map(([k, v]) => [k, { name: v.name, colour: v.colour }])), experiments, bench };
 }
 
 /** What is left on the OpenRouter key's limit (the key itself is never sent to the page). */

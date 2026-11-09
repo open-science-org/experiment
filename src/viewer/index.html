@@ -2301,6 +2301,7 @@ function leanLabs(d) {
   if (!d.setups.length) { $('l-body').innerHTML = '<p class="muted">No society experiments yet.</p>'; return; }
   const o = d.setups[0].options;
   const fields = [
+    ['OSO parameters', (x) => esc(x.params)],
     ['Labs', (x) => `${x.options.agents.length}: ${[...new Set(x.options.agents)].map(esc).join(', ')}`],
     ['Money per lab', (x) => `$${x.options.budget} (as charged)`],
     ['Rounds, at most', (x) => x.options.rounds],

@@ -1,6 +1,6 @@
 # Findings so far
 
-Last updated: 2026-11-08. Plain summaries; each links to its full result. **Finding** means it was the measure fixed in advance; **lead** means it was noticed afterwards or is from a small or exploratory run.
+Last updated: 2026-11-08. Plain summaries; each links to its full result. **Finding** means it was the measure fixed in advance; **lead** means it was noticed afterwards or is from a small or exploratory run. Setup names are short labels for their [OSO parameters](lean-experiment.md#the-setups): for example, the shared library is public at once, α 1, m 0.
 
 ## Simulation
 

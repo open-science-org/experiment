@@ -3,34 +3,43 @@
 // against targets Lean has verified, one line per society.
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { LEAN_REWARDS, charged, countedOf, progress, spendTo, stats, type CommunityOptions, type CommunityResult, type Rules } from './community.ts';
+import { LEAN_REWARDS, charged, countedOf, mintOf, progress, spendTo, stats, type CommunityOptions, type CommunityResult, type Rules } from './community.ts';
 import { lineChart } from '../report/figures.ts';
 import { writeCard } from '../card.ts';
 import { RESULTS_DIR } from '../paths.ts';
 import { loadTasks } from './tasks.ts';
 import { experimentName } from './names.ts';
 
-export interface Society { /** Labs choose what to publish, with the knowledge reward by proof size (roadmap M3). */ choose?: boolean; /** With `choose`: 'off' pays no reward for publishing, so keeping a result costs nothing. */ knowledge?: 'off' | 'flat-mint'; name: string; /** The setup in OSO settings: when others see a result, α, who decides the work. */ params: string; rules: Rules; alpha?: number; /** One lab with everyone's budget. */ single?: boolean; colour: string; slot: 1 | 2 | 3 }
+export interface Society { /** Labs choose what to publish, with the knowledge reward by proof size (roadmap M3). */ choose?: boolean; /** With `choose`: 'off' pays no reward for publishing, so keeping a result costs nothing. */ knowledge?: 'off' | 'flat-mint'; name: string; /** The setup in OSO settings: when others see a result, α, who decides the work. */ rules: Rules; alpha?: number; /** One lab with everyone's budget. */ single?: boolean; colour: string; slot: 1 | 2 | 3 }
 
 /** OSO is orange, traditional blue; the baselines are greys. */
 export const SOCIETIES: Record<string, Society> = {
-  single: { name: 'Single agent', params: 'one lab, all the money · α 1', rules: 'independent', single: true, colour: '#5f5e5a', slot: 3 },
-  independent: { name: 'Independent labs', params: 'results never shared · α 1', rules: 'independent', colour: '#8a8984', slot: 3 },
-  shared: { name: 'Shared library', params: 'shared at once · α 1', rules: 'shared', colour: '#b3b1aa', slot: 3 },
-  planner: { name: 'Planner', params: 'shared at once · α 1 · lab 1 assigns the work', rules: 'planner', colour: '#33322f', slot: 3 },
+  single: { name: 'Single agent', rules: 'independent', single: true, colour: '#5f5e5a', slot: 3 },
+  independent: { name: 'Independent labs', rules: 'independent', colour: '#8a8984', slot: 3 },
+  shared: { name: 'Shared library', rules: 'shared', colour: '#b3b1aa', slot: 3 },
+  planner: { name: 'Planner', rules: 'planner', colour: '#33322f', slot: 3 },
   // New results pay their authors a flat amount and nothing flows back: credit without the dependency graph.
-  'pay-lemma': { name: 'Pay per lemma', params: 'shared at once · each new result pays its author · α 1', rules: 'oso', alpha: 1, knowledge: 'flat-mint', colour: '#6f6e69', slot: 3 },
-  traditional: { name: 'Traditional', params: 'shared when a target is proved · α 1', rules: 'traditional', colour: '#2a78d6', slot: 1 },
-  oso: { name: 'OSO, α 0.8', params: 'shared at once · α 0.8', rules: 'oso', alpha: 0.8, colour: '#eb6834', slot: 2 },
-  'oso-0.2': { name: 'OSO, α 0.2', params: 'shared at once · α 0.2', rules: 'oso', alpha: 0.2, colour: '#f2a07b', slot: 2 },
+  'pay-lemma': { name: 'Pay per lemma', rules: 'oso', alpha: 1, knowledge: 'flat-mint', colour: '#6f6e69', slot: 3 },
+  traditional: { name: 'Traditional', rules: 'traditional', colour: '#2a78d6', slot: 1 },
+  oso: { name: 'OSO, α 0.8', rules: 'oso', alpha: 0.8, colour: '#eb6834', slot: 2 },
+  'oso-0.2': { name: 'OSO, α 0.2', rules: 'oso', alpha: 0.2, colour: '#f2a07b', slot: 2 },
   // Labs choose what to publish (roadmap M3); knowledge reward by proof size. α 1: nothing flows back.
-  'choose-1': { name: 'Labs choose, α 1', params: 'each lab chooses what to publish · α 1', rules: 'oso', alpha: 1, choose: true, colour: '#33322f', slot: 3 },
-  'choose-0.8': { name: 'Labs choose, α 0.8', params: 'each lab chooses what to publish · α 0.8', rules: 'oso', alpha: 0.8, choose: true, colour: '#eb6834', slot: 2 },
-  'choose-0.2': { name: 'Labs choose, α 0.2', params: 'each lab chooses what to publish · α 0.2', rules: 'oso', alpha: 0.2, choose: true, colour: '#f2a07b', slot: 2 },
+  'choose-1': { name: 'Labs choose, α 1', rules: 'oso', alpha: 1, choose: true, colour: '#33322f', slot: 3 },
+  'choose-0.8': { name: 'Labs choose, α 0.8', rules: 'oso', alpha: 0.8, choose: true, colour: '#eb6834', slot: 2 },
+  'choose-0.2': { name: 'Labs choose, α 0.2', rules: 'oso', alpha: 0.2, choose: true, colour: '#f2a07b', slot: 2 },
   // The same with the knowledge reward off.
-  'choose-off-1': { name: 'Labs choose, reward off, α 1', params: 'each lab chooses what to publish · no reward for publishing · α 1', rules: 'oso', alpha: 1, choose: true, knowledge: 'off', colour: '#33322f', slot: 3 },
-  'choose-off-0.2': { name: 'Labs choose, reward off, α 0.2', params: 'each lab chooses what to publish · no reward for publishing · α 0.2', rules: 'oso', alpha: 0.2, choose: true, knowledge: 'off', colour: '#f2a07b', slot: 2 },
+  'choose-off-1': { name: 'Labs choose, reward off, α 1', rules: 'oso', alpha: 1, choose: true, knowledge: 'off', colour: '#33322f', slot: 3 },
+  'choose-off-0.2': { name: 'Labs choose, reward off, α 0.2', rules: 'oso', alpha: 0.2, choose: true, knowledge: 'off', colour: '#f2a07b', slot: 2 },
 };
+
+/** A setup in OSO's parameters, from the options a run really used: when results go public, α, the flat mint m, the knowledge reward m_bit and f, the share of money that follows earnings. */
+export function osoParams(o: CommunityOptions) {
+  const when = o.publishing === 'choose' ? 'labs choose when to publish' : o.rules === 'traditional' ? 'public when a target is proved' : o.rules === 'independent' ? 'never shared' : 'public at once';
+  const parts = [when, `α ${o.rules === 'oso' ? o.alpha : 1}`, `m ${mintOf(o)}`, `m_bit ${o.knowledge === 'proof-size' ? 'by proof size' : 0}`, `f ${o.follow ?? 0}`];
+  if (o.rules === 'planner') parts.push('lab 1 plans, the others prove');
+  if (o.agents.length === 1) parts.push('one lab, all the money');
+  return parts.join(' · ');
+}
 
 /** A society's options from the common ones: the same total money in every society. */
 export function societyOptions(key: string, base: CommunityOptions): CommunityOptions {
@@ -148,7 +157,7 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
       key, got, share, money,
       row: {
         society: SOCIETIES[key].name,
-        settings: SOCIETIES[key].params,
+        'OSO parameters': osoParams(rs[0].opts),
         'targets proved': `${f2(mean(got))} ± ${f2(sd(got))} of ${nTargets}`,
         [moneyMeasure ? `median money to ${K} targets` : `money to ${K} targets`]: `${moneyMeasure ? medianText(money) : `$${f2(mean(to))}`} (${rs.filter((r) => spendTo(r, K) !== null).length} of ${rs.length} got there)`,
         spent: `$${f2(mean(st.map((x) => x.spent)))}`,

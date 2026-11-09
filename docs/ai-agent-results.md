@@ -1,6 +1,6 @@
 # AI agents on the Lean problems: results so far
 
-Last updated: 2026-11-08. Every result here has its own page under `results/` (the links), with its design, caveats and logs. This page only gathers them.
+Last updated: 2026-11-08. Every result here has its own page under `results/` (the links), with its design, caveats and logs. This page only gathers them. Setup names are short labels for their [OSO parameters](lean-experiment.md#the-setups): when results go public, α, the flat mint m, the knowledge reward m_bit, and f.
 
 ## TL;DR
 
@@ -87,13 +87,13 @@ Money to reach 2 counted targets, run by run (OSO / traditional): $0.25 / never,
 
 | Setup | Settings | Money to 2 targets | Targets proved (of 8) |
 | --- | --- | --- | --- |
-| Single agent | one lab, all the money | $0.04 | 4.0 |
-| Independent labs | never shared | $0.03 | 3.0 |
-| Shared library | shared at once, no flow-back | $0.05 | 5.0 |
-| Planner | shared at once, lab 1 assigns the work | $0.12 | 3.5 |
-| Traditional | shared when a target is proved | $0.07 | 3.5 |
-| OSO, α 0.8 | shared at once, 20% flows back | $0.03 | 4.5 |
-| OSO, α 0.2 | shared at once, 80% flows back | $0.02 | **6.0** |
+| Single agent | never shared, one lab with all the money, α 1, m 1 | $0.04 | 4.0 |
+| Independent labs | never shared, α 1, m 1 | $0.03 | 3.0 |
+| Shared library | public at once, α 1, m 1 | $0.05 | 5.0 |
+| Planner | public at once, α 1, m 1, lab 1 assigns the work | $0.12 | 3.5 |
+| Traditional | public when a target is proved, α 1, m 1 | $0.07 | 3.5 |
+| OSO, α 0.8 | public at once, α 0.8, m 1 | $0.03 | 4.5 |
+| OSO, α 0.2 | public at once, α 0.2, m 1 | $0.02 | **6.0** |
 
 **What it means:**
 - **The measure was too easy.** Every setup reached 2 targets for a few cents, so the comparison says nothing yet. The main experiment needs a harder measure (3 or more targets, or only the hard ones).
@@ -107,6 +107,8 @@ Money to reach 2 counted targets, run by run (OSO / traditional): $0.25 / never,
 **Choosing the lab model.** A lab model must keep working and gain from lemmas. DeepSeek V4.1 Flash is the cheapest tested model that does both. GPT-OSS-120B is cheaper but gave up as a lab. In the [lemma panel](../results/pilot/panel-gpt-oss-120b/summary.md) it gained a little (2 of 16 alone, 7 with lemmas). It has not been tried in a plain race, so it may have failed only in the planner trial's setup. The strong Claude models prove every target alone, so they cannot show what sharing is worth.
 
 ## 4. Spend all: labs must spend all their money (2026-11-07)
+
+**Setups:** traditional (public when a target is proved, α 1), shared library (public at once, α 1), OSO (public at once, α 0.8 and 0.2). m 0, m_bit 0, f 0 throughout.
 
 **Question, fixed in advance** (the design is in the local notes, `notes/lean-main-experiment.md`): at the same money **spent**, does a community prove more when value flows back (OSO) than when results are only shared (a shared library)? 4 DeepSeek V4.1 Flash labs, $0.15 each; labs could not stop early, so nearly every run spent its money (about $0.61; one OSO α 0.8 run proved all 8 targets by round 13 and ended at $0.45); 20 runs per setup; knowledge reward off; bounties 4 · 2^(depth − 1). Results: [lean-main-b](../results/community/lean-main-b/summary.md). Traditional (20 runs) was added afterwards as a reference point; its runs came after the others'. Full design: [the Lean experiment](lean-experiment.md).
 
@@ -162,6 +164,8 @@ A target is proved twice when a lab proves it after another lab already has: nea
 
 ## 4a. Fair-prompt check (2026-11-07 to 08)
 
+**Setups:** shared library (public at once, α 1), OSO (public at once, α 0.2). m 0, m_bit 0, f 0 throughout.
+
 [Result](../results/community/lean-b5/summary.md). Plan fixed before the runs (roadmap M1): Spend all's B5 lead, tested again with one prompt template, so that the setups' prompts differ only in their rules. Shared library against OSO α 0.2, labs cannot stop, 10 runs per setup, 20 in all, $16.10. **Labs had $0.20 each here, against $0.15 in Spend all**, so two things changed at once: the prompts and the money.
 
 | Setup | B5 proved | Targets proved (of 8) | Lemmas proved | Built on another lab | Rounds a lab worked |
@@ -177,6 +181,8 @@ A target is proved twice when a lab proves it after another lab already has: nea
 **What labs thought** (runs 6–10, `scripts/lean-thinking.py`, a rough keyword count checked by hand on 10 matches per setup): on lemma turns, 64% of OSO labs' thinking mentions being paid through flow-back, against 20% in the shared library, where it mostly notes that nothing flows back. So labs notice the rule, often quoting it. Whether it drives their choice is not shown: in about half the OSO samples the lab mentions flow-back and then goes for a target.
 
 ## 4b. May quit: labs may stop early (2026-11-08)
+
+**Setups:** traditional (public when a target is proved, α 1), shared library (public at once, α 1), OSO (public at once, α 0.8 and 0.2). m 0, m_bit 0, f 0 throughout.
 
 [Result](../results/community/lean-part-a/summary.md). Plan fixed before the runs (roadmap M2). Same setups and money as Spend all ($0.15 a lab, prompts from the one template), but a lab that passes stops for good. 10 runs per setup, 40 in all, $11.90. Main comparison: OSO α 0.2 against the shared library.
 
@@ -205,6 +211,8 @@ Means with 95% ranges (Student t; for differences, degrees of freedom from the s
 - **Against Spend all** (labs could not stop, so they spent all their money): May quit proved 0.7 to 1.25 fewer targets per setup (shared library −0.85, range −1.6 to −0.1; OSO α 0.2 −1.25, range −1.9 to −0.6) for about half the money. The prompts differ too (Spend all used the older wording), so this is not only the effect of stopping.
 
 ## 4c. Labs choose what to publish (2026-11-08, roadmap M3)
+
+**Setups:** the lab chooses when to publish, α 1, 0.8 and 0.2; m 0, m_bit by proof size (at most 4), f 0.
 
 [Result](../results/community/lean-m3/summary.md). Plan fixed before the runs. Each lab, after proving a lemma, says whether to publish it now or keep it private; a kept lemma goes public only with a target its author proves on it. A new result earns a small reward by proof length (at most 4) when it is published, if no lab published it first. α 1, 0.8 and 0.2; labs cannot stop; $0.15 a lab; 10 runs per setup, 30 in all, $17.94.
 
@@ -264,6 +272,8 @@ Median money to reach 5 of the 8 targets (range covering at least 95%):
 **What it suggests:** OSO α 0.2 reached 5 targets for the least money in all four experiments, about 20–40% less than the shared library or α 1, though most ranges overlap. It does not hold at every count: at 4 targets the order varies, and at 6 targets Spend all's shared library was cheapest ($0.336, against $0.382 for OSO α 0.2). A lead: the count of 5 was picked after looking. At 7 targets, more OSO α 0.2 runs got there in Spend all (10 of 20, against 1 of 20 in the shared library) and Labs choose (7 of 10, against 4 of 10).
 
 ## 4f. Harder targets, stage 1 (pilot, 2026-11-09; left out)
+
+**Setups:** public at once in all: OSO α 0.2 (m 0), shared library (α 1, m 0), planner (α 1, m 0; lab 1 assigns the work), pay per lemma (α 1, m 1). m_bit 0, f 0.
 
 8 runs, 2 per setup, $0.20 a lab, $6.16 in all. The rule fixed in advance needed each of H4, H5 and H6 to be proved in some runs but not all, or at least two of them. Results pooled over the setups, so the check did not look at who was ahead.
 
