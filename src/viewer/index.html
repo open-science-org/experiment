@@ -2435,7 +2435,9 @@ function leanResults(d) {
     const each = (s) => s.series.map((r) => ks.map((k) => [k, r.find((row) => row[3] >= k)?.[0]]).filter(([, v]) => v !== undefined));
     const yTop = Math.max(0.01, ...lines.flatMap((L) => L.drawn.flatMap((p) => [p.m, ...(showBand && p.hi !== null && p.hi < Infinity ? [p.hi] : [])])), ...(showEach ? sets.flatMap((s) => each(s).flatMap((r) => r.map(([, v]) => v))) : []));
     const yMin = logy ? Math.max(1e-3, Math.min(yTop, ...lines.flatMap((L) => L.drawn.map((p) => p.m))) / 1.5) : 0;
-    const W = Math.min(820, Math.max(480, Math.round($('l-chart').clientWidth) || 820)), H = 420, l = 64, top = 16, pw = W - l - 170, ph = H - top - 54, Lg = Math.log10;
+    const W = Math.min(820, Math.max(480, Math.round($('l-chart').clientWidth) || 820)), H = 420, l = 64, top = 16, ph = H - top - 54, Lg = Math.log10;
+    // Room on the right for the longest end label.
+    const pw = W - l - Math.max(170, 40 + 6 * Math.max(...sets.map((s) => `${s.name}: $0.000 at ${n}`.length)));
     const sx = (k) => l + ((k - 0.5) / n) * pw, sy = (y) => top + ph - (logy ? (Lg(Math.max(y, yMin)) - Lg(yMin)) / (Lg(yTop) - Lg(yMin) || 1) : y / yTop) * ph;
     let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:auto;touch-action:pan-y" role="img" aria-label="Median money to reach each number of targets">`;
     for (const y of ticks(yMin, yTop, logy, false)) svg += `<line x1="${l}" x2="${l + pw}" y1="${sy(y)}" y2="${sy(y)}" stroke="var(--line)"/><text x="${l - 8}" y="${sy(y) + 4}" text-anchor="end" font-size="11" fill="var(--ink-2)">$${y < 0.01 ? y.toFixed(3) : y.toFixed(2)}</text>`;
@@ -2570,7 +2572,7 @@ function leanResults(d) {
     const rows = sets.map((s) => { const at = s.series.map((r) => r.find((row) => row[3] >= k)), [m, lo, hi] = medianRange(at.map((row) => row?.[0] ?? Infinity)); return { s, hit: at.filter(Boolean).length, n: at.length, m, lo, hi }; });
     const usd = (x) => `$${x.toFixed(3)}`, end = (x) => (x === Infinity ? 'not reached' : usd(x));
     $('l-a-tiles').innerHTML = rows.map((r) => `<div class="tile"><div class="k"><span class="swatch" style="background:${r.s.colour}"></span>${esc(r.s.name)}</div><div class="v">${end(r.m)}</div>${r.lo === null ? '<div class="muted" style="font-size:12px">too few runs for a range</div>' : r.lo === Infinity ? '' : `<div class="muted" style="font-size:12px">${end(r.lo)} to ${end(r.hi)}</div>`}<div class="muted" style="font-size:12px">${r.hit} of ${r.n} runs got there</div></div>`).join('');
-    $('l-a-note').textContent = rows.some((r) => r.lo === null) ? '' : Math.max(...rows.map((r) => r.lo)) <= Math.min(...rows.map((r) => r.hi)) ? ' All the ranges overlap, so no setup is clearly cheaper.' : ' Not all the ranges overlap: see the table below the graph.';
+    $('l-a-note').textContent = rows.some((r) => r.lo === null) ? '' : rows.every((r) => r.m === Infinity) ? ' No setup has a median here: half or more of the runs of each never got there.' : Math.max(...rows.map((r) => r.lo)) <= Math.min(...rows.map((r) => r.hi)) ? ' All the ranges overlap, so no setup is clearly cheaper.' : ' Not all the ranges overlap: see the table below the graph.';
   };
   const drawReach = (k) => { $('l-reach-k').textContent = k; $('l-reach-rows').innerHTML = reach(k); drawAnswer(k); };
   $('l-reach').innerHTML = `<div class="pane" style="overflow-x:auto;margin-bottom:12px"><h3 style="margin:0 0 8px;font-size:15px">Cost to reach <span id="l-reach-k"></span> targets</h3>
