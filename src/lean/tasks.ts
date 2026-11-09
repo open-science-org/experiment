@@ -33,7 +33,9 @@ export interface Task {
 /** Definitional lemmas (proved by rfl): free for everyone, as part of the definitions. */
 export const FREE = ['OSO.u_succ_succ'];
 
-const FILES: [string, Task['area']][] = [['A', 'A'], ['B', 'B'], ['C', 'C'], ['Cross', 'cross']];
+// The harder targets are a separate set, so that the runs made on the main set keep their meaning.
+const HARD = process.env.OSO_PROBLEMS === 'hard';
+const FILES: [string, Task['area']][] = [['A', 'A'], ['B', 'B'], ['C', 'C'], ['Cross', 'cross'], ...(HARD ? [['Hard', 'cross'] as [string, Task['area']]] : [])];
 
 export function leanAvailable(): boolean {
   return existsSync(join(LEAN_DIR, 'Reference', 'A.lean')) && existsSync(join(LEAN_DIR, 'reference-dag.md'));
@@ -69,10 +71,12 @@ export function parseReference(): Map<string, { ns: string; short: string; signa
 export function loadTasks(): Task[] {
   const src = parseReference();
   const rows: { depth: number; name: string; area: Task['area']; posted: string; uses: string[] }[] = [];
-  for (const line of readFileSync(join(LEAN_DIR, 'reference-dag.md'), 'utf8').split('\n')) {
+  for (const line of ['reference-dag.md', ...(HARD ? ['reference-dag-hard.md'] : [])].flatMap((f) => readFileSync(join(LEAN_DIR, f), 'utf8').split('\n'))) {
     if (!/^\| \d/.test(line)) continue;
     const [depth, name, area, posted, uses] = line.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim());
     const q = (n: string) => `OSO.${n.replace(/`/g, '')}`;
+    const known = rows.find((r) => r.name === q(name));
+    if (known) { known.posted = posted; continue; } // a harder target that is an existing lemma
     rows.push({
       depth: Number(depth), name: q(name), area: area as Task['area'], posted,
       uses: uses === '—' ? [] : uses.split(',').map((u) => q(u.trim())),

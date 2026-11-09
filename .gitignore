@@ -7,6 +7,7 @@ lean/.pilot/
 lean/Reference/
 lean/Reference.lean
 lean/reference-dag.md
+lean/reference-dag-hard.md
 lean/NOTES.md
 lean/runs/
 # Stub runs of the pilot only test the pipeline.
