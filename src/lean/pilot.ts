@@ -1,7 +1,7 @@
 // The calibration pilot: how hard is each theorem for a real agent?
 // For every reference theorem, with the theorems it rests on as its library ("library"), and for every
 // posted target with an empty library ("alone"), run a few attempts and record success, repairs, tokens
-// and checking time. Transcripts contain proofs, so they stay in lean/runs/ (private); the summary in
+// and checking time. Transcripts are large, so they stay in lean/runs/, out of git; the summary in
 // results/pilot/ uses only the anonymous ids of worlds/lean-reference.json.
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -165,7 +165,7 @@ How hard each theorem of the Lean problem set is for a real agent. ${note}
 - **Conditions:** *library*: the theorems it rests on in the reference tree are given; *alone*: posted targets with an empty library.
 - **Attempts:** ${records.length}; tokens in ${k(totals.input)} (plus ${k(totals.cacheRead)} cached), out ${k(totals.output)}${totals.cost ? `; cost $${totals.cost.toFixed(2)} ($${(totals.cost / Math.max(1, records.length)).toFixed(3)} per attempt)` : ''}.
 
-Theorem ids are the anonymous ids of [worlds/lean-reference.json](../../../worlds/lean-reference.json); statements and proofs are private until the experiment.
+Theorem ids are the anonymous ids of [worlds/lean-reference.json](../../../worlds/lean-reference.json); statements and proofs are in lean/Reference/.
 
 ## Success by level (library)
 

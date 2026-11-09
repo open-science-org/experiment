@@ -1,6 +1,6 @@
 // The Lean problem set as tasks for the pilot: every reference theorem, its statement, the theorems
-// it rests on, and an anonymous public id. Reads the private reference proofs in lean/, which are
-// never shown to agents and never committed (lean/README.md).
+// it rests on, and an anonymous public id. Reads the reference proofs in lean/, which are
+// never shown to agents (lean/README.md).
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ROOT } from '../paths.ts';
@@ -16,7 +16,7 @@ export interface Task {
   ns: string;
   /** Binders and type, as written after the name: `(x y : M2) : det (mul x y) = …`. */
   signature: string;
-  /** The reference proof, starting at `:=` or the first `|` (private; used only to test the harness). */
+  /** The reference proof, starting at `:=` or the first `|` (used only to test the harness). */
   reference: string;
   depth: number;
   area: 'A' | 'B' | 'C' | 'cross';
@@ -37,6 +37,11 @@ export const FREE = ['OSO.u_succ_succ'];
 export type Problems = 'main' | 'hard';
 const DEFAULT_PROBLEMS: Problems = process.env.OSO_PROBLEMS === 'hard' ? 'hard' : 'main';
 const filesOf = (problems: Problems): [string, Task['area']][] => [['A', 'A'], ['B', 'B'], ['C', 'C'], ['Cross', 'cross'], ...(problems === 'hard' ? [['Hard', 'cross'] as [string, Task['area']]] : [])];
+
+/** Lean is on this machine and the checker is built: what the tests that run Lean need. */
+export function leanReady(): boolean {
+  return leanAvailable() && existsSync(join(LEAN_DIR, '.lake', 'build', 'bin', 'axcheck'));
+}
 
 export function leanAvailable(): boolean {
   return existsSync(join(LEAN_DIR, 'Reference', 'A.lean')) && existsSync(join(LEAN_DIR, 'reference-dag.md'));

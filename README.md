@@ -49,7 +49,7 @@ npm install
 npm run viewer        # then open http://127.0.0.1:8791
 ```
 
-Needs Node 22.18 or later. Simulations need nothing else. AI-model tests also need [Lean](https://lean-lang.org/install/), an `OPENROUTER_API_KEY` in `.env`, and the private reference proofs in `lean/` (ask the maintainers).
+Needs Node 22.18 or later. Simulations need nothing else. AI-model tests also need [Lean](https://lean-lang.org/install/), an `OPENROUTER_API_KEY` in `.env`, and the checker built once: `lake build axcheck` in `lean/`.
 
 - **Runs:** every run (History), every result as a short card with interactive charts (Results), and any run replayed round by round (Live).
 - **New:** design a run. Simple model (only α and β vary) or full model (every setting; simulated agents or AI models).
@@ -76,7 +76,7 @@ The [code guide](docs/simulator.md) covers configuration, plugins and tests.
 | [spaces/](spaces/) | Example presets of the idea graph generator, and the Lean problem set |
 | [results/](results/), [reports/](reports/) | Saved results, and one full report per preset |
 | [src/](src/) | The model (`engine/`), experiments, reports, the AI-model tests (`lean/`) and the app (`viewer/`) |
-| [lean/](lean/) | The Lean problem set (definitions and targets; reference proofs are private) |
+| [lean/](lean/) | The Lean problem set (definitions, targets and reference proofs) |
 | [vendor/oso-ledger/](vendor/oso-ledger/) | A pinned copy of the OSO ledger; the tests check the simulator pays exactly what it pays |
 
 ## Related

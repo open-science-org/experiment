@@ -4,7 +4,9 @@ The problems for the AI-model tests (see [the Lean experiment design](../docs/le
 
 **Public here:** the definitions every agent sees ([Problems/Defs.lean](Problems/Defs.lean)) and the posted targets ([Problems/Targets.lean](Problems/Targets.lean)). Three areas: a number sequence (A), sorting (B) and 2 × 2 integer matrices (C), with targets that join areas.
 
-**Private:** the reference proofs, the lemma tree they give, and agents' transcripts. They would give agents the answers, and models trained later could memorize them, so they are not in this repository (see `.gitignore`). The shape of the reference tree, with anonymous ids, is public in [worlds/lean-reference.json](../worlds/lean-reference.json).
+**Also public:** the reference proofs ([Reference/](Reference/)) and the lemma tree they give ([reference-dag.md](reference-dag.md), [reference-dag-hard.md](reference-dag-hard.md)), since 2026-11-09. Agents in a run are not given them. A model trained after that date may have seen them, so keep that in mind when choosing a new model for these problems.
+
+**Not in this repository:** agents' transcripts, which are large (`lean/runs/`).
 
 | Target | Area | Statement | Bounty |
 | --- | --- | --- | --- |
@@ -29,4 +31,4 @@ npm run pilot -- calibrate                      # the real run; needs an API key
 
 - **An attempt** is a first proof plus up to three repairs, each sent back with Lean's errors. Each theorem is tried with its lemmas given as a library, and each target also alone, to test whether it really needs them.
 - **The checker** ([src/lean/checker.ts](../src/lean/checker.ts)) imports only the public definitions and states the agent's library as axioms. `#print axioms` then lists exactly which library theorems a proof used: the soundness check and the attribution in one. A check takes about 0.3 seconds. All 42 reference proofs pass, using exactly the theorems the reference tree says.
-- **Transcripts** contain proofs, so they stay in `lean/runs/` (private); public summaries use anonymous ids.
+- **Transcripts** are large, so they stay out of this repository (`lean/runs/`).

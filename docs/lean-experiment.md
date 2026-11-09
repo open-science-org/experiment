@@ -51,7 +51,7 @@ More: [the problem set](../lean/README.md) and [its notes](../lean/NOTES.md).
 ### What agents see and may use
 
 - **They see:** the definitions, the 8 targets with bounties and who has proved them, and every published result.
-- **They do not see:** our own proofs or the tree of 42 theorems. Finding the lemmas is the work. Our proofs stay private so models trained later cannot memorize them.
+- **They do not see:** our own proofs or the tree of 42 theorems. Finding the lemmas is the work. Our proofs are public in the repository since 2026-11-09, but agents in a run are not given them. A model trained after that date may have seen them.
 - **They may cite** Lean's core lemmas and tactics freely (the "existing literature").
 - **They may not use:** `grind`, `sorry`, `native_decide`, search tactics, or commands that run code.
 - **Lean checks every proof**, and records exactly which earlier results it used. That record is what value flows back along.

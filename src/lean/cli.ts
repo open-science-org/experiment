@@ -39,7 +39,7 @@ const flag = (name: string) => args.includes(`--${name}`);
 const value = (name: string, fallback: string) => { const i = args.indexOf(`--${name}`); return i >= 0 ? args[i + 1] : fallback; };
 
 if (!leanAvailable()) {
-  console.error('The Lean problem set is not here: lean/Reference/ and lean/reference-dag.md are private and not in git.');
+  console.error('The Lean problem set is not here: lean/Reference/ and lean/reference-dag.md are missing.');
   process.exit(1);
 }
 
@@ -83,7 +83,7 @@ if (cmd === 'calibrate') {
   const runId = value('run', `${stub ? 'stub-' : ''}${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}`);
   const records = await runPilot(opts, stub ? referenceChat(loadTasks()) : chatFor(opts.model), runId);
   const dir = writeSummary(runId, records, opts, stub ? 'This is a pipeline test: the "agent" answers with the reference proofs.' : '');
-  console.log(`\n${records.filter((r) => r.ok).length}/${records.length} attempts proved. Summary: ${dir}/summary.md; transcripts (private): lean/runs/${runId}/`);
+  console.log(`\n${records.filter((r) => r.ok).length}/${records.length} attempts proved. Summary: ${dir}/summary.md; transcripts: lean/runs/${runId}/`);
   process.exit(0);
 }
 

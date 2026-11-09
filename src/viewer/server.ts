@@ -1,6 +1,6 @@
 // The experiment viewer: `npm run viewer`, then open http://127.0.0.1:8791.
 // Plays back simulated runs round by round (traced on demand), and Lean pilot runs, live or after the
-// fact. It listens on this machine only: pilot transcripts contain proofs, which are private.
+// fact. It listens on this machine only.
 import { MODEL_HISTORY, MODEL_VERSION } from '../engine/version.ts';
 import { createServer } from 'node:http';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';

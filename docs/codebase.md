@@ -70,7 +70,7 @@ flowchart TB
     benchproj["bench/<br/>Mathlib project, problems.json"]
     llm["Model services<br/>OpenRouter · Ollama on this Mac"]
     results["results/<br/>summaries, graphs, cards"]
-    runs["lean/runs, bench/runs<br/>transcripts (private)"]
+    runs["lean/runs, bench/runs<br/>transcripts (not in git)"]
   end
 
   checker --> leanproj

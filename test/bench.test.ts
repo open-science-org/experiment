@@ -7,7 +7,7 @@ import { join } from 'node:path';
 import { BENCH_DIR, bannedTactics, compile, extractTactics, indentProof } from '../src/bench/check.ts';
 import { SOCIETIES, societyOptions, writeSocieties } from '../src/lean/societies.ts';
 import { Community, runCommunity, stats, referenceAgent, type CommunityOptions } from '../src/lean/community.ts';
-import { leanAvailable } from '../src/lean/tasks.ts';
+import { leanReady } from '../src/lean/tasks.ts';
 import { RESULTS_DIR } from '../src/paths.ts';
 
 const p = { id: 't', header: 'import Mathlib', statement: 'theorem t (a b : ℕ) : a + b = b + a := by' };
@@ -35,7 +35,7 @@ test('banned shortcuts and new declarations are refused', () => {
   assert.deepEqual(bannedTactics('have h : 1 = 1 := rfl\nomega'), []);
 });
 
-test('with Mathlib: a proof starting at the margin with nested lines is accepted', { skip: !leanAvailable() || !existsSync(join(BENCH_DIR, '.lake', 'packages', 'mathlib')) || !process.env.BENCH_LEAN }, async () => {
+test('with Mathlib: a proof starting at the margin with nested lines is accepted', { skip: !leanReady() || !existsSync(join(BENCH_DIR, '.lake', 'packages', 'mathlib')) || !process.env.BENCH_LEAN }, async () => {
   const q = { id: 'q', header: 'import Mathlib', statement: 'theorem q (a b : ℕ) (h : a = b) : a + 0 = b ∧ b = a := by' };
   assert.ok((await compile(q, 'constructor\n· simp\n  exact h\n· exact h.symm')).ok);
   assert.ok(!(await compile(q, 'constructor\n· simp')).ok);

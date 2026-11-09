@@ -237,7 +237,7 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
 - **Societies:** single agent (one lab, everyone's money); independent labs (nothing shared, a target counts when any lab proves it); shared library (everything public at once, no value flows back); planner (lab 1 assigns work to the others each round, results shared, nothing flows back); traditional (private until a target is proved); OSO (public at once, value flows back to what a result used; α is the share an author keeps).
 - **Agents:** ${o.agents.map((m) => `\`${m}\``).join(', ')}; up to ${o.rounds} rounds; up to ${o.repairs} repairs on Lean's errors per action.
 
-Transcripts, with every proof, are private.`);
+Transcripts are not in this repository.`);
   writeFileSync(join(dir, 'data.json'), JSON.stringify({ id, k: K, counted, runs: runs.map((r) => ({ society: r.key, rep: r.rep, runId: r.runId, stats: stats(r.result) })) }, null, 1) + '\n');
   return dir;
 }

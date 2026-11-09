@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { join } from 'node:path';
 import { banned, checkFile, parseAxioms, parseErrors } from '../src/lean/checker.ts';
 import { extractProof } from '../src/lean/agent.ts';
-import { leanAvailable } from '../src/lean/tasks.ts';
+import { leanReady } from '../src/lean/tasks.ts';
 import { Community, LEAN_REWARDS, parseReply, progress, proofBody, spendTo, type CommunityOptions, type CommunityResult } from '../src/lean/community.ts';
 import { medianDiff, medianRange, reachK } from '../src/lean/societies.ts';
 import { MODEL_VERSION } from '../src/engine/version.ts';
@@ -86,7 +86,7 @@ test('proofs are taken from the last lean block, without a repeated statement', 
   assert.equal(extractProof('no code'), null);
 });
 
-test('with Lean: the checker accepts a proof, rejects a wrong one, and reports what it used', { skip: !leanAvailable() }, async () => {
+test('with Lean: the checker accepts a proof, rejects a wrong one, and reports what it used', { skip: !leanReady() }, async () => {
   const { check } = await import('../src/lean/checker.ts');
   // Examples only: these are not lemmas of the problem set.
   const lib = [{ name: 'OSO.lemC', ns: 'OSO', short: 'lemC', signature: ': ∀ n : Nat, n ≤ n + 1' }];
@@ -100,7 +100,7 @@ test('with Lean: the checker accepts a proof, rejects a wrong one, and reports w
   assert.ok(!hidden.ok, 'a lemma outside the library is unknown');
 });
 
-test('with Lean: an attempt repairs a rejected proof using the error messages', { skip: !leanAvailable() }, async () => {
+test('with Lean: an attempt repairs a rejected proof using the error messages', { skip: !leanReady() }, async () => {
   const { attempt } = await import('../src/lean/agent.ts');
   // A made-up task (not from the problem set): the first reply is wrong, the second fixes it.
   const task = { ns: 'OSO', signature: '(n : Nat) : n + 0 = n' } as unknown as Parameters<typeof attempt>[0];
@@ -123,7 +123,7 @@ test('a lemma declaration splits into name, statement and proof', async () => {
   assert.equal(parseLemma('def foo := 1'), null);
 });
 
-test('with Lean: communities run, and under OSO results are shared while traditional labs duplicate', { skip: !leanAvailable() }, async () => {
+test('with Lean: communities run, and under OSO results are shared while traditional labs duplicate', { skip: !leanReady() }, async () => {
   const { runCommunity, referenceAgent } = await import('../src/lean/community.ts');
   const base = { agents: ['a', 'b', 'c'], budget: 0.12, rounds: 12, repairs: 0, alpha: 0.8, mint: 1, effort: 'low' as const, allowGrind: true };
   const { mkdtempSync } = await import('node:fs');
@@ -149,7 +149,7 @@ test('a community stops, marked, when the key runs out of credit', async () => {
   assert.equal(calls, 2, 'no round after the first refusal');
 });
 
-test('with Lean: race designs suggest counted targets from the pilot and post their lemmas as conjectures', { skip: !leanAvailable() }, async () => {
+test('with Lean: race designs suggest counted targets from the pilot and post their lemmas as conjectures', { skip: !leanReady() }, async () => {
   const design = await import('../src/viewer/design.ts');
   const direct = design.conjecturesFor(['A3'], 'direct');
   const all = design.conjecturesFor(['A5'], 'all');

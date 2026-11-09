@@ -15,7 +15,7 @@
 //   planner:     lab 1 plans and does not prove: each round it gives every other lab one assignment (a
 //                target, or a lemma to state and prove). Results are shared at once and nothing flows
 //                back, as in a shared library. A strong orchestration baseline, at the same total money.
-// Transcripts contain proofs, so they stay in lean/runs/ (private); summaries use anonymous ids.
+// Transcripts are large, so they stay in lean/runs/, out of git.
 import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { check, type CheckOptions } from './checker.ts';
@@ -114,7 +114,7 @@ export interface CommunityOptions {
   conjectureBounty?: number;
   /** The targets the result is judged on (public ids); all if empty. */
   counted?: string[];
-  /** Which problem set: the main 8 targets (default) or those plus the harder targets (private files; see lean/reference-dag-hard.md). */
+  /** Which problem set: the main 8 targets (default) or those plus the harder targets (see lean/reference-dag-hard.md). */
   problems?: Problems;
   /** Enforced persona features, per lab: repairs per action, reasoning effort, and whether it sees others' results. */
   repairsByLab?: number[];
@@ -806,7 +806,7 @@ ${table}
 - **Duplicated work:** a lemma proved again when another agent already had it (privately, under traditional rules), or a target solved twice, for example by two agents in the same round. **Trivial:** one basic tactic proves it; it can be cited but earns no mint. **Agents may pass** when nothing seems worth their budget, and keep the rest.
 - **One run per setting:** results vary from run to run; several runs are needed before reading much into a difference.
 
-Runs: ${runs.map((x) => x.runId).join(', ')}. Transcripts (with proofs) are private.
+Runs: ${runs.map((x) => x.runId).join(', ')}. Transcripts are not in this repository.
 `;
   if (!standIn) writeCard(dir, {
     ranAt: firstAt(runs.map((x) => x.result)),
@@ -930,7 +930,7 @@ ${design}
 | --- | --- | --- | --- | --- | --- | --- | --- |
 ${perRun.join('\n')}
 
-Transcripts, with every proof, are private.
+Transcripts are not in this repository.
 `;
   // Exploratory measures, computed the same way for every series and labelled as such.
   const ks = Array.from({ length: counted.length }, (_, i) => i + 1);
