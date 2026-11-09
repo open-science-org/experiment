@@ -241,7 +241,7 @@
 <body>
 <header>
   <h1>OSO experiment</h1>
-  <span class="muted">Share work early (OSO) or keep it until it is finished (traditional): which reaches the same verified results for less money?</span>
+  <span class="muted">Share work early (OSO) or keep it until it is finished (traditional): which gets more done for the same money?</span>
 </header>
 <div class="app">
 <nav class="side" aria-label="Pages">
@@ -286,13 +286,13 @@
       <a class="btn" href="#/lean?tab=prompts" data-tab="prompts">Prompts</a>
       <a class="btn" href="#/lean?tab=runs" data-tab="runs">Runs</a>
     </nav>
-    <div class="pane" style="margin:10px 0 12px"><b>The question.</b> Does a community of AI labs proving Lean theorems reach the same verified results for less money when value flows back to the results a proof used (OSO) than when results are only shared (a shared library), or kept private until a target is proved (traditional)? The full design (how the targets were chosen, why this model, the setups, measures): <a href="#/doc/docs/lean-experiment.md">the Lean experiment design</a>. Results so far: <a href="#/doc/docs/ai-agent-results.md">AI agents on the Lean problems</a>.</div>
+    <div class="pane" style="margin:10px 0 12px"><b>The question.</b> For the same money, does a community of AI labs proving Lean theorems prove more when value flows back to the results a proof used (OSO) than when results are only shared (a shared library), or kept private until a target is proved (traditional)? The full design (how the targets were chosen, why this model, the setups, measures): <a href="#/doc/docs/lean-experiment.md">the Lean experiment design</a>. Results so far: <a href="#/doc/docs/ai-agent-results.md">AI agents on the Lean problems</a>.</div>
     <div class="bar" id="l-bar"><label>Experiment <select id="l-exp"></select></label><span id="l-live" style="flex:1;min-width:220px"></span></div>
     <div id="l-body"></div>
   </section>
   <!-- Progress: the paid runs going now, with what is left of the money -->
   <section id="view-home" class="hidden">
-    <div class="pane" style="margin-bottom:12px"><h2 style="margin:0 0 6px;font-size:20px">Share work early, and credit what others build on: does research reach the same verified results for less money?</h2>
+    <div class="pane" style="margin-bottom:12px"><h2 style="margin:0 0 6px;font-size:20px">Share work early, and credit what others build on: does research get further for the same money?</h2>
       <p class="muted" id="h-aim" style="margin:0"></p></div>
     <div class="home-grid">
       <div class="pane"><h3 style="margin:0 0 8px;font-size:15px">Running now</h3><div id="h-running"><p class="muted">Loading…</p></div><div id="h-pilot"></div>
@@ -2348,7 +2348,7 @@ const LY = (d) => [
 ];
 // The main questions: clicking one sets the graph.
 const LQ = (d) => [
-  { text: 'Does OSO reach the same verified results for less money?', y: 'targets', x: 0, read: 'Read across at one height: the line further left got there for less money. Every target counted was checked by Lean.' },
+  { text: 'How much money does each setup spend to reach a number of targets?', y: 'targets', x: 0, read: 'Read across at one height: the line further left reached that many targets for less money.' },
   { text: 'Which setup gets there in the fewest tries?', y: 'targets', x: 2, read: 'Higher line: more targets for the same number of proofs Lean checked, all labs together. Tries do not depend on prices.' },
   { text: 'Which setup gets there soonest, with labs working at once?', y: 'targets', x: 1, read: 'Higher line: more targets by that round. In a round, every lab still working picks one task and gets up to 3 tries.' },
   { text: 'How deep does each setup get for the money?', y: 'deepest', x: 0, read: 'Higher line: a deeper target for the same money.' },
@@ -2378,10 +2378,10 @@ function leanResults(d) {
   const ends = sets.map((s) => ({ s, a: fin(s, 3), r: rangeOf(fin(s, 3)) }));
   const nRuns = [...new Set(sets.map((s) => s.series.length))];
   $('l-body').innerHTML = `<div class="pane" style="margin-bottom:12px">
-    <h3 style="margin:0 0 4px;font-size:15px">Does OSO reach the same verified results for less money?</h3>
-    <p style="font-size:13px;margin:0 0 8px">Median money, all labs together, to reach <span id="l-a-k"></span> of the ${d.targets.length} targets, each checked by Lean:</p>
+    <h3 style="margin:0 0 8px;font-size:15px"><label>Money spent to reach <select id="l-k"></select> of the ${d.targets.length} targets</label></h3>
+    <p style="font-size:13px;margin:0 0 8px">Median, all labs together:</p>
     <div class="tiles" id="l-a-tiles"></div>
-    <p class="muted" style="font-size:12px;margin:8px 0 0">${nRuns.length === 1 ? `${nRuns[0]} run${nRuns[0] === 1 ? '' : 's'} per setup` : `${sets.map((s) => `${esc(s.name)} ${s.series.length}`).join(', ')} runs`}, with a range of at least 95% below each median.<span id="l-a-note"></span> This measure was chosen after the runs up to 2026-11-08, so read those as a lead. Change the count of targets in the table below the graph. <a href="#/doc/results/community/${esc(d.id)}/summary.md">The run summary</a>.</p>
+    <p class="muted" style="font-size:12px;margin:8px 0 0">${nRuns.length === 1 ? `${nRuns[0]} run${nRuns[0] === 1 ? '' : 's'} per setup` : `${sets.map((s) => `${esc(s.name)} ${s.series.length}`).join(', ')} runs`}, with a range of at least 95% below each median.<span id="l-a-note"></span> This measure was chosen after the runs up to 2026-11-08, so read those as a lead. <a href="#/doc/results/community/${esc(d.id)}/summary.md">The run summary</a>.</p>
     <p class="muted" style="font-size:12px;margin:4px 0 0">Targets proved by the end of a run: ${ends.map((e) => `${esc(e.s.name)} ${mean(e.a).toFixed(1)}${e.r ? ` (${e.r[0].toFixed(1)} to ${e.r[1].toFixed(1)})` : ''}`).join(' · ')}.</p></div>
     <div class="pane" style="margin-bottom:12px">
     <h3 style="margin:0 0 6px;font-size:15px">Main questions</h3>
@@ -2508,14 +2508,14 @@ function leanResults(d) {
   const drawAnswer = (k) => {
     const rows = sets.map((s) => { const at = s.series.map((r) => r.find((row) => row[3] >= k)), [m, lo, hi] = medianRange(at.map((row) => row?.[0] ?? Infinity)); return { s, hit: at.filter(Boolean).length, n: at.length, m, lo, hi }; });
     const usd = (x) => `$${x.toFixed(3)}`, end = (x) => (x === Infinity ? 'not reached' : usd(x));
-    $('l-a-k').textContent = k;
     $('l-a-tiles').innerHTML = rows.map((r) => `<div class="tile"><div class="k"><span class="swatch" style="background:${r.s.colour}"></span>${esc(r.s.name)}</div><div class="v">${end(r.m)}</div>${r.lo === null ? '<div class="muted" style="font-size:12px">too few runs for a range</div>' : r.lo === Infinity ? '' : `<div class="muted" style="font-size:12px">${end(r.lo)} to ${end(r.hi)}</div>`}<div class="muted" style="font-size:12px">${r.hit} of ${r.n} runs got there</div></div>`).join('');
     $('l-a-note').textContent = rows.some((r) => r.lo === null) ? '' : Math.max(...rows.map((r) => r.lo)) <= Math.min(...rows.map((r) => r.hi)) ? ' All the ranges overlap, so no setup is clearly cheaper.' : ' Not all the ranges overlap: see the table below the graph.';
   };
-  const drawReach = (k) => { $('l-reach-rows').innerHTML = reach(k); drawAnswer(k); };
-  $('l-reach').innerHTML = `<div class="pane" style="overflow-x:auto;margin-bottom:12px"><h3 style="margin:0 0 8px;font-size:15px"><label>Cost to reach <select id="l-k">${Array.from({ length: nTargets }, (_, n) => `<option value="${n + 1}"${n + 1 === kv ? ' selected' : ''}>${n + 1}</option>`).join('')}</select> targets</label></h3>
+  const drawReach = (k) => { $('l-reach-k').textContent = k; $('l-reach-rows').innerHTML = reach(k); drawAnswer(k); };
+  $('l-reach').innerHTML = `<div class="pane" style="overflow-x:auto;margin-bottom:12px"><h3 style="margin:0 0 8px;font-size:15px">Cost to reach <span id="l-reach-k"></span> targets</h3>
     <table class="agents"><thead><tr><th>Setup</th><th>Runs that reached it</th><th>Median money, all labs</th><th>Median tries, all labs</th><th>Median round</th></tr></thead><tbody id="l-reach-rows"></tbody></table>
     <p class="muted" style="font-size:12px;margin:8px 0 0">${d.setups[0].options?.counted?.length ? `<b>This table and the graph count all ${nTargets} posted targets; the Progress page counts only ${esc(d.setups[0].options.counted.join(', '))}.</b> ` : ''}Every run counts: a run that never got there is "not reached", so no setup is flattered by leaving it out. Ranges cover at least 95%; under 6 runs there are too few for one. For runs up to 2026-11-08 this was looked at after the results, so read it as a lead.</p></div>`;
+  $('l-k').innerHTML = Array.from({ length: nTargets }, (_, n) => `<option value="${n + 1}"${n + 1 === kv ? ' selected' : ''}>${n + 1}</option>`).join('');
   drawReach(kv);
   $('l-k').onchange = () => { const p = params(); p.set('tab', 'results'); p.set('exp', d.id); p.set('k', $('l-k').value); history.replaceState(null, '', '#/lean?' + p); drawReach(Number($('l-k').value)); };
   const cell = (a) => { const r = rangeOf(a); return `${mean(a).toFixed(2)}${r ? ` <span class="muted">(${r[0].toFixed(2)}–${r[1].toFixed(2)})</span>` : ''}`; };
