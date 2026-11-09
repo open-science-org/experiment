@@ -1,0 +1,21 @@
+id: lean-tree-choice-matched-off
+title: Agents choosing what to publish on the Lean tree, matched to the Lean runs, knowledge reward off, by α
+description: >-
+  The prediction for the Lean run "labs choose, reward off": as lean-tree-choice-matched (4 identical agents,
+  money split equally and not following earnings), but a new result earns nothing by itself. Agents choose
+  whether to publish each intermediate idea; α 1 and 0.2 as in the Lean runs, α 0.8 for reference.
+question: "Set up like the Lean runs, with no reward for publishing, does flow-back make agents choose to share?"
+compare: "α 1, 0.8 and 0.2, agents choosing what to publish, knowledge reward off"
+fixed: "the Lean tree, 4 identical agents, equal money, no knowledge reward"
+measure: sharing
+better: higher
+seeds: 100
+scenario: lean-tree
+set:
+  rules: { visibility: { kind: choice }, mintPerBit: 0 }
+  agents.mix: { plain: 4, foundation: 0, racer: 0, explorer: 0, specialist: 0, freeRider: 0, gamer: 0 }
+  budget.X: 133
+  budget.allocation.rho: 0
+factors:
+  - { name: α, path: rules.alpha, values: [1, 0.8, 0.2] }
+columns: [sharing, frontier, targetsSolved, spend, waste]
