@@ -4,7 +4,7 @@ Last updated: 2026-11-08. Every result here has its own page under `results/` (t
 
 ## TL;DR
 
-Checked after every run; last checked 2026-11-08, after the difficulty check of the harder targets (a pilot).
+Checked after every run; last checked 2026-11-08, after the medium-effort test (a pilot).
 
 - **Lemmas help weak models.** DeepSeek proves 4 of 16 targets alone, 12 of 16 with the lemmas they need.
 - **Sharing lets labs build on each other** (Spend all: 2.2 results a run in the shared library, 0.4 under traditional), but it has not raised targets proved. A plain shared library gets this too, so it is not unique to OSO. **Repeated work is not a general result:** traditional labs proved the same lemma about 20 times a run in the small cheap race (5 runs), but only 0.4 times in Spend all (20 runs per setup; shared library 0.2).
@@ -13,7 +13,7 @@ Checked after every run; last checked 2026-11-08, after the difficulty check of 
 - **Lead, not a finding: low α gets there sooner.** OSO α 0.2 reached 5 of the 8 targets for the least money in all four experiments (section 4e), but most ranges overlap, and the count of 5 was picked after looking. At 4 and 6 targets the order is mixed: at 6 in Spend all the shared library was cheapest.
 - **Lead, not a finding:** the hardest target, B5, comes up more at low α, but the gap shrank with fair prompts and B5 was picked after looking.
 - **Against OSO:** labs did not share more with flow-back (they published nearly everything at every α), and did not clearly keep working longer (α 0.8: about 2 rounds longer; α 0.2: no clear change).
-- **Money was wasted in every run so far.** About 23% of model replies ran out of length while thinking and gave no answer, costing roughly 39% of the money (section 5). It affects all setups, more in the shared library (27%) than at α 0.2 (23%).
+- **Money was wasted in every run so far.** About 23% of model replies ran out of length while thinking and gave no answer, costing roughly 39% of the money (section 5). It affects all setups, more in the shared library (27%) than at α 0.2 (23%). In a small test, medium effort did not fix it.
 - **Pilot: three harder targets kept.** Alone the model proved none of 6 candidates (0 of 24 attempts). With the lemmas, 3 passed the rule fixed in advance (H4 and H5 4 of 4, H6 3 of 4); 3 were still too hard (0 of 4 each). Four attempts each is a rough screen.
 - **Why the tests may be blind:** five of the 8 targets are nearly always proved, so "targets proved" barely moves. Flow-back should matter most on deep problems, not tested yet.
 - **The setup checks out** (proof checker, fault tests, public benchmark). Flow-back was split by money spent instead of lines saved until 2026-11-08; the counts stand (correction below).
@@ -275,6 +275,12 @@ Faults found and fixed on the way: wrong error labels, proofs without a code blo
 Each model reply may use up to 32,000 tokens, including its thinking. In the four main experiments 5,646 of 24,902 replies (23%) used all of them and gave no text at all. Each cost about $0.0066, so about $37 of the $94.63 spent. All setups are affected: 27% of replies in the shared library, 25% traditional, 22–23% OSO, 16–18% Labs choose. Costs on this page include this waste.
 
 A further 22% of replies (5,385) had text that never reached Lean, mostly because of its format. From 2026-11-08 these are read more tolerantly, and the prompt shows an example; the same checks still apply. Read again by the new code, 3,517 of those saved replies would now reach Lean; whether they would pass is not known. Runs after that date are not directly comparable with earlier ones on cost.
+
+**Would less thinking fix it? (pilot, 2026-11-08; 24 attempts at each effort, H4, H5, H6, alone and with lemmas.)** No clear change. Replies stopped by the length limit: 50 of 69 at medium effort, 54 of 69 at high. Cost: $0.60 and $0.62. With lemmas: 12 of 12 proved at medium, 11 of 12 at high. Alone, every reply at both efforts hit the limit (48 of 48) and nothing was proved: the model keeps thinking when it is stuck. Too small to show a difference in quality.
+
+**Would a lower limit fix it?** From saved single-reply turns (1,203, all high effort), not a new test: replies that gave an answer used a median of 14,875 tokens, and a limit of 16,000 would have cut 41% of those Lean accepted. So a lower limit would cost proofs.
+
+**Is retrying after an empty reply worth it?** When the first reply was empty, 29% of turns still ended in an accepted proof (717 of 2,483). When the first empty reply came second, 4% did (57 of 1,269); third, none (0 of 387).
 
 ## 6. What is still open
 
