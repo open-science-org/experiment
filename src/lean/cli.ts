@@ -18,7 +18,7 @@
 //     --rules traditional,oso  --effort low|medium|high (medium)  --run ID  --stub  --dry-run
 //     --knowledge off|flat-mint|proof-size (off): what a new result earns for itself; off: nothing, only bounties
 //     --societies choose-1,choose-0.8,choose-0.2: labs choose what to publish, with the knowledge reward by proof size
-//     --societies choose-off-1,choose-off-0.2: the same with the knowledge reward off (these setups set it; --knowledge does not change a choose setup)
+//     --societies choose-off-1,choose-off-0.8,choose-off-0.2: the same with the knowledge reward off (these setups set it; --knowledge does not change a choose setup)
 //     --follow F                  money follows earnings: released round by round, a share F of it by recent earnings (0: equal); unset: a fixed budget per lab
 //     --may-stop yes|no (yes): may a lab pass and stop early? no: every lab works until its money or the rounds run out
 import { chatFor, creditLeft, DEFAULT_MODEL, DEFAULT_MODELS, defaultProvider, type Provider } from './agent.ts';

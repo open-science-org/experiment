@@ -32,6 +32,7 @@ export const SOCIETIES: Record<string, Society> = {
   'choose-0.2': { name: 'Labs choose, α 0.2', rules: 'oso', alpha: 0.2, choose: true, colour: '#f2a07b', slot: 2 },
   // The same with the knowledge reward off.
   'choose-off-1': { name: 'Labs choose, reward off, α 1', rules: 'oso', alpha: 1, choose: true, knowledge: 'off', colour: '#33322f', slot: 3 },
+  'choose-off-0.8': { name: 'Labs choose, reward off, α 0.8', rules: 'oso', alpha: 0.8, choose: true, knowledge: 'off', colour: '#eb6834', slot: 2 },
   'choose-off-0.2': { name: 'Labs choose, reward off, α 0.2', rules: 'oso', alpha: 0.2, choose: true, knowledge: 'off', colour: '#f2a07b', slot: 2 },
 };
 

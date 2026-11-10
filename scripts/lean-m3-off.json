@@ -1,0 +1,9 @@
+{
+  "agents": ["deepseek/deepseek-v4.1-flash", "deepseek/deepseek-v4.1-flash", "deepseek/deepseek-v4.1-flash", "deepseek/deepseek-v4.1-flash"],
+  "societies": ["choose-off-1", "choose-off-0.8", "choose-off-0.2"],
+  "budget": 0.15,
+  "rounds": 60,
+  "repairs": 2,
+  "effort": "medium",
+  "may-stop": "no"
+}
