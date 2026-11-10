@@ -22,6 +22,8 @@ Last updated: 2026-11-08. Plain summaries; each links to its full result. **Find
 
 - **Lead, why flow-back raises groundwork (labs' saved thinking, 118 runs):** under flow-back, labs reason that a lemma earns when another lab uses it; in the shared library, that it earns nothing and may hand a rival the bounty. They respond to whether value flows back much more than to how much (α 0.8 and 0.2 look alike). [Flow-back so far](flow-back.md)
 
+- **Lead, labs choose with the knowledge reward off (10 runs per α, 2026-11-10):** with nothing paid for publishing, labs shared less as α rose: 90% of lemmas published at α 0.2, 79% at α 0.8, 63% at α 1 (8 lemmas only). The simulation predicted 93%, 16% and 16%. Labs also proved far fewer lemmas without the reward. [Results](ai-agent-results.md)
+
 **Correction (2026-11-08):** every Lean run so far split flow-back by money spent instead of by graph weights (lines saved). Only 1–5% of earnings would have gone elsewhere and the counted measures are unaffected, but labs saw slightly wrong earnings. [Details](ai-agent-results.md)
 
 **Harness (2026-11-08):** about 23% of model replies ran out of length and gave no answer, roughly 39% of the money spent, in every setup. A small test of high against medium effort showed no clear change. [Details](ai-agent-results.md)

@@ -10,7 +10,7 @@
 | Why? | Labs reason that a lemma earns when others use it; without flow-back, that it helps rivals | Lead (labs' thinking) |
 | Does the size of α matter? | Little: α 0.8 and α 0.2 look alike | Lead |
 | More targets or lower cost? | No, in any experiment | Finding |
-| Does it make labs share? | Not tested yet with AI labs | – |
+| Does it make labs share? | Yes, once publishing earns nothing by itself: 63% published at α 1, 90% at α 0.2 | Lead (8 lemmas at α 1) |
 | Does it send money to useful labs? | Not tested yet (f = 0 in every run) | – |
 | Through the prompt or through the money? | Not separated yet; three leads point to the prompt (section 2) | Lead |
 
@@ -22,7 +22,7 @@
 | --- | --- | --- | --- |
 | 1 | Flow-back → the prompt states the rule | A | By design. The shared library's prompt says the opposite: "Nothing flows back" |
 | 2 | Rule → lab expects groundwork to pay | A | **Seen:** 18 of 20 OSO sentences say a lemma earns when used; 0 of 20 in the shared library |
-| 3 | Expects pay → publishes more | A | **Blocked:** sharing forced by the rules, or publishing paid (Labs choose: 99–100% at every α) |
+| 3 | Expects pay → publishes more | A | **Seen** once publishing is not paid (Labs choose, reward off: 63% → 79% → 90% as α falls); blocked in every other run. Like arrow 4, it can also come through arrow 7 |
 | 4 | Expects pay → more lemmas | A | **Seen,** but mixed with arrow 7: more lemmas in 4 of 5 experiments |
 | 5 | Flow-back → money reaches cited results | B | By design |
 | 6 | → lab sees its earnings rise | B | By design: each turn shows "Your earnings so far" |
@@ -55,7 +55,7 @@ Route A = the difference between the rows; route B = between the columns. "Told,
 
 | Effect | Simulation | AI runs on Lean |
 | --- | --- | --- |
-| Labs share | **Finding:** 24% of ideas shared at α 1, 66% at α 0.2 | Not shown: sharing was forced, or publishing was paid at every α |
+| Labs share | **Finding:** 24% of ideas shared at α 1, 66% at α 0.2 | **Lead: yes, once publishing is not paid** (63% at α 1, 90% at α 0.2). With publishing paid, 98–100% at every α |
 | Labs do groundwork | Yes | **Yes** (section 3) |
 | Money goes to labs whose work is used | **Lead:** with money following earnings, best α drops to 0.2 | Not tested |
 
@@ -65,24 +65,26 @@ Route A = the difference between the rows; route B = between the columns. "Told,
 
 ![Share of ideas published at once (β), by α, when agents choose](figures/beta-by-alpha.svg)
 
-| α | AI labs, paid to publish | Sim. matched, paid | Sim. matched, not paid | Sim. full model |
+| α | AI labs, paid to publish | AI labs, not paid | Sim. matched, paid | Sim. matched, not paid | Sim. full model |
 | --- | --- | --- | --- | --- |
-| 1 | 99% (98–100%) | 17% (16–18%) | 16% (15–17%) | 33% (31–35%) |
-| 0.8 | 99% (97–100%) | 20% (19–21%) | 16% (15–17%) | 36% (34–38%) |
-| 0.2 | 100% (99–100%) | 93% (93–94%) | 93% (92–93%) | 66% (64–67%) |
-| 0 | – | – | – | 100% |
+| 1 | 98% (96–99%) of 197 | **63% (31–86%) of 8** | 17% (16–18%) | 16% (15–17%) | 33% (31–35%) |
+| 0.8 | 99% (96–100%) of 199 | **79% (60–90%) of 28** | 20% (19–21%) | 16% (15–17%) | 36% (34–38%) |
+| 0.2 | 100% (97–100%) of 210 | **90% (74–97%) of 30** | 93% (93–94%) | 93% (92–93%) | 66% (64–67%) |
+| 0 | – | – | – | – | 100% |
 
 | Series | What it is |
 | --- | --- |
-| AI labs, paid to publish | Labs choose: 4 DeepSeek labs, 10 runs per α; a new result earns up to 4 when published |
+| AI labs, paid to publish | Labs choose: 4 DeepSeek labs, 10 runs per α; a new result earns up to 4 when published. All lemmas pooled |
+| AI labs, not paid | Labs choose, knowledge reward off (Nov 9): the same with nothing paid for publishing |
 | Sim. matched, paid | The simulation set up like Labs choose (Lean tree, 4 agents, same reward); 100 runs per α |
-| Sim. matched, not paid | The same with no reward for publishing: the prediction for the AI run not yet done |
+| Sim. matched, not paid | The same with no reward for publishing: the prediction for "AI labs, not paid" |
 | Sim. full model | The README's full model (step 5): default idea graph, 12 agents; 100 runs per α |
 
 - **In the simulation, β rises as α falls:** from 16–33% at α 1 to 66–93% at α 0.2. Little change from α 1 to 0.8; the rise comes at low α.
-- **AI labs did not follow it:** 99–100% at every α, because publishing was paid. The simulation with the same pay still predicted 17% at α 1, so the AI labs weigh the scoop risk far less than simulated agents.
-- **The test that matters is the one not yet run:** AI labs with nothing paid for publishing (prediction: 16% at α 1, 93% at α 0.2).
-- Values are means with 95% ranges; only α 1, 0.8, 0.2 (and 0) were run, so the lines between points are not data.
+- **AI labs paid to publish did not follow it:** 98–100% at every α. The simulation with the same pay still predicted 17% at α 1.
+- **AI labs not paid did follow it, in direction:** 63% at α 1, 79% at α 0.8, 90% at α 0.2. At α 0.2 this matches the prediction (93%); at α 1 and 0.8 the labs shared far more than predicted (16%). Lead, not a finding: at α 1 they proved only 8 lemmas in 10 runs.
+- **Turning the reward off cut lemma work sharply:** lemma attempts fell from 366 to 17 at α 1 and from 401 to 45 at α 0.2. Labs went for targets instead.
+- AI labs: lemmas pooled over runs, with Wilson 95% ranges; simulation: means with 95% ranges. Only α 1, 0.8, 0.2 (and 0) were run, so the lines between points are not data.
 
 ## 3. Groundwork: lemmas proved per run
 
@@ -92,6 +94,7 @@ Route A = the difference between the rows; route B = between the columns. "Told,
 | Fair-prompt check (10) | – | 8.5 | – | 17.2 | +8.7 (+3.4 to +14.0) |
 | May quit (10) | 1.0 | 0.3 | 3.7 | 2.5 | +2.2 (+1.4 to +3.0) |
 | Labs choose, publishing paid (10) | – | 19.6 | 19.6 | 20.4 | +0.8 |
+| Labs choose, nothing paid (10) | – | 0.7 (α 1) | 2.7 | 3.0 | +2.3 (+0.8 to +3.8); cited +1.1 (+0.2 to +2.0) |
 | Harder targets (5) | 20.0 | 21.8 | – | 26.4 | +4.6 (+0.2 to +9.0) |
 | Harder targets, pay per lemma (α 1, m 1) | | | | 63.0 | +41.2 (+5.5 to +76.9) against shared |
 
@@ -160,7 +163,6 @@ About half of all lemmas are never cited, so extra groundwork helps only where a
 
 | Test | What it would show | Cost |
 | --- | --- | --- |
-| Labs choose, nothing paid for publishing | Whether flow-back makes labs share | about $18 |
 | Money follows earnings (f > 0) | Whether money moves to labs whose work is used | to plan |
 | Prompt × money, 2 × 2 (section 1) | Route A against route B | about $25 |
 | Same wording at α 0.9, 0.5, 0.2 | Whether the amount matters | to plan |
