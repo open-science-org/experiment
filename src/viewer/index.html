@@ -2273,7 +2273,8 @@ async function pollLean() {
 }
 
 async function leanProblems(d) {
-  const set = params().get('set') === 'hard' ? 'hard' : 'main';
+  // The experiment's own set unless one is picked: the harder set has more than 8 targets.
+  const set = (params().get('set') ?? ((d.targets?.length ?? 0) > 8 ? 'hard' : 'main')) === 'hard' ? 'hard' : 'main';
   let P; try { P = await api('/api/problems?set=' + set); } catch (e) { $('l-body').textContent = e.message; return; }
   const hard = (t) => (t.community ? `${t.community[0]} of ${t.community[1]} runs` : t.alone ? `Alone ${t.alone[0]} of ${t.alone[1]}, with lemmas ${t.lemmas[0]} of ${t.lemmas[1]}` : '—');
   const link = (v, text) => `<a class="btn" href="#/lean?tab=problems&exp=${encodeURIComponent(d.id)}&set=${v}"${v === set ? ' aria-pressed="true"' : ''}>${text}</a>`;
@@ -2281,10 +2282,10 @@ async function leanProblems(d) {
     <td>${esc(t.area)}</td><td>${t.depth}</td><td>${t.bounty}</td><td>${t.uses.map(esc).join(', ') || '—'}<br><span class="muted">${t.below} in all below it</span></td><td>${hard(t)}</td></tr>`).join('');
   $('l-body').innerHTML = `<div class="chips" style="margin:0 0 10px">${link('main', 'Main set: 8 targets')}${link('hard', 'Harder set: 11 targets')}</div>
     <div class="pane" style="margin-bottom:12px;overflow-x:auto"><h3 style="margin:0 0 6px;font-size:15px">The problem space: ${P.theorems.length} theorems, ${P.targets.length} targets</h3>
-      <p class="muted" style="margin:0 0 8px">Left to right by depth; a line means "is used by". Targets are dark, with how often they have been proved. Colours are the areas below. Hover for the statement. The labs do not see this graph: they see only the targets and what has been published.</p>${leanGraph(P)}
+      <p class="muted" style="margin:0 0 8px">Left to right by depth; a line means "is used by". Targets are dark, with their bounty and how often they have been proved. Colours are the areas below. Hover for the statement. The labs do not see this graph: they see only the targets and what has been published.</p>${leanGraph(P)}
       <dl class="muted" style="font-size:13px;margin:8px 0 0">${Object.entries(P.areas).map(([k, v]) => `<dt style="display:inline;font-weight:700">${esc(k)}</dt> <dd style="display:inline;margin:0 14px 0 4px">${esc(v)}</dd>`).join('')}</dl></div>
     <div class="pane" style="margin-bottom:12px;overflow-x:auto"><h3 style="margin:0 0 6px;font-size:15px">The ${P.targets.length} targets</h3>
-      <p class="muted" style="margin:0 0 8px">Each lab sees these with their bounties and tries to prove them in Lean 4 (core library only). A target's <b>depth</b> is how many levels of lemmas sit under it in our reference proofs; its <b>bounty</b> is 4 · 2^(depth − 1). The lemmas listed are what our own proof uses; labs may find other routes, and must state and prove their own lemmas.${set === 'hard' ? ' No community run has used the harder set yet.' : ''}</p>
+      <p class="muted" style="margin:0 0 8px">Each lab sees these with their bounties and tries to prove them in Lean 4 (core library only). A target's <b>depth</b> is how many levels of lemmas sit under it in our reference proofs; its <b>bounty</b> is 4 · 2^(depth − 1). The lemmas listed are what our own proof uses; labs may find other routes, and must state and prove their own lemmas.</p>
       <table class="agents"><thead><tr><th>Target</th><th>What it says</th><th>Area</th><th>Depth</th><th>Bounty</th><th>Lemmas in our proof</th><th>How hard so far<br><span class="muted" style="font-weight:400">Proved in “${esc(P.experiment)}”, all setups; new targets: the pilot difficulty check</span></th></tr></thead><tbody>${rows}</tbody></table></div>
     <details class="pane"><summary style="cursor:pointer;font-weight:700">The definitions every lab is given (Lean)</summary><pre style="font-size:12px;overflow-x:auto">${esc(d.definitions)}</pre></details>`;
 }
@@ -2304,7 +2305,8 @@ function leanGraph(d) {
     const [x, y] = pos[t.id];
     const T = d.targets.find((x) => x.id === t.id);
     // A target shows how often it has been proved: in community runs, or for a new target in the pilot.
-    const text = !t.posted ? t.id : T?.community ? `${t.id} · ${Math.round((100 * T.community[0]) / T.community[1])}% of runs` : T?.alone ? `${t.id} · alone ${T.alone[0]}/${T.alone[1]}, lemmas ${T.lemmas[0]}/${T.lemmas[1]}` : `${t.id} · ${t.name}`;
+    const head = T ? `${t.id} · bounty ${T.bounty}` : t.id;
+    const text = !t.posted ? t.id : T?.community ? `${head} · ${Math.round((100 * T.community[0]) / T.community[1])}% of runs` : T?.alone ? `${head} · alone ${T.alone[0]}/${T.alone[1]}` : `${head} · ${t.name}`;
     svg += `<g><title>${esc(text)} (area ${esc(t.area)}, depth ${t.depth})${t.plain ? '\n' + esc(t.plain) : ''}\n${esc(t.statement)}</title><rect x="${x}" y="${y}" width="${boxW}" height="20" rx="4" fill="${t.posted ? '#33322f' : fill[t.area] ?? '#eee'}" stroke="currentColor" stroke-opacity="0.25"/>
       <text x="${x + 6}" y="${y + 14}" font-size="11" fill="${t.posted ? '#fff' : '#222'}" font-weight="${t.posted ? 700 : 400}">${esc(text.length > 29 ? text.slice(0, 28) + '…' : text)}</text></g>`;
   }
