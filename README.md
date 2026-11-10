@@ -71,7 +71,7 @@ The [code guide](docs/simulator.md) covers configuration, plugins and tests.
 
 | Path | Contents |
 | --- | --- |
-| [docs/](docs/) | [How it works](docs/README.md), [Equations](docs/equations.md), [model versions](docs/model-versions.md), [design](docs/design.md), [code guide](docs/simulator.md) |
+| [docs/](docs/) | [How it works](docs/README.md), [Equations](docs/equations.md), [flow-back so far](docs/flow-back.md), [model versions](docs/model-versions.md), [design](docs/design.md), [code guide](docs/simulator.md) |
 | [config/](config/) | The default settings (each one documented) and every experiment |
 | [spaces/](spaces/) | Example presets of the idea graph generator, and the Lean problem set |
 | [results/](results/), [reports/](reports/) | Saved results, and one full report per preset |

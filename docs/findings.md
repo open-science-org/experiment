@@ -20,6 +20,8 @@ Last updated: 2026-11-08. Plain summaries; each links to its full result. **Find
 
 - **Lead, harder targets (6 setups × 5 runs, 2026-11-09; too few runs for ranges):** setups that publish at once proved 10.4 to 11 of 11 targets, traditional 7.6. The planner with a good strategy was cheapest, but without our hints it was among the worst. Flow-back alone (OSO α 0.2 against the shared library) gave no gain. [Results](ai-agent-results.md)
 
+- **Lead, why flow-back raises groundwork (labs' saved thinking, 118 runs):** under flow-back, labs reason that a lemma earns when another lab uses it; in the shared library, that it earns nothing and may hand a rival the bounty. They respond to whether value flows back much more than to how much (α 0.8 and 0.2 look alike). [Flow-back so far](flow-back.md)
+
 **Correction (2026-11-08):** every Lean run so far split flow-back by money spent instead of by graph weights (lines saved). Only 1–5% of earnings would have gone elsewhere and the counted measures are unaffected, but labs saw slightly wrong earnings. [Details](ai-agent-results.md)
 
 **Harness (2026-11-08):** about 23% of model replies ran out of length and gave no answer, roughly 39% of the money spent, in every setup. A small test of high against medium effort showed no clear change. [Details](ai-agent-results.md)
