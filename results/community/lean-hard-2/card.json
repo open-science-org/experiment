@@ -1,0 +1,94 @@
+{
+ "id": "lean-hard-2",
+ "kind": "race",
+ "date": "2026-11-10",
+ "title": "Harder targets: money to reach them, 5 runs per setup, $0.40 a lab (Nov 9)",
+ "ranAt": "2026-11-09T16:52:14.340Z",
+ "design": {
+  "question": "For the same agents and checker, how much money does each way of organizing the labs spend to reach the same number of targets?",
+  "compare": "OSO, α 0.2, Shared library, Planner with a good strategy, Plain planner, Pay per lemma, Traditional",
+  "fixed": "the same 4 agents (the single agent: the first, with all the money), $1.60 in all, Lean checks every proof",
+  "measure": "median money, all labs together, to reach 7 of the 11 targets; 7 is the highest count that more than half the runs of every setup reached; a run that never got there counts as not reached",
+  "better": "lower",
+  "runs": "5 runs per setup, not paired"
+ },
+ "answer": "Median money, all labs together, to reach 7 of the 11 targets: OSO, α 0.2 $0.727; Shared library $0.509; Planner with a good strategy $0.203; Plain planner $1.137; Pay per lemma $0.699; Traditional $0.812. OSO, α 0.2 minus Shared library: +$0.218. OSO, α 0.2 minus Planner with a good strategy: +$0.524. OSO, α 0.2 minus Plain planner: −$0.410. OSO, α 0.2 minus Pay per lemma: +$0.028. OSO, α 0.2 minus Traditional: −$0.085.",
+ "table": [
+  {
+   "society": "OSO, α 0.2",
+   "OSO parameters": "public at once · α 0.2 · m 0 · m_bit 0 · f 0",
+   "targets proved": "10.80 ± 0.45 of 11",
+   "median money to 7 targets": "$0.727 (5 of 5 got there)",
+   "spent": "$1.17",
+   "lemmas proved": "26.40",
+   "built on another lab": "15.60",
+   "lemmas proved twice": "0.80",
+   "targets proved twice": "7.40"
+  },
+  {
+   "society": "Shared library",
+   "OSO parameters": "public at once · α 1 · m 0 · m_bit 0 · f 0",
+   "targets proved": "10.40 ± 1.34 of 11",
+   "median money to 7 targets": "$0.509 (5 of 5 got there)",
+   "spent": "$1.44",
+   "lemmas proved": "21.80",
+   "built on another lab": "14.40",
+   "lemmas proved twice": "0.20",
+   "targets proved twice": "6.60"
+  },
+  {
+   "society": "Planner with a good strategy",
+   "OSO parameters": "public at once · α 1 · m 0 · m_bit 0 · f 0 · lab 1 plans, the others prove; lab 1 also gets strategy advice and reports of what failed",
+   "targets proved": "11.00 ± 0.00 of 11",
+   "median money to 7 targets": "$0.203 (5 of 5 got there)",
+   "spent": "$0.70",
+   "lemmas proved": "22.60",
+   "built on another lab": "12.00",
+   "lemmas proved twice": "0.00",
+   "targets proved twice": "1.40"
+  },
+  {
+   "society": "Plain planner",
+   "OSO parameters": "public at once · α 1 · m 0 · m_bit 0 · f 0 · lab 1 plans, the others prove; same information as the labs",
+   "targets proved": "7.80 ± 1.92 of 11",
+   "median money to 7 targets": "$1.137 (4 of 5 got there)",
+   "spent": "$1.19",
+   "lemmas proved": "13.00",
+   "built on another lab": "2.60",
+   "lemmas proved twice": "0.00",
+   "targets proved twice": "0.40"
+  },
+  {
+   "society": "Pay per lemma",
+   "OSO parameters": "public at once · α 1 · m 1 · m_bit 0 · f 0",
+   "targets proved": "10.60 ± 0.55 of 11",
+   "median money to 7 targets": "$0.699 (5 of 5 got there)",
+   "spent": "$1.45",
+   "lemmas proved": "63.00",
+   "built on another lab": "39.20",
+   "lemmas proved twice": "1.20",
+   "targets proved twice": "5.40"
+  },
+  {
+   "society": "Traditional",
+   "OSO parameters": "public when a target is proved · α 1 · m 0 · m_bit 0 · f 0",
+   "targets proved": "7.60 ± 1.52 of 11",
+   "median money to 7 targets": "$0.812 (4 of 5 got there)",
+   "spent": "$1.62",
+   "lemmas proved": "20.00",
+   "built on another lab": "2.80",
+   "lemmas proved twice": "2.80",
+   "targets proved twice": "2.60"
+  }
+ ],
+ "caveats": [
+  "Labs could not stop early: each worked until its money or the rounds ran out, so setups are compared at the same money spent.",
+  "Rewards differ from the current simulation model: the knowledge reward is off (the simulation pays 1 per new bit since v5): Lean has no agreed measure of a result's new knowledge yet, see docs/design.md; value flowing back is split by the lines each parent saves (its own proof's length in symbols), a stand-in for the work it saves (1/p) in the simulation.",
+  "Money to a count is all labs together, to the end of the round that reached it. Medians have ranges of at least 95% from the sorted runs; differences of medians have 95% ranges from resampling the runs; runs are not paired. Other table values are mean ± standard deviation.",
+  "Planner with a good strategy has advantages the other setups lack: its prompt says how to split the work, and it sees what each lab tried last round and why it failed. A win for it may come from these hints rather than from coordination. Lab 1 only plans, so three labs prove and most of its money stays unspent.",
+  "The plain planner has the same information as the labs (no strategy advice, no failure reports). Lab 1 only plans, so three labs prove."
+ ],
+ "cost": "$37.86 as charged",
+ "page": "results/community/lean-hard-2/summary.md",
+ "chart": "results/community/lean-hard-2/figures/progress.svg"
+}

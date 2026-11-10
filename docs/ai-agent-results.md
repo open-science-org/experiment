@@ -4,7 +4,7 @@ Last updated: 2026-11-08. Every result here has its own page under `results/` (t
 
 ## TL;DR
 
-Checked after every run; last checked 2026-11-09, after stage 1 on the harder targets (a pilot, left out).
+Checked after every run; last checked 2026-11-09, after the main run on the harder targets (section 4g).
 
 - **Lemmas help weak models.** DeepSeek proves 4 of 16 targets alone, 12 of 16 with the lemmas they need.
 - **Sharing lets labs build on each other** (Spend all: 2.2 results a run in the shared library, 0.4 under traditional), but it has not raised targets proved. A plain shared library gets this too, so it is not unique to OSO. **Repeated work is not a general result:** traditional labs proved the same lemma about 20 times a run in the small cheap race (5 runs), but only 0.4 times in Spend all (20 runs per setup; shared library 0.2).
@@ -15,7 +15,8 @@ Checked after every run; last checked 2026-11-09, after stage 1 on the harder ta
 - **Against OSO:** labs did not share more with flow-back (they published nearly everything at every α), and did not clearly keep working longer (α 0.8: about 2 rounds longer; α 0.2: no clear change).
 - **Money was wasted in every run so far.** About 23% of model replies ran out of length while thinking and gave no answer, costing roughly 39% of the money (section 5). It affects all setups, more in the shared library (27%) than at α 0.2 (23%). In a small test, effort (high or medium) made no clear difference.
 - **Pilot: three harder targets kept.** Alone the model proved none of 6 candidates (0 of 24 attempts). With the lemmas, 3 passed the rule fixed in advance (H4 and H5 4 of 4, H6 3 of 4); 3 were still too hard (0 of 4 each). Four attempts each is a rough screen.
-- **Pilot: the harder targets were barely tried.** In stage 1 (8 runs, $6.16) labs spent nearly all their money before reaching them: H4 was never tried and H5 only in 1 run; neither was proved. H6 was proved in 7 of 8. The check fixed in advance failed, so these runs are left out. So we still do not know whether H4 and H5 are too hard in a community.
+- **Harder targets, main run (6 setups × 5 runs, $0.40 a lab; too few runs for 95% ranges):** sharing at once mattered most: the four sharing setups proved 10.4 to 11 of the 11 targets a run, traditional 7.6 and the plain planner 7.8. The planner with a good strategy was cheapest at every count and proved all 11 in every run, but the same role without our hints (the plain planner) was among the worst, so the gain came from the hints. Flow-back alone (OSO α 0.2 against the shared library) showed no gain here: the shared library was somewhat cheaper. Section 4g.
+- **Our hints may matter more than the rules.** The strategy advice and failure reports we gave only the planner made the biggest difference in any run so far. A lead: give them to every lab and compare again.
 - **Why the tests may be blind:** five of the 8 targets are nearly always proved, so "targets proved" barely moves. Flow-back should matter most on deep problems, not tested yet.
 - **The setup checks out** (proof checker, fault tests, public benchmark). Flow-back was split by money spent instead of lines saved until 2026-11-08; the counts stand (correction below).
 
@@ -287,6 +288,33 @@ Median money to reach 5 of the 8 targets (range covering at least 95%):
 | X1 | 4 | 90 | $2.08 |
 
 Only H6 met the rule, so stage 2 was not started. Labs spent $0.77 of each run's $0.80, a third of all the money on X1 alone. Runs proved 5 to 7 targets. 28% of replies were empty (95% range 25–31%), above the 23% of earlier runs. With 2 runs per setup this says nothing about which setup is better.
+
+## 4g. Harder targets, main run (2026-11-09)
+
+[Result](../results/community/lean-hard-2/summary.md) · [How soon each setup got there](../results/community/lean-hard-2/speed.md). 6 setups × 5 runs, 4 DeepSeek labs, $0.40 a lab, medium effort, labs cannot stop early; $37.86 in all. The plain planner and traditional were added after the other four had run, and ran later.
+
+**Setups** ([OSO parameters](lean-experiment.md#the-setups); m_bit 0 and f 0 in all): OSO (public at once, α 0.2, m 0); shared library (at once, α 1, m 0); planner with a good strategy (at once, α 1, m 0; lab 1 assigns the work and also gets [strategy advice and failure reports](lean-experiment.md#the-advantages-of-the-planner-with-a-good-strategy)); plain planner (the same with the labs' information only); pay per lemma (at once, α 1, m 1); traditional (public when a target is proved, α 1, m 0).
+
+**Measure, fixed in advance:** median money, all labs together, to reach K of the 11 targets, with K the highest count that more than half the runs of every setup reached: **K = 7**. With 5 runs a setup there is no 95% range for a median (it needs 6), so these are estimates only.
+
+| Setup | Runs that reached 7 | Median money to 7 | Targets proved by the end (mean) | Money spent (mean) | Lemmas proved (mean) |
+| --- | --- | --- | --- | --- | --- |
+| Planner with a good strategy | 5 of 5 | **$0.203** | 11.0 | $0.70 | 22.6 |
+| Shared library | 5 of 5 | $0.509 | 10.4 | $1.44 | 21.8 |
+| Pay per lemma | 5 of 5 | $0.699 | 10.6 | $1.45 | 63.0 |
+| OSO, α 0.2 | 5 of 5 | $0.727 | 10.8 | $1.17 | 26.4 |
+| Traditional | 4 of 5 | $0.812 | 7.6 | $1.62 | 20.0 |
+| Plain planner | 4 of 5 | $1.137 | 7.8 | $1.19 | 13.0 |
+
+**What it suggests:**
+- **Sharing at once is the big effect.** The four setups that publish at once proved 10.4 to 11 targets a run; traditional proved 7.6. This matches the simulation.
+- **The planner's hints, not the planning, did it.** The planner with a good strategy was cheapest at every count (to 10 targets: $0.400, against $0.940 to $1.152 for the other sharing setups) and proved all 11 in every run, for half the money. The plain planner, the same role with the labs' information, proved 7.8 and was the most expensive to 7.
+- **Flow-back, the only difference between OSO α 0.2 and the shared library:** no gain here. The shared library was cheaper to 7 ($0.509 against $0.727) and to 10 ($0.970 against $1.152); OSO spent less in all ($1.17 against $1.44) and proved about the same. Five runs each, so this is not settled.
+- **A flat reward per lemma (pay per lemma against the shared library: only m differs)** tripled the lemmas proved (63 against 22) and changed little else.
+- **The harder targets work at $0.40 a lab.** In the four sharing setups H4 was proved in 19 of 20 runs and H5 in 20 of 20; in traditional and the plain planner, 1 to 3 of 5.
+- **Empty replies rose again:** 34% (3,087 of 9,088), against 23% in earlier runs and 28% in stage 1.
+
+**Caveats:** K is set by the setups that reach the fewest targets, so the four sharing setups are compared at 7 of 11, well below what they reached; the counts above 7 were looked at afterwards. Two setups ran later than the others. Five more runs per setup would give ranges.
 
 ## 5. Is the test setup sound? (harness checks)
 

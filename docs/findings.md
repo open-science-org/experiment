@@ -18,6 +18,8 @@ Last updated: 2026-11-08. Plain summaries; each links to its full result. **Find
 
 - **Finding, labs choose what to publish (M3, 10 runs per setup):** AI labs published nearly every lemma at every α (99–100%; the simulation predicted 17% at α 1 and 93% at α 0.2). Their thinking shows why: the new-result reward is paid only on publishing, and they rarely weigh helping rivals. **Lead:** B5 proved in 8 of 10 runs at α 0.2, 4 of 10 at α 1. [Results](ai-agent-results.md)
 
+- **Lead, harder targets (6 setups × 5 runs, 2026-11-09; too few runs for ranges):** setups that publish at once proved 10.4 to 11 of 11 targets, traditional 7.6. The planner with a good strategy was cheapest, but without our hints it was among the worst. Flow-back alone (OSO α 0.2 against the shared library) gave no gain. [Results](ai-agent-results.md)
+
 **Correction (2026-11-08):** every Lean run so far split flow-back by money spent instead of by graph weights (lines saved). Only 1–5% of earnings would have gone elsewhere and the counted measures are unaffected, but labs saw slightly wrong earnings. [Details](ai-agent-results.md)
 
 **Harness (2026-11-08):** about 23% of model replies ran out of length and gave no answer, roughly 39% of the money spent, in every setup. A small test of high against medium effort showed no clear change. [Details](ai-agent-results.md)
