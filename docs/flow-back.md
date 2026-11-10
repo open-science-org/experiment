@@ -12,16 +12,54 @@
 | More targets or lower cost? | No, in any experiment | Finding |
 | Does it make labs share? | Not tested yet with AI labs | – |
 | Does it send money to useful labs? | Not tested yet (f = 0 in every run) | – |
+| Through the prompt or through the money? | Not separated yet; three leads point to the prompt (section 2) | Lead |
 
-## 1. What flow-back should do
+## 1. Two routes: the prompt and the money
+
+![How flow-back can change what labs do: A through the prompt, B through the money](figures/flow-back-dag.svg)
+
+| # | Arrow | Route | Evidence so far |
+| --- | --- | --- | --- |
+| 1 | Flow-back → the prompt states the rule | A | By design. The shared library's prompt says the opposite: "Nothing flows back" |
+| 2 | Rule → lab expects groundwork to pay | A | **Seen:** 18 of 20 OSO sentences say a lemma earns when used; 0 of 20 in the shared library |
+| 3 | Expects pay → publishes more | A | **Blocked:** sharing forced by the rules, or publishing paid (Labs choose: 99–100% at every α) |
+| 4 | Expects pay → more lemmas | A | **Seen,** but mixed with arrow 7: more lemmas in 4 of 5 experiments |
+| 5 | Flow-back → money reaches cited results | B | By design |
+| 6 | → lab sees its earnings rise | B | By design: each turn shows "Your earnings so far" |
+| 7 | Earnings seen → more lemmas | B | **Not tested:** cannot be told apart from arrow 4 |
+| 8 | → money follows earnings | B | **Not tested:** f = 0 in every run |
+| 9, 10 | More money → more turns → targets | B | **Not tested** |
+| 11 | Sharing → others build on it | | Simulation only |
+| 12 | More lemmas → cited later | | **Seen:** +4.1 cited a run (Spend all), +5.1 (Fair-prompt check) |
+| 13 | Building on others → targets, cost | | Simulation yes; AI runs: no clear gain |
+
+**Leads that route A carries the effect:**
+
+| Lead | Why it points to the prompt |
+| --- | --- |
+| α 0.8 and α 0.2 look alike (section 5) | The money flowing back differs 4×; the prompt differs only in one number |
+| Labs quote the rule on 67–87% of OSO lemma turns | They reason from what they are told |
+| They mention their own earnings (23–57%) only as a running total | In 16 examples read, none linked earnings to others using their work |
+| The shared library's prompt says "Nothing flows back" | Route A may also push its groundwork down, so the gap overstates route B |
+
+**The test that separates them** (about $25 at $0.15 a lab, 10 runs a setup):
+
+| | Money flows back (α 0.2) | Money does not (α 1) |
+| --- | --- | --- |
+| **Prompt states flow-back** | OSO α 0.2 (run) | Told, not paid |
+| **Prompt is silent** | Paid, not told (labs see only their earnings) | Neutral shared library |
+
+Route A = the difference between the rows; route B = between the columns. "Told, not paid" gives labs a rule that is not applied, so the write-up must say so.
+
+## 2. What flow-back should do
 
 | Effect | Simulation | AI runs on Lean |
 | --- | --- | --- |
 | Labs share | **Finding:** 24% of ideas shared at α 1, 66% at α 0.2 | Not shown: sharing was forced, or publishing was paid at every α |
-| Labs do groundwork | Yes | **Yes** (section 2) |
+| Labs do groundwork | Yes | **Yes** (section 3) |
 | Money goes to labs whose work is used | **Lead:** with money following earnings, best α drops to 0.2 | Not tested |
 
-## 2. Groundwork: lemmas proved per run
+## 3. Groundwork: lemmas proved per run
 
 | Experiment (runs a setup) | Traditional | Shared library (α 1) | OSO α 0.8 | OSO α 0.2 | α 0.2 minus shared (95% range) |
 | --- | --- | --- | --- | --- | --- |
@@ -36,7 +74,7 @@
 - No gain in Labs choose, where a lemma was paid on publishing at every α.
 - A certain payment per lemma did far more than flow-back.
 
-## 3. Why: what the labs say
+## 4. Why: what the labs say
 
 Share of turns where the lab's thinking weighs what a result gets when another lab uses it (`scripts/lean-flowback.py`, 118 runs):
 
@@ -67,7 +105,7 @@ Which way they reason, from 20 sentences per setup read by hand:
 - The payoff reason is real: labs work it out.
 - About a third of OSO target turns also weigh flow-back, then go for the target anyway.
 
-## 4. The size of α
+## 5. The size of α
 
 Same wording; only the number differs.
 
@@ -81,7 +119,7 @@ Same wording; only the number differs.
 
 **Lead:** labs respond to *whether* value flows back, much less to *how much*. The rule's wording may carry part of the effect.
 
-## 5. What it has not done
+## 6. What it has not done
 
 | Measure | OSO α 0.2 against shared library |
 | --- | --- |
@@ -93,13 +131,14 @@ Same wording; only the number differs.
 
 About half of all lemmas are never cited, so extra groundwork helps only where a target lacks it.
 
-## 6. Tests still to run
+## 7. Tests still to run
 
 | Test | What it would show | Cost |
 | --- | --- | --- |
 | Labs choose, nothing paid for publishing | Whether flow-back makes labs share | about $18 |
 | Money follows earnings (f > 0) | Whether money moves to labs whose work is used | to plan |
-| Same wording at α 0.9, 0.5, 0.2 | Payoff or wording | to plan |
+| Prompt × money, 2 × 2 (section 1) | Route A against route B | about $25 |
+| Same wording at α 0.9, 0.5, 0.2 | Whether the amount matters | to plan |
 
 ## Method
 

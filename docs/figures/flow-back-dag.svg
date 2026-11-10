@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 580" width="1020" height="580" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="12" role="img" aria-label="How flow-back can change what labs do: through the prompt (A) and through the money (B)">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#999"/></marker>
+  </defs>
+  <rect width="1020" height="580" fill="#fff"/>
+
+  <!-- the two groups -->
+  <rect x="200" y="30" width="430" height="135" rx="10" fill="#f3f0fa" stroke="#d9d2ec"/>
+  <text x="212" y="52" font-weight="700" fill="#222">A. Through the prompt: what labs are told</text>
+  <rect x="200" y="250" width="430" height="250" rx="10" fill="#eef5ee" stroke="#cfe0cf"/>
+  <text x="212" y="272" font-weight="700" fill="#222">B. Inherent: what the money does</text>
+
+  <!-- edges: seen = dark, simulation only = grey solid, not tested or blocked = dashed -->
+  <g fill="none" stroke-width="2">
+    <path d="M170,268 C190,268 190,105 210,105" stroke="#333" marker-end="url(#a)"/>
+    <path d="M400,105 L438,105" stroke="#333" marker-end="url(#a)"/>
+    <path d="M620,105 C640,105 640,135 658,135" stroke="#999" stroke-dasharray="5 4" marker-end="url(#g)"/>
+    <path d="M620,105 C640,105 640,255 658,255" stroke="#333" marker-end="url(#a)"/>
+    <path d="M170,268 C190,268 190,328 208,328" stroke="#333" marker-end="url(#a)"/>
+    <path d="M400,328 L438,316" stroke="#333" marker-end="url(#a)"/>
+    <path d="M620,311 C640,311 640,255 658,255" stroke="#999" stroke-dasharray="5 4" marker-end="url(#g)"/>
+    <path d="M305,356 L305,440 L438,440" stroke="#999" stroke-dasharray="5 4" marker-end="url(#g)"/>
+    <path d="M620,440 L658,440" stroke="#999" stroke-dasharray="5 4" marker-end="url(#g)"/>
+    <path d="M820,440 C835,440 835,360 848,360" stroke="#999" stroke-dasharray="5 4" marker-end="url(#g)"/>
+    <path d="M820,135 C835,135 835,200 848,200" stroke="#999" stroke-width="1.5" marker-end="url(#g)"/>
+    <path d="M820,255 C835,255 835,200 848,200" stroke="#333" marker-end="url(#a)"/>
+    <path d="M925,230 L925,328" stroke="#999" stroke-width="1.5" marker-end="url(#g)"/>
+  </g>
+
+  <!-- nodes -->
+  <g fill="#fff" stroke="#888">
+    <rect x="20" y="240" width="150" height="56" rx="8" stroke="#333" stroke-width="1.5"/>
+    <rect x="210" y="70" width="190" height="70" rx="8"/>
+    <rect x="440" y="70" width="180" height="70" rx="8"/>
+    <rect x="210" y="300" width="190" height="56" rx="8"/>
+    <rect x="440" y="280" width="180" height="62" rx="8"/>
+    <rect x="440" y="400" width="180" height="80" rx="8"/>
+    <rect x="660" y="110" width="160" height="50" rx="8"/>
+    <rect x="660" y="230" width="160" height="50" rx="8"/>
+    <rect x="660" y="415" width="160" height="50" rx="8"/>
+    <rect x="850" y="170" width="150" height="60" rx="8"/>
+    <rect x="850" y="330" width="150" height="60" rx="8" stroke="#333" stroke-width="1.5"/>
+  </g>
+  <g fill="#222" text-anchor="middle">
+    <text x="95" y="264" font-weight="700">Flow-back on</text><text x="95" y="281">(α &lt; 1)</text>
+    <text x="305" y="97">The prompt states the rule:</text><text x="305" y="113">“value flows back to the</text><text x="305" y="129">results it used”</text>
+    <text x="530" y="99">The lab expects groundwork</text><text x="530" y="115">and sharing to pay</text>
+    <text x="305" y="324">Money reaches the results</text><text x="305" y="340">a proof cited</text>
+    <text x="530" y="306">The lab sees its earnings rise</text><text x="530" y="322">when its work is used</text>
+    <text x="530" y="427">Money follows earnings (f &gt; 0):</text><text x="530" y="443">labs whose work is used</text><text x="530" y="459">get more money</text>
+    <text x="740" y="133">Publishes more</text><text x="740" y="149">(sharing)</text>
+    <text x="740" y="253">Proves more lemmas</text><text x="740" y="269">(groundwork)</text>
+    <text x="740" y="438">Those labs work</text><text x="740" y="454">more turns</text>
+    <text x="925" y="196">Others build on it;</text><text x="925" y="212">lemmas cited later</text>
+    <text x="925" y="356" font-weight="700">Targets proved,</text><text x="925" y="372" font-weight="700">money to reach them</text>
+  </g>
+
+  <!-- edge numbers -->
+  <g font-size="11" font-weight="700" text-anchor="middle">
+    <g fill="#222" stroke="#333"><circle cx="190" cy="186" r="9" fill="#fff"/><circle cx="420" cy="105" r="9" fill="#fff"/><circle cx="640" cy="120" r="9" fill="#fff"/><circle cx="640" cy="185" r="9" fill="#fff"/><circle cx="190" cy="298" r="9" fill="#fff"/><circle cx="420" cy="322" r="9" fill="#fff"/><circle cx="640" cy="283" r="9" fill="#fff"/><circle cx="305" cy="400" r="9" fill="#fff"/><circle cx="640" cy="440" r="9" fill="#fff"/><circle cx="835" cy="400" r="9" fill="#fff"/><circle cx="835" cy="160" r="9" fill="#fff"/><circle cx="835" cy="232" r="9" fill="#fff"/><circle cx="925" cy="280" r="9" fill="#fff"/></g>
+    <g fill="#222"><text x="190" y="190">1</text><text x="420" y="109">2</text><text x="640" y="124">3</text><text x="640" y="189">4</text><text x="190" y="302">5</text><text x="420" y="326">6</text><text x="640" y="287">7</text><text x="305" y="404">8</text><text x="640" y="444">9</text><text x="835" y="404">10</text><text x="835" y="164">11</text><text x="835" y="236">12</text><text x="925" y="284">13</text></g>
+  </g>
+
+  <!-- legend -->
+  <g fill="#222">
+    <line x1="20" y1="540" x2="60" y2="540" stroke="#333" stroke-width="2"/><text x="68" y="544">seen in the AI runs</text>
+    <line x1="210" y1="540" x2="250" y2="540" stroke="#999" stroke-width="1.5"/><text x="258" y="544">simulation only</text>
+    <line x1="380" y1="540" x2="420" y2="540" stroke="#999" stroke-width="2" stroke-dasharray="5 4"/><text x="428" y="544">not tested, or blocked by the rules so far</text>
+    <text x="740" y="544">Numbers: the table below the graph</text>
+  </g>
+</svg>
