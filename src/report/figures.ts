@@ -56,7 +56,15 @@ export interface LineChart {
 
 export function lineChart(c: LineChart): string {
   const stroke = (s: Series) => (s.colour ? ` style="stroke:${s.colour}"` : ''), fill = (s: Series) => (s.colour ? ` style="fill:${s.colour}"` : '');
-  const W = 760, H = 420, left = 64, right = 190, top = 92, bottom = 56;
+  // The legend wraps onto more rows when it is wider than the chart; the plot starts below it.
+  const W = 760, H = 420, left = 64, right = 190, bottom = 56;
+  const legend: { x: number; row: number }[] = [];
+  for (let i = 0, x = left, row = 0; i < c.series.length; i++) {
+    const w = 34 + c.series[i].name.length * 6.6;
+    if (i && x + w > W - 10) { x = left; row++; }
+    legend.push({ x, row }); x += w;
+  }
+  const top = 92 + 18 * Math.max(0, ...legend.map((l) => l.row));
   const pw = W - left - right, ph = H - top - bottom;
   const fx = c.format?.x ?? ((v: number) => String(v));
   const fy = c.format?.y ?? ((v: number) => String(v));
@@ -70,13 +78,12 @@ export function lineChart(c: LineChart): string {
   out.push(`<style>${STYLE}</style><rect class="bg" width="${W}" height="${H}" rx="8"/>`);
   out.push(`<text class="title" x="${left}" y="30">${esc(c.title)}</text>`);
   out.push(`<text class="sub" x="${left}" y="50">${esc(c.subtitle)}</text>`);
-  // Legend, one row above the plot.
-  let lx = left;
-  for (const s of c.series) {
+  // Legend above the plot.
+  c.series.forEach((s, i) => {
     // The legend is in each series' colour, like its line.
-    out.push(`<line class="line c${s.slot}"${stroke(s)} x1="${lx}" y1="70" x2="${lx + 18}" y2="70"/><text class="label t${s.slot}"${fill(s)} x="${lx + 24}" y="74">${esc(s.name)}</text>`);
-    lx += 34 + s.name.length * 6.6;
-  }
+    const { x: lx, row } = legend[i], ly = 70 + 18 * row;
+    out.push(`<line class="line c${s.slot}"${stroke(s)} x1="${lx}" y1="${ly}" x2="${lx + 18}" y2="${ly}"/><text class="label t${s.slot}"${fill(s)} x="${lx + 24}" y="${ly + 4}">${esc(s.name)}</text>`);
+  });
   for (const t of c.yTicks) {
     out.push(`<line class="grid" x1="${left}" x2="${left + pw}" y1="${sy(t)}" y2="${sy(t)}"/>`);
     out.push(`<text class="tick" x="${left - 8}" y="${sy(t) + 4}" text-anchor="end">${esc(fy(t))}</text>`);

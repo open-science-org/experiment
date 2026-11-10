@@ -59,6 +59,31 @@ Route A = the difference between the rows; route B = between the columns. "Told,
 | Labs do groundwork | Yes | **Yes** (section 3) |
 | Money goes to labs whose work is used | **Lead:** with money following earnings, best α drops to 0.2 | Not tested |
 
+### β by α: sharing when agents choose
+
+β is the share of ideas published as soon as they are proved. From saved results (`node scripts/beta-by-alpha.ts`):
+
+![Share of ideas published at once (β), by α, when agents choose](figures/beta-by-alpha.svg)
+
+| α | AI labs, paid to publish | Sim. matched, paid | Sim. matched, not paid | Sim. full model |
+| --- | --- | --- | --- | --- |
+| 1 | 99% (98–100%) | 17% (16–18%) | 16% (15–17%) | 33% (31–35%) |
+| 0.8 | 99% (97–100%) | 20% (19–21%) | 16% (15–17%) | 36% (34–38%) |
+| 0.2 | 100% (99–100%) | 93% (93–94%) | 93% (92–93%) | 66% (64–67%) |
+| 0 | – | – | – | 100% |
+
+| Series | What it is |
+| --- | --- |
+| AI labs, paid to publish | Labs choose: 4 DeepSeek labs, 10 runs per α; a new result earns up to 4 when published |
+| Sim. matched, paid | The simulation set up like Labs choose (Lean tree, 4 agents, same reward); 100 runs per α |
+| Sim. matched, not paid | The same with no reward for publishing: the prediction for the AI run not yet done |
+| Sim. full model | The README's full model (step 5): default idea graph, 12 agents; 100 runs per α |
+
+- **In the simulation, β rises as α falls:** from 16–33% at α 1 to 66–93% at α 0.2. Little change from α 1 to 0.8; the rise comes at low α.
+- **AI labs did not follow it:** 99–100% at every α, because publishing was paid. The simulation with the same pay still predicted 17% at α 1, so the AI labs weigh the scoop risk far less than simulated agents.
+- **The test that matters is the one not yet run:** AI labs with nothing paid for publishing (prediction: 16% at α 1, 93% at α 0.2).
+- Values are means with 95% ranges; only α 1, 0.8, 0.2 (and 0) were run, so the lines between points are not data.
+
 ## 3. Groundwork: lemmas proved per run
 
 | Experiment (runs a setup) | Traditional | Shared library (α 1) | OSO α 0.8 | OSO α 0.2 | α 0.2 minus shared (95% range) |
