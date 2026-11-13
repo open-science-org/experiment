@@ -1,23 +1,23 @@
 # AI agents on the Lean problems: results so far
 
-Last updated: 2026-11-08. Every result here has its own page under `results/` (the links), with its design, caveats and logs. This page only gathers them. Setup names are short labels for their [OSO parameters](lean-experiment.md#the-setups): when results go public, α, the flat mint m, the knowledge reward m_bit, and f.
+Last updated: 2026-11-12. Every result here has its own page under `results/` (the links), with its design, caveats and logs. This page only gathers them. Setup names are short labels for their [OSO parameters](lean-experiment.md#the-setups): when results go public, α, the flat mint m, the knowledge reward m_bit, and f.
 
 ## TL;DR
 
-Checked after every run; last checked 2026-11-10, after Labs choose with the knowledge reward off (section 4h).
+Checked after every run; last checked 2026-11-12, after an independent review of sections 4g, 4h and the flow-back report.
 
 - **Lemmas help weak models.** DeepSeek proves 4 of 16 targets alone, 12 of 16 with the lemmas they need.
 - **Sharing lets labs build on each other** (Spend all: 2.2 results a run in the shared library, 0.4 under traditional), but it has not raised targets proved. A plain shared library gets this too, so it is not unique to OSO. **Repeated work is not a general result:** traditional labs proved the same lemma about 20 times a run in the small cheap race (5 runs), but only 0.4 times in Spend all (20 runs per setup; shared library 0.2).
 - **Flow-back (OSO's own rule): no clear gain in targets proved yet.** Against the shared library, OSO α 0.2 proved about the same: +0.4 (Spend all), +0.5 (Fair-prompt check), +0.0 (May quit), all with ranges that include zero.
-- **Flow-back goes with more lemmas in most experiments** (about twice as many with fair prompts), and more of them get used: lemmas a later proof cites rose by 1 to 5 a run at α 0.2 (section 4d). About half of all lemmas are never cited, and in Labs choose α 1 labs proved as many once publishing paid a small reward.
-- **Lead, not a finding: low α gets there sooner.** OSO α 0.2 reached 5 of the 8 targets for the least money in all four experiments (section 4e), but most ranges overlap, and the count of 5 was picked after looking. At 4 and 6 targets the order is mixed: at 6 in Spend all the shared library was cheapest.
+- **Lead: flow-back goes with more lemmas** in all 5 experiments where only flow-back paid for lemmas (about twice as many with fair prompts), and more of them get used: lemmas a later proof cites rose by 1 to 5 a run at α 0.2 (section 4d). Lemmas were never the measure fixed in advance. About half of all lemmas are never cited, and in Labs choose α 1 labs proved as many once publishing paid a small reward.
+- **A lead that did not hold: low α gets there sooner.** OSO α 0.2 reached 5 of the 8 targets for the least money in all four earlier experiments (section 4e, ranges overlapping, count picked after looking); on the harder targets the shared library was cheaper (section 4g).
 - **Lead, not a finding:** the hardest target, B5, comes up more at low α, but the gap shrank with fair prompts and B5 was picked after looking.
-- **Lead: flow-back makes labs share, once publishing earns nothing by itself.** With the knowledge reward off, labs published 63% of lemmas at α 1, 79% at α 0.8 and 90% at α 0.2 (section 4h). Few lemmas at α 1 (8 in 10 runs), so the ranges are wide. With publishing paid they shared 98–100% at every α.
+- **Flow-back and sharing: direction as predicted, not shown.** With the knowledge reward off, labs published 58% of lemmas at α 1 and 93% at α 0.2 (section 4h); the planned difference, +35 points, has a range from −18 to +87. Labs proved only 8 lemmas at α 1. With publishing paid they shared 98–100% at every α.
 - **Against OSO:** with publishing paid, labs did not share more with flow-back (they published nearly everything at every α), and did not clearly keep working longer (α 0.8: about 2 rounds longer; α 0.2: no clear change).
 - **Money was wasted in every run so far.** About 23% of model replies ran out of length while thinking and gave no answer, costing roughly 39% of the money (section 5). It affects all setups, more in the shared library (27%) than at α 0.2 (23%). In a small test, effort (high or medium) made no clear difference.
 - **Pilot: three harder targets kept.** Alone the model proved none of 6 candidates (0 of 24 attempts). With the lemmas, 3 passed the rule fixed in advance (H4 and H5 4 of 4, H6 3 of 4); 3 were still too hard (0 of 4 each). Four attempts each is a rough screen.
 - **Harder targets, main run (6 setups × 5 runs, $0.40 a lab; too few runs for 95% ranges):** sharing at once mattered most: the four sharing setups proved 10.4 to 11 of the 11 targets a run, traditional 7.6 and the plain planner 7.8. The planner with a good strategy was cheapest at every count and proved all 11 in every run, but the same role without our hints (the plain planner) was among the worst, so the gain came from the hints. Flow-back alone (OSO α 0.2 against the shared library) showed no gain here: the shared library was somewhat cheaper. Section 4g.
-- **Flow-back, everything so far in one place:** [flow-back](flow-back.md). Labs' thinking shows they see groundwork pay under flow-back and see it as a gift to rivals without it.
+- **Flow-back, everything so far in one place:** [flow-back](flow-back.md). Labs restate the rule in their thinking; in the shared library they call a lemma a gift to rivals. Whether the prompt or the earnings drive the extra groundwork is not separated yet.
 - **Our hints may matter more than the rules.** The strategy advice and failure reports we gave only the planner made the biggest difference in any run so far. A lead: give them to every lab and compare again.
 - **Why the tests may be blind:** five of the 8 targets are nearly always proved, so "targets proved" barely moves. Flow-back should matter most on deep problems, not tested yet.
 - **The setup checks out** (proof checker, fault tests, public benchmark). Flow-back was split by money spent instead of lines saved until 2026-11-08; the counts stand (correction below).
@@ -320,24 +320,32 @@ Only H6 met the rule, so stage 2 was not started. Labs spent $0.77 of each run's
 
 ## 4h. Labs choose, knowledge reward off (2026-11-09 to 10)
 
-[Result](../results/community/lean-m3-off/summary.md). The same as Labs choose (4c) with one change: a new result earns nothing when published (m_bit 0). **Setups:** the lab chooses when to publish; α 1, 0.8 and 0.2; m 0, m_bit 0, f 0. 4 DeepSeek labs, $0.15 a lab, labs cannot stop, 10 runs per α, 30 in all, $18.57. Flow-back is split by lines saved here (fixed 2026-11-08), by money spent in 4c. Prediction fixed beforehand, from the simulation matched to these runs: 16% published at α 1, 16% at α 0.8, 93% at α 0.2.
+[Result](../results/community/lean-m3-off/summary.md). The same as Labs choose (4c) with one change: a new result earns nothing when published (m_bit 0). **Setups:** the lab chooses when to publish; α 1, 0.8 and 0.2; m 0, m_bit 0, f 0. 4 DeepSeek labs, $0.15 a lab, labs cannot stop, 10 runs per α, 30 in all, $18.57. **Measure fixed in advance:** the share of lemmas published at once, α 0.2 against α 1; flow-back counts only if α 0.2 is clearly higher. **Prediction,** from the simulation matched to these runs: 16% at α 1, 16% at α 0.8, 93% at α 0.2.
 
-| α | Lemmas published at once (all runs pooled) | Predicted | Lemma attempts | Lemmas proved a run | Targets proved (of 8) |
-| --- | --- | --- | --- | --- | --- |
-| 1 | 63% (31–86%), 5 of 8 | 16% | 17 | 0.7 (0.2–1.2) | 4.1 (3.3–4.9) |
-| 0.8 | 79% (60–90%), 22 of 28 | 16% | 40 | 2.7 (1.4–4.1) | 4.6 (4.1–5.1) |
-| 0.2 | 90% (74–97%), 27 of 30 | 93% | 45 | 3.0 (1.6–4.4) | 4.8 (4.1–5.5) |
+**Departures from the plan** (`notes/lean-main-experiment.md`, 2026-11-08):
+- α 0.8 was added; the plan had α 1 and α 0.2 only.
+- The plan's first step, 2 runs at α 1 to check that labs keep at least 15% of their lemmas, was skipped: all 30 runs started at once. The check would have passed (3 of 8 kept).
+- 30 runs instead of 20, $18.57 instead of about $14.
+- Not the same as 4c apart from the reward: flow-back is split by lines saved here (fixed 2026-11-08), by money spent in 4c; the prompt no longer says how it is split; the runs are a day later.
 
-α 0.2 minus α 1: lemmas +2.3 (+0.8 to +3.8), lemmas cited later +1.1 (+0.2 to +2.0), built on another lab +1.1 (+0.1 to +2.1), targets +0.7 (−0.3 to +1.7). B5 and A5: proved in no run.
+| α | Published at once (mean over runs) | Pooled lemmas | Predicted | Lemma attempts | Lemmas proved a run | Targets proved (of 8) |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | 58% (7–100%), 6 runs with a lemma | 5 of 8 | 16% | 17 | 0.7 (0.2–1.2) | 4.1 (3.3–4.9) |
+| 0.8 | 63% (31–94%) | 22 of 28 | 16% | 40 | 2.7 (1.4–4.1) | 4.6 (4.1–5.1) |
+| 0.2 | 93% (84–100%) | 27 of 30 | 93% | 45 | 3.0 (1.6–4.4) | 4.8 (4.1–5.5) |
+
+**The planned measure, α 0.2 minus α 1: +35 points (−18 to +87).** Pooling all lemmas instead: +28 points (−1 to +60). Both ranges include zero, so by the plan's rule flow-back did **not** clearly raise sharing.
+
+α 0.2 minus α 1, also: lemmas +2.3 (+0.8 to +3.8), lemmas cited later +1.1 (+0.2 to +2.0), built on another lab +1.1 (+0.1 to +2.1), targets +0.7 (−0.3 to +1.7). B5 and A5: proved in no run.
 
 **What it shows:**
-- **Sharing now falls as α rises,** in the direction the simulation predicts. At α 0.2 the labs matched the prediction (90% against 93%). At α 1 and 0.8 they shared much more than predicted (63% and 79% against 16%).
-- **Without the reward, labs mostly stopped proving lemmas:** 17 attempts at α 1 against 366 with the reward. They went for targets instead, so the α 1 share rests on 8 lemmas.
-- **Flow-back still went with more groundwork:** about 4 times the lemmas at α 0.2 as at α 1.
+- **Direction as predicted, not shown.** At α 0.2 the labs matched the prediction (93% against 93%). At α 1 and 0.8 they shared more than predicted, but the α 1 share rests on 8 lemmas.
+- **Without the reward, labs mostly stopped proving lemmas:** 17 attempts at α 1 against 366 with the reward. They went for targets instead.
+- **Flow-back still went with more groundwork:** about 4 times the lemmas at α 0.2 as at α 1 (lead).
 - **Targets: fewer than with the reward** (4.1–4.8 against 6.1–6.7 in 4c), and no deep target proved.
-- **Why labs kept lemmas** (12 kept, all read): mostly because keeping cost nothing ("if we keep it private and then prove C4 using it, it will be published automatically"); once because a rival might use it ("If we publish the lemma, others could use it to prove B3 faster").
+- **Why labs kept lemmas** (all 12 kept lemmas read): mostly because keeping cost nothing ("if we keep it private and then prove C4 using it, it will be published automatically"); once because a rival might use it ("If we publish the lemma, others could use it to prove B3 faster").
 
-**Caveats:** few lemmas, so wide ranges; the share published was the measure fixed in advance, but these counts are smaller than planned for. The number of lemmas itself depends on α, so the share is measured on different amounts of work.
+**Caveats:** the number of lemmas depends on α, so the share is measured on different amounts of work. To measure sharing at α 1, labs need to prove more lemmas there: more runs, or more money a lab.
 
 ## 5. Is the test setup sound? (harness checks)
 

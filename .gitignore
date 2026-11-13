@@ -17,3 +17,4 @@ results/community/*-r[0-9]*/
 bench/.lake/
 bench/.check/
 bench/runs/
+__pycache__/

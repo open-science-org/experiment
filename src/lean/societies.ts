@@ -194,8 +194,9 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
   const verdict = (r: (typeof rows)[number]) => {
     return `${SOCIETIES[r.key].name} proved ${range(r.got)} targets of ${nTargets} a run; ${SOCIETIES[base.key].name} ${range(base.got)}. Difference: ${diff(r.got, base.got)}.`;
   };
-  // Labs choosing what to publish (roadmap M3): the main measure is the share published at once, α 0.2 against α 1.
-  const lo = rows.find((r) => r.key === 'choose-0.2'), hi = rows.find((r) => r.key === 'choose-1');
+  // Labs choosing what to publish (roadmap M3), with or without the knowledge reward: the main measure is the
+  // share published at once, α 0.2 against α 1.
+  const lo = rows.find((r) => /^choose-(off-)?0\.2$/.test(r.key)), hi = rows.find((r) => /^choose-(off-)?1$/.test(r.key));
   const chooseAnswer = lo && hi && lo.share.length && hi.share.length
     ? `Lemmas published at once: ${rows.filter((r) => SOCIETIES[r.key].choose).map((r) => `${SOCIETIES[r.key].name} ${r.share.length ? range(r.share, pct) : '—'}`).join('; ')}. α 0.2 minus α 1: ${diff(lo.share, hi.share, pct)}.`
     : null;

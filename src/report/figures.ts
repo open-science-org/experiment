@@ -35,6 +35,8 @@ export interface Series {
   /** A colour of its own instead of the slot's, for ordered series (shades of one hue). */
   colour?: string;
   points: [number, number][];
+  /** A 95% range for each point, drawn as a thin bar through it. */
+  ranges?: [number, number][];
 }
 
 export interface LineChart {
@@ -100,6 +102,10 @@ export function lineChart(c: LineChart): string {
     if (!s.points.length) continue;
     const d = s.points.map(([x, y], i) => `${i ? 'L' : 'M'}${sx(x).toFixed(1)} ${sy(y).toFixed(1)}`).join(' ');
     out.push(`<path class="line c${s.slot}"${stroke(s)} d="${d}"/>`);
+    s.ranges?.forEach(([lo, hi], i) => {
+      const x = sx(s.points[i][0]).toFixed(1);
+      out.push(`<line class="line c${s.slot}" style="stroke-width:1.5;opacity:.55${s.colour ? `;stroke:${s.colour}` : ''}" x1="${x}" x2="${x}" y1="${sy(lo).toFixed(1)}" y2="${sy(hi).toFixed(1)}"/>`);
+    });
     const shown = c.markers ? s.points : [s.points[s.points.length - 1]];
     for (const [x, y] of shown) {
       out.push(`<circle class="dot f${s.slot}"${fill(s)} cx="${sx(x).toFixed(1)}" cy="${sy(y).toFixed(1)}" r="4.5"><title>${esc(`${s.name}: ${fy(y)} at ${c.xLabel.toLowerCase()} ${fx(x)}`)}</title></circle>`);

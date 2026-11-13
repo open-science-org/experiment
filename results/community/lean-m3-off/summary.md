@@ -2,7 +2,7 @@
 
 **Question:** For the same agents, checker and money, does a community prove more targets when value flows back (OSO) than when results are only shared, or kept private until a target is proved?
 
-**Answer:** Most targets proved: Labs choose, reward off, α 0.2, 4.80 of 8.
+**Answer:** Lemmas published at once: Labs choose, reward off, α 1 58% (95% range 7% to 100%); Labs choose, reward off, α 0.8 63% (95% range 31% to 94%); Labs choose, reward off, α 0.2 93% (95% range 84% to 100%). α 0.2 minus α 1: 35% (95% range -18% to 87%).
 
 ![Labs choose, knowledge reward off: α 1, 0.8, 0.2 × 10 runs, $0.15 a lab (Nov 9)](figures/progress.svg)
 
@@ -12,7 +12,7 @@
 | Labs choose, reward off, α 0.8 | labs choose when to publish · α 0.8 · m 0 · m_bit 0 · f 0 | 4.60 ± 0.70 of 8 | $0.18 (10 of 10 got there) | $0.62 | 2.70 | 0.90 | 0.00 | 0.70 | 63% (95% range 31% to 94%) | 0.00 | 143.46 |
 | Labs choose, reward off, α 0.2 | labs choose when to publish · α 0.2 · m 0 · m_bit 0 · f 0 | 4.80 ± 0.92 of 8 | $0.21 (10 of 10 got there) | $0.61 | 3.00 | 1.40 | 0.00 | 1.60 | 93% (95% range 84% to 100%) | 0.00 | 79.84 |
 
-**Design** (fixed before the run): compared Labs choose, reward off, α 1, Labs choose, reward off, α 0.8, Labs choose, reward off, α 0.2 · held the same: the same 4 agents (the single agent: the first, with all the money), $0.60 in all, Lean checks every proof · measure: targets proved by the end of a run, of 8; money to reach 2 targets is shown beside it, higher is better · 10 runs per setup, not paired. Cost: $18.57 as charged.
+**Design** (fixed before the run): compared Labs choose, reward off, α 1, Labs choose, reward off, α 0.8, Labs choose, reward off, α 0.2 · held the same: the same 4 agents (the single agent: the first, with all the money), $0.60 in all, Lean checks every proof · measure: the share of lemmas published at once (of those with a PUBLISH line), α 0.2 against α 1; targets proved beside it, higher is better · 10 runs per setup, not paired. Cost: $18.57 as charged.
 
 **Caveats:**
 - Labs could not stop early: each worked until its money or the rounds ran out, so setups are compared at the same money spent.

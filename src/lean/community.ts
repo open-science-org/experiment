@@ -731,6 +731,9 @@ export function stats(r: CommunityResult) {
     sharedAtOnce: (() => { const xs = r.library.filter((e) => !e.target && !e.trivial); return xs.length ? xs.filter((e) => e.public && e.publishedRound === e.round).length / xs.length : null; })(),
     /** Labs choosing: the share published at once among lemmas with an explicit PUBLISH line. */
     sharedOfChosen: (() => { const xs = r.library.filter((e) => e.choice === 'yes' || e.choice === 'no'); return xs.length ? xs.filter((e) => e.choice === 'yes').length / xs.length : null; })(),
+    /** Labs choosing: lemmas with an explicit PUBLISH line, and how many of them said yes (to pool runs exactly). */
+    chosen: r.library.filter((e) => e.choice === 'yes' || e.choice === 'no').length,
+    chosenShared: r.library.filter((e) => e.choice === 'yes').length,
     /** Labs choosing: lemmas kept private because the reply gave no PUBLISH line. */
     noChoice: r.library.filter((e) => e.choice === 'none').length,
     /** The knowledge reward by proof size: mean proof size of accepted lemmas (to spot padding). */

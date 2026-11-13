@@ -306,13 +306,24 @@ const savedFile = (...parts: string[]) => { const f = join(ROOT, 'site', 'data',
 const savedLean = (exp: string) => { const d = (/^[\w.-]+$/.test(exp) && savedFile('lean', `${exp}.json`)) || savedFile('lean', 'default.json'); return d && { ...d, saved: true }; };
 
 /** One problem set as a graph: only the theorems some target needs, with how hard each target has been so far. */
+/** problemSpace reads every run's result; kept for a minute, since runs can finish while the app is open. */
+const problemCache = new Map<Problems, { at: number; value: ReturnType<typeof buildProblemSpace> }>();
 function problemSpace(set: Problems) {
+  const hit = problemCache.get(set);
+  if (hit && Date.now() - hit.at < 60_000) return hit.value;
+  const value = buildProblemSpace(set);
+  problemCache.set(set, { at: Date.now(), value });
+  return value;
+}
+
+function buildProblemSpace(set: Problems) {
   const tasks = loadTasks(set), byName = new Map(tasks.map((t) => [t.name, t]));
   const below = (name: string, seen = new Set<string>()): Set<string> => { for (const u of byName.get(name)?.uses ?? []) if (!seen.has(u)) { seen.add(u); below(u, seen); } return seen; };
   const label = new Map(tasks.map((t) => [t.name, t.posted ? t.publicId : t.short]));
   const needed = new Set(tasks.filter((t) => t.posted).flatMap((t) => [t.name, ...below(t.name)]));
   // Community results from the main run on each set; targets it lacks fall back to the difficulty check (one model alone, a pilot).
-  const main = leanData(set === 'hard' ? 'lean-hard-2' : 'lean-main-b'), community = !main ? {} : Object.fromEntries(main.targets.map((t: { id: string }) => [t.id, [main.setups.reduce((a: number, s: { proved: Record<string, number> }) => a + s.proved[t.id], 0), main.setups.reduce((a: number, s: { done: number }) => a + s.done, 0)]]));
+  // leanData falls back to the newest experiment when the one asked for is missing: then there are no counts to show.
+  const want = set === 'hard' ? 'lean-hard-2' : 'lean-main-b', found = leanData(want), main = found?.id === want ? found : null, community = !main ? {} : Object.fromEntries(main.targets.map((t: { id: string }) => [t.id, [main.setups.reduce((a: number, s: { proved: Record<string, number> }) => a + s.proved[t.id], 0), main.setups.reduce((a: number, s: { done: number }) => a + s.done, 0)]]));
   const check: Record<string, Record<string, [number, number]>> = {};
   for (const run of ['hard-check-1', 'hard-check-2']) for (const a of jsonl(join(LEAN_DIR, 'runs', run, 'attempts.jsonl'))) { const c = ((check[a.publicId] ??= {})[a.condition] ??= [0, 0]); c[1]++; if (a.ok) c[0]++; }
   const shown = tasks.filter((t) => needed.has(t.name));

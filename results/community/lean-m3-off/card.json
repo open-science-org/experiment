@@ -8,11 +8,11 @@
   "question": "For the same agents, checker and money, does a community prove more targets when value flows back (OSO) than when results are only shared, or kept private until a target is proved?",
   "compare": "Labs choose, reward off, α 1, Labs choose, reward off, α 0.8, Labs choose, reward off, α 0.2",
   "fixed": "the same 4 agents (the single agent: the first, with all the money), $0.60 in all, Lean checks every proof",
-  "measure": "targets proved by the end of a run, of 8; money to reach 2 targets is shown beside it",
+  "measure": "the share of lemmas published at once (of those with a PUBLISH line), α 0.2 against α 1; targets proved beside it",
   "better": "higher",
   "runs": "10 runs per setup, not paired"
  },
- "answer": "Most targets proved: Labs choose, reward off, α 0.2, 4.80 of 8.",
+ "answer": "Lemmas published at once: Labs choose, reward off, α 1 58% (95% range 7% to 100%); Labs choose, reward off, α 0.8 63% (95% range 31% to 94%); Labs choose, reward off, α 0.2 93% (95% range 84% to 100%). α 0.2 minus α 1: 35% (95% range -18% to 87%).",
  "table": [
   {
    "society": "Labs choose, reward off, α 1",

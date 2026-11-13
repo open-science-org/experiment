@@ -1,6 +1,6 @@
 # Findings so far
 
-Last updated: 2026-11-08. Plain summaries; each links to its full result. **Finding** means it was the measure fixed in advance; **lead** means it was noticed afterwards or is from a small or exploratory run. Setup names are short labels for their [OSO parameters](lean-experiment.md#the-setups): for example, the shared library is public at once, α 1, m 0.
+Last updated: 2026-11-12. Plain summaries; each links to its full result. **Finding** means it was the measure fixed in advance; **lead** means it was noticed afterwards or is from a small or exploratory run. Setup names are short labels for their [OSO parameters](lean-experiment.md#the-setups): for example, the shared library is public at once, α 1, m 0.
 
 ## Simulation
 
@@ -20,9 +20,9 @@ Last updated: 2026-11-08. Plain summaries; each links to its full result. **Find
 
 - **Lead, harder targets (6 setups × 5 runs, 2026-11-09; too few runs for ranges):** setups that publish at once proved 10.4 to 11 of 11 targets, traditional 7.6. The planner with a good strategy was cheapest, but without our hints it was among the worst. Flow-back alone (OSO α 0.2 against the shared library) gave no gain. [Results](ai-agent-results.md)
 
-- **Lead, why flow-back raises groundwork (labs' saved thinking, 118 runs):** under flow-back, labs reason that a lemma earns when another lab uses it; in the shared library, that it earns nothing and may hand a rival the bounty. They respond to whether value flows back much more than to how much (α 0.8 and 0.2 look alike). [Flow-back so far](flow-back.md)
+- **Lead, labs' saved thinking (148 runs):** under flow-back, labs restate the rule and reason that a lemma earns when another lab uses it; in the shared library, that it earns nothing and may hand a rival the bounty. This shows they read the rule, not that it drives their choices. [Flow-back so far](flow-back.md)
 
-- **Lead, labs choose with the knowledge reward off (10 runs per α, 2026-11-10):** with nothing paid for publishing, labs shared less as α rose: 90% of lemmas published at α 0.2, 79% at α 0.8, 63% at α 1 (8 lemmas only). The simulation predicted 93%, 16% and 16%. Labs also proved far fewer lemmas without the reward. [Results](ai-agent-results.md)
+- **Finding, labs choose with the knowledge reward off (10 runs per α, 2026-11-10): flow-back did not clearly raise sharing.** Share of lemmas published at once: 58% at α 1, 63% at α 0.8, 93% at α 0.2 (predicted 16, 16 and 93%). The planned difference, α 0.2 minus α 1, is +35 points with a range from −18 to +87: the direction predicted, but not shown. Labs proved few lemmas without the reward (8 at α 1). [Results](ai-agent-results.md)
 
 **Correction (2026-11-08):** every Lean run so far split flow-back by money spent instead of by graph weights (lines saved). Only 1–5% of earnings would have gone elsewhere and the counted measures are unaffected, but labs saw slightly wrong earnings. [Details](ai-agent-results.md)
 
