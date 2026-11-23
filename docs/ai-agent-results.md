@@ -1,10 +1,10 @@
 # AI agents on the Lean problems: results so far
 
-Last updated: 2026-11-20. Every result here has its own page under `results/` (the links), with its design, caveats and logs. This page only gathers them. Setup names are short labels for their [OSO parameters](lean-experiment.md#the-setups): when results go public, α, the flat mint m, the knowledge reward m_bit, and f.
+Last updated: 2026-11-23. Every result here has its own page under `results/` (the links), with its design, caveats and logs. This page only gathers them. Setup names are short labels for their [OSO parameters](lean-experiment.md#the-setups): when results go public, α, the flat mint m, the knowledge reward m_bit, and f.
 
 ## TL;DR
 
-Checked after every run; last checked 2026-11-20, after the bigger-set model check.
+Checked after every run; last checked 2026-11-23, after Labs choose on the bigger set (section 4i).
 
 - **Lemmas help weak models.** DeepSeek proves 4 of 16 targets alone, 12 of 16 with the lemmas they need.
 - **Sharing lets labs build on each other** (Spend all: 2.2 results a run in the shared library, 0.4 under traditional), but it has not raised targets proved. A plain shared library gets this too, so it is not unique to OSO. **Repeated work is not a general result:** traditional labs proved the same lemma about 20 times a run in the small cheap race (5 runs), but only 0.4 times in Spend all (20 runs per setup; shared library 0.2).
@@ -13,6 +13,7 @@ Checked after every run; last checked 2026-11-20, after the bigger-set model che
 - **A lead that did not hold: low α gets there sooner.** OSO α 0.2 reached 5 of the 8 targets for the least money in all four earlier experiments (section 4e, ranges overlapping, count picked after looking); on the harder targets the shared library was cheaper (section 4g).
 - **Lead, not a finding:** the hardest target, B5, comes up more at low α, but the gap shrank with fair prompts and B5 was picked after looking.
 - **Flow-back and sharing: direction as predicted, not shown.** With the knowledge reward off, labs published 58% of lemmas at α 1 and 93% at α 0.2 (section 4h); the planned difference, +35 points, has a range from −18 to +87. Labs proved only 8 lemmas at α 1. With publishing paid they shared 98–100% at every α.
+- **Bigger set (27 targets), labs choose, reward off (section 4i): no clear difference.** Lemmas published at once: 92% at α 1, 96% at α 0.2 (+4 points, range −3 to +12). Targets proved of 27: traditional 20.0, α 1 20.6, α 0.2 21.2; α 0.2 minus traditional +1.2 (range −0.3 to +2.7). Lead, not fixed in advance: results built on another lab's work rose from 6.4 (traditional) to 11.4 (α 1) and 16.0 (α 0.2) a run, and α 0.2 proved more lemmas (23 against 14).
 - **Against OSO:** with publishing paid, labs did not share more with flow-back (they published nearly everything at every α), and did not clearly keep working longer (α 0.8: about 2 rounds longer; α 0.2: no clear change).
 - **Money was wasted in every run so far.** About 23% of model replies ran out of length while thinking and gave no answer, costing roughly 39% of the money (section 5). It affects all setups, more in the shared library (27%) than at α 0.2 (23%). In a small test, effort (high or medium) made no clear difference.
 - **Pilot: three harder targets kept.** Alone the model proved none of 6 candidates (0 of 24 attempts). With the lemmas, 3 passed the rule fixed in advance (H4 and H5 4 of 4, H6 3 of 4); 3 were still too hard (0 of 4 each). Four attempts each is a rough screen.
@@ -356,6 +357,16 @@ Only H6 met the rule, so stage 2 was not started. Labs spent $0.77 of each run's
 - **Why labs kept lemmas** (all 12 kept lemmas read): mostly because keeping cost nothing ("if we keep it private and then prove C4 using it, it will be published automatically"); once because a rival might use it ("If we publish the lemma, others could use it to prove B3 faster").
 
 **Caveats:** the number of lemmas depends on α, so the share is measured on different amounts of work. To measure sharing at α 1, labs need to prove more lemmas there: more runs, or more money a lab.
+
+## 4i. Labs choose on the bigger set, knowledge reward off (2026-11-22 to 23)
+
+[Result](../results/community/lean-big-1/summary.md). **Setups:** traditional (public when a target is proved, α 1, m 0, m_bit 0, f 0); the lab chooses when to publish with α 1 or α 0.2 (m 0, m_bit 0, f 0). 4 DeepSeek V4.1 Flash labs, $0.40 a lab ($1.60 a run), labs cannot stop early, 5 runs per setup, 15 in all, about $24 at the fixed reference price. 27 targets, depth 1 to 7. Streamed live on oso.network.
+
+**Measure fixed in advance:** the share of lemmas published at once, α 0.2 against α 1. **Result:** 92% (95% range 85% to 98%) at α 1, 96% (93% to 99%) at α 0.2; difference +4 points (−3 to +12). No clear difference: labs shared nearly everything at both α.
+
+**Targets proved, of 27** (mean, 95% range over 5 runs): traditional 20.0 (18.5 to 21.5), α 1 20.6 (19.5 to 21.7), α 0.2 21.2 (20.6 to 21.8). α 0.2 minus traditional +1.2 (−0.3 to +2.7); α 0.2 minus α 1 +0.6 (−0.5 to +1.7). Every run stalled at 20 to 21 targets; the deepest ones (X1, X6) were tried and failed to the end of the money.
+
+**Looked at after the results (leads only):** results that built on another lab's work: 6.4 a run (traditional), 11.4 (α 1), 16.0 (α 0.2). Lemmas proved: 14.6, 14.0, 23.0. Targets proved again by a second lab: 11.0, 12.6, 19.2, so more building on others came with more repeated target work too.
 
 ## 5. Is the test setup sound? (harness checks)
 
