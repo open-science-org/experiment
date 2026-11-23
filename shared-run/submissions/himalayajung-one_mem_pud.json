@@ -1,0 +1,9 @@
+{
+ "kind": "lemma",
+ "statement": "(n : ℕ) (hn : 1 < n) : 1 ∈ properUnitaryDivisors n",
+ "proof": ":= by\n  have h₁ : 1 ∈ Finset.Ico 1 n := by\n    rw [Finset.mem_Ico]\n    <;> omega\n  \n  have h₂ : 1 ∣ n := by\n    exact Nat.one_dvd n\n  \n  have h₃ : Nat.Coprime 1 (n / 1) := by\n    have h₄ : n / 1 = n := by\n      simp\n    rw [h₄]\n    -- We need to show that gcd(1, n) = 1.\n    -- Since gcd(a, b) = gcd(a, b - a), we can use the property of gcd.\n    -- Here, gcd(1, n) = gcd(1, n - 1) = 1.\n    -- However, since 1 is a special case, we can directly use the fact that gcd(1, n) = 1 for any n.\n    simp [Nat.coprime_iff_gcd_eq_one, Nat.gcd_comm]\n    <;>\n    (try omega) <;>\n    (try\n      {\n        cases n with\n        | zero => contradiction -- n cannot be zero since hn : 1 < n\n        | succ n =>\n          simp [Nat.gcd_eq_right_iff_dvd, Nat.dvd_one]\n          <;>\n          omega\n      })\n    <;>\n    omega\n  \n  have h₄ : 1 ∈ properUnitaryDivisors n := by\n    rw [properUnitaryDivisors]\n    simp_all [Finset.mem_filter, Finset.mem_Ico, Nat.div_eq_of_lt]\n    <;>\n    (try omega) <;>\n    (try\n      {\n        cases n with\n        | zero => contradiction -- n cannot be zero since hn : 1 < n\n        | succ n =>\n          simp_all [Nat.div_eq_of_lt]\n          <;>\n          omega\n      })\n    <;>\n    (try\n      {\n        simp_all [Nat.div_eq_of_lt]\n        <;>\n        omega\n      })\n    <;>\n    (try\n      {\n        omega\n      })\n  \n  exact h₄",
+ "open": [
+  "Erdos1052"
+ ],
+ "note": "one_mem_pud; local model Goedel-Prover-V2-8B-GGUF:Q4_K_M"
+}

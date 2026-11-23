@@ -1,0 +1,9 @@
+{
+ "kind": "lemma",
+ "statement": "(n : ℕ) : properUnitaryDivisors n ⊆ Finset.Ico 1 n",
+ "proof": ":= by\n  have h_main : properUnitaryDivisors n ⊆ Finset.Ico 1 n := by\n    intro d hd\n    simp only [properUnitaryDivisors, Finset.mem_filter, Finset.mem_Ico, Finset.mem_Ico] at hd ⊢\n    <;> aesop\n  exact h_main",
+ "open": [
+  "Erdos1052"
+ ],
+ "note": "pud_subset; local model Goedel-Prover-V2-8B-GGUF:Q4_K_M"
+}

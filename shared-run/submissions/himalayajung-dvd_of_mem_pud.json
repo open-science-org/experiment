@@ -1,0 +1,9 @@
+{
+ "kind": "lemma",
+ "statement": "(n d : ℕ) (hd : d ∈ properUnitaryDivisors n) : d ∣ n",
+ "proof": ":= by\n  have h₁ : d ∈ Finset.Ico 1 n ∧ d ∣ n ∧ d.Coprime (n / d) := by\n    -- Extract the conditions from the membership in properUnitaryDivisors\n    have h₁ : d ∈ properUnitaryDivisors n := hd\n    have h₂ : d ∈ {d ∈ Finset.Ico 1 n | d ∣ n ∧ d.Coprime (n / d)} := by\n      simpa [properUnitaryDivisors] using h₁\n    -- Simplify the membership condition\n    have h₃ : d ∈ Finset.Ico 1 n ∧ d ∣ n ∧ d.Coprime (n / d) := by\n      simpa using h₂\n    exact h₃\n  \n  have h₂ : d ∣ n := by\n    -- Extract the divisibility condition from h₁\n    have h₃ : d ∣ n := h₁.2.1\n    exact h₃\n  \n  exact h₂",
+ "open": [
+  "Erdos1052"
+ ],
+ "note": "dvd_of_mem_pud; local model Goedel-Prover-V2-8B-GGUF:Q4_K_M"
+}
