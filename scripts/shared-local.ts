@@ -28,8 +28,17 @@ function context(problem: string) {
 }
 
 async function ask(prompt: string) {
-  const r = await fetch('http://localhost:11434/api/generate', { method: 'POST', body: JSON.stringify({ model, prompt, stream: false, options: { num_predict: 8000, temperature: 0.6 } }) });
-  return ((await r.json()) as { response: string }).response;
+  // Streamed, so the reply starts at once: a long reasoning reply can take many minutes, longer than Node waits for
+  // the first byte of a reply that is not streamed. Ollama returns a reasoning model's thinking apart from its
+  // answer; the Lean block can be in either.
+  const r = await fetch('http://localhost:11434/api/generate', { method: 'POST', body: JSON.stringify({ model, prompt, stream: true, options: { num_predict: 8000, temperature: 0.6 } }) });
+  let thinking = '', response = '', rest = '';
+  for await (const chunk of r.body!.pipeThrough(new TextDecoderStream())) {
+    const lines = (rest + chunk).split('\n');
+    rest = lines.pop() ?? '';
+    for (const l of lines.filter(Boolean)) { const d = JSON.parse(l) as { thinking?: string; response?: string }; thinking += d.thinking ?? ''; response += d.response ?? ''; }
+  }
+  return `${thinking}\n${response}`;
 }
 
 /** The proof after `:= by` in the model's last Lean block for this theorem. */
