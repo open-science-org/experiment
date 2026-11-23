@@ -70,7 +70,8 @@ jobs:
         run: node scripts/shared.ts check submitted/*.json --out verdicts.json || true
       - name: Who and which pull request
         if: always()
-        run: echo '{"pr": ${{ github.event.pull_request.number }}, "head": "${{ github.event.pull_request.head.sha }}"}' > meta.json
+        run: |
+          echo '{"pr": ${{ github.event.pull_request.number }}, "head": "${{ github.event.pull_request.head.sha }}"}' > meta.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
