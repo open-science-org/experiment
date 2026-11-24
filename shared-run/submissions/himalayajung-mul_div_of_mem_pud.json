@@ -1,0 +1,9 @@
+{
+ "kind": "lemma",
+ "statement": "(n d : ℕ) (hd : d ∈ properUnitaryDivisors n) : d * (n / d) = n",
+ "proof": ":= by\n  have h₁ : d ∣ n := by\n    have h₂ : d ∈ properUnitaryDivisors n := hd\n    have h₃ : d ∈ Finset.Ico 1 n ∧ d ∣ n ∧ Nat.Coprime d (n / d) := by\n      simpa [properUnitaryDivisors] using h₂\n    exact h₃.2.1\n  \n  have h₂ : d * (n / d) = n := by\n    have h₃ : d ∣ n := h₁\n    have h₄ : d * (n / d) = n := by\n      apply Nat.mul_div_cancel' h₃\n    exact h₄\n  \n  exact h₂",
+ "open": [
+  "Erdos1052"
+ ],
+ "note": "mul_div_of_mem_pud; local model Goedel-Prover-V2-8B-GGUF:Q4_K_M"
+}
