@@ -8,6 +8,7 @@ export const EXPERIMENT_NAMES: Record<string, string> = {
   'm3-smoke': 'Labs choose what to publish: smoke test, 1 run at α 0.2, $0.05 a lab (Nov 7)',
   'lean-m3': 'Labs choose what to publish: α 1, 0.8, 0.2 × 10 runs, $0.15 a lab (Nov 8)',
   'lean-m3-off': 'Labs choose, knowledge reward off: α 1, 0.8, 0.2 × 10 runs, $0.15 a lab (Nov 9)',
+  'deep-fermat-1': "Deep set, Fermat's little theorem from scratch (depth 11): one α 0.2 run, 4 labs, $2 a lab, 100 rounds (Nov 23)",
   'lean-big-1': 'Bigger set, labs choose, reward off: traditional, α 1, α 0.2 × 5 runs, $0.40 a lab (Nov 22)',
   'lean-b5': 'Fair-prompt check: OSO α 0.2 vs shared library, $0.20 a lab (Nov 7)',
   'lean-main-b': 'Spend all: labs must spend all their money, 4 setups × 20 runs, $0.15 a lab (Nov 7)',
