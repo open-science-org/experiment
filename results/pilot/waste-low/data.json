@@ -1,0 +1,123 @@
+{
+ "runId": "waste-low",
+ "options": {
+  "attempts": 4,
+  "repairs": 3,
+  "concurrency": 4,
+  "allowGrind": false,
+  "conditions": [
+   "library",
+   "alone"
+  ],
+  "only": [
+   "H4",
+   "H5",
+   "H6"
+  ],
+  "model": {
+   "provider": "openrouter",
+   "model": "deepseek/deepseek-v4.1-flash",
+   "effort": "low",
+   "maxTokens": 32000
+  }
+ },
+ "totals": {
+  "input": 15670,
+  "output": 1680835,
+  "cacheRead": 87168,
+  "cacheWrite": 0,
+  "cost": 0.6453179740399999
+ },
+ "byDepth": [
+  {
+   "depth": 2,
+   "theorems": 1,
+   "attempts": 4,
+   "proved": 4,
+   "rate": 1,
+   "tokens": 38025
+  },
+  {
+   "depth": 4,
+   "theorems": 2,
+   "attempts": 8,
+   "proved": 8,
+   "rate": 1,
+   "tokens": 2904.375
+  }
+ ],
+ "theorems": [
+  {
+   "id": "H6",
+   "depth": 2,
+   "area": "cross",
+   "posted": "H6",
+   "condition": "alone",
+   "attempts": 4,
+   "proved": 0,
+   "meanTurns": 4,
+   "tokens": 133636,
+   "outputTokens": 128000
+  },
+  {
+   "id": "H4",
+   "depth": 4,
+   "area": "B",
+   "posted": "H4",
+   "condition": "alone",
+   "attempts": 4,
+   "proved": 0,
+   "meanTurns": 4,
+   "tokens": 134900.5,
+   "outputTokens": 127321.5
+  },
+  {
+   "id": "H5",
+   "depth": 4,
+   "area": "B",
+   "posted": "H5",
+   "condition": "alone",
+   "attempts": 4,
+   "proved": 0,
+   "meanTurns": 4,
+   "tokens": 133548,
+   "outputTokens": 128000
+  },
+  {
+   "id": "H6",
+   "depth": 2,
+   "area": "cross",
+   "posted": "H6",
+   "condition": "library",
+   "attempts": 4,
+   "proved": 4,
+   "meanTurns": 2.25,
+   "tokens": 38025,
+   "outputTokens": 34376.5
+  },
+  {
+   "id": "H4",
+   "depth": 4,
+   "area": "B",
+   "posted": "H4",
+   "condition": "library",
+   "attempts": 4,
+   "proved": 4,
+   "meanTurns": 1,
+   "tokens": 3261.25,
+   "outputTokens": 1622.25
+  },
+  {
+   "id": "H5",
+   "depth": 4,
+   "area": "B",
+   "posted": "H5",
+   "condition": "library",
+   "attempts": 4,
+   "proved": 4,
+   "meanTurns": 1,
+   "tokens": 2547.5,
+   "outputTokens": 888.5
+  }
+ ]
+}
