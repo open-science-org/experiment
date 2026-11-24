@@ -118,6 +118,8 @@ export interface CommunityOptions {
   personaNames?: string[];
   /** Posted conjectures: intermediate results the community wants proved, each with a small bounty (by public id). */
   conjectures?: string[];
+  /** Post only these targets (by public id); the set's other targets are not shown to the labs. Unset: every target. */
+  only?: string[];
   conjectureBounty?: number;
   /** The targets the result is judged on (public ids); all if empty. */
   counted?: string[];
@@ -249,7 +251,7 @@ export class Community {
     // A run without a problem set is a main-set run (runs from before the option existed).
     this.problems = opts.problems ?? 'main';
     const tasks = loadTasks(this.problems);
-    this.targets = tasks.filter((t) => t.posted);
+    this.targets = tasks.filter((t) => t.posted && (!opts.only?.length || opts.only.includes(t.publicId)));
     this.conjectures = (opts.conjectures ?? []).map((id, k) => {
       const t = tasks.find((x) => x.publicId === id);
       if (!t || t.posted) throw new Error(`conjecture ${id} is not a lemma of the problem set`);
@@ -708,8 +710,8 @@ export function readCommunity(runId: string): CommunityResult {
 
 /** Targets solved by community spend, in the order actions finished. */
 /** The targets a result is judged on. */
-const postedCount = (r: CommunityResult) => loadTasks(r.opts.problems ?? 'main').filter((t) => t.posted).length;
-export const countedOf = (r: CommunityResult) => (r.opts.counted?.length ? r.opts.counted : loadTasks(r.opts.problems ?? 'main').filter((t) => t.posted).map((t) => t.publicId));
+const postedCount = (r: CommunityResult) => r.opts.only?.length || loadTasks(r.opts.problems ?? 'main').filter((t) => t.posted).length;
+export const countedOf = (r: CommunityResult) => (r.opts.counted?.length ? r.opts.counted : r.opts.only?.length ? r.opts.only : loadTasks(r.opts.problems ?? 'main').filter((t) => t.posted).map((t) => t.publicId));
 
 /** Money all labs together had spent by the end of each round. Labs work at the same time, so a proof is counted with its whole round: otherwise the calls still running when it came in would be left out. */
 export function moneyByRound(actions: Action[]): Map<number, number> {

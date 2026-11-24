@@ -23,6 +23,7 @@
 //     --pricing reference|charged (reference): budgets count tokens at the model's fixed reference price (src/lean/prices.ts), or what the provider charged
 //     --providers TAG,...         OpenRouter companies allowed to serve the calls (e.g. deepinfra/fp8); default: any within the price cap
 //     --may-stop yes|no (yes): may a lab pass and stop early? no: every lab works until its money or the rounds run out
+//     --only A5,...               post only these targets (the set's others are not shown to the labs)
 import { chatFor, creditLeft, DEFAULT_MODEL, DEFAULT_MODELS, defaultProvider, type Provider } from './agent.ts';
 import { referenceCost } from './prices.ts';
 import { estimate, readRun, writeComparison, referenceChat, runPilot, writeMeasuredWorld, writeSummary, type Condition, type PilotOptions } from './pilot.ts';
@@ -112,6 +113,7 @@ if (cmd === 'community') {
     conjectureBounty: Number(pick('conjectureBounty', '1')),
     mayStop: pick('may-stop', 'yes') !== 'no',
     counted: (cfg.counted as string[] | undefined) ?? (value('counted', '') ? value('counted', '').split(',') : []),
+    only: (cfg.only as string[] | undefined) ?? (value('only', '') ? value('only', '').split(',') : []),
     ...(['hard', 'big'].includes(pick('problems', process.env.OSO_PROBLEMS ?? 'main')) ? { problems: pick('problems', process.env.OSO_PROBLEMS ?? 'main') as 'hard' | 'big' } : {}),
   };
   const rules = pick('rules', 'traditional,oso').split(',') as ('traditional' | 'oso')[];

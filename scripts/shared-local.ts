@@ -34,11 +34,22 @@ function context(problem: string) {
     .replace(/\nend \S+\s*$/, '').trim();
 }
 
+/** The public library's lemmas on this problem, as the model sees them: already proved, to cite by name (OSO.L1, …).
+ *  Read from GitHub before each job, so proofs accepted during the run are in it. */
+async function libraryFor(ns: string) {
+  try {
+    const r = await fetch(`https://raw.githubusercontent.com/${REPO}/master/shared-run/state/library.json?t=${Date.now()}`, { cache: 'no-store' });
+    const lib = (await r.json()) as { name: string; statement: string; open: string[]; kind: string }[];
+    const mine = lib.filter((e) => e.kind === 'lemma' && e.open.includes(ns));
+    return mine.length ? `-- Already proved in the shared library; use them by name.\n${mine.map((e) => `theorem ${e.name} ${/^[:({]/.test(e.statement.trim()) ? e.statement.trim() : `: ${e.statement.trim()}`} := by\n  sorry`).join('\n\n')}` : '';
+  } catch { return ''; }
+}
+
 async function ask(prompt: string) {
   // Streamed, so the reply starts at once: a long reasoning reply can take many minutes, longer than Node waits for
   // the first byte of a reply that is not streamed. Ollama returns a reasoning model's thinking apart from its
   // answer; the Lean block can be in either.
-  const r = await fetch('http://localhost:11434/api/generate', { method: 'POST', body: JSON.stringify({ model, prompt, stream: true, options: { num_predict: 8000, temperature: 0.6 } }) });
+  const r = await fetch('http://localhost:11434/api/generate', { method: 'POST', body: JSON.stringify({ model, prompt, stream: true, options: { num_predict: 12000, temperature: 0.6 } }) });
   let thinking = '', response = '', rest = '';
   for await (const chunk of r.body!.pipeThrough(new TextDecoderStream())) {
     const lines = (rest + chunk).split('\n');
@@ -116,7 +127,8 @@ for (const job of jobs) {
   working(job.kind === 'target' ? job.target! : `1052 lemma ${job.name}`);
   const sig = job.kind === 'target' ? t!.statement : job.statement!;
   const head = sig.trim().startsWith(':') || /^[({]/.test(sig.trim()) ? sig.trim() : `: ${sig.trim()}`;
-  const prompt = `Complete the following Lean 4 code:\n\n\`\`\`lean4\nimport Mathlib\nimport Aesop\n\nset_option maxHeartbeats 400000\n\n${context(problem)}\n\ntheorem attempt ${head} := by\n  sorry\n\`\`\`\n\nBefore producing the Lean 4 code to formally prove the given theorem, provide a detailed proof plan outlining the main proof steps and strategies.\nThe plan should highlight key ideas, intermediate lemmas, and proof structures that will guide the construction of the final formal proof.`;
+  const known = await libraryFor(ns);
+  const prompt = `Complete the following Lean 4 code:\n\n\`\`\`lean4\nimport Mathlib\nimport Aesop\n\nset_option maxHeartbeats 400000\n\n${context(problem)}\n\n${known}\n\ntheorem attempt ${head} := by\n  sorry\n\`\`\`\n\nBefore producing the Lean 4 code to formally prove the given theorem, provide a detailed proof plan outlining the main proof steps and strategies.\nThe plan should highlight key ideas, intermediate lemmas, and proof structures that will guide the construction of the final formal proof.`;
   for (let k = 1; k <= tries; k++) {
     const t0 = Date.now();
     const reply = await ask(prompt);
