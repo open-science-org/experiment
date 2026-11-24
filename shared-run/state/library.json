@@ -118,5 +118,20 @@
    "Erdos1052"
   ],
   "uses": []
+ },
+ {
+  "id": "L9",
+  "name": "OSO.L9",
+  "lab": "himalayajung",
+  "pr": 10,
+  "at": "2026-11-24T02:55:48.083Z",
+  "kind": "lemma",
+  "target": null,
+  "statement": "properUnitaryDivisors 0 = ∅",
+  "proof": ":= by\n  have h₁ : properUnitaryDivisors 0 = ∅ := by\n    rw [properUnitaryDivisors]\n    -- We need to show that the set {d ∈ Finset.Ico 1 0 | d ∣ 0 ∧ d.Coprime (0 / d)} is empty.\n    -- Since Finset.Ico 1 0 is empty, the set is automatically empty.\n    have h₂ : Finset.Ico 1 0 = ∅ := by\n      -- Prove that Finset.Ico 1 0 is empty.\n      simp [Finset.Ico_eq_empty_of_le]\n    -- Now we can rewrite the set using h₂.\n    rw [h₂]\n    -- The set {d ∈ ∅ | ...} is empty because there are no elements in ∅.\n    simp\n  -- The final result follows from h₁.\n  exact h₁",
+  "open": [
+   "Erdos1052"
+  ],
+  "uses": []
  }
 ]
