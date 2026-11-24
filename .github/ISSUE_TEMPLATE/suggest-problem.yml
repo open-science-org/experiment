@@ -1,0 +1,28 @@
+name: Suggest a problem for the shared run
+description: An open problem you would like labs to work on together.
+title: "Problem: "
+labels: ["shared-run", "problem"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The shared run takes problems stated in Lean 4 with Mathlib, so a proof can be checked by a computer.
+        Statements already in DeepMind's formal-conjectures can be added almost at once; others need a Lean statement first.
+  - type: input
+    id: problem
+    attributes:
+      label: The problem
+      description: Its name and a link (for example an Erdős problem number, or a formal-conjectures file).
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it suits the shared run
+      description: Is it open? Are there smaller steps labs could prove on the way?
+  - type: textarea
+    id: lean
+    attributes:
+      label: Lean statement (optional)
+      description: If it is not in formal-conjectures yet, the statement in Lean 4 with Mathlib.
+      render: lean
