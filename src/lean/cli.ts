@@ -28,6 +28,7 @@
 import { chatFor, creditLeft, DEFAULT_MODEL, DEFAULT_MODELS, defaultProvider, type Provider } from './agent.ts';
 import { referenceCost } from './prices.ts';
 import { estimate, readRun, writeComparison, referenceChat, runPilot, writeMeasuredWorld, writeSummary, type Condition, type PilotOptions } from './pilot.ts';
+import { stayAwake } from './awake.ts';
 import { selftest } from './selftest.ts';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -81,6 +82,7 @@ if (cmd === 'calibrate') {
   console.log(`${e.attempts} attempts; at most ${e.maxCalls} model calls; first prompts about ${Math.round(e.firstPromptTokens / 1000)}k tokens in all (repairs and thinking add more).`);
   if (flag('dry-run')) process.exit(0);
   const stub = flag('stub');
+  if (!stub) stayAwake(`Run ${value('run', 'calibrate')}`);
   const keyVar = opts.model.provider === 'openrouter' ? 'OPENROUTER_API_KEY' : 'ANTHROPIC_API_KEY';
   if (!stub && opts.model.provider !== 'local' && !process.env[keyVar]) {
     console.error(`Set ${keyVar} in .env to run with ${opts.model.provider} (or use --dry-run or --stub).`);
@@ -143,6 +145,7 @@ if (cmd === 'community') {
     if (left != null && left < most * 1.1) { console.error(`The key has $${left.toFixed(2)} left; this test can spend up to $${most.toFixed(2)}. Add credit first.`); process.exit(1); }
   }
   const id = pick('run', `${stub ? 'stub-' : ''}community-${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}`);
+  if (!stub) stayAwake(`Run ${id}`);
   const repeats = Number(pick('repeats', '1'));
   const chat = (com: import('./community.ts').Community, i: number) => {
     const m = com.opts.agents[i];

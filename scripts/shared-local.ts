@@ -10,6 +10,7 @@
 // that file, made in a separate worktree so this checkout is untouched), as join.txt asks. --issue n: the lab's join
 // issue is edited to name the job being worked on, which keeps the lab shown as active. --fork: go through the user's fork even with write access to the shared repo
 // (to test the path an outside lab takes).
+import { stayAwake } from '../src/lean/awake.ts';
 import { execFileSync, spawn } from 'node:child_process';
 import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -74,7 +75,7 @@ function proofOf(reply: string, name: string) {
 }
 
 // Keep the Mac awake (not the screen) for as long as this lab runs: a try takes minutes and sleep would stop it.
-if (process.platform === 'darwin') spawn('caffeinate', ['-i', '-w', String(process.pid)], { detached: true, stdio: 'ignore' }).unref();
+stayAwake('Local lab');
 
 const sh = (cmd: string, a: string[], cwd?: string) => execFileSync(cmd, a, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 
