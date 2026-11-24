@@ -29,7 +29,7 @@ const setups = plan.societies.map((key) => {
     first ??= opts;
     const actions = lines(join(dir, 'actions.jsonl')) as Action[];
     let spent = 0;
-    const targets: string[] = [], steps: [number, number][] = [[0, 0]];
+    const targets: string[] = [], steps: [number, number][] = [[0, 0]], lsteps: [number, number][] = [[0, 0]];
     // For the round-by-round view: the round each target was first proved, money spent by the end of each round,
     // and every attempt at a target (round, accepted or not).
     const provedAt: Record<string, number> = {}, spentBy: number[] = [];
@@ -40,12 +40,14 @@ const setups = plan.societies.map((key) => {
         if (a.ok && provedAt[a.target] === undefined) provedAt[a.target] = a.round;
         ((tried[a.target] ??= {})[a.round] ??= [0, 0])[a.ok ? 0 : 1]++;
       }
+      // New lemmas only: a lemma another lab proved first is refused as a duplicate and has no entry.
+      if (a.kind === 'lemma' && a.ok && a.entry) lsteps.push([spent, lsteps.length]);
       if (a.kind === 'target' && a.ok && a.target && !a.reason?.includes('duplicate') && !targets.includes(a.target)) { targets.push(a.target); steps.push([spent, targets.length]); }
     }
     return {
       rep: k + 1, status: existsSync(join(dir, 'result.json')) ? 'done' as const : 'running' as const,
       round: Math.max(0, ...actions.map((a) => a.round)), spent, targets,
-      lemmas: actions.filter((a) => a.kind === 'lemma' && a.ok).length, steps, provedAt,
+      lemmas: actions.filter((a) => a.kind === 'lemma' && a.ok).length, steps, lsteps, provedAt,
       spentBy: Array.from({ length: spentBy.length }, (_, i) => Math.round(1e4 * (spentBy.slice(0, i + 1).filter((x) => x !== undefined).at(-1) ?? 0)) / 1e4),
     };
   });
@@ -95,9 +97,11 @@ const snapshot = {
       runs: { done: s.reps.filter((r) => r.status === 'done').length, running: s.reps.filter((r) => r.status === 'running').length, total: plan.repeats },
       // Line graph: mean over started runs of targets proved for the money spent, money as a share of a run's money.
       curve: started.length ? Array.from({ length: GRID + 1 }, (_, g) => { const m = reach * g / GRID; return [m, started.reduce((a, r) => a + at(r.steps, m), 0) / started.length]; }) : [],
+      // The same for new lemmas: the page shows it when a run has one target, so the climb toward it shows.
+      lemmaCurve: started.length ? Array.from({ length: GRID + 1 }, (_, g) => { const m = reach * g / GRID; return [m, started.reduce((a, r) => a + at(r.lsteps, m), 0) / started.length]; }) : [],
       // How many runs proved each target.
       proved: Object.fromEntries(tasks.map((t) => [t.publicId, s.reps.filter((r) => r.targets.includes(t.publicId)).length])),
-      reps: s.reps.map(({ steps: _, ...r }) => r),
+      reps: s.reps.map(({ steps: _, lsteps: __, ...r }) => r),
       // Attempts at each target by round, over all runs: [accepted, not accepted].
       tried: s.tried,
     };
