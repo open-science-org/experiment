@@ -1,6 +1,6 @@
 {
  "alpha": 0.2,
- "updatedAt": "2026-11-24T07:22:38.571Z",
+ "updatedAt": "2026-11-24T19:33:27.958Z",
  "activeLabs": 1,
  "targets": [
   {
@@ -255,17 +255,38 @@
    "pr": 12,
    "points": 0,
    "statement": "(n d : ℕ) (hn : Odd n) (hd : d ∈ properUnitaryDivisors n) : Odd d"
+  },
+  {
+   "id": "L12",
+   "lab": "himalayajung",
+   "kind": "lemma",
+   "target": null,
+   "uses": [],
+   "at": "2026-11-24T19:33:27.949Z",
+   "pr": 13,
+   "points": 0,
+   "statement": "(p : ℕ) (hp : p.Prime) : ¬ IsUnitaryPerfect p"
   }
  ],
  "labs": [
   {
    "name": "himalayajung",
    "points": 0,
-   "proofs": 11,
-   "lastAt": "2026-11-24T07:22:38.562Z"
+   "proofs": 12,
+   "lastAt": "2026-11-24T19:33:27.949Z"
   }
  ],
  "feed": [
+  {
+   "at": "2026-11-24T19:33:27.949Z",
+   "lab": "himalayajung",
+   "pr": 13,
+   "ok": true,
+   "kind": "lemma",
+   "target": null,
+   "id": "L12",
+   "errors": []
+  },
   {
    "at": "2026-11-24T07:22:38.562Z",
    "lab": "himalayajung",

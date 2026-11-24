@@ -165,5 +165,21 @@
    "Erdos1052"
   ],
   "uses": []
+ },
+ {
+  "id": "L12",
+  "name": "OSO.L12",
+  "lab": "himalayajung",
+  "pr": 13,
+  "at": "2026-11-24T19:33:27.949Z",
+  "prAt": "2026-11-24T19:30:34Z",
+  "kind": "lemma",
+  "target": null,
+  "statement": "(p : ℕ) (hp : p.Prime) : ¬ IsUnitaryPerfect p",
+  "proof": ":= by\n  have h_main : properUnitaryDivisors p = {1} := by\n    apply Finset.ext\n    intro d\n    simp only [properUnitaryDivisors, Finset.mem_filter, Finset.mem_Ico, Finset.mem_singleton]\n    constructor\n    · -- Prove the forward direction: if d is in properUnitaryDivisors p, then d = 1\n      intro h\n      have h₁ : 1 ≤ d := by linarith\n      have h₂ : d < p := by linarith\n      have h₃ : d ∣ p := by tauto\n      have h₄ : Nat.Coprime d (p / d) := by tauto\n      have h₅ : d = 1 := by\n        have h₅₁ : d ∣ p := h₃\n        have h₅₂ : d ≤ p := Nat.le_of_dvd (Nat.Prime.pos hp) h₅₁\n        have h₅₃ : d < p := h₂\n        have h₅₄ : d = 1 := by\n          by_contra h₅₄\n          have h₅₅ : d ≠ 1 := h₅₄\n          have h₅₆ : d > 1 := by\n            by_contra h₅₆\n            have h₅₇ : d ≤ 1 := by linarith\n            have h₅₈ : d = 1 := by\n              omega\n            contradiction\n          have h₅₉ : d ∣ p := h₃\n          have h₅₁₀ : d = p := by\n            have h₅₁₁ : d ∣ p := h₃\n            have h₅₁₂ : d ≤ p := Nat.le_of_dvd (Nat.Prime.pos hp) h₅₁₁\n            have h₅₁₃ : d ≥ 2 := by omega\n            have h₅₁₄ : d = p := by\n              have h₅₁₅ := Nat.Prime.eq_one_or_self_of_dvd hp d h₅₁₁\n              omega\n            exact h₅₁₄\n          have h₅₁₁ : d < p := h₂\n          omega\n        exact h₅₄\n      simp_all\n    · -- Prove the reverse direction: if d = 1, then d is in properUnitaryDivisors p\n      intro h\n      have h₁ : d = 1 := by simp_all\n      rw [h₁]\n      have h₂ : 1 < p := Nat.Prime.one_lt hp\n      have h₃ : 1 ∣ p := by\n        exact Nat.one_dvd p\n      have h₄ : Nat.Coprime 1 (p / 1) := by\n        simp [Nat.coprime_one_left]\n      have h₅ : 1 < p := Nat.Prime.one_lt hp\n      constructor\n      · -- Prove 1 ∈ Finset.Ico 1 p\n        constructor <;> omega\n      · -- Prove 1 ∣ p ∧ Nat.Coprime 1 (p / 1)\n        constructor <;> simp_all [Nat.coprime_one_left]\n        <;> omega\n  \n  have h_sum : ∑ i ∈ properUnitaryDivisors p, i = 1 := by\n    rw [h_main]\n    simp [Finset.sum_singleton]\n    <;>\n    aesop\n  \n  have h_false : ¬ IsUnitaryPerfect p := by\n    intro h\n    have h₁ : ∑ i ∈ properUnitaryDivisors p, i = p := h.1\n    have h₂ : 0 < p := h.2\n    rw [h_sum] at h₁\n    have h₃ : p = 1 := by linarith\n    have h₄ : p.Prime := hp\n    have h₅ : p ≥ 2 := Nat.Prime.two_le h₄\n    linarith\n  \n  exact h_false",
+  "open": [
+   "Erdos1052"
+  ],
+  "uses": []
  }
 ]

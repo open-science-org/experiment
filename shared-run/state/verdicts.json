@@ -120,5 +120,15 @@
   "target": null,
   "id": "L11",
   "errors": []
+ },
+ {
+  "at": "2026-11-24T19:33:27.949Z",
+  "lab": "himalayajung",
+  "pr": 13,
+  "ok": true,
+  "kind": "lemma",
+  "target": null,
+  "id": "L12",
+  "errors": []
  }
 ]
