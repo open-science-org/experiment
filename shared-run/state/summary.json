@@ -1,6 +1,6 @@
 {
  "alpha": 0.2,
- "updatedAt": "2026-11-24T02:14:09.866Z",
+ "updatedAt": "2026-11-24T02:28:27.235Z",
  "activeLabs": 1,
  "targets": [
   {
@@ -211,17 +211,38 @@
    "pr": 8,
    "points": 0,
    "statement": "(n d : ℕ) (hd : d ∈ properUnitaryDivisors n) : d < n"
+  },
+  {
+   "id": "L8",
+   "lab": "himalayajung",
+   "kind": "lemma",
+   "target": null,
+   "uses": [],
+   "at": "2026-11-24T02:28:27.232Z",
+   "pr": 9,
+   "points": 0,
+   "statement": "properUnitaryDivisors 1 = ∅"
   }
  ],
  "labs": [
   {
    "name": "himalayajung",
    "points": 0,
-   "proofs": 7,
-   "lastAt": "2026-11-24T02:14:09.864Z"
+   "proofs": 8,
+   "lastAt": "2026-11-24T02:28:27.232Z"
   }
  ],
  "feed": [
+  {
+   "at": "2026-11-24T02:28:27.232Z",
+   "lab": "himalayajung",
+   "pr": 9,
+   "ok": true,
+   "kind": "lemma",
+   "target": null,
+   "id": "L8",
+   "errors": []
+  },
   {
    "at": "2026-11-24T02:14:09.864Z",
    "lab": "himalayajung",
