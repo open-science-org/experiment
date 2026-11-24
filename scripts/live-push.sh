@@ -1,11 +1,11 @@
 #!/bin/sh
 # Streams an experiment to the Live page on oso.network: `sh scripts/live-push.sh <experiment id> [seconds]`.
-# Every few minutes (default 300) it writes experiments/<id>.json (scripts/live-snapshot.ts) to the `live` branch,
+# Every minute (default 60; the Live page checks once a minute) it writes experiments/<id>.json (scripts/live-snapshot.ts) to the `live` branch,
 # rebuilds index.json (every experiment on the branch, so several can stream at once) and pushes that branch only.
 # The branch is one commit, replaced each time; master is never touched. A lock keeps two streams from pushing at
 # once. Stops when every run of the experiment has finished, after a last push.
 set -e
-id=$1; every=${2:-300}
+id=$1; every=${2:-60}
 [ -n "$id" ] || { echo "usage: sh scripts/live-push.sh <experiment id> [seconds]"; exit 1; }
 root=$(cd "$(dirname "$0")/.." && pwd); live="$root/.live"; lock="$root/.live.lock"
 cd "$root"
