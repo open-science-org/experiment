@@ -1,6 +1,6 @@
 {
  "alpha": 0.2,
- "updatedAt": "2026-11-24T02:55:48.086Z",
+ "updatedAt": "2026-11-24T07:15:58.930Z",
  "activeLabs": 1,
  "targets": [
   {
@@ -233,17 +233,38 @@
    "pr": 10,
    "points": 0,
    "statement": "properUnitaryDivisors 0 = ∅"
+  },
+  {
+   "id": "L10",
+   "lab": "himalayajung",
+   "kind": "lemma",
+   "target": null,
+   "uses": [],
+   "at": "2026-11-24T07:15:58.920Z",
+   "pr": 11,
+   "points": 0,
+   "statement": "(n d : ℕ) (hd : d ∈ properUnitaryDivisors n) : d * (n / d) = n"
   }
  ],
  "labs": [
   {
    "name": "himalayajung",
    "points": 0,
-   "proofs": 9,
-   "lastAt": "2026-11-24T02:55:48.083Z"
+   "proofs": 10,
+   "lastAt": "2026-11-24T07:15:58.920Z"
   }
  ],
  "feed": [
+  {
+   "at": "2026-11-24T07:15:58.920Z",
+   "lab": "himalayajung",
+   "pr": 11,
+   "ok": true,
+   "kind": "lemma",
+   "target": null,
+   "id": "L10",
+   "errors": []
+  },
   {
    "at": "2026-11-24T02:55:48.083Z",
    "lab": "himalayajung",
