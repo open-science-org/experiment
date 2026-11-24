@@ -7,6 +7,7 @@
 //     --only A3,B-02,...          some theorems only
 //     --conditions library,alone  which conditions (both)
 //     --provider anthropic|openrouter (whichever key is set)  --model NAME  --effort low|medium|high|max
+//     --think N                   at most N tokens of thinking a reply (OpenRouter), leaving room for the answer
 //     --grind (allow grind)
 //     --run ID                    resume or name a run (default: today's date and time)
 //   summary <run>                 rewrite the public summary of a run
@@ -73,7 +74,7 @@ if (cmd === 'calibrate') {
       const provider = value('provider', defaultProvider() ?? 'anthropic') as Provider;
       // A local model writes 8-10 tokens a second here (measured on a 24 GB M4 with Mathlib loaded): a 32k-token reply would take about an hour.
       return { ...DEFAULT_MODEL, provider, model: value('model', DEFAULT_MODELS[provider]), effort: value('effort', DEFAULT_MODEL.effort) as PilotOptions['model']['effort'],
-        maxTokens: Number(value('max-tokens', provider === 'local' ? '8000' : String(DEFAULT_MODEL.maxTokens))) };
+        maxTokens: Number(value('max-tokens', provider === 'local' ? '8000' : String(DEFAULT_MODEL.maxTokens))), ...(flag('think') ? { thinkTokens: Number(value('think', '0')) } : {}) };
     })(),
   };
   const e = estimate(opts);
@@ -114,7 +115,7 @@ if (cmd === 'community') {
     mayStop: pick('may-stop', 'yes') !== 'no',
     counted: (cfg.counted as string[] | undefined) ?? (value('counted', '') ? value('counted', '').split(',') : []),
     only: (cfg.only as string[] | undefined) ?? (value('only', '') ? value('only', '').split(',') : []),
-    ...(['hard', 'big'].includes(pick('problems', process.env.OSO_PROBLEMS ?? 'main')) ? { problems: pick('problems', process.env.OSO_PROBLEMS ?? 'main') as 'hard' | 'big' } : {}),
+    ...(['hard', 'big', 'deep'].includes(pick('problems', process.env.OSO_PROBLEMS ?? 'main')) ? { problems: pick('problems', process.env.OSO_PROBLEMS ?? 'main') as 'hard' | 'big' | 'deep' } : {}),
   };
   const rules = pick('rules', 'traditional,oso').split(',') as ('traditional' | 'oso')[];
   // The next experiment: several societies with the same agents and total money (src/lean/societies.ts).
@@ -147,7 +148,7 @@ if (cmd === 'community') {
     const m = com.opts.agents[i];
     return stub ? referenceAgent(com, i)
       : isLocal(m) ? localChat({ provider: 'local', model: m.slice(LOCAL_PREFIX.length), effort: base.effort, maxTokens: Number(pick('max-tokens', '8000')) })
-      : openRouterChat({ provider: 'openrouter', model: m, effort: com.opts.effortByLab?.[i] ?? base.effort, maxTokens: 32_000, providers: base.providers });
+      : openRouterChat({ provider: 'openrouter', model: m, effort: com.opts.effortByLab?.[i] ?? base.effort, maxTokens: 32_000, providers: base.providers, ...(pick('think', '') ? { thinkTokens: Number(pick('think', '')) } : {}) });
   };
   if (societies.length) {
     // Paired runs: run k of every society before run k + 1 of any, so a stop midway leaves complete pairs.

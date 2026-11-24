@@ -7,7 +7,7 @@ import { execFile, execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { asAxiom, defaultProblems, LEAN_DIR, type Problems, type Task } from './tasks.ts';
+import { asAxiom, defaultProblems, LEAN_DIR, opened, type Problems, type Task } from './tasks.ts';
 
 /** Lean's own axioms, which any proof may use. */
 export const STANDARD_AXIOMS = ['propext', 'Classical.choice', 'Quot.sound'];
@@ -57,14 +57,14 @@ export function banned(proof: string, allowGrind = false): string[] {
 /** The checked file: definitions, the library as axioms, the attempt, and the axioms it uses. */
 export function checkFile(task: Pick<Task, 'ns' | 'signature'>, proof: string, library: CheckOptions['library'], problems: Problems = defaultProblems()): { text: string; firstProofLine: number } {
   const head = [
-    problems === 'big' ? 'import Problems.BigDefs' : 'import Problems.Defs',
+    problems === 'big' ? 'import Problems.BigDefs' : problems === 'deep' ? 'import Problems.DeepDefs' : 'import Problems.Defs',
     'set_option autoImplicit false',
     '',
     '-- The agent\'s library: theorems proved earlier, stated as axioms.',
     ...library.map(asAxiom),
     '',
     `namespace ${task.ns}`,
-    task.ns === 'OSO' ? 'open M2' : '',
+    task.ns === 'OSO' ? `open ${opened(problems)}` : '',
     `theorem attempt ${task.signature}`,
   ];
   const tail = ['', `end ${task.ns}`, `#print axioms ${task.ns}.attempt`, ''];

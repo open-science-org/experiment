@@ -3,7 +3,7 @@
 // proof, with a few repair turns on Lean's error messages").
 import Anthropic from '@anthropic-ai/sdk';
 import { check, type CheckOptions, type CheckResult } from './checker.ts';
-import { definitions, type Task } from './tasks.ts';
+import { definitions, opened, type Task } from './tasks.ts';
 
 export interface Usage { input: number; output: number; cacheRead: number; cacheWrite: number; /** Dollars, when the provider reports it. */ cost?: number; /** The company that served the call (OpenRouter sends calls to many). */ provider?: string }
 export interface Turn { proof: string | null; check: CheckResult | null; usage: Usage; stop: string }
@@ -15,6 +15,8 @@ export type Chat = (system: string, messages: { role: 'user' | 'assistant'; cont
 export type Provider = 'anthropic' | 'openrouter' | 'local';
 export interface ModelSettings {
   provider: Provider; model: string; effort: 'low' | 'medium' | 'high' | 'max'; maxTokens: number;
+  /** At most this many tokens of thinking (OpenRouter), so a reply always has room left for its answer; unset: by effort. */
+  thinkTokens?: number;
   /** OpenRouter only: use only companies that cost at most this many times the cheapest one, for our kind of work. Default 2. */
   priceCap?: number;
   /** OpenRouter only: the companies allowed to serve the calls (tags); set, it replaces the price cap. */
@@ -169,7 +171,7 @@ export function openRouterChat(settings: ModelSettings): Chat {
     const body = {
       model: settings.model,
       max_tokens: settings.maxTokens,
-      reasoning: { effort: settings.effort === 'max' ? 'high' : settings.effort },
+      reasoning: settings.thinkTokens ? { max_tokens: settings.thinkTokens } : { effort: settings.effort === 'max' ? 'high' : settings.effort },
       usage: { include: true },
       // By default OpenRouter spreads calls across companies; in October 2026 that cost about 5.6x the listed price.
       // Only companies within the cap, cheapest first for our mix of input and output (OpenRouter's own
@@ -281,7 +283,7 @@ export function taskPrompt(task: Pick<Task, 'ns' | 'signature'>, library: CheckO
   const lib = library.length
     ? `Your library (theorems proved earlier, which you may cite):\n\n\`\`\`lean\n${library.map((l) => `theorem ${l.name} ${l.signature}`).join('\n\n')}\n\`\`\``
     : 'Your library is empty: there are no earlier theorems to cite.';
-  return `${lib}\n\nProve this, inside \`namespace ${task.ns}\`${task.ns === 'OSO' ? ' with `open M2`' : ''}:\n\n\`\`\`lean\ntheorem attempt ${task.signature}\n\`\`\``;
+  return `${lib}\n\nProve this, inside \`namespace ${task.ns}\`${task.ns === 'OSO' ? ` with \`open ${opened()}\`` : ''}:\n\n\`\`\`lean\ntheorem attempt ${task.signature}\n\`\`\``;
 }
 
 export function extractProof(text: string): string | null {
