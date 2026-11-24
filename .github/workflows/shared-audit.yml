@@ -1,0 +1,52 @@
+# The OSO shared run: check the whole library again, every day, each proof against only the entries before it.
+# The check of a pull request runs untrusted Lean; this is the second look, on master's code and records.
+# If any entry no longer checks, it opens an issue (one at a time).
+name: Shared run audit
+on:
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+concurrency:
+  group: shared-audit
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Lean
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - uses: actions/cache@v4
+        with:
+          path: shared-run/.lake
+          key: shared-lake-${{ hashFiles('shared-run/lake-manifest.json', 'shared-run/lean-toolchain', 'shared-run/*.lean') }}
+      - name: Build the board
+        working-directory: shared-run
+        run: |
+          lake exe cache get
+          lake build Board axcheck
+      - name: Audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if node scripts/shared.ts audit > audit.txt 2>&1; then cat audit.txt; exit 0; fi
+          cat audit.txt
+          if [ -z "$(gh issue list --repo ${{ github.repository }} --state open --search 'in:title "Shared run audit failed"' --json number --jq '.[0].number')" ]; then
+            { echo 'The daily audit found library entries that no longer check:'; echo; echo '```'; tail -c 6000 audit.txt; echo '```'; echo; echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"; } > body.md
+            gh issue create --repo ${{ github.repository }} --title "Shared run audit failed" --body-file body.md
+          fi
+          exit 1

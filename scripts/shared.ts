@@ -27,6 +27,8 @@ const BOUNTY: Record<string, number> = { open: 1000, solved: 100, test: 10 };
 export interface Target { id: string; problem: string; name: string; status: 'open' | 'solved' | 'test'; bounty: number; plain: string; statement: string }
 export interface Entry {
   id: string; name: string; lab: string; pr: number | null; at: string;
+  /** When the pull request was opened: a target goes to the earliest opened passing proof, not the first recorded. */
+  prAt?: string | null;
   kind: 'lemma' | 'target'; target: string | null; statement: string; proof: string; open: string[]; uses: string[];
 }
 export interface Submission { kind: 'lemma' | 'target'; target?: string; statement?: string; proof: string; open?: string[]; note?: string }
@@ -72,29 +74,40 @@ function badStatement(s: string): string[] {
   return out;
 }
 
-/** The checked file: the board, the library as axioms, then the submission as `OSO.attempt`. */
+/** A statement as Lean writes it after a declaration's name. */
+const signature = (statement: string) => (/^[:({]/.test(statement.trim()) ? statement.trim() : `: ${statement.trim()}`);
+/** A library entry as the axiom later checks see. */
+const asAxiom = (e: Pick<Entry, 'name' | 'open' | 'statement'>) => `${e.open.length ? `open ${e.open.join(' ')} in\n` : ''}axiom ${e.name} ${signature(e.statement)}`;
+/** Same statement, same namespaces: whitespace aside, a lemma already in the library. */
+const sameStatement = (a: { statement: string; open: string[] }, b: { statement: string; open: string[] }) =>
+  a.statement.replace(/\s+/g, ' ').trim() === b.statement.replace(/\s+/g, ' ').trim() && [...a.open].sort().join(' ') === [...b.open].sort().join(' ');
+
+/** The checked file: the board, the library as axioms, then the submission as `OSO.attempt`. After the proof, a lemma's
+ *  statement is written again exactly as the library will store it (an axiom, after the proof so the proof cannot use it),
+ *  and Lean must agree the two say the same thing: what later labs build on is what was proved. */
 function checkText(sub: Submission, lib: Entry[], target: Target | undefined) {
   const opens = (sub.open ?? []).filter((o) => IDENT.test(o));
-  const sig = sub.kind === 'target' ? `: type_of% @${target!.name}` : sub.statement!.trim().startsWith(':') || sub.statement!.trim().startsWith('(') || sub.statement!.trim().startsWith('{') ? sub.statement!.trim() : `: ${sub.statement!.trim()}`;
+  const sig = sub.kind === 'target' ? `: type_of% @${target!.name}` : signature(sub.statement!);
   const head = [
     'import Board',
     'set_option autoImplicit false',
     '',
     '-- The shared library: lemmas other labs proved, stated as axioms.',
-    ...lib.map((e) => `${e.open.length ? `open ${e.open.join(' ')} in\n` : ''}axiom ${e.name} ${e.statement.trim().startsWith(':') || /^[({]/.test(e.statement.trim()) ? e.statement.trim() : `: ${e.statement.trim()}`}`),
+    ...lib.map(asAxiom),
     '',
     opens.length ? `open ${opens.join(' ')}` : '',
     `theorem OSO.attempt ${sig}`,
   ];
-  return { text: [head.join('\n'), sub.proof, ''].join('\n'), firstProofLine: head.join('\n').split('\n').length + 1 };
+  const same = sub.kind === 'lemma' ? ['', asAxiom({ name: 'OSO.stored', open: opens, statement: sub.statement! }), 'example : type_of% @OSO.attempt = type_of% @OSO.stored := rfl', ''] : [''];
+  return { text: [head.join('\n'), sub.proof, ...same].join('\n'), firstProofLine: head.join('\n').split('\n').length + 1 };
 }
 
 /** Checks one submission against the current board and library. */
-export async function checkOne(file: string): Promise<Verdict> {
+export async function checkOne(file: string, before?: Entry[]): Promise<Verdict> {
   let sub: Submission;
   try { sub = JSON.parse(readFileSync(file, 'utf8')); } catch { return { file, ok: false, errors: ['the file is not valid JSON'], uses: [], submission: null }; }
   const errors: string[] = [];
-  const targets = board(), lib = library();
+  const targets = board(), lib = before ?? library();
   const target = sub.kind === 'target' ? targets.find((t) => t.id === sub.target) : undefined;
   if (sub.kind !== 'lemma' && sub.kind !== 'target') errors.push('`kind` must be "lemma" or "target"');
   if (sub.kind === 'target' && !target) errors.push(`unknown target ${JSON.stringify(sub.target)}; see shared-run/state/board.json`);
@@ -102,6 +115,8 @@ export async function checkOne(file: string): Promise<Verdict> {
   if (typeof sub.proof !== 'string' || sub.proof.length > 60_000) errors.push('`proof` must be text (at most 60,000 characters)');
   if ((sub.open ?? []).some((o) => !IDENT.test(o))) errors.push('`open` must list namespaces only');
   if (sub.kind === 'lemma' && typeof sub.statement === 'string') errors.push(...badStatement(sub.statement));
+  const copy = sub.kind === 'lemma' && typeof sub.statement === 'string' ? lib.find((e) => e.kind === 'lemma' && sameStatement(e, { statement: sub.statement!, open: (sub.open ?? []).filter((o) => IDENT.test(o)) })) : undefined;
+  if (copy) errors.push(`this lemma is already in the library as ${copy.name}: cite it instead`);
   if (typeof sub.proof === 'string') errors.push(...banned(sub.proof, true));
   if (errors.length) return { file, ok: false, errors, uses: [], submission: sub };
   const { text, firstProofLine } = checkText(sub, lib, target);
@@ -131,7 +146,9 @@ export function credit(lib: Entry[], targets: Target[]) {
     for (const p of parents) pay(p, ((1 - ALPHA) * v) / parents.length);
   };
   const paid = new Set<string>();
-  for (const e of lib) {
+  // A proof copied from an open pull request can finish its check first; the bounty goes to the one opened first.
+  const when = (e: Entry) => e.prAt ?? e.at;
+  for (const e of [...lib].sort((a, b) => when(a).localeCompare(when(b)))) {
     if (e.kind !== 'target' || !e.target || paid.has(e.target)) continue;
     const t = targets.find((x) => x.id === e.target);
     if (!t) continue;
@@ -177,7 +194,7 @@ if (cmd === 'board') {
   process.exitCode = verdicts.every((v) => v.ok) ? 0 : 1;
 } else if (cmd === 'apply') {
   const verdicts: Verdict[] = JSON.parse(readFileSync(args[0], 'utf8'));
-  const lab = flag('--lab'), pr = Number(flag('--pr')), dir = flag('--files');
+  const lab = flag('--lab'), pr = Number(flag('--pr')), dir = flag('--files'), prAt = flag('--pr-at') ?? null;
   if (!lab || !IDENT.test(lab.replace(/-/g, '_'))) throw new Error('--lab <github user> is required');
   const lib = library(), log = read<object[]>(join(STATE, 'verdicts.json'), []), at = new Date().toISOString();
   // The verdicts come from the check job, where the submission's Lean ran: trust a pass only if its submission
@@ -188,11 +205,14 @@ if (cmd === 'board') {
       v.ok = false; v.errors = ['the verdict does not match the pull request'];
     }
     const s = v.submission;
+    // The library may have grown since the check: a lemma recorded meanwhile with the same statement wins.
+    const copy = v.ok && s?.kind === 'lemma' ? lib.find((e) => e.kind === 'lemma' && sameStatement(e, { statement: s.statement ?? '', open: (s.open ?? []).filter((o) => IDENT.test(o)) })) : undefined;
+    if (copy) { v.ok = false; v.errors = [`this lemma is already in the library as ${copy.name}: cite it instead`]; }
     let id: string | null = null;
     if (v.ok && s) {
       id = `L${lib.length + 1}`;
       const t = s.kind === 'target' ? board().find((x) => x.id === s.target) : undefined;
-      lib.push({ id, name: `OSO.${id}`, lab, pr: pr || null, at, kind: s.kind, target: s.kind === 'target' ? s.target! : null,
+      lib.push({ id, name: `OSO.${id}`, lab, pr: pr || null, at, prAt, kind: s.kind, target: s.kind === 'target' ? s.target! : null,
         statement: s.kind === 'target' ? `: type_of% @${t!.name}` : s.statement!, proof: s.proof, open: (s.open ?? []).filter((o) => IDENT.test(o)), uses: v.uses });
     }
     log.push({ at, lab, pr, ok: v.ok, kind: s?.kind ?? '?', target: s?.target ?? null, id, errors: v.errors.slice(0, 3).map((e) => e.slice(0, 300)) });
@@ -201,10 +221,25 @@ if (cmd === 'board') {
   write(join(STATE, 'verdicts.json'), log);
   summarize();
   console.log(`applied ${verdicts.length} verdict(s) for ${lab}; library has ${lib.length}`);
+} else if (cmd === 'audit') {
+  // Check every library entry again, each against only the entries before it: anyone can confirm the whole library.
+  const lib = library(), tmp = join(DIR, '.check', 'audit');
+  mkdirSync(tmp, { recursive: true });
+  let bad = 0;
+  for (const [i, e] of lib.entries()) {
+    const f = join(tmp, `${e.id}.json`);
+    writeFileSync(f, JSON.stringify(e.kind === 'target' ? { kind: 'target', target: e.target, proof: e.proof, open: e.open } : { kind: 'lemma', statement: e.statement, proof: e.proof, open: e.open }));
+    const v = await checkOne(f, lib.slice(0, i));
+    const usesOk = [...v.uses].sort().join() === [...e.uses].sort().join();
+    if (!v.ok || !usesOk) bad++;
+    console.log(`${v.ok && usesOk ? 'OK  ' : 'BAD '} ${e.id} (${e.lab}, #${e.pr})${v.ok ? (usesOk ? '' : `: uses ${v.uses.join(', ')}, recorded ${e.uses.join(', ')}`) : ': ' + v.errors.join(' / ').slice(0, 300)}`);
+  }
+  console.log(`${lib.length - bad} of ${lib.length} entries check again`);
+  if (bad) process.exitCode = 1;
 } else if (cmd === 'credit') {
   summarize();
   console.log(JSON.stringify(credit(library(), board()), null, 1));
 } else if (main) {
-  console.error('usage: node scripts/shared.ts board | check <file.json>... [--out v.json] | apply <v.json> --lab <user> --pr <n> | credit');
+  console.error('usage: node scripts/shared.ts board | check <file.json>... [--out v.json] | apply <v.json> --lab <user> --pr <n> [--pr-at time] | audit | credit');
   process.exitCode = 2;
 }

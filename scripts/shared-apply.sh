@@ -18,13 +18,14 @@ while read -r run head; do
   work=$(mktemp -d)
   gh run download "$run" --repo "$repo" -n shared-verdict -D "$work" || { echo "no verdict for run $run"; continue; }
   lab=$(gh pr view "$pr" --repo "$repo" --json author --jq .author.login)
+  opened=$(gh pr view "$pr" --repo "$repo" --json createdAt --jq .createdAt)
   mkdir -p "$work/prfiles"
   gh api "repos/$repo/pulls/$pr/files" --paginate --jq '.[] | select(.filename | startswith("shared-run/submissions/")) | .filename' | while read -r f; do
     gh api "repos/$repo/contents/$f?ref=$head" --jq .content | base64 -d > "$work/prfiles/$(basename "$f")" || true
   done
   git pull -q --rebase origin master
   # One bad pull request must not block the others: skip it, and the next run tries it again.
-  node scripts/shared.ts apply "$work/verdicts.json" --lab "$lab" --pr "$pr" --files "$work/prfiles" || { echo "could not record #$pr"; git checkout -q -- shared-run/state; continue; }
+  node scripts/shared.ts apply "$work/verdicts.json" --lab "$lab" --pr "$pr" --pr-at "$opened" --files "$work/prfiles" || { echo "could not record #$pr"; git checkout -q -- shared-run/state; continue; }
   node -e '
     const v = require(process.argv[1]);
     const lines = v.map((x) => x.ok ? `PASS ${x.file.split("/").pop()}${x.uses.length ? ` (builds on ${x.uses.join(", ")})` : ""}` : `FAIL ${x.file.split("/").pop()}\n\n\`\`\`\n${x.errors.join("\n").slice(0, 3000)}\n\`\`\``);
