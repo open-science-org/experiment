@@ -48,6 +48,14 @@ const setups = plan.societies.map((key) => {
       rep: k + 1, status: existsSync(join(dir, 'result.json')) ? 'done' as const : 'running' as const,
       round: Math.max(0, ...actions.map((a) => a.round)), spent, targets,
       lemmas: actions.filter((a) => a.kind === 'lemma' && a.ok).length, steps, lsteps, provedAt,
+      // What the labs built: every new result Lean accepted, who proved it and when, and the earlier results its
+      // proof cites (read from Lean, so exact). Statements, not proofs.
+      library: (() => {
+        const got = actions.filter((a) => a.ok && a.entry);
+        const names = new Set(got.map((a) => a.entry!));
+        return got.map((a) => ({ n: a.entry!, lab: a.agent + 1, round: a.round, target: a.kind === 'target' ? a.target : undefined, s: a.signature,
+          uses: [...new Set((a.uses ?? []).map((u) => u.replace(/^OSO\./, '')).filter((u) => names.has(u) && u !== a.entry))] }));
+      })(),
       spentBy: Array.from({ length: spentBy.length }, (_, i) => Math.round(1e4 * (spentBy.slice(0, i + 1).filter((x) => x !== undefined).at(-1) ?? 0)) / 1e4),
     };
   });
@@ -101,7 +109,9 @@ const snapshot = {
       lemmaCurve: started.length ? Array.from({ length: GRID + 1 }, (_, g) => { const m = reach * g / GRID; return [m, started.reduce((a, r) => a + at(r.lsteps, m), 0) / started.length]; }) : [],
       // How many runs proved each target.
       proved: Object.fromEntries(tasks.map((t) => [t.publicId, s.reps.filter((r) => r.targets.includes(t.publicId)).length])),
-      reps: s.reps.map(({ steps: _, lsteps: __, ...r }) => r),
+      // The library one run built (the first started run of this setup), for the page's graph of it.
+      library: started[0]?.library ?? [],
+      reps: s.reps.map(({ steps: _, lsteps: __, library: ___, ...r }) => r),
       // Attempts at each target by round, over all runs: [accepted, not accepted].
       tried: s.tried,
     };
