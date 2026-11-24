@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { costOf, type Action, type CommunityOptions } from '../src/lean/community.ts';
 import { EXPERIMENT_NAMES } from '../src/lean/names.ts';
 import { osoLabel, osoParams } from '../src/lean/societies.ts';
-import { LEAN_DIR, loadTasks } from '../src/lean/tasks.ts';
+import { AREAS, LEAN_DIR, loadTasks, PLAIN } from '../src/lean/tasks.ts';
 
 const [id, out = 'live.json'] = process.argv.slice(2);
 if (!id) { console.error('usage: node scripts/live-snapshot.ts <experiment id> [out.json]'); process.exit(1); }
@@ -16,7 +16,7 @@ const lines = (f: string) => (existsSync(f) ? readFileSync(f, 'utf8').split('\n'
 
 // Money points for the line graph: mean targets proved by each setup once each run has spent that much.
 const GRID = 40;
-let problems: CommunityOptions['problems'] = 'main', cap = 0;
+let problems: CommunityOptions['problems'] = 'main', cap = 0, first: CommunityOptions | null = null;
 const setups = plan.societies.map((key) => {
   let opts: CommunityOptions | null = null;
   const tried: Record<string, Record<number, [number, number]>> = {};
@@ -26,6 +26,7 @@ const setups = plan.societies.map((key) => {
     opts ??= JSON.parse(readFileSync(join(dir, 'options.json'), 'utf8')) as CommunityOptions;
     problems = opts.problems ?? 'main';
     cap = opts.budget * opts.agents.length;
+    first ??= opts;
     const actions = lines(join(dir, 'actions.jsonl')) as Action[];
     let spent = 0;
     const targets: string[] = [], steps: [number, number][] = [[0, 0]];
@@ -79,7 +80,13 @@ const reach = Math.min(cap, Math.max(cap / 400, ...setups.flatMap((s) => s.reps.
 const snapshot = {
   id, title: EXPERIMENT_NAMES[id] ?? id, updatedAt: Date.now(), startedAt: plan.startedAt,
   problems, moneyPerRun: cap,
-  targets: tasks.map((t) => ({ id: t.publicId, depth: t.depth, bounty: 4 * 2 ** (t.depth - 1), area: t.area })),
+  targets: tasks.map((t) => ({ id: t.publicId, depth: t.depth, bounty: 4 * 2 ** (t.depth - 1), area: t.area, text: PLAIN[t.publicId] ?? '' })),
+  // Who the labs are and how a run goes, for the page's "About this run".
+  about: first && {
+    labs: first.agents.length, models: [...new Set(first.agents.map((m) => m.split('/').pop()!))], budget: first.budget,
+    rounds: first.rounds, mayStop: first.mayStop !== false, repairs: first.repairs, hidden: all.length - tasks.length,
+    areas: [...new Set(all.map((t) => t.area))].map((a) => AREAS[a]).filter(Boolean),
+  },
   dag,
   setups: setups.map((s) => {
     const started = s.reps.filter((r) => r.status !== 'waiting');
