@@ -149,5 +149,21 @@
    "Erdos1052"
   ],
   "uses": []
+ },
+ {
+  "id": "L11",
+  "name": "OSO.L11",
+  "lab": "himalayajung",
+  "pr": 12,
+  "at": "2026-11-24T07:22:38.562Z",
+  "prAt": "2026-11-24T07:20:00Z",
+  "kind": "lemma",
+  "target": null,
+  "statement": "(n d : ℕ) (hn : Odd n) (hd : d ∈ properUnitaryDivisors n) : Odd d",
+  "proof": ":= by\n  have h_dvd_n : d ∣ n := by\n    have h₁ : d ∈ properUnitaryDivisors n := hd\n    have h₂ : d ∈ Finset.Ico 1 n ∧ d ∣ n ∧ d.Coprime (n / d) := by\n      simpa [properUnitaryDivisors] using h₁\n    exact h₂.2.1\n  \n  have h_main : Odd d := by\n    have h₁ : d ∣ n := h_dvd_n\n    have h₂ : Odd n := hn\n    have h₃ : ¬Even n := by\n      intro h\n      have h₄ : Even n := h\n      rw [Nat.even_iff] at h₄\n      have h₅ : n % 2 = 0 := by omega\n      have h₆ : Odd n := hn\n      rw [Nat.odd_iff] at h₆\n      omega\n    have h₄ : ¬Even d := by\n      intro h\n      have h₅ : Even d := h\n      rw [Nat.even_iff] at h₅\n      have h₆ : 2 ∣ d := by omega\n      have h₇ : 2 ∣ n := dvd_trans h₆ h₁\n      have h₈ : Even n := by\n        rw [Nat.even_iff]\n        omega\n      contradiction\n    have h₅ : Odd d := by\n      rw [Nat.odd_iff]\n      have h₆ : ¬Even d := h₄\n      have h₇ : ¬(2 ∣ d) := by\n        intro h\n        have h₈ : Even d := by\n          rw [Nat.even_iff]\n          omega\n        contradiction\n      omega\n    exact h₅\n  \n  exact h_main",
+  "open": [
+   "Erdos1052"
+  ],
+  "uses": []
  }
 ]
