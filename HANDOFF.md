@@ -1,5 +1,34 @@
 # Handoff notes
 
+## 2026-11-24 17:13 · Deep Fermat set and run, live page graphs, step matcher, stay-awake
+Session: c47e3b16-8be4-4ac2-81b3-3c703bdb6a60 · branch master · last commit 9408854
+
+**Done**
+- Deep problem set `--problems deep`, "Peano to Fermat": its own numbers, no Mathlib, one target P1 (Fermat's little theorem), depth 11, 96 hidden results (c67808a). All reference proofs pass; stand-in labs solve it in round 27.
+- Paid run `deep-fermat-1` (OSO α 0.2, 4 DeepSeek V4.1 Flash, $2 each, 100 rounds) is RUNNING on the Mac since 2026-11-23 23:07, streaming every minute. At 17:13: round 47, about 76 lemmas, $1.7 spent, no target try. The labs are stuck on (k+1)·C(n+1,k+1) = (n+1)·C(n,k): 15+ failed tries.
+- Empty-reply test done and pushed (68ecb02): medium, low and capped thinking all leave 71–75% of replies cut off; the thinking cap seems ignored.
+- `--think N` and `--only` options; the local lab sees library lemmas (f4af264).
+- Live page (site repo): About this run; problems and lemmas plots; one DAG where proved steps take the lab's colour and off-map lemmas sit in a lane (site 16eda69, UNPUSHED).
+- `scripts/match-steps.ts` (9408854, UNPUSHED): Lean checks which hidden steps a lab lemma gives (apply, with_reducible, positive #print axioms only, -DmaxErrors). Runs in live-push.sh each minute; writes <run dir>/matches.json. Works on deep and big sets.
+- Stay-awake: `src/lean/awake.ts`. Every run uses caffeinate -i -s and warns on battery (screen + text to OSO_TEXT_TO in .env) (bdab2d2). live-push.sh: SSH timeouts so a push can't hang and hold the lock (b8f60da).
+- Goedel local lab run-4 finished: 3 lemmas accepted (PRs #11–13); the 1052 target failed.
+
+**Decisions**
+- No 50-deep set: chains grow slowly with size; padding would be fake. Fermat at depth 11 was approved.
+- Push rule (memory): results push at once, in their own commit; code and site wait for "push".
+- Two plots, not a second y-axis.
+
+**Open threads**
+1. Push 9408854 (experiment) and 16eda69 (site) when the user says "push".
+2. When deep-fermat-1 ends: text the user, write the TL;DR + findings, push the results. Report whether any lab broke the binomial identity.
+3. Offered, waiting for a go: a traditional comparison run on the deep set ($8 max); running paid runs on GitHub Actions (the Mac is for testing).
+4. Older offers: fix the stale join issue #2; DeepSeek lab on 1052 ($2); remove the lab-2 worktree; Pages auto-retry.
+
+**Watch out**
+- The Mac was on battery at 15:11: the run stalls when it sleeps (rounds 8–15 took 12 hours). The deep-fermat-1 run started before awake.ts, so it gets no battery warning; a `caffeinate -s -w 7730` hold was added by hand.
+- Matches skip steps proved in another shape or split over several lemmas: grey means "not proved in this form".
+- Ollama Goedel is idle; no local lab running.
+
 ## 2026-11-08 17:32 · Lean M1–M3 done, app rework, flow-back fix, money follows earnings, epochs
 Session: 25a0cabb-cf52-4331-b873-073049b023d5 · branch master · last commit 6a71d76
 
