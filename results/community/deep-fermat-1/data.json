@@ -1,0 +1,50 @@
+{
+ "id": "deep-fermat-1",
+ "k": 1,
+ "counted": [
+  "P1"
+ ],
+ "runs": [
+  {
+   "society": "oso-0.2",
+   "rep": 1,
+   "runId": "deep-fermat-1-r1-oso-0.2",
+   "stats": {
+    "rules": "oso",
+    "targetsSolved": 1,
+    "countedSolved": 1,
+    "counted": 1,
+    "conjecturesProved": 0,
+    "sharedAtOnce": 1,
+    "sharedOfChosen": null,
+    "chosen": 0,
+    "chosenShared": 0,
+    "noChoice": 0,
+    "lemmaSize": 94.21951219512195,
+    "builtOnOthers": 63,
+    "deepestTarget": 11,
+    "value": 4096,
+    "spent": 2.526937732000001,
+    "budget": 8,
+    "actions": 244,
+    "lemmasAccepted": 82,
+    "lemmasDuplicate": 6,
+    "targetsDuplicate": 2,
+    "replies": 568,
+    "repliesCutOff": null,
+    "errors": 28,
+    "trivial": 0,
+    "failed": 125,
+    "plansUnusable": 0,
+    "published": 83,
+    "neverPublished": 2,
+    "earnings": [
+     661.0649296152909,
+     1079.9103186932148,
+     994.2250427111708,
+     1360.7997089803248
+    ]
+   }
+  }
+ ]
+}
