@@ -127,7 +127,9 @@ const snapshot = {
     // Each setup's lines stop at the most one of its runs has spent, so a setup that has spent less is not drawn
     // as if it had spent more and stalled.
     const upTo = Math.max(0, ...started.map((r) => r.spent)) * (1 + 1e-9);
-    const grid = (f: (m: number) => number) => Array.from({ length: GRID + 1 }, (_, g) => reach * g / GRID).filter((m, g) => g === 0 || m <= upTo).map((m) => [m, f(m)]);
+    // The grid, then one last point at the setup's own spend, so a proof just before the line ends still shows.
+    const own = upTo / (1 + 1e-9);
+    const grid = (f: (m: number) => number) => [...Array.from({ length: GRID + 1 }, (_, g) => reach * g / GRID).filter((m, g) => g === 0 || m < own), ...(own > 0 ? [own] : [])].map((m) => [m, f(m)]);
     return {
       key: s.key, label: s.label, params: s.params, from: s.from, earlier: s.earlier,
       runs: { done: s.reps.filter((r) => r.status === 'done').length, running: s.reps.filter((r) => r.status === 'running').length, total: s.repeats },
