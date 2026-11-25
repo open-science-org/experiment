@@ -8,6 +8,8 @@ export const EXPERIMENT_NAMES: Record<string, string> = {
   'm3-smoke': 'Labs choose what to publish: smoke test, 1 run at α 0.2, $0.05 a lab (Nov 7)',
   'lean-m3': 'Labs choose what to publish: α 1, 0.8, 0.2 × 10 runs, $0.15 a lab (Nov 8)',
   'lean-m3-off': 'Labs choose, knowledge reward off: α 1, 0.8, 0.2 × 10 runs, $0.15 a lab (Nov 9)',
+  'deep-fermat-trad-1': "Deep set, Fermat's little theorem: one traditional run, compared with the earlier OSO α 0.2 run, 4 labs, $2 a lab, 100 rounds (Nov 24)",
+  'lean-e1': 'E1, reward vs instruction: shared (prove), shared (earn), α 0.2, α 0.2 with earnings hidden × 5 runs, big set, $0.40 a lab (Nov 24)',
   'deep-fermat-1': "Deep set, Fermat's little theorem from scratch (depth 11): one α 0.2 run, 4 labs, $2 a lab, 100 rounds (Nov 23)",
   'lean-big-1': 'Bigger set, labs choose, reward off: traditional, α 1, α 0.2 × 5 runs, $0.40 a lab (Nov 22)',
   'lean-b5': 'Fair-prompt check: OSO α 0.2 vs shared library, $0.20 a lab (Nov 7)',
@@ -18,6 +20,16 @@ export const EXPERIMENT_NAMES: Record<string, string> = {
   'planner-trial-1': 'Planner setup, trial 1 (Nov 6)',
   'race-cheap': 'Cheap-model race: OSO vs traditional × 5 (Oct 24)',
   'race-speed': 'Speed race: not valid, credit ran out (Oct 24)',
+};
+
+/** The question each experiment asks, in plain words: one piece of OSO's central question (which organizational
+ *  structure gets the most out of a group). The letter is the core experiment it belongs to (A scaling, B incentives). */
+export const EXPERIMENT_QUESTIONS: Record<string, string> = {
+  'deep-fermat-trad-1': "On one deep problem, Fermat's little theorem built from scratch, do labs get further for the same money when they share every result at once and credit flows back (OSO, α 0.2), or when each keeps its work private until it has proved the theorem (traditional)? One run each: a first look, not a test. [A]",
+  'deep-fermat-1': "Can four cheap AI labs prove Fermat's little theorem from scratch, 95 hidden steps deep, when they share every result at once and credit flows back (OSO, α 0.2)?",
+  'lean-e1': 'Under OSO, labs lay more groundwork. Is that the reward itself, the instruction to earn, or seeing the earnings? Four setups change one of these at a time. [B]',
+  'lean-hard-2': 'On harder targets, which structure reaches them for the least money: keeping work private, a shared library, OSO credit, or one lab planning for the rest? [A]',
+  'lean-big-1': 'When labs choose what to publish and when, does credit flowing back make them share more, and does the community prove more? [B]',
 };
 
 export const experimentName = (id: string) => EXPERIMENT_NAMES[id] ?? (id.startsWith('stub') ? `Pipeline test, no model: ${id}` : id);

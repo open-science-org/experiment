@@ -4,7 +4,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { costOf, type Action, type CommunityOptions } from '../src/lean/community.ts';
-import { EXPERIMENT_NAMES } from '../src/lean/names.ts';
+import { EXPERIMENT_NAMES, EXPERIMENT_QUESTIONS } from '../src/lean/names.ts';
 import { osoLabel, osoParams } from '../src/lean/societies.ts';
 import { AREAS, LEAN_DIR, loadTasks, PLAIN } from '../src/lean/tasks.ts';
 
@@ -103,7 +103,7 @@ const feed = sources.flatMap(({ key, from, repeats }) => Array.from({ length: re
 // The graph runs to the most any run has spent so far (all the money once runs finish), so early progress is visible.
 const reach = Math.min(cap, Math.max(cap / 400, ...setups.flatMap((s) => s.reps.map((r) => r.spent))));
 const snapshot = {
-  id, title: EXPERIMENT_NAMES[id] ?? id, updatedAt: Date.now(), startedAt: plan.startedAt,
+  id, title: EXPERIMENT_NAMES[id] ?? id, question: EXPERIMENT_QUESTIONS[id] ?? null, updatedAt: Date.now(), startedAt: plan.startedAt,
   problems, moneyPerRun: cap,
   targets: tasks.map((t) => ({ id: t.publicId, depth: t.depth, bounty: 4 * 2 ** (t.depth - 1), area: t.area, text: PLAIN[t.publicId] ?? '' })),
   // Who the labs are and how a run goes, for the page's "About this run".
