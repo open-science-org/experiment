@@ -11,17 +11,24 @@ import { AREAS, LEAN_DIR, loadTasks, PLAIN } from '../src/lean/tasks.ts';
 const [id, out = 'live.json'] = process.argv.slice(2);
 if (!id) { console.error('usage: node scripts/live-snapshot.ts <experiment id> [out.json]'); process.exit(1); }
 const runs = join(LEAN_DIR, 'runs');
-const plan = JSON.parse(readFileSync(join(runs, `${id}.plan.json`), 'utf8')) as { societies: string[]; repeats: number; startedAt: number };
+const plan = JSON.parse(readFileSync(join(runs, `${id}.plan.json`), 'utf8')) as { societies: string[]; repeats: number; startedAt: number; compare?: { experiment: string; setup: string }[] };
+// The setups drawn: this experiment's, then any earlier runs it names to compare against (`compare` in the plan),
+// read from that experiment's run folders. Same charts, same scales, so the setups can be compared.
+const sources = [
+  ...plan.societies.map((key) => ({ key, from: id, repeats: plan.repeats, earlier: false })),
+  ...(plan.compare ?? []).map((c) => ({ key: c.setup, from: c.experiment, earlier: true,
+    repeats: (JSON.parse(readFileSync(join(runs, `${c.experiment}.plan.json`), 'utf8')) as { repeats: number }).repeats })),
+];
 const lines = (f: string) => (existsSync(f) ? readFileSync(f, 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l)) : []);
 
 // Money points for the line graph: mean targets proved by each setup once each run has spent that much.
 const GRID = 40;
 let problems: CommunityOptions['problems'] = 'main', cap = 0, first: CommunityOptions | null = null;
-const setups = plan.societies.map((key) => {
+const setups = sources.map(({ key, from, repeats, earlier }) => {
   let opts: CommunityOptions | null = null;
   const tried: Record<string, Record<number, [number, number]>> = {};
-  const reps = Array.from({ length: plan.repeats }, (_, k) => {
-    const dir = join(runs, `${id}-r${k + 1}-${key}`);
+  const reps = Array.from({ length: repeats }, (_, k) => {
+    const dir = join(runs, `${from}-r${k + 1}-${key}`);
     if (!existsSync(join(dir, 'options.json'))) return { rep: k + 1, status: 'waiting' as const, round: 0, spent: 0, targets: [] as string[], lemmas: 0, steps: [] as [number, number][], provedAt: {} as Record<string, number>, spentBy: [] as number[] };
     opts ??= JSON.parse(readFileSync(join(dir, 'options.json'), 'utf8')) as CommunityOptions;
     problems = opts.problems ?? 'main';
@@ -67,7 +74,7 @@ const setups = plan.societies.map((key) => {
       spentBy: Array.from({ length: spentBy.length }, (_, i) => Math.round(1e4 * (spentBy.slice(0, i + 1).filter((x) => x !== undefined).at(-1) ?? 0)) / 1e4),
     };
   });
-  return { key, label: opts ? osoLabel(key, opts) : key, params: opts ? osoParams(opts) : '', reps, tried };
+  return { key, from, earlier, repeats, label: (opts ? osoLabel(key, opts) : key) + (earlier ? ` (earlier run: ${from})` : ''), params: opts ? osoParams(opts) : '', reps, tried };
 });
 
 const at = (steps: [number, number][], money: number) => steps.filter(([m]) => m <= money).at(-1)?.[1] ?? 0;
@@ -77,10 +84,10 @@ const all = loadTasks(problems), tasks = all.filter((t) => t.posted);
 const idOf = new Map(all.map((t) => [t.name, t.publicId]));
 const dag = all.map((t) => ({ id: t.publicId, depth: t.depth, area: t.area, posted: !!t.posted, uses: t.uses.map((u) => idOf.get(u) ?? idOf.get(`OSO.${u}`)).filter(Boolean) }));
 // The feed: each lab's checked results, and whose results a proof built on (the lab that first proved each one cited).
-const built: Record<string, { on: number; scratch: number }> = Object.fromEntries(plan.societies.map((k) => [k, { on: 0, scratch: 0 }]));
-const feed = plan.societies.flatMap((key) => Array.from({ length: plan.repeats }, (_, k) => {
+const built: Record<string, { on: number; scratch: number }> = Object.fromEntries(sources.map((s) => [s.key, { on: 0, scratch: 0 }]));
+const feed = sources.flatMap(({ key, from, repeats }) => Array.from({ length: repeats }, (_, k) => {
   const author = new Map<string, number>();
-  return (lines(join(runs, `${id}-r${k + 1}-${key}`, 'actions.jsonl')) as Action[])
+  return (lines(join(runs, `${from}-r${k + 1}-${key}`, 'actions.jsonl')) as Action[])
     .filter((a) => a.kind === 'target' || a.kind === 'lemma')
     .map((a) => {
       const duplicate = !!a.reason?.includes('duplicate');
@@ -108,13 +115,17 @@ const snapshot = {
   dag,
   setups: setups.map((s) => {
     const started = s.reps.filter((r) => r.status !== 'waiting');
+    // Each setup's lines stop at the most one of its runs has spent, so a setup that has spent less is not drawn
+    // as if it had spent more and stalled.
+    const upTo = Math.max(0, ...started.map((r) => r.spent)) * (1 + 1e-9);
+    const grid = (f: (m: number) => number) => Array.from({ length: GRID + 1 }, (_, g) => reach * g / GRID).filter((m, g) => g === 0 || m <= upTo).map((m) => [m, f(m)]);
     return {
-      key: s.key, label: s.label, params: s.params,
-      runs: { done: s.reps.filter((r) => r.status === 'done').length, running: s.reps.filter((r) => r.status === 'running').length, total: plan.repeats },
+      key: s.key, label: s.label, params: s.params, from: s.from, earlier: s.earlier,
+      runs: { done: s.reps.filter((r) => r.status === 'done').length, running: s.reps.filter((r) => r.status === 'running').length, total: s.repeats },
       // Line graph: mean over started runs of targets proved for the money spent, money as a share of a run's money.
-      curve: started.length ? Array.from({ length: GRID + 1 }, (_, g) => { const m = reach * g / GRID; return [m, started.reduce((a, r) => a + at(r.steps, m), 0) / started.length]; }) : [],
+      curve: started.length ? grid((m) => started.reduce((a, r) => a + at(r.steps, m), 0) / started.length) : [],
       // The same for new lemmas: the page shows it when a run has one target, so the climb toward it shows.
-      lemmaCurve: started.length ? Array.from({ length: GRID + 1 }, (_, g) => { const m = reach * g / GRID; return [m, started.reduce((a, r) => a + at(r.lsteps, m), 0) / started.length]; }) : [],
+      lemmaCurve: started.length ? grid((m) => started.reduce((a, r) => a + at(r.lsteps, m), 0) / started.length) : [],
       // How many runs proved each target.
       proved: Object.fromEntries(tasks.map((t) => [t.publicId, s.reps.filter((r) => r.targets.includes(t.publicId)).length])),
       // The library one run built (the first started run of this setup), for the page's graph of it.
@@ -129,4 +140,4 @@ const snapshot = {
   built,
 };
 writeFileSync(out, JSON.stringify(snapshot) + '\n');
-console.log(`${out}: ${setups.map((s) => `${s.key} ${s.reps.filter((r) => r.status !== 'waiting').length}/${plan.repeats} started`).join(', ')}`);
+console.log(`${out}: ${setups.map((s) => `${s.key}${s.earlier ? ` (${s.from})` : ''} ${s.reps.filter((r) => r.status !== 'waiting').length}/${s.repeats} started`).join(', ')}`);
