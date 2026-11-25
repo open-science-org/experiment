@@ -24,3 +24,5 @@ shared-run/.lake/
 shared-run/.check/
 .live.lock/
 shared-run/.local-lab/
+lean/Reference/QR*.lean
+lean/reference-dag-qr.md
