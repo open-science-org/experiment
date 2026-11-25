@@ -1,0 +1,51 @@
+{
+ "id": "deep-fermat-trad-1",
+ "k": 2,
+ "counted": [
+  "P1"
+ ],
+ "runs": [
+  {
+   "society": "traditional",
+   "rep": 1,
+   "runId": "deep-fermat-trad-1-r1-traditional",
+   "stats": {
+    "rules": "traditional",
+    "targetsSolved": 0,
+    "countedSolved": 0,
+    "counted": 1,
+    "conjecturesProved": 0,
+    "sharedAtOnce": 0,
+    "sharedOfChosen": null,
+    "chosen": 0,
+    "chosenShared": 0,
+    "noChoice": 0,
+    "lemmaSize": 125.50847457627118,
+    "citedLater": 97,
+    "builtOnOthers": 0,
+    "deepestTarget": 0,
+    "value": 0,
+    "spent": 4.653975404000007,
+    "budget": 8,
+    "actions": 400,
+    "lemmasAccepted": 175,
+    "lemmasDuplicate": 22,
+    "targetsDuplicate": 0,
+    "replies": 1074,
+    "repliesCutOff": 501,
+    "errors": 0,
+    "trivial": 2,
+    "failed": 223,
+    "plansUnusable": 0,
+    "published": 0,
+    "neverPublished": 177,
+    "earnings": [
+     0,
+     0,
+     0,
+     0
+    ]
+   }
+  }
+ ]
+}

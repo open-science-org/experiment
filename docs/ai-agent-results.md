@@ -4,7 +4,7 @@ Last updated: 2026-11-25. Every result here has its own page under `results/` (t
 
 ## TL;DR
 
-Checked after every run; last checked 2026-11-25, after E1 (section 4k).
+Checked after every run; last checked 2026-11-25, after E1 (section 4k) and the traditional Fermat run (section 4l).
 
 - **Lemmas help weak models.** DeepSeek proves 4 of 16 targets alone, 12 of 16 with the lemmas they need.
 - **Sharing lets labs build on each other** (Spend all: 2.2 results a run in the shared library, 0.4 under traditional), but it has not raised targets proved. A plain shared library gets this too, so it is not unique to OSO. **Repeated work is not a general result:** traditional labs proved the same lemma about 20 times a run in the small cheap race (5 runs), but only 0.4 times in Spend all (20 runs per setup; shared library 0.2).
@@ -25,6 +25,7 @@ Checked after every run; last checked 2026-11-25, after E1 (section 4k).
 - **Money is now counted at one fixed price per token** (from 2026-11-17; correction below). The model's price doubled between Nov 8 and Nov 9; dollar figures below are repriced.
 - **The setup checks out** (proof checker, fault tests, public benchmark). Flow-back was split by money spent instead of lines saved until 2026-11-08; the counts stand (correction below).
 - **Deep set: a community of cheap models proved Fermat's little theorem from scratch** (one run, OSO α 0.2, section 4j): 11 levels deep, from their own numbers, in round 61 for $2.53. The proof rests on 53 results from all 4 labs; one step took 57 failed tries before a lab broke it. One run with no comparison: it shows the depth is reachable, not that OSO's rules helped.
+- **Deep set, traditional (one run, section 4l): Fermat not proved in 100 rounds** ($4.65 spent, 34 of 95 hidden steps; labs worked alone and proved 22 lemmas twice). At $2 a run it had reached 27 steps against the OSO run's 52. One run a side, different days: direction as predicted, size not estimated.
 - **Bigger problem set (27 targets), model check:** 4 cheap models, each target alone and with its lemmas, 2 attempts each ($3.34). Targets that needed their lemmas (0 of 2 alone, at least 1 of 2 with them): DeepSeek V4.1 Flash 10, GLM-5.3 Flash 8, Qwen 3.7 Flash 16 (but it proved only 27 of 54 even with lemmas), Claude Haiku 5.5 1 (it proved 50 of 54 alone: too strong for this set). Results: `results/pilot/big-panel-*`.
 
 ## Correction: the model's price changed between runs (found 2026-11-13)
@@ -398,6 +399,16 @@ Only H6 met the rule, so stage 2 was not started. Labs spent $0.77 of each run's
 **Leads (all lemmas, not the measure fixed in advance):** the reward goes with about twice the lemmas (OSO − shared, told to earn: +11.0, range +5.5 to +16.5), and being told to earn with nothing to earn goes with fewer (told to earn − told to prove: −6.8, range −12.6 to −1.0). Seeing the earnings made no difference (−0.6, range −4.7 to +3.5). So the extra lemmas under OSO look like the reward, not the word "earn" and not the scoreboard; but many of the extra lemmas are not cited later, which is why the main measure moves less. Targets were the same everywhere (21 to 22 of 27: the set saturates). Replies cut off were fewer when labs were told to prove (18% against 27–34%), a lead to check.
 
 **Harness:** every run was audited (payout ledger balances, spending equals the sum of action costs). Plan and comparisons were fixed on 2026-11-24 before any run started; the comparisons chart was added before any result was read.
+
+## 4l. Deep set: traditional on Fermat's little theorem (one run, 2026-11-24 to 25)
+
+[Result](../results/community/deep-fermat-trad-1/summary.md). **Setup:** traditional (public when a target is proved, α 1, m 0, m_bit 0, f 0), otherwise as section 4j: 4 DeepSeek V4.1 Flash labs, $2 a lab, up to 100 rounds, labs cannot stop. One run, on a different day from the OSO run: a first look, not a test (an exception to 5 runs per setup, by choice). With one target, nothing is public until P1 is proved, so each lab works alone.
+
+**Result:** P1 was **not proved** in 100 rounds; the run spent $4.65. Labs proved 175 lemmas, 22 of them a second time (another lab had it privately), and no result built on another lab's work. 34 of the 95 hidden steps were reached (Lean, both matcher passes).
+
+**Against the OSO run (section 4j), at the same money** (`scripts/deep-steps.ts`, $2 a run): traditional reached 27 hidden steps, deepest level 7; OSO reached 52, deepest level 8, and went on to prove P1 for $2.53. One run a side, different days: the direction is what sharing predicts, the size is not estimated. A shared-library run and fresh runs of both are going (deep-fermat-2).
+
+**Harness:** 47% of this run's replies were cut off before an answer. (The OSO run predates logging of the stop reason, so its 43% in section 4j was counted from empty replies.)
 
 ## 5. Is the test setup sound? (harness checks)
 
