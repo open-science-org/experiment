@@ -177,6 +177,12 @@ How these runs differ from the simulation: [The simulation and the Lean runs](si
 
 All setups in a batch run together, so a change at the model provider hits them alike. A run with a harness fault is rerun; runs are never dropped for their results.
 
+**What each run saves (from 2026-11-24),** in `lean/runs/<run>/`:
+- `manifest.json`: the code's commit and whether it had uncommitted changes, Node and Lean versions, a hash of every problem-set file and of the prompts, the models' reference prices, the command line.
+- `actions.jsonl`: every turn; each reply also records why it ended (`length` means cut off) and its output tokens.
+- `result.json`: also a `ledger` (every amount a lab earned, which result earned it, and the payout it came from) and an `audit`: the ledger adds up to the earnings, each payout hands out exactly its value, spending equals the actions' costs, and no more money was released than the funder had.
+- A run with bad settings (an unknown option, a budget that is not a number, f above 1) stops before it spends.
+
 ## Measures and comparisons, fixed in advance
 
 - **Main measure:** targets proved (of 8) by the end of a run.

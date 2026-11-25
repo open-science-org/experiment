@@ -361,3 +361,61 @@ test('lemma names never take a name the definitions use, and old runs read as th
   assert.equal(old.targets.length, 8);
   assert.doesNotMatch(old.systemPrompt(1), /def tsort/);
 });
+
+test('every payout is in the ledger, the ledger adds up to the earnings, and flow-back hands out exactly what came in', async () => {
+  const { Community, audit } = await import('../src/lean/community.ts');
+  const d = new Community({ rules: 'oso', alpha: 0.5, publishing: 'choose', knowledge: 'off', agents: ['a', 'b'], budget: 1, rounds: 1, repairs: 0, mint: 1, effort: 'low' });
+  const k = { name: 'k', ns: 'OSO', signature: 'S', author: 0, public: false, round: 1, uses: [] };
+  const p = { name: 'p', ns: 'OSO', signature: 'P', author: 0, public: false, round: 1, uses: ['OSO.k'] };
+  const t = { name: 't', ns: 'OSO', signature: 'T', author: 1, public: false, round: 3, uses: ['OSO.p'], target: 'C3' };
+  d.library.push(k, p, t); d.publishBundle(p, 2); d.publishBundle(t, 3);
+  // C3's bounty of 4: b keeps 2, p keeps 1, k gets 1; all three rows name the payout they came from.
+  assert.deepEqual(d.ledger.map((x) => [x.lab, x.result, x.amount, x.why, x.from, x.value, x.round]), [[1, 't', 2, 'bounty', 't', 4, 3], [0, 'p', 1, 'bounty', 't', 4, 3], [0, 'k', 1, 'bounty', 't', 4, 3]]);
+  const result = { opts: d.opts, actions: [], library: d.library, earnings: d.earnings, spent: [0, 0], ledger: d.ledger };
+  assert.deepEqual(audit(result), { ok: true, problems: [], overspent: [0, 0] });
+  // Books that do not balance are caught: earnings off the ledger, a payout that lost value, spending without an action.
+  const bad = audit({ ...result, earnings: [2, 2], ledger: d.ledger.slice(0, 2), spent: [0.5, 0] });
+  assert.equal(bad.ok, false);
+  assert.ok(bad.problems.some((x) => /lab 1: ledger 1 but earnings 2/.test(x)));
+  assert.ok(bad.problems.some((x) => /bounty from t: paid out 3 of 4/.test(x)));
+  assert.ok(bad.problems.some((x) => /lab 1: actions cost 0 but spent 0.5/.test(x)));
+  assert.deepEqual(bad.overspent, [0, 0]);
+  // Money follows earnings: more released than the funder had is a problem; a lab past what it got is overspent.
+  const f = audit({ ...result, opts: { ...d.opts, follow: 0.5 }, released: [1.5, 1], spent: [0, 0] });
+  assert.ok(f.problems.some((x) => /released 2.5 of 2/.test(x)));
+});
+
+test('a run saves a manifest, why each reply ended, and its audit', async () => {
+  const { runCommunity, stats } = await import('../src/lean/community.ts');
+  const { MANIFEST_SCHEMA } = await import('../src/lean/manifest.ts');
+  const { mkdtempSync, readFileSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const root = mkdtempSync(join(tmpdir(), 'oso-manifest-'));
+  let n = 0;
+  // One reply cut off by the length limit, then a pass that is not allowed (the turn is skipped).
+  const chat = async () => (n++ % 2 ? { text: 'ACTION: pass', content: 'x', usage: { input: 1, output: 5, cacheRead: 0, cacheWrite: 0 }, stop: 'stop' } : { text: '', content: '', usage: { input: 1, output: 32000, cacheRead: 0, cacheWrite: 0 }, stop: 'length' });
+  const opts = { rules: 'oso' as const, agents: ['m'], budget: 1, rounds: 1, repairs: 1, alpha: 0.2, mint: 0, effort: 'low' as const, knowledge: 'off' as const, mayStop: false };
+  const r = await runCommunity(opts, () => chat as never, () => 0.01, 'man', () => {}, root);
+  const m = JSON.parse(readFileSync(join(root, 'man', 'manifest.json'), 'utf8'));
+  assert.equal(m.schema, MANIFEST_SCHEMA);
+  assert.equal(m.runId, 'man');
+  assert.match(m.code.commit, /^[0-9a-f]{40}$/);
+  assert.equal(typeof m.code.dirty, 'boolean');
+  assert.match(m.tools.lean, /lean4/);
+  assert.match(m.problems.files['reference-dag.md'], /^[0-9a-f]{64}$/);
+  assert.match(m.prompts, /^[0-9a-f]{64}$/);
+  assert.deepEqual(m.models, ['m']);
+  assert.deepEqual(r.actions[0].transcript.map((x) => [x.stop, x.output]), [['length', 32000], ['stop', 5]]);
+  assert.deepEqual([stats(r).replies, stats(r).repliesCutOff], [2, 1]);
+  assert.equal(r.audit?.ok, true);
+  assert.deepEqual(JSON.parse(readFileSync(join(root, 'man', 'result.json'), 'utf8')).audit, r.audit);
+});
+
+test('bad settings are caught before a run spends anything', async () => {
+  const { checkOptions } = await import('../src/lean/community.ts');
+  const ok = { rules: 'oso' as const, agents: ['a', 'b'], budget: 1, rounds: 10, repairs: 2, alpha: 0.2, mint: 0, effort: 'low' as const };
+  assert.deepEqual(checkOptions(ok), []);
+  const bad = checkOptions({ ...ok, budget: NaN, rounds: 2.5, alpha: 1.2, follow: -1, effort: 'max' as never, problems: 'huge' as never, effortByLab: ['low'], only: ['Z-99'] });
+  for (const x of [/budget/, /rounds/, /alpha/, /follow/, /effort must/, /problems must/, /effortByLab/, /Z-99/]) assert.ok(bad.some((b) => x.test(b)), String(x));
+  assert.ok(checkOptions({ ...ok, rules: 'planner', agents: ['a'] }).some((b) => /planner needs/.test(b)));
+});

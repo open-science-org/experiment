@@ -123,6 +123,18 @@ if (cmd === 'community') {
   // The next experiment: several societies with the same agents and total money (src/lean/societies.ts).
   const societies = pick('societies', '').split(',').filter(Boolean);
   if (societies.length) rules.splice(0, rules.length, ...(societies as never[]));
+  // Stop a bad run before it spends: an unknown flag (a typo runs with the default), or a setting out of range.
+  const KNOWN = ['problems', 'config', 'agents', 'budget', 'rounds', 'repairs', 'knowledge', 'pricing', 'providers', 'follow', 'effort', 'conjectures', 'conjectureBounty', 'may-stop', 'counted', 'only', 'rules', 'societies', 'dry-run', 'stub', 'run', 'repeats', 'from-rep', 'k', 'parallel', 'max-tokens', 'think', 'design'];
+  const unknown = args.filter((a) => a.startsWith('--') && !KNOWN.includes(a.slice(2)));
+  const { checkOptions } = await import('./community.ts');
+  const { societyOptions } = await import('./societies.ts');
+  const bad = [
+    ...unknown.map((a) => `unknown option ${a}`),
+    ...(['yes', 'no'].includes(pick('may-stop', 'yes')) ? [] : [`may-stop must be yes or no (got ${pick('may-stop', 'yes')})`]),
+    ...[['repeats', '1'], ['from-rep', '1'], ['k', '2']].filter(([n, d]) => !(Number.isInteger(Number(pick(n, d))) && Number(pick(n, d)) >= 1)).map(([n, d]) => `${n} must be a whole number, at least 1 (got ${pick(n, d)})`),
+    ...(() => { try { return [...new Set(rules.flatMap((r) => checkOptions(societies.length ? societyOptions(r, { ...base, rules: 'oso' }) : { ...base, rules: r })))]; } catch (e) { return [(e as Error).message]; } })(),
+  ];
+  if (bad.length) { console.error(`Not started:\n- ${bad.join('\n- ')}`); process.exit(1); }
   console.log(`${rules.length} communities × ${agents.length} labs × $${base.budget} = $${(rules.length * agents.length * base.budget).toFixed(2)} at most; up to ${base.rounds} rounds.`);
   if (flag('dry-run')) process.exit(0);
   // Models on this machine (`local:<ollama model>`) need no key and cost nothing; see LOCAL_PRICE.

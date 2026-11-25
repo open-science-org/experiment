@@ -22,6 +22,7 @@ import { check, type CheckOptions } from './checker.ts';
 import { definedNames, definitions, FREE, LEAN_DIR, loadTasks, parseReference, type Problems, type Task } from './tasks.ts';
 import { OPENROUTER_API, type Chat, type Usage } from './agent.ts';
 import { referenceCost } from './prices.ts';
+import { runManifest } from './manifest.ts';
 import { referenceProof } from './selftest.ts';
 import { lineChart } from '../report/figures.ts';
 import { writeCard } from '../card.ts';
@@ -131,6 +132,31 @@ export interface CommunityOptions {
   reuseByLab?: boolean[];
 }
 
+/** What is wrong with a run's settings, so a bad run stops before it spends anything (empty: fine). */
+export function checkOptions(o: CommunityOptions): string[] {
+  const bad: string[] = [];
+  const num = (name: string, x: unknown, ok: (v: number) => boolean, want: string) => { if (typeof x !== 'number' || !Number.isFinite(x) || !ok(x)) bad.push(`${name} must be ${want} (got ${String(x)})`); };
+  const oneOf = (name: string, x: unknown, xs: readonly string[]) => { if (x !== undefined && !xs.includes(String(x))) bad.push(`${name} must be one of ${xs.join(', ')} (got ${String(x)})`); };
+  if (!o.agents.length || o.agents.some((m) => !m.trim())) bad.push('agents must name at least one model, with no empty names');
+  num('budget', o.budget, (v) => v > 0, 'a positive number of dollars');
+  num('rounds', o.rounds, (v) => Number.isInteger(v) && v >= 1, 'a whole number, at least 1');
+  num('repairs', o.repairs, (v) => Number.isInteger(v) && v >= 0, 'a whole number, at least 0');
+  num('alpha', o.alpha, (v) => v >= 0 && v <= 1, 'between 0 and 1');
+  if (o.follow !== undefined) num('follow', o.follow, (v) => v >= 0 && v <= 1, 'between 0 and 1');
+  if (o.conjectureBounty !== undefined) num('conjectureBounty', o.conjectureBounty, (v) => v >= 0, 'at least 0');
+  oneOf('rules', o.rules, ['traditional', 'oso', 'shared', 'independent', 'planner']);
+  oneOf('knowledge', o.knowledge, ['off', 'flat-mint', 'proof-size']);
+  oneOf('effort', o.effort, ['low', 'medium', 'high']);
+  oneOf('pricing', o.pricing, ['reference', 'charged']);
+  oneOf('problems', o.problems, ['main', 'hard', 'big', 'deep']);
+  oneOf('publishing', o.publishing, ['rules', 'choose']);
+  for (const [name, xs] of [['repairsByLab', o.repairsByLab], ['effortByLab', o.effortByLab], ['reuseByLab', o.reuseByLab]] as const) if (xs && xs.length !== o.agents.length) bad.push(`${name} must give one value per lab (${o.agents.length}), not ${xs.length}`);
+  if (o.rules === 'planner' && o.agents.length < 2) bad.push('a planner needs at least 2 labs: one plans, the others prove');
+  const ids = new Set(loadTasks(o.problems ?? 'main').map((t) => t.publicId));
+  for (const [name, xs] of [['only', o.only], ['counted', o.counted]] as const) for (const x of xs ?? []) if (!ids.has(x)) bad.push(`${name}: ${x} is not a target of the ${o.problems ?? 'main'} set`);
+  return bad;
+}
+
 /** A result in the community's library. */
 export interface Entry {
   name: string;
@@ -169,10 +195,14 @@ export interface Action {
   usage: Usage; cost?: number; listCost?: number; spentAfter: number;
   /** The companies that served this action's calls, in order. */
   servedBy?: string[];
-  /** Each reply: the model's thinking (saved since 2026-11-07, where the provider returns it), its answer, the proof and Lean's errors. */
-  transcript: { reasoning?: string; text: string; proof: string | null; errors: string[] }[];
+  /** Each reply: the model's thinking (saved since 2026-11-07, where the provider returns it), why it ended and its output
+   *  tokens (since 2026-11-24; 'length' is cut off), its answer, the proof and Lean's errors. */
+  transcript: { reasoning?: string; stop?: string; output?: number; text: string; proof: string | null; errors: string[] }[];
   t: number;
 }
+
+/** One amount a lab kept: `amount` of the payout `why` (worth `value` in all) that result `from` triggered, kept by result `result` of lab `lab`. */
+export interface Payout { round: number; lab: number; result: string; amount: number; why: 'bounty' | 'mint' | 'knowledge' | 'conjecture'; from: string; value: number }
 
 const TRIVIAL = [':= by rfl', ':= by decide', ':= by simp', ':= by omega', ':= by simp_all', ':= by simp [u]'];
 
@@ -243,6 +273,8 @@ export class Community {
   recent: number[] = [];
   /** Labs that passed: they stop for the rest of the run. */
   passed = new Set<number>();
+  /** Every amount a lab earned, and the payout it came from. */
+  ledger: Payout[] = [];
   /** Planner rules: this round's assignment for each lab. */
   plans: string[] = [];
 
@@ -293,15 +325,17 @@ export class Community {
     const costs = used.map((u) => (this.opts.split === 'lines-saved' ? u.size : u.cost) ?? 0), sum = costs.reduce((a, b) => a + b, 0);
     return costs.every((x) => x > 0) ? costs.map((x) => x / sum) : used.map(() => 1 / used.length);
   }
-  /** Pays value v into entry x: it keeps α (all, under traditional rules or if it used nothing); the rest flows to what it used. */
-  pay(x: Entry, v: number) {
+  /** Pays value v into entry x: it keeps α (all, under traditional rules or if it used nothing); the rest flows to what it used.
+   *  Every amount a lab keeps goes into the ledger, with the payout it came from, so earnings can be audited. */
+  pay(x: Entry, v: number, why: Payout['why'] = 'bounty', from: Entry = x, round = from.publishedRound ?? from.round, value = v) {
     // A copy of a statement another lab published first: credit goes to the first publisher, as in the simulation.
     const first = (u: Entry) => this.library.filter((e) => e.public && norm(e.signature) === norm(u.signature) && !e.target)
       .sort((a, b) => a.publishedRound! - b.publishedRound! || this.library.indexOf(a) - this.library.indexOf(b))[0] ?? u;
     const used = [...new Set(x.uses.map((n) => this.library.find((e) => `${e.ns}.${e.name}` === n)).filter((e): e is Entry => !!e).map((u) => (u.target ? u : first(u))))];
     const keep = this.opts.rules === 'oso' && used.length ? this.opts.alpha : 1;
     this.earnings[x.author] += v * keep;
-    if (keep < 1) { const w = this.weights(used); used.forEach((u, k) => this.pay(u, v * (1 - keep) * w[k])); }
+    this.ledger.push({ round, lab: x.author, result: x.name, amount: v * keep, why, from: from.name, value });
+    if (keep < 1) { const w = this.weights(used); used.forEach((u, k) => this.pay(u, v * (1 - keep) * w[k], why, from, round, value)); }
   }
   /** Publishing a result: its mint (less the cited share under OSO), and the bounty if it is a target. */
   publish(e: Entry, round: number) {
@@ -311,13 +345,13 @@ export class Community {
     const used = e.uses.map((n) => this.library.find((x) => `${x.ns}.${x.name}` === n)).filter((x): x is Entry => !!x);
     // A new result's own reward flows back like a bounty (the simulation's α0, equal to α).
     const mint = e.trivial || e.known ? 0 : mintOf(this.opts);
-    if (mint) this.pay(e, mint);
+    if (mint) this.pay(e, mint, 'mint');
     // The knowledge reward by proof size: only for what is new, so nothing if a lab published the same statement first.
     const first = !this.library.some((x) => x !== e && x.public && norm(x.signature) === norm(e.signature));
-    if (this.opts.knowledge === 'proof-size' && !e.trivial && !e.known && first && e.size) this.pay(e, sizeReward(e.size));
+    if (this.opts.knowledge === 'proof-size' && !e.trivial && !e.known && first && e.size) this.pay(e, sizeReward(e.size), 'knowledge');
     // A target pays once: a lab's private duplicate published later (inside a bundle) earns nothing for it.
-    if (e.target && !this.library.some((x) => x !== e && x.public && x.target === e.target)) this.pay(e, this.bounty(this.targets.find((t) => t.publicId === e.target)!));
-    if (e.conjecture && !e.trivial) this.pay(e, this.opts.conjectureBounty ?? 1);
+    if (e.target && !this.library.some((x) => x !== e && x.public && x.target === e.target)) this.pay(e, this.bounty(this.targets.find((t) => t.publicId === e.target)!), 'bounty');
+    if (e.conjecture && !e.trivial) this.pay(e, this.opts.conjectureBounty ?? 1, 'conjecture');
   }
   /** Publishing with the author's own private results it rests on (traditional rules, and a lab's PUBLISH: yes),
    *  so nothing public rests on hidden work. Another lab's private results are never published by it. */
@@ -459,6 +493,8 @@ ${last.length && !this.opts.plainPlanner ? `Last round:\n${last.join('\n')}\n\n`
     const system = this.systemPrompt(i);
     const messages: { role: 'user' | 'assistant'; content: unknown }[] = [{ role: 'user', content: this.turnPrompt(i, round) }];
     const usage: Usage = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, cost: 0 };
+    // What this turn counted against the budget, reply by reply (the same as pricing the summed tokens when prices are per token).
+    let counted = 0;
     const transcript: Action['transcript'] = [];
     const servedBy: string[] = [];
     let kind: Action['kind'] = 'none', target: string | undefined, lemma: ReturnType<typeof parseLemma> = null, ok = false, reason = '';
@@ -468,16 +504,17 @@ ${last.length && !this.opts.plainPlanner ? `Last round:\n${last.join('\n')}\n\n`
       for (const key of ['input', 'output', 'cacheRead', 'cacheWrite'] as const) usage[key] += reply.usage[key];
       usage.cost = (usage.cost ?? 0) + (reply.usage.cost ?? 0);
       if (reply.usage.provider) servedBy.push(reply.usage.provider);
-      this.spent[i] += price(reply.usage);
+      const c = price(reply.usage);
+      this.spent[i] += c; counted += c;
       const text = reply.text;
       if (/ACTION:\s*pass\b/i.test(text)) {
         // Labs that may not stop lose only this turn.
-        if (this.opts.mayStop === false) { reason = 'tried to pass, which is not allowed: turn skipped'; transcript.push({ ...(reply.reasoning ? { reasoning: reply.reasoning } : {}), text, proof: null, errors: [] }); break; }
-        kind = 'pass'; reason = 'passed'; this.passed.add(i); transcript.push({ ...(reply.reasoning ? { reasoning: reply.reasoning } : {}), text, proof: null, errors: [] }); break;
+        if (this.opts.mayStop === false) { reason = 'tried to pass, which is not allowed: turn skipped'; transcript.push({ ...(reply.reasoning ? { reasoning: reply.reasoning } : {}), stop: reply.stop, output: reply.usage.output, text, proof: null, errors: [] }); break; }
+        kind = 'pass'; reason = 'passed'; this.passed.add(i); transcript.push({ ...(reply.reasoning ? { reasoning: reply.reasoning } : {}), stop: reply.stop, output: reply.usage.output, text, proof: null, errors: [] }); break;
       }
       const { action, code } = parseReply(text);
       let errors: string[] = [];
-      if (reply.stop === 'refusal') { reason = 'declined'; transcript.push({ ...(reply.reasoning ? { reasoning: reply.reasoning } : {}), text, proof: null, errors: ['declined'] }); break; }
+      if (reply.stop === 'refusal') { reason = 'declined'; transcript.push({ ...(reply.reasoning ? { reasoning: reply.reasoning } : {}), stop: reply.stop, output: reply.usage.output, text, proof: null, errors: ['declined'] }); break; }
       if (!text.trim()) errors = ['Your reply ran out of length before it gave an answer. Think for less, then give the ACTION line and the code block.'];
       else if (!action || !code) errors = ['Start with ACTION: target <ID> or ACTION: lemma, then one ```lean code block.'];
       else if (action[1].toLowerCase() === 'conjecture') {
@@ -559,18 +596,18 @@ ${last.length && !this.opts.plainPlanner ? `Last round:\n${last.join('\n')}\n\n`
           }
         }
       }
-      transcript.push({ ...(reply.reasoning ? { reasoning: reply.reasoning } : {}), text, proof: code, errors });
+      transcript.push({ ...(reply.reasoning ? { reasoning: reply.reasoning } : {}), stop: reply.stop, output: reply.usage.output, text, proof: code, errors });
       if (ok || reason) break;
       if (this.spent[i] >= this.budgetOf(i)) { reason = 'budget spent'; break; }
       messages.push({ role: 'assistant', content: reply.content });
       messages.push({ role: 'user', content: `Not accepted:\n\n${errors.join('\n\n').slice(0, 5000)}\n\nFix it and reply again in the same format.` });
     }
     const made = ok ? this.library.filter((e) => e.author === i && e.round === round).at(-1) : undefined;
-    if (made) made.cost = price(usage);
+    if (made) made.cost = counted;
     const a: Action = {
       round, agent: i, model, kind, target, name: lemma?.name, signature: lemma?.signature, ok, reason: reason || (ok ? undefined : 'not accepted'),
       ...(made ? { entry: made.name, uses: made.uses } : {}),
-      turns: transcript.length, usage, cost: price(usage), spentAfter: this.spent[i], ...(servedBy.length ? { servedBy } : {}), transcript, t: Date.now(),
+      turns: transcript.length, usage, cost: counted, spentAfter: this.spent[i], ...(servedBy.length ? { servedBy } : {}), transcript, t: Date.now(),
     };
     this.actions.push(a);
     log(a);
@@ -637,7 +674,39 @@ export function referenceAgent(com: Community, i: number): Chat {
   };
 }
 
-export interface CommunityResult { opts: CommunityOptions; actions: Action[]; library: Entry[]; earnings: number[]; spent: number[]; /** Why the run ended early, if it did (for example, out of credit). */ stopped?: string }
+export interface CommunityResult {
+  opts: CommunityOptions; actions: Action[]; library: Entry[]; earnings: number[]; spent: number[];
+  /** Why the run ended early, if it did (for example, out of credit). */ stopped?: string;
+  /** Runs from 2026-11-24: every amount earned, the money released to each lab (money follows earnings), and the audit. */
+  ledger?: Payout[]; released?: number[]; audit?: Audit;
+}
+
+export interface Audit { ok: boolean; problems: string[]; /** Money each lab spent beyond what it was given: its last call may run over. */ overspent: number[] }
+
+/** Checks that a run's books balance: the ledger adds up to each lab's earnings, every payout hands out exactly its value
+ *  (nothing lost or made in flow-back), each lab's spending is the sum of its actions' costs, and no more money was
+ *  released than the funder had. Overspending (the call that crosses the budget) is reported, not a problem.
+ *  Runs before 2026-11-24 have no ledger: only spending is checked. `cost` gives each action's cost as it was counted. */
+export function audit(r: CommunityResult, cost: (a: Action) => number = (a) => a.cost ?? a.listCost ?? 0): Audit {
+  const problems: string[] = [], close = (a: number, b: number) => Math.abs(a - b) <= 1e-6 * Math.max(1, Math.abs(a), Math.abs(b));
+  const n = r.opts.agents.length;
+  if (r.ledger) {
+    for (let i = 0; i < n; i++) {
+      const sum = r.ledger.filter((p) => p.lab === i).reduce((a, p) => a + p.amount, 0);
+      if (!close(sum, r.earnings[i])) problems.push(`lab ${i + 1}: ledger ${sum} but earnings ${r.earnings[i]}`);
+    }
+    const payouts = new Map<string, { value: number; sum: number }>();
+    for (const p of r.ledger) { const k = `${p.why} from ${p.from}`, x = payouts.get(k) ?? { value: p.value, sum: 0 }; x.sum += p.amount; payouts.set(k, x); }
+    for (const [k, x] of payouts) if (!close(x.sum, x.value)) problems.push(`${k}: paid out ${x.sum} of ${x.value}`);
+  }
+  for (let i = 0; i < n; i++) {
+    const sum = r.actions.filter((a) => a.agent === i).reduce((a, x) => a + cost(x), 0);
+    if (!close(sum, r.spent[i])) problems.push(`lab ${i + 1}: actions cost ${sum} but spent ${r.spent[i]}`);
+  }
+  const given = (i: number) => (r.opts.follow === undefined ? r.opts.budget : r.released?.[i] ?? r.opts.budget);
+  if (r.released && r.released.reduce((a, b) => a + b, 0) > r.opts.budget * n * (1 + 1e-9)) problems.push(`released ${r.released.reduce((a, b) => a + b, 0)} of ${r.opts.budget * n}`);
+  return { ok: !problems.length, problems, overspent: r.spent.map((s, i) => Math.max(0, s - given(i))) };
+}
 
 /** What an action cost: its tokens at the model's reference price (prices.ts), so runs on different days compare;
  *  for a model without one, the charge, or the list price for runs recorded before charges were used. */
@@ -652,7 +721,9 @@ export async function runCommunity(opts: CommunityOptions, chatFor: (com: Commun
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, 'options.json'), JSON.stringify({ kind: 'community', ...opts, rewards: { gaps: LEAN_REWARDS.gaps(opts) } }, null, 1));
   // The exact instructions each lab gets, as sent (the viewer shows these; the code's wording may change later).
-  writeFileSync(join(dir, 'prompts.json'), JSON.stringify(opts.agents.map((_, i) => com.systemPrompt(i)), null, 1));
+  const prompts = opts.agents.map((_, i) => com.systemPrompt(i));
+  writeFileSync(join(dir, 'prompts.json'), JSON.stringify(prompts, null, 1));
+  writeFileSync(join(dir, 'manifest.json'), JSON.stringify(runManifest(runId, opts, prompts), null, 1));
   const file = join(dir, 'actions.jsonl');
   writeFileSync(file, '');
   const chats = opts.agents.map((_, i) => chatFor(com, i));
@@ -696,7 +767,9 @@ export async function runCommunity(opts: CommunityOptions, chatFor: (com: Commun
     com.settle(before);
   }
   if (stopped) log(`  stopped: ${stopped}`);
-  const result: CommunityResult = { opts, actions: com.actions, library: com.library, earnings: com.earnings, spent: com.spent, ...(stopped ? { stopped } : {}) };
+  const result: CommunityResult = { opts, actions: com.actions, library: com.library, earnings: com.earnings, spent: com.spent, ...(stopped ? { stopped } : {}), ledger: com.ledger, ...(opts.follow !== undefined ? { released: com.released } : {}) };
+  result.audit = audit(result);
+  if (!result.audit.ok) log(`  audit: ${result.audit.problems.join('; ')}`);
   writeFileSync(join(dir, 'result.json'), JSON.stringify(result, null, 1));
   return result;
 }
@@ -767,6 +840,9 @@ export function stats(r: CommunityResult) {
     lemmasDuplicate: r.actions.filter((a) => (a.kind === 'lemma' || a.kind === 'conjecture') && /duplicate/.test(a.reason ?? '')).length,
     /** Targets proved again after another lab had already proved them. */
     targetsDuplicate: r.actions.filter((a) => a.kind === 'target' && /duplicate/.test(a.reason ?? '')).length,
+    /** Replies, and those the length limit cut off (runs from 2026-11-24 record why each reply ended; earlier runs: null). */
+    replies: r.actions.reduce((a, x) => a + x.transcript.length, 0),
+    repliesCutOff: r.actions.some((x) => x.transcript.some((t) => t.stop !== undefined)) ? r.actions.flatMap((x) => x.transcript).filter((t) => t.stop === 'length' || t.stop === 'max_tokens').length : null,
     /** Turns lost to an error the harness could not recover from (a call that failed after its retries). */
     errors: r.actions.filter((a) => a.kind === 'error').length,
     trivial: lemmas.filter((a) => /trivial/.test(a.reason ?? '')).length,

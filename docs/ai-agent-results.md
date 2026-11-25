@@ -375,6 +375,7 @@ Only H6 met the rule, so stage 2 was not started. Labs spent $0.77 of each run's
 | [Proof checker stress test](../results/bench/stress/summary.md) | 32 of 32 cases right; one cheat found and closed (faking Lean's report on which axioms a proof uses) |
 | Fault tests | server errors, stuck models, no credit, missing costs, the budget limit and replies cut off partway are all handled (9 tests) |
 | [Public benchmark](../results/bench/or-gptoss120b-50x4/summary.md) (FormalMATH-Lite, 50 problems, GPT-OSS-120B) | 12 of 50 with one try, 17 with any of 4, for $0.10; **no proof lost by our harness**; 2 benchmark statements look broken |
+| Books balance (`node scripts/audit-runs.ts`, 2026-11-24) | 327 of 336 saved runs: each lab's spending equals its actions' costs. The 9 others are races of Oct 20–21, from before failed turns were logged (Nov 7): money spent on turns that hit "out of credit" has no action. Labs spent 0.9% beyond their budgets in all (the call that crosses a budget is allowed to finish). From Nov 24 every payout is in a ledger and each run audits itself. |
 
 Faults found and fixed on the way: wrong error labels, proofs without a code block, planner lines dropped, dotted lemma names, replies cut off partway, and runs spoiled by the laptop sleeping. Budgets count the actual charge since 2026-10-21.
 
