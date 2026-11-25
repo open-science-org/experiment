@@ -371,9 +371,9 @@ Only H6 met the rule, so stage 2 was not started. Labs spent $0.77 of each run's
 
 ## 4j. Deep set: Fermat's little theorem from scratch (one run, 2026-11-23 to 24)
 
-[Result](../results/community/deep-fermat-1/summary.md). **Setup:** OSO α 0.2 (public at once, α 0.2, m 0, m_bit 0, f 0). 4 DeepSeek V4.1 Flash labs, $2 a lab, up to 100 rounds, labs cannot stop early. One run, no other setup: it shows what a community can reach, not whether OSO's rules help. The deep set has its own numbers built from zero (no Mathlib) and one posted target, P1, Fermat's little theorem, at depth 11; the 96 steps below it are hidden. Stand-in labs replaying the reference proofs reach P1 in round 27.
+[Result](../results/community/deep-fermat-1/summary.md). **Setup:** OSO α 0.2 (public at once, α 0.2, m 0, m_bit 0, f 0). 4 DeepSeek V4.1 Flash labs, $2 a lab, up to 100 rounds, labs cannot stop early. One run, no other setup: it shows what a community can reach, not whether OSO's rules help. The deep set has its own numbers built from zero (no Mathlib) and one posted target, P1, Fermat's little theorem, at depth 11; the 95 steps below it are hidden. Stand-in labs replaying the reference proofs reach P1 in round 27.
 
-**Result:** P1 was proved in round 61, for $2.53 at the reference price (about a third of the $8; the run ends when the target is proved). The proof rests on 53 results, from all 4 labs. Labs proved 82 lemmas; 63 results built on another lab's work. Lean matched 50 of the 96 hidden steps to lab lemmas as stated (steps proved in another form or split over several lemmas are not counted).
+**Result:** P1 was proved in round 61, for $2.53 at the reference price (about a third of the $8; the run ends when the target is proved). The proof rests on 53 results, from all 4 labs. Labs proved 82 lemmas; 63 results built on another lab's work. Lean matched 50 of the 95 hidden steps to lab lemmas as stated (steps proved in another form or split over several lemmas are not counted).
 
 **The bottleneck:** from round 25 the labs kept trying one step, (k+1)·C(n+1,k+1) = (n+1)·C(n,k), and failed 57 times (counting tries of this statement and its close variants). Lab 1 proved it in round 59. In round 60 lab 4 used it to show that a prime p divides C(p,k), and in round 61 it proved P1.
 
