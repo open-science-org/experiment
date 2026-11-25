@@ -11,7 +11,7 @@ import { RESULTS_DIR } from '../paths.ts';
 import { loadTasks } from './tasks.ts';
 import { experimentName } from './names.ts';
 
-export interface Society { /** Planner rules: no strategy advice and no failure reports for the planner. */ plain?: boolean; /** Labs choose what to publish, with the knowledge reward by proof size (roadmap M3). */ choose?: boolean; /** With `choose`: 'off' pays no reward for publishing, so keeping a result costs nothing. */ knowledge?: 'off' | 'flat-mint'; name: string; /** The setup in OSO settings: when others see a result, α, who decides the work. */ rules: Rules; alpha?: number; /** One lab with everyone's budget. */ single?: boolean; colour: string; slot: 1 | 2 | 3 }
+export interface Society { /** What labs are told to aim for ('prove': no rewards mentioned or shown). */ aim?: 'prove'; /** Earnings not shown to the labs (the rules still are). */ hidden?: boolean; /** Planner rules: no strategy advice and no failure reports for the planner. */ plain?: boolean; /** Labs choose what to publish, with the knowledge reward by proof size (roadmap M3). */ choose?: boolean; /** With `choose`: 'off' pays no reward for publishing, so keeping a result costs nothing. */ knowledge?: 'off' | 'flat-mint'; name: string; /** The setup in OSO settings: when others see a result, α, who decides the work. */ rules: Rules; alpha?: number; /** One lab with everyone's budget. */ single?: boolean; colour: string; slot: 1 | 2 | 3 }
 
 /** OSO is orange, traditional blue; the baselines are greys. */
 export const SOCIETIES: Record<string, Society> = {
@@ -27,6 +27,10 @@ export const SOCIETIES: Record<string, Society> = {
   traditional: { name: 'Traditional', rules: 'traditional', colour: '#2a78d6', slot: 1 },
   oso: { name: 'OSO, α 0.8', rules: 'oso', alpha: 0.8, colour: '#eb6834', slot: 2 },
   'oso-0.2': { name: 'OSO, α 0.2', rules: 'oso', alpha: 0.2, colour: '#f2a07b', slot: 2 },
+  // Instruction against reward (2026-11-24): the shared library told only to prove targets, with no bounty, reward or
+  // earnings in its prompts; and OSO α 0.2 with its rules stated but each lab's earnings not shown.
+  'shared-prove': { name: 'Shared library, told to prove', rules: 'shared', aim: 'prove', colour: '#d6d4ce', slot: 3 },
+  'oso-0.2-hidden': { name: 'OSO, α 0.2, earnings hidden', rules: 'oso', alpha: 0.2, hidden: true, colour: '#c4501f', slot: 2 },
   // Labs choose what to publish (roadmap M3); knowledge reward by proof size. α 1: nothing flows back.
   'choose-1': { name: 'Labs choose, α 1', rules: 'oso', alpha: 1, choose: true, colour: '#33322f', slot: 3 },
   'choose-0.8': { name: 'Labs choose, α 0.8', rules: 'oso', alpha: 0.8, choose: true, colour: '#eb6834', slot: 2 },
@@ -43,6 +47,8 @@ export function osoParams(o: CommunityOptions) {
   const parts = [when, `α ${o.rules === 'oso' ? o.alpha : 1}`, `m ${mintOf(o)}`, `m_bit ${o.knowledge === 'proof-size' ? 'by proof size' : 0}`, `f ${o.follow ?? 0}`];
   if (o.rules === 'planner') parts.push(o.plainPlanner ? 'lab 1 plans, the others prove; same information as the labs' : 'lab 1 plans, the others prove; lab 1 also gets strategy advice and reports of what failed');
   if (o.agents.length === 1) parts.push('one lab, all the money');
+  if (o.aim === 'prove') parts.push('told to prove targets; no rewards mentioned or shown');
+  if (o.earningsShown === false) parts.push('earnings not shown');
   return parts.join(' · ');
 }
 
@@ -52,6 +58,8 @@ export function osoLabel(name: string, o: CommunityOptions) {
   const parts = [when, `α=${o.rules === 'oso' ? o.alpha : 1}`, `m=${mintOf(o)}`];
   if (o.knowledge === 'proof-size') parts.push('m_bit=by size');
   if (o.follow) parts.push(`f=${o.follow}`);
+  if (o.aim === 'prove') parts.push('told to prove');
+  if (o.earningsShown === false) parts.push('earnings hidden');
   return `${name.replace(/, α [\d.]+$/, '')} (${parts.join(', ')})`;
 }
 
@@ -59,7 +67,7 @@ export function osoLabel(name: string, o: CommunityOptions) {
 export function societyOptions(key: string, base: CommunityOptions): CommunityOptions {
   const s = SOCIETIES[key];
   if (!s) throw new Error(`unknown society ${key}; known: ${Object.keys(SOCIETIES).join(', ')}`);
-  const o: CommunityOptions = { ...base, rules: s.rules, alpha: s.alpha ?? base.alpha, ...(s.plain ? { plainPlanner: true } : {}), ...(s.choose ? { publishing: 'choose' as const, knowledge: s.knowledge ?? ('proof-size' as const) } : s.knowledge ? { knowledge: s.knowledge } : {}) };
+  const o: CommunityOptions = { ...base, rules: s.rules, alpha: s.alpha ?? base.alpha, ...(s.plain ? { plainPlanner: true } : {}), ...(s.aim ? { aim: s.aim } : {}), ...(s.hidden ? { earningsShown: false } : {}), ...(s.choose ? { publishing: 'choose' as const, knowledge: s.knowledge ?? ('proof-size' as const) } : s.knowledge ? { knowledge: s.knowledge } : {}) };
   if (!s.single) return o;
   const one = <T>(xs?: T[]) => (xs ? xs.slice(0, 1) : undefined);
   // One action per round: the single agent gets as many rounds as all the labs' actions, so money is the only limit.

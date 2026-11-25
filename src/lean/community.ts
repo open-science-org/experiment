@@ -110,6 +110,12 @@ export interface CommunityOptions {
    *  so setups are compared at the same money spent; a pass then only skips that turn. */
   /** Planner rules: the planner gets no strategy advice and no report of what failed, so it has the same information as the labs. */
   plainPlanner?: boolean;
+  /** What labs are told to aim for (runs from 2026-11-24; default 'earn'). 'earn': earn as much as they can, with the
+   *  bounty and reward rules and their earnings shown. 'prove': prove as many targets as the community can; no bounty,
+   *  reward or earnings is mentioned (rewards are still counted). Separates the instruction from the reward. */
+  aim?: 'earn' | 'prove';
+  /** Whether a lab sees its own earnings each turn (default yes). No: the rules are stated, the numbers are not shown. */
+  earningsShown?: boolean;
   mayStop?: boolean;
   effort: 'low' | 'medium' | 'high';
   /** Allow grind (only for the stand-in agents, whose reference proofs use it). */
@@ -150,6 +156,8 @@ export function checkOptions(o: CommunityOptions): string[] {
   oneOf('pricing', o.pricing, ['reference', 'charged']);
   oneOf('problems', o.problems, ['main', 'hard', 'big', 'deep']);
   oneOf('publishing', o.publishing, ['rules', 'choose']);
+  oneOf('aim', o.aim, ['earn', 'prove']);
+  if (o.aim === 'prove' && (o.follow !== undefined || o.publishing === 'choose' || o.conjectures?.length)) bad.push('aim prove hides rewards, so it cannot be combined with money following earnings, labs choosing, or conjecture bounties');
   for (const [name, xs] of [['repairsByLab', o.repairsByLab], ['effortByLab', o.effortByLab], ['reuseByLab', o.reuseByLab]] as const) if (xs && xs.length !== o.agents.length) bad.push(`${name} must give one value per lab (${o.agents.length}), not ${xs.length}`);
   if (o.rules === 'planner' && o.agents.length < 2) bad.push('a planner needs at least 2 labs: one plans, the others prove');
   const ids = new Set(loadTasks(o.problems ?? 'main').map((t) => t.publicId));
@@ -387,9 +395,10 @@ export class Community {
       : M ? `A new result earns its author a mint of ${M}${o.rules === 'oso' && o.alpha < 1 ? ', which flows back in the same way' : ''}. It is new if no lab has published it, or a result that proves it in one step, before.` : 'A new result earns nothing by itself.';
     const planner = o.rules === 'planner' ? '\n- Lab 1 is the planner: it does not prove anything; each round it gives every other lab an assignment, to bring the targets within reach together. Follow your assignment unless it is clearly impossible.' : '';
     const money = o.follow === undefined ? '' : `\n- Money: the funder releases the money round by round, $${((o.budget * o.agents.length) / o.rounds).toFixed(3)} a round for all labs: ${Math.round((1 - o.follow) * 100)}% split equally among the labs still working, ${Math.round(o.follow * 100)}% in proportion to what each earned recently. Unspent money carries over; a lab with no money left waits for the next round.`;
-    const rules = `How this community works (${name}):${planner}\n- Seeing results: ${seeing}\n- Bounties: ${flow}\n- New results: ${own}${money}`;
+    const prove = o.aim === 'prove';
+    const rules = `How this community works (${name}):${planner}\n- Seeing results: ${seeing}${prove ? '' : `\n- Bounties: ${flow}\n- New results: ${own}`}${money}`;
     const persona = o.personas?.[i]?.trim() ? `Your lab's way of working${o.personaNames?.[i] ? ` (${o.personaNames[i]})` : ''}: ${o.personas[i].trim()}` : '';
-    return `You are lab ${i + 1} of ${o.agents.length} in a research community proving theorems in Lean 4 (version 4.35.0, core library only, no Mathlib). Your aim is to earn as much as you can within your budget; every model call you make costs budget.
+    return `You are lab ${i + 1} of ${o.agents.length} in a research community proving theorems in Lean 4 (version 4.35.0, core library only, no Mathlib). ${prove ? 'Your aim is to help the community prove as many of the posted targets as it can within the budget' : 'Your aim is to earn as much as you can within your budget'}; every model call you make costs budget.
 
 ${rules}
 
@@ -418,14 +427,14 @@ ${o.mayStop === false ? '- You keep working until your budget or the rounds run 
     const targets = this.targets.map((t) => {
       const s = this.solved(t.publicId);
       const status = s ? ((s.public && this.opts.rules !== 'independent') || s.author === i ? `solved by lab ${s.author + 1}` : 'open') : 'open';
-      return `${t.publicId} (bounty ${this.bounty(t)}, ${status}): theorem attempt ${norm(t.signature)}${t.ns === 'OSO.M2' ? '   -- stated inside namespace M2' : ''}`;
+      return `${t.publicId} (${this.opts.aim === 'prove' ? '' : `bounty ${this.bounty(t)}, `}${status}): theorem attempt ${norm(t.signature)}${t.ns === 'OSO.M2' ? '   -- stated inside namespace M2' : ''}`;
     });
     const conj = this.conjectures.map((k) => {
       const e = this.provedConjecture(k.cid);
       const status = e ? (e.public ? `proved by lab ${e.author + 1}: cite it as ${e.name}` : e.author === i ? `proved by you (private): cite it as ${e.name}` : 'open') : 'open';
       return `${k.cid} (${status}): theorem attempt ${norm(k.signature)}`;
     });
-    return `Round ${round}. Your earnings so far: ${this.earnings[i].toFixed(1)}. Budget left: $${Math.max(0, this.budgetOf(i) - this.spent[i]).toFixed(3)}.${this.opts.follow !== undefined ? ` Money you get next round: about $${this.nextFunding(i).toFixed(3)}.` : ''}
+    return `Round ${round}.${this.opts.aim === 'prove' || this.opts.earningsShown === false ? '' : ` Your earnings so far: ${this.earnings[i].toFixed(1)}.`} Budget left: $${Math.max(0, this.budgetOf(i) - this.spent[i]).toFixed(3)}.${this.opts.follow !== undefined ? ` Money you get next round: about $${this.nextFunding(i).toFixed(3)}.` : ''}
 
 Posted targets:
 ${targets.join('\n')}

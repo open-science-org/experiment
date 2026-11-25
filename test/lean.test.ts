@@ -419,3 +419,24 @@ test('bad settings are caught before a run spends anything', async () => {
   for (const x of [/budget/, /rounds/, /alpha/, /follow/, /effort must/, /problems must/, /effortByLab/, /Z-99/]) assert.ok(bad.some((b) => x.test(b)), String(x));
   assert.ok(checkOptions({ ...ok, rules: 'planner', agents: ['a'] }).some((b) => /planner needs/.test(b)));
 });
+
+test('told to prove: no bounty, reward or earnings in any prompt; earnings hidden: the rules stay, the numbers go', async () => {
+  const { Community } = await import('../src/lean/community.ts');
+  const { societyOptions } = await import('../src/lean/societies.ts');
+  const base = { rules: 'oso' as const, agents: ['a', 'b'], budget: 1, rounds: 10, repairs: 0, alpha: 0.8, mint: 1, effort: 'low' as const, knowledge: 'off' as const };
+  const prove = new Community(societyOptions('shared-prove', base));
+  const text = prove.systemPrompt(0) + prove.turnPrompt(0, 1);
+  assert.doesNotMatch(text, /earn|bount|reward/i);
+  assert.match(text, /prove as many of the posted targets as it can/);
+  assert.match(text, /published at once/);
+  const hidden = new Community(societyOptions('oso-0.2-hidden', base));
+  assert.match(hidden.systemPrompt(0), /keeps 20% and the rest flows back/);
+  assert.match(hidden.systemPrompt(0), /Your aim is to earn/);
+  assert.doesNotMatch(hidden.turnPrompt(0, 1), /earnings/i);
+  assert.match(hidden.turnPrompt(0, 1), /bounty/);
+  const shown = new Community(societyOptions('oso-0.2', base));
+  assert.match(shown.turnPrompt(0, 1), /Your earnings so far/);
+  // Apart from the earnings line, hidden and shown labs read the same prompts.
+  assert.equal(hidden.systemPrompt(0), shown.systemPrompt(0));
+  assert.equal(hidden.turnPrompt(0, 1), shown.turnPrompt(0, 1).replace(' Your earnings so far: 0.0.', ''));
+});
