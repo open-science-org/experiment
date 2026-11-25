@@ -130,6 +130,10 @@ export interface CommunityOptions {
   conjectureBounty?: number;
   /** The targets the result is judged on (public ids); all if empty. */
   counted?: string[];
+  /** Ask each lab for one small lemma a turn, not a plan of the whole proof (fix for replies cut off on hard steps, 2026-11-25). */
+  smallSteps?: boolean;
+  /** Show each lab the most recent failed tries it can see (statement, lab, why), up to this many; 0 or unset: none. */
+  showFailures?: number;
   /** Which problem set: the main 8 targets (default) or those plus the harder targets (see lean/reference-dag-hard.md). */
   problems?: Problems;
   /** Enforced persona features, per lab: repairs per action, reasoning effort, and whether it sees others' results. */
@@ -417,8 +421,27 @@ ACTION: target <ID>
   simp
 \`\`\`
 - To prove a posted target, start your reply with the line ACTION: target <ID>, and give the proof that completes \`theorem attempt <statement>\` (starting with := or with | match arms).
-${this.conjectures.length ? `- To prove a posted conjecture, start your reply with the line ACTION: conjecture <ID>, and give the proof that completes \`theorem attempt <statement>\` (starting with := or with | match arms). A conjecture is an intermediate result the community wants; it earns a bounty of ${o.conjectureBounty ?? 1} when it is published, and can then be cited by the name shown.\n` : ''}- To state and prove a new lemma, start with ACTION: lemma, and give the whole declaration: \`theorem <name> <statement> := <proof>\`. Choose lemmas that bring a target within reach.
+${this.conjectures.length ? `- To prove a posted conjecture, start your reply with the line ACTION: conjecture <ID>, and give the proof that completes \`theorem attempt <statement>\` (starting with := or with | match arms). A conjecture is an intermediate result the community wants; it earns a bounty of ${o.conjectureBounty ?? 1} when it is published, and can then be cited by the name shown.\n` : ''}- To state and prove a new lemma, start with ACTION: lemma, and give the whole declaration: \`theorem <name> <statement> := <proof>\`. Choose lemmas that bring a target within reach.${o.smallSteps ? ' Prove one small lemma each turn, one you can finish in a few lines. Do not work out the whole proof of a target in one reply: the library keeps what you prove, and you can build on it next turn.' : ''}
 ${o.mayStop === false ? '- You keep working until your budget or the rounds run out: you cannot stop early. Use every turn to prove something useful.' : '- If nothing seems worth your budget, reply ACTION: pass. You stop for the rest of the run and keep what you have not spent.'}${persona ? `\n\n${persona}` : ''}`;
+  }
+
+  /** The most recent failed tries lab i can see, one line each (opts.showFailures): under rules that share at once every
+   *  lab's, otherwise only its own. A turn with no answer has no statement, so it shows as a count. */
+  failuresFor(i: number): string {
+    const n = this.opts.showFailures ?? 0;
+    if (!n) return '';
+    const seen = this.actions.filter((a) => a.kind !== 'plan' && !a.ok && (atOnce(this.opts.rules) || a.agent === i));
+    const why = (a: Action) => {
+      const t = a.transcript?.at(-1);
+      if (t?.stop === 'length' || /ran out of length/.test(t?.errors?.[0] ?? '')) return 'ran out of length before an answer';
+      const e = (t?.errors ?? []).join(' ').replace(/\s+/g, ' ').trim();
+      return /duplicate/.test(a.reason ?? '') ? a.reason! : e ? `Lean: ${e.slice(0, 140)}` : (a.reason ?? 'failed');
+    };
+    const tries = seen.filter((a) => a.kind === 'lemma' || a.kind === 'target' || a.kind === 'conjecture').slice(-n).reverse()
+      .map((a) => `- round ${a.round}, lab ${a.agent + 1}: ${a.kind === 'lemma' ? `theorem ${a.name ?? '?'} ${norm(a.signature ?? '')}` : `${a.kind} ${a.target ?? ''}`} -- ${why(a)}`);
+    const empty = seen.filter((a) => a.kind === 'none' && a.round >= Math.max(1, (this.actions.at(-1)?.round ?? 0) - 9)).length;
+    if (!tries.length && !empty) return '';
+    return `Recent failed tries${atOnce(this.opts.rules) ? ' (all labs)' : ' (yours)'}, newest first:\n${tries.join('\n')}${empty ? `\n- in the last 10 rounds, ${empty} turn${empty > 1 ? 's' : ''} gave no answer: every reply ran out of length` : ''}\n\n`;
   }
 
   turnPrompt(i: number, round: number): string {
@@ -439,7 +462,7 @@ ${o.mayStop === false ? '- You keep working until your budget or the rounds run 
 Posted targets:
 ${targets.join('\n')}
 
-${conj.length ? `Posted conjectures:\n${conj.join('\n')}\n\n` : ''}Library you can cite:
+${conj.length ? `Posted conjectures:\n${conj.join('\n')}\n\n` : ''}${this.failuresFor(i)}Library you can cite:
 ${lib.length ? '```lean\n' + lib.map(fmt).join('\n') + '\n```' : '(empty)'}
 ${this.plans[i] ? `\nYour assignment from the planner this round:\n${this.plans[i]}\n` : ''}
 Take one action.`;
