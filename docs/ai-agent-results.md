@@ -1,10 +1,10 @@
 # AI agents on the Lean problems: results so far
 
-Last updated: 2026-11-23. Every result here has its own page under `results/` (the links), with its design, caveats and logs. This page only gathers them. Setup names are short labels for their [OSO parameters](lean-experiment.md#the-setups): when results go public, α, the flat mint m, the knowledge reward m_bit, and f.
+Last updated: 2026-11-25. Every result here has its own page under `results/` (the links), with its design, caveats and logs. This page only gathers them. Setup names are short labels for their [OSO parameters](lean-experiment.md#the-setups): when results go public, α, the flat mint m, the knowledge reward m_bit, and f.
 
 ## TL;DR
 
-Checked after every run; last checked 2026-11-23, after Labs choose on the bigger set (section 4i).
+Checked after every run; last checked 2026-11-25, after the deep Fermat run (section 4j).
 
 - **Lemmas help weak models.** DeepSeek proves 4 of 16 targets alone, 12 of 16 with the lemmas they need.
 - **Sharing lets labs build on each other** (Spend all: 2.2 results a run in the shared library, 0.4 under traditional), but it has not raised targets proved. A plain shared library gets this too, so it is not unique to OSO. **Repeated work is not a general result:** traditional labs proved the same lemma about 20 times a run in the small cheap race (5 runs), but only 0.4 times in Spend all (20 runs per setup; shared library 0.2).
@@ -23,6 +23,7 @@ Checked after every run; last checked 2026-11-23, after Labs choose on the bigge
 - **Why the tests may be blind:** five of the 8 targets are nearly always proved, so "targets proved" barely moves. Flow-back should matter most on deep problems, not tested yet.
 - **Money is now counted at one fixed price per token** (from 2026-11-17; correction below). The model's price doubled between Nov 8 and Nov 9; dollar figures below are repriced.
 - **The setup checks out** (proof checker, fault tests, public benchmark). Flow-back was split by money spent instead of lines saved until 2026-11-08; the counts stand (correction below).
+- **Deep set: a community of cheap models proved Fermat's little theorem from scratch** (one run, OSO α 0.2, section 4j): 11 levels deep, from their own numbers, in round 61 for $2.53. The proof rests on 53 results from all 4 labs; one step took 57 failed tries before a lab broke it. One run with no comparison: it shows the depth is reachable, not that OSO's rules helped.
 - **Bigger problem set (27 targets), model check:** 4 cheap models, each target alone and with its lemmas, 2 attempts each ($3.34). Targets that needed their lemmas (0 of 2 alone, at least 1 of 2 with them): DeepSeek V4.1 Flash 10, GLM-5.3 Flash 8, Qwen 3.7 Flash 16 (but it proved only 27 of 54 even with lemmas), Claude Haiku 5.5 1 (it proved 50 of 54 alone: too strong for this set). Results: `results/pilot/big-panel-*`.
 
 ## Correction: the model's price changed between runs (found 2026-11-13)
@@ -367,6 +368,16 @@ Only H6 met the rule, so stage 2 was not started. Labs spent $0.77 of each run's
 **Targets proved, of 27** (mean, 95% range over 5 runs): traditional 20.0 (18.5 to 21.5), α 1 20.6 (19.5 to 21.7), α 0.2 21.2 (20.6 to 21.8). α 0.2 minus traditional +1.2 (−0.3 to +2.7); α 0.2 minus α 1 +0.6 (−0.5 to +1.7). Every run stalled at 20 to 21 targets; the deepest ones (X1, X6) were tried and failed to the end of the money.
 
 **Looked at after the results (leads only):** results that built on another lab's work: 6.4 a run (traditional), 11.4 (α 1), 16.0 (α 0.2). Lemmas proved: 14.6, 14.0, 23.0. Targets proved again by a second lab: 11.0, 12.6, 19.2, so more building on others came with more repeated target work too.
+
+## 4j. Deep set: Fermat's little theorem from scratch (one run, 2026-11-23 to 24)
+
+[Result](../results/community/deep-fermat-1/summary.md). **Setup:** OSO α 0.2 (public at once, α 0.2, m 0, m_bit 0, f 0). 4 DeepSeek V4.1 Flash labs, $2 a lab, up to 100 rounds, labs cannot stop early. One run, no other setup: it shows what a community can reach, not whether OSO's rules help. The deep set has its own numbers built from zero (no Mathlib) and one posted target, P1, Fermat's little theorem, at depth 11; the 96 steps below it are hidden. Stand-in labs replaying the reference proofs reach P1 in round 27.
+
+**Result:** P1 was proved in round 61, for $2.53 at the reference price (about a third of the $8; the run ends when the target is proved). The proof rests on 53 results, from all 4 labs. Labs proved 82 lemmas; 63 results built on another lab's work. Lean matched 50 of the 96 hidden steps to lab lemmas as stated (steps proved in another form or split over several lemmas are not counted).
+
+**The bottleneck:** from round 25 the labs kept trying one step, (k+1)·C(n+1,k+1) = (n+1)·C(n,k), and failed 57 times (counting tries of this statement and its close variants). Lab 1 proved it in round 59. In round 60 lab 4 used it to show that a prime p divides C(p,k), and in round 61 it proved P1.
+
+**Harness:** 245 of 568 replies (43%) ran out of length and gave no answer; 28 turns were lost to provider errors. The laptop slept during rounds 8 to 15, which only slowed the run. This run started before the payout ledger existed (2026-11-24), so its earnings cannot be audited.
 
 ## 5. Is the test setup sound? (harness checks)
 

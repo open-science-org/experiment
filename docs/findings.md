@@ -1,6 +1,6 @@
 # Findings so far
 
-Last updated: 2026-11-12. Plain summaries; each links to its full result. **Finding** means it was the measure fixed in advance; **lead** means it was noticed afterwards or is from a small or exploratory run. Setup names are short labels for their [OSO parameters](lean-experiment.md#the-setups): for example, the shared library is public at once, α 1, m 0.
+Last updated: 2026-11-25. Plain summaries; each links to its full result. **Finding** means it was the measure fixed in advance; **lead** means it was noticed afterwards or is from a small or exploratory run. Setup names are short labels for their [OSO parameters](lean-experiment.md#the-setups): for example, the shared library is public at once, α 1, m 0.
 
 ## Simulation
 
@@ -25,6 +25,8 @@ Last updated: 2026-11-12. Plain summaries; each links to its full result. **Find
 - **Finding, labs choose with the knowledge reward off (10 runs per α, 2026-11-10): flow-back did not clearly raise sharing.** Share of lemmas published at once: 58% at α 1, 63% at α 0.8, 93% at α 0.2 (predicted 16, 16 and 93%). The planned difference, α 0.2 minus α 1, is +35 points with a range from −18 to +87: the direction predicted, but not shown. Labs proved few lemmas without the reward (8 at α 1). [Results](ai-agent-results.md)
 
 - **Finding, labs choose on the bigger set (27 targets, 5 runs per setup, 2026-11-23): no clear difference.** Lemmas published at once: 92% at α 1, 96% at α 0.2 (+4 points, range −3 to +12). Targets proved: traditional 20.0, α 1 20.6, α 0.2 21.2 of 27 (α 0.2 minus traditional +1.2, range −0.3 to +2.7). Lead: results built on another lab's work 6.4, 11.4 and 16.0 a run. [Result](../results/community/lean-big-1/summary.md)
+
+- **Lead, deep set (1 run, 2026-11-24):** 4 cheap DeepSeek labs under OSO α 0.2 proved Fermat's little theorem from their own numbers (depth 11) in round 61, for $2.53; the proof rests on 53 results from all 4 labs. No comparison setup, so this shows the depth is reachable, not that the rules helped. [Result](ai-agent-results.md#4j-deep-set-fermats-little-theorem-from-scratch-one-run-2026-11-23-to-24)
 
 **Correction (2026-11-08):** every Lean run so far split flow-back by money spent instead of by graph weights (lines saved). Only 1–5% of earnings would have gone elsewhere and the counted measures are unaffected, but labs saw slightly wrong earnings. [Details](ai-agent-results.md)
 
