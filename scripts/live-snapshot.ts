@@ -4,7 +4,25 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { costOf, type Action, type CommunityOptions } from '../src/lean/community.ts';
+import { ROOT } from '../src/paths.ts';
 import { EXPERIMENT_NAMES, EXPERIMENT_QUESTIONS } from '../src/lean/names.ts';
+
+import { marked } from 'marked';
+
+// The experiment's write-up in docs/ai-agent-results.md: the section that opens with a link to its result folder.
+// As HTML for the Live page, links pointed at GitHub. Null until it is written up.
+function resultsSection(id: string): { heading: string; html: string } | null {
+  const doc = join(ROOT, 'docs', 'ai-agent-results.md');
+  if (!existsSync(doc)) return null;
+  const sections = readFileSync(doc, 'utf8').split(/^(?=## )/m);
+  const sec = sections.find((x) => x.split('\n').slice(1).find((l) => l.trim())?.includes(`(../results/community/${id}/summary.md)`));
+  if (!sec) return null;
+  const [head, ...body] = sec.split('\n');
+  const gh = 'https://github.com/open-science-org/experiment/blob/master/';
+  const md = body.join('\n').trim().replace(/\]\((?!https?:|#)([^)]+)\)/g, (_, u: string) => `](${gh}${u.startsWith('../') ? u.slice(3) : 'docs/' + u})`)
+    .replace(/\]\(#([^)]+)\)/g, (_, a: string) => `](${gh}docs/ai-agent-results.md#${a})`);
+  return { heading: head.replace(/^##\s*/, '').replace(/^[0-9]+[a-z]?\.\s*/, ''), html: marked.parse(md, { async: false }) as string };
+}
 import { osoLabel, osoParams } from '../src/lean/societies.ts';
 import { AREAS, LEAN_DIR, loadTasks, PLAIN } from '../src/lean/tasks.ts';
 
@@ -112,7 +130,7 @@ const feed = sources.flatMap(({ key, from, repeats }) => Array.from({ length: re
 // The graph runs to the most any run has spent so far (all the money once runs finish), so early progress is visible.
 const reach = Math.min(cap, Math.max(cap / 400, ...setups.flatMap((s) => s.reps.map((r) => r.spent))));
 const snapshot = {
-  id, title: EXPERIMENT_NAMES[id] ?? id, question: EXPERIMENT_QUESTIONS[id] ?? null, updatedAt: Date.now(), startedAt: plan.startedAt,
+  id, title: EXPERIMENT_NAMES[id] ?? id, question: EXPERIMENT_QUESTIONS[id] ?? null, results: resultsSection(id), updatedAt: Date.now(), startedAt: plan.startedAt,
   problems, moneyPerRun: cap,
   targets: tasks.map((t) => ({ id: t.publicId, depth: t.depth, bounty: 4 * 2 ** (t.depth - 1), area: t.area, text: PLAIN[t.publicId] ?? '' })),
   // Who the labs are and how a run goes, for the page's "About this run".
