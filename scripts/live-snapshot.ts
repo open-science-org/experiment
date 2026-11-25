@@ -5,7 +5,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { costOf, type Action, type CommunityOptions } from '../src/lean/community.ts';
 import { ROOT } from '../src/paths.ts';
-import { EXPERIMENT_NAMES, EXPERIMENT_QUESTIONS } from '../src/lean/names.ts';
+import { EXPERIMENT_ANSWERS, EXPERIMENT_NAMES, EXPERIMENT_QUESTIONS } from '../src/lean/names.ts';
 
 import { marked } from 'marked';
 
@@ -130,9 +130,9 @@ const feed = sources.flatMap(({ key, from, repeats }) => Array.from({ length: re
 // The graph runs to the most any run has spent so far (all the money once runs finish), so early progress is visible.
 const reach = Math.min(cap, Math.max(cap / 400, ...setups.flatMap((s) => s.reps.map((r) => r.spent))));
 const snapshot = {
-  id, title: EXPERIMENT_NAMES[id] ?? id, question: EXPERIMENT_QUESTIONS[id] ?? null, results: resultsSection(id), updatedAt: Date.now(), startedAt: plan.startedAt,
+  id, title: EXPERIMENT_NAMES[id] ?? id, question: EXPERIMENT_QUESTIONS[id] ?? null, answer: EXPERIMENT_ANSWERS[id] ?? null, results: resultsSection(id), updatedAt: Date.now(), startedAt: plan.startedAt,
   problems, moneyPerRun: cap,
-  targets: tasks.map((t) => ({ id: t.publicId, depth: t.depth, bounty: 4 * 2 ** (t.depth - 1), area: t.area, text: PLAIN[t.publicId] ?? '' })),
+  targets: tasks.map((t) => ({ id: t.publicId, depth: t.depth, bounty: 4 * 2 ** (t.depth - 1), area: t.area, text: PLAIN[t.publicId] ?? '', statement: t.signature.replace(/\s+/g, ' ').trim() })),
   // Who the labs are and how a run goes, for the page's "About this run".
   about: first && {
     labs: first.agents.length, models: [...new Set(first.agents.map((m) => m.split('/').pop()!))], budget: first.budget,

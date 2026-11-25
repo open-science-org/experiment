@@ -38,3 +38,13 @@ export const EXPERIMENT_QUESTIONS: Record<string, string> = {
 
 export const experimentName = (id: string) => EXPERIMENT_NAMES[id] ?? (id.startsWith('stub') ? `Pipeline test, no model: ${id}` : id);
 export const isTest = (id: string) => id.startsWith('stub') || id.startsWith('test-');
+
+// The answer to each finished experiment's question, in a few plain lines, shown at the top of its Live page.
+// Written with its write-up (docs/ai-agent-results.md); a measure fixed in advance comes first, leads after.
+export const EXPERIMENT_ANSWERS: Record<string, string> = {
+  'deep-fermat-1': "Yes. The four labs proved Fermat's little theorem from scratch in round 61, for $2.53 of the $8: 11 levels deep, resting on 53 results from all four labs. One run with nothing to compare: it shows the depth is reachable, not that OSO's rules helped.",
+  'deep-fermat-trad-1': "Further with OSO, in this one look. Working alone (traditional), the labs did not prove Fermat in 100 rounds and reached 27 of the 95 hidden steps by $2 a run; the OSO run had reached 52 and went on to prove it. One run a side on different days: the direction is clear, the size is not estimated.",
+  'deep-fermat-2': "Sharing got furthest; credit flowing back did not add to it here. No setup proved Fermat. Hidden steps reached by $2 a run: working alone 34, shared library 51, OSO 38. OSO's labs reached the last hard step first and then lost almost half their money to replies cut off on it. One run each: a first look.",
+  'lean-e1': "Not shown on the measure fixed in advance: lemmas a later proof cited moved by +3.8 with the reward (range −1.9 to +9.5), −1.8 with the word \"earn\" and −0.8 with seeing earnings, all ranges including zero. Lead: counting all lemmas, the reward about doubles them (+11.0, range +5.5 to +16.5), so the extra groundwork under OSO looks like the reward, not the prompt.",
+  'lean-big-1': "No clear difference. Labs published 92% of their lemmas at once at α 1 and 96% at α 0.2 (+4 points, range −3 to +12): they share almost everything either way. Targets proved were about the same (about 20 to 21 of 27). Lead: at α 0.2 labs built more on each other's work.",
+};
