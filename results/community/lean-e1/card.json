@@ -1,0 +1,71 @@
+{
+ "id": "lean-e1",
+ "kind": "race",
+ "date": "2026-11-25",
+ "title": "E1, reward vs instruction: shared (prove), shared (earn), α 0.2, α 0.2 with earnings hidden × 5 runs, big set, $0.40 a lab (Nov 24)",
+ "ranAt": "2026-11-25T03:57:12.488Z",
+ "design": {
+  "question": "For the same agents, checker and money, does a community prove more targets when value flows back (OSO) than when results are only shared, or kept private until a target is proved?",
+  "compare": "Shared library, told to prove, Shared library, OSO, α 0.2, OSO, α 0.2, earnings hidden",
+  "fixed": "the same 4 agents (the single agent: the first, with all the money), $1.60 in all, Lean checks every proof",
+  "measure": "targets proved by the end of a run, of 27; money to reach 2 targets is shown beside it",
+  "better": "higher",
+  "runs": "5 runs per setup, not paired"
+ },
+ "answer": "OSO, α 0.2 proved 21.40 (95% range 20.72 to 22.08) targets of 27 a run; Shared library 21.00 (95% range 21.00 to 21.00). Difference: 0.40 (95% range -0.28 to 1.08). OSO, α 0.2, earnings hidden proved 21.80 (95% range 20.76 to 22.84) targets of 27 a run; Shared library 21.00 (95% range 21.00 to 21.00). Difference: 0.80 (95% range -0.24 to 1.84).",
+ "table": [
+  {
+   "society": "Shared library, told to prove",
+   "OSO parameters": "public at once · α 1 · m 0 · m_bit 0 · f 0 · told to prove targets; no rewards mentioned or shown",
+   "targets proved": "21.40 ± 0.55 of 27",
+   "money to 2 targets": "$0.01 (5 of 5 got there)",
+   "spent": "$1.61",
+   "lemmas proved": "19.00",
+   "built on another lab": "16.20",
+   "lemmas proved twice": "0.60",
+   "targets proved twice": "17.40"
+  },
+  {
+   "society": "Shared library",
+   "OSO parameters": "public at once · α 1 · m 0 · m_bit 0 · f 0",
+   "targets proved": "21.00 ± 0.00 of 27",
+   "money to 2 targets": "$0.01 (5 of 5 got there)",
+   "spent": "$1.61",
+   "lemmas proved": "12.20",
+   "built on another lab": "13.00",
+   "lemmas proved twice": "0.20",
+   "targets proved twice": "12.00"
+  },
+  {
+   "society": "OSO, α 0.2",
+   "OSO parameters": "public at once · α 0.2 · m 0 · m_bit 0 · f 0",
+   "targets proved": "21.40 ± 0.55 of 27",
+   "money to 2 targets": "$0.01 (5 of 5 got there)",
+   "spent": "$1.61",
+   "lemmas proved": "23.20",
+   "built on another lab": "19.60",
+   "lemmas proved twice": "0.60",
+   "targets proved twice": "13.20"
+  },
+  {
+   "society": "OSO, α 0.2, earnings hidden",
+   "OSO parameters": "public at once · α 0.2 · m 0 · m_bit 0 · f 0 · earnings not shown",
+   "targets proved": "21.80 ± 0.84 of 27",
+   "money to 2 targets": "$0.02 (5 of 5 got there)",
+   "spent": "$1.61",
+   "lemmas proved": "23.80",
+   "built on another lab": "19.60",
+   "lemmas proved twice": "0.60",
+   "targets proved twice": "15.40"
+  }
+ ],
+ "caveats": [
+  "Labs could not stop early: each worked until its money or the rounds ran out, so setups are compared at the same money spent.",
+  "Rewards differ from the current simulation model: the knowledge reward is off (the simulation pays 1 per new bit since v5): Lean has no agreed measure of a result's new knowledge yet, see docs/design.md; value flowing back is split by the lines each parent saves (its own proof's length in symbols), a stand-in for the work it saves (1/p) in the simulation.",
+  "Table values are mean ± standard deviation over runs. Above: means with 95% ranges (Student t), and differences between setups with their 95% ranges; runs are not paired.",
+  "Money in the results is tokens at a fixed reference price per model (src/lean/prices.ts), not what the provider charged on the day, so runs on different days compare. The cost below is what was charged."
+ ],
+ "cost": "$32.18 as charged",
+ "page": "results/community/lean-e1/summary.md",
+ "chart": "results/community/lean-e1/figures/progress.svg"
+}

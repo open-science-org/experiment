@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="viz" viewBox="0 0 930 320" width="930" height="320" role="img" aria-label="The comparisons fixed in advance: lemmas cited later">
+<style>
+  .viz { --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --grid: #e6e5e1;
+         --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --dead: #c9c7c0; }
+  @media (prefers-color-scheme: dark) {
+    .viz { --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --grid: #34332f;
+           --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --dead: #4a4945; }
+  }
+  .bg { fill: var(--surface); }
+  text { fill: var(--ink); font-family: Helvetica, Arial, sans-serif; }
+  .title { font-size: 16px; font-weight: 700; }
+  .sub, .tick, .axis { fill: var(--ink-2); font-size: 12px; }
+  .grid { stroke: var(--grid); stroke-width: 1; }
+  .base { stroke: var(--ink-2); stroke-width: 1; }
+  .line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .c1 { stroke: var(--s1); } .f1 { fill: var(--s1); }
+  .c2 { stroke: var(--s2); } .f2 { fill: var(--s2); }
+  .c3 { stroke: var(--s3); } .f3 { fill: var(--s3); }
+  .dot { stroke: var(--surface); stroke-width: 2; }
+  .label { font-size: 12px; font-weight: 700; }
+  .t1 { fill: var(--s1); } .t2 { fill: var(--s2); } .t3 { fill: var(--s3); }
+  .ce { stroke: var(--ink); } .fe { fill: var(--ink); }
+</style><rect class="bg" width="930" height="320" rx="8"/>
+<text class="title" x="20" y="30">The comparisons fixed in advance: lemmas cited later</text>
+<text class="sub" x="20" y="50">Difference of means, a run each, with 95% ranges (Student t, runs not paired); 5 runs per setup.</text>
+<line class="grid" x1="442.00155687511625" x2="442.00155687511625" y1="74" y2="276"/>
+<text class="tick" x="442.00155687511625" y="292" text-anchor="middle">−5.0</text>
+<line class="base" x1="530.3468585506075" x2="530.3468585506075" y1="74" y2="276" style="stroke-width:1.5"/>
+<text class="tick" x="530.3468585506075" y="292" text-anchor="middle">0</text>
+<line class="grid" x1="618.6921602260987" x2="618.6921602260987" y1="74" y2="276"/>
+<text class="tick" x="618.6921602260987" y="292" text-anchor="middle">+5.0</text>
+<line class="grid" x1="707.03746190159" x2="707.03746190159" y1="74" y2="276"/>
+<text class="tick" x="707.03746190159" y="292" text-anchor="middle">+10.0</text>
+<text class="axis" x="560" y="310" text-anchor="middle">Difference in lemmas cited later a run</text>
+<text class="label" x="20" y="106">Reward: OSO, α 0.2 minus Shared library</text>
+<text class="tick" x="20" y="122" style="font-size:11px">Changes: α 1 → α 0.2</text>
+<line class="line ce" x1="479.8" x2="715.2" y1="109" y2="109" style="stroke-width:2.5"/>
+<line class="line ce" x1="479.8" x2="479.8" y1="103" y2="115" style="stroke-width:2"/>
+<line class="line ce" x1="715.2" x2="715.2" y1="103" y2="115" style="stroke-width:2"/>
+<circle class="dot fe" cx="597.5" cy="109" r="6"><title>Reward: OSO, α 0.2 minus Shared library: +3.8 (95% range −2.9 to +10.5)</title></circle>
+<text class="label" x="756" y="113">+3.8<tspan class="tick" style="font-weight:400"> (−2.9 to +10.5)</tspan></text>
+<text class="label" x="20" y="168">Instruction: Shared library minus Shared library, told to prove</text>
+<text class="tick" x="20" y="184" style="font-size:11px">Changes: told to prove targets; no rewards mentioned</text>
+<text class="tick" x="20" y="197" style="font-size:11px">or shown → —</text>
+<line class="line ce" x1="404.8" x2="592.3" y1="171" y2="171" style="stroke-width:2.5"/>
+<line class="line ce" x1="404.8" x2="404.8" y1="165" y2="177" style="stroke-width:2"/>
+<line class="line ce" x1="592.3" x2="592.3" y1="165" y2="177" style="stroke-width:2"/>
+<circle class="dot fe" cx="498.5" cy="171" r="6"><title>Instruction: Shared library minus Shared library, told to prove: −1.8 (95% range −7.1 to +3.5)</title></circle>
+<text class="label" x="756" y="175">−1.8<tspan class="tick" style="font-weight:400"> (−7.1 to +3.5)</tspan></text>
+<text class="label" x="20" y="230">Seeing earnings: OSO, α 0.2 minus OSO, α 0.2, earnings hidden</text>
+<text class="tick" x="20" y="246" style="font-size:11px">Changes: earnings not shown → —</text>
+<line class="line ce" x1="415.1" x2="617.4" y1="233" y2="233" style="stroke-width:2.5"/>
+<line class="line ce" x1="415.1" x2="415.1" y1="227" y2="239" style="stroke-width:2"/>
+<line class="line ce" x1="617.4" x2="617.4" y1="227" y2="239" style="stroke-width:2"/>
+<circle class="dot fe" cx="516.2" cy="233" r="6"><title>Seeing earnings: OSO, α 0.2 minus OSO, α 0.2, earnings hidden: −0.8 (95% range −6.5 to +4.9)</title></circle>
+<text class="label" x="756" y="237">−0.8<tspan class="tick" style="font-weight:400"> (−6.5 to +4.9)</tspan></text>
+</svg>
