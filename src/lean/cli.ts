@@ -173,7 +173,9 @@ if (cmd === 'community') {
     const opts = { ...base, rules: 'oso' as const, allowGrind: stub };
     const done = [];
     // The plan, so the viewer's Progress page can show runs still waiting.
-    writeFileSync(join(LEAN_DIR, 'runs', `${id}.plan.json`), JSON.stringify({ id, societies, repeats, k, startedAt: Date.now() }) + '\n');
+    writeFileSync(join(LEAN_DIR, 'runs', `${id}.plan.json`), JSON.stringify({ id, societies, repeats, k, startedAt: Date.now(), ...(cfg.effects ? { effects: cfg.effects } : {}) }) + '\n');
+    // The comparisons fixed in advance, if the plan names them (added to the plan file before results are read).
+    const planEffects = () => (JSON.parse(readFileSync(join(LEAN_DIR, 'runs', `${id}.plan.json`), 'utf8')) as { effects?: import('./societies.ts').Effects }).effects;
     // --parallel: every run not yet done goes at once (a redo of an earlier run included), so they all meet
     // the same provider speed and load. --from-rep N: runs before N were done earlier under the same --run
     // id; they are read, not rerun (one that is missing is run).
@@ -193,14 +195,14 @@ if (cmd === 'community') {
       }
       done.push(...(await Promise.all(jobs)));
       done.sort((a, b) => a.rep - b.rep || societies.indexOf(a.key) - societies.indexOf(b.key));
-      writeSocieties(id, done, k, stub ? 'This is a pipeline test: the labs play from the reference proofs.' : String(cfg.design ?? value('design', '')), stub);
+      writeSocieties(id, done, k, stub ? 'This is a pipeline test: the labs play from the reference proofs.' : String(cfg.design ?? value('design', '')), stub, planEffects());
     }
     for (let rep = 1; rep <= repeats && !parallel; rep++) {
       for (const key of societies) {
         if (have(key, rep)) done.push({ key, rep, runId: `${id}-r${rep}-${key}`, result: readCommunity(`${id}-r${rep}-${key}`) });
         else done.push(await one(key, rep));
       }
-      writeSocieties(id, done, k, stub ? 'This is a pipeline test: the labs play from the reference proofs.' : String(cfg.design ?? value('design', '')), stub);
+      writeSocieties(id, done, k, stub ? 'This is a pipeline test: the labs play from the reference proofs.' : String(cfg.design ?? value('design', '')), stub, planEffects());
     }
     console.log(`\nSummary: results/community/${id}/summary.md`);
     process.exit(0);

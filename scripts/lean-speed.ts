@@ -78,16 +78,20 @@ const params = keys.map((k) => osoParams(groups.get(k)![0].opts).split(' · '));
 const onlyAlpha = params.every((p) => p.filter((x) => !x.startsWith('α ')).join() === params[0].filter((x) => !x.startsWith('α ')).join());
 const curve = (rs: CommunityResult[]) => {
   const pts: [number, number][] = [], ranges: [number, number][] = [];
-  for (let n = 1; n <= targets.length; n++) {
+  let ranged = false, n = 1;
+  for (; n <= targets.length; n++) {
     const [m, lo, hi] = medianRange(rs.map((r) => atK(r, n, 'money')));
     if (m === Infinity) break;
+    if (lo !== null) ranged = true;
     pts.push([n, m]); ranges.push([lo ?? m, Math.min(cap, hi ?? m)]);
   }
-  return { points: pts, ranges };
+  // Each run's own line, to the last count it reached; the median line stops once half the runs or more never got further.
+  const own = rs.map((r) => { const xs: [number, number][] = []; for (let k = 1; k <= targets.length && atK(r, k, 'money') < Infinity; k++) xs.push([k, atK(r, k, 'money')]); return xs; });
+  return { points: pts, ...(ranged ? { ranges } : {}), runs: own, ...(n <= targets.length && pts.length ? { stopped: `${usd(pts.at(-1)![1])} at ${pts.length}; most runs never reached ${n}` } : {}) };
 };
 const series = keys.map((k, i) => ({
   name: onlyAlpha ? params[i].find((x) => x.startsWith('α '))!.replace('α ', 'α = ') : osoLabel(SOCIETIES[k].name, groups.get(k)![0].opts),
-  slot: SOCIETIES[k].slot ?? 2, colour: SOCIETIES[k].colour, ...curve(groups.get(k)!),
+  slot: SOCIETIES[k].slot ?? 2, colour: SOCIETIES[k].colour, dash: SOCIETIES[k].dash, ...curve(groups.get(k)!),
 }));
 let file = 'money-to-targets.svg', runsNote = `Median of ${groups.get(keys[0])!.length} runs`;
 if (withArg) {
@@ -103,7 +107,7 @@ if (withArg) {
 mkdirSync(join(dir, 'figures'), { recursive: true });
 writeFileSync(join(dir, 'figures', file), lineChart({
   title: 'Money spent to reach a number of targets',
-  subtitle: `${onlyAlpha ? `${withArg ? 'α' : 'All'}: ${params[0].filter((x) => !x.startsWith('α ')).join(', ')}. ` : ''}${runsNote}; bars: 95% ranges.`,
+  subtitle: `${onlyAlpha ? `${withArg ? 'α' : 'All'}: ${params[0].filter((x) => !x.startsWith('α ')).join(', ')}. ` : ''}${runsNote}, bold; each run faint${series.some((x) => x.ranges) ? '; bars: 95% ranges' : ' (no ranges under 6 runs)'}; an open ring: the line stops there.`,
   xLabel: `Targets proved (of ${targets.length})`, yLabel: 'Money spent, all labs ($)', series,
   x: [1, targets.length], y: [0, cap], xTicks: targets.map((_, i) => i + 1), yTicks: [0, cap / 4, cap / 2, (3 * cap) / 4, cap],
   markers: true, format: { y: (v) => `$${v.toFixed(2)}` },

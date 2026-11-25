@@ -440,3 +440,20 @@ test('told to prove: no bounty, reward or earnings in any prompt; earnings hidde
   assert.equal(hidden.systemPrompt(0), shown.systemPrompt(0));
   assert.equal(hidden.turnPrompt(0, 1), shown.turnPrompt(0, 1).replace(' Your earnings so far: 0.0.', ''));
 });
+
+test('charts: faint runs, dashes, a stopped line and the effect chart make valid SVG, and every label fits', async () => {
+  const { lineChart, effectChart } = await import('../src/report/figures.ts');
+  const svg = lineChart({ title: 't', subtitle: 's', xLabel: 'x', yLabel: 'y', x: [0, 2], y: [0, 2], xTicks: [0, 1, 2], yTicks: [0, 1, 2], markers: true,
+    series: [{ name: 'A very long setup name, with its OSO parameters spelled out', slot: 3, colour: '#888', dash: '6 4', points: [[0, 0], [1, 1]], runs: [[[0, 0], [1, 2]], [[0, 0], [1, 0.5]]], stopped: 'not reached after 1' }] });
+  // No element repeats an attribute (a repeated style made the whole SVG unreadable once).
+  for (const tag of svg.match(/<[a-z]+ [^>]*>/g) ?? []) { const names = [...tag.matchAll(/\s([a-z-]+)="/g)].map((m) => m[1]); assert.equal(new Set(names).size, names.length, tag); }
+  assert.match(svg, /stroke-dasharray="6 4"/);
+  assert.equal((svg.match(/opacity:\.28/g) ?? []).length, 2);
+  assert.match(svg, /not reached after 1/);
+  // The canvas is wide enough for the end label.
+  const width = Number(/viewBox="0 0 (\d+(?:\.\d+)?)/.exec(svg)![1]);
+  assert.ok(width >= 64 + 506 + 6.9 * 'A very long setup name, with its OSO parameters spelled out: not reached after 1'.length);
+  const eff = effectChart({ title: 'e', subtitle: 's', xLabel: 'd', rows: [{ label: 'Reward', detail: 'Changes: α 1 → α 0.2', est: 4.8, lo: 0.9, hi: 8.7 }] });
+  assert.match(eff, /\+4\.8/);
+  assert.match(eff, /\(\+0\.9 to \+8\.7\)/);
+});

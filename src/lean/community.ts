@@ -837,6 +837,9 @@ export function stats(r: CommunityResult) {
     noChoice: r.library.filter((e) => e.choice === 'none').length,
     /** The knowledge reward by proof size: mean proof size of accepted lemmas (to spot padding). */
     lemmaSize: (() => { const xs = r.library.filter((e) => !e.target && e.size); return xs.length ? xs.reduce((a, e) => a + e.size!, 0) / xs.length : null; })(),
+    /** Lemmas cited later: first proofs of lemmas (not targets, conjectures or trivial) that some result's proof used
+     *  (as scripts/lean-estimates.py counts them): groundwork that was used, not only proved. */
+    citedLater: (() => { const cited = new Set(r.library.flatMap((e) => e.uses)); return firstProofs(r.library).filter((e) => !e.target && !e.conjecture && !e.trivial && cited.has(`${e.ns}.${e.name}`)).length; })(),
     builtOnOthers: firstProofs(r.library).filter((e) => e.uses.some((u) => { const x = r.library.find((y) => `${y.ns}.${y.name}` === u); return x && x.author !== e.author; })).length,
     deepestTarget: deepest,
     /** Value gained: the prizes of the targets solved (4 at depth 1, doubling with each level). */

@@ -24,6 +24,7 @@ const STYLE = `
   .dot { stroke: var(--surface); stroke-width: 2; }
   .label { font-size: 12px; font-weight: 700; }
   .t1 { fill: var(--s1); } .t2 { fill: var(--s2); } .t3 { fill: var(--s3); }
+  .ce { stroke: var(--ink); } .fe { fill: var(--ink); }
 `;
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -37,6 +38,12 @@ export interface Series {
   points: [number, number][];
   /** A 95% range for each point, drawn as a thin bar through it. */
   ranges?: [number, number][];
+  /** Each run's own curve, drawn faint behind the bold summary line, so the spread between runs shows. */
+  runs?: [number, number][][];
+  /** A dash pattern, so lines of the same colour (the grey baselines) stay apart. */
+  dash?: string;
+  /** The series stops because it never got further (some runs, or most, never got there): marked at its end. */
+  stopped?: string;
 }
 
 export interface LineChart {
@@ -59,7 +66,10 @@ export interface LineChart {
 export function lineChart(c: LineChart): string {
   const stroke = (s: Series) => (s.colour ? ` style="stroke:${s.colour}"` : ''), fill = (s: Series) => (s.colour ? ` style="fill:${s.colour}"` : '');
   // The legend wraps onto more rows when it is wider than the chart; the plot starts below it.
-  const W = 760, H = 420, left = 64, right = 190, bottom = 56;
+  // The label gutter fits the longest end label, so no label is cut off at the edge.
+  const endText = (s: Series) => `${s.name}: ${s.stopped ?? (c.format?.y ?? String)(s.points.at(-1)?.[1] ?? 0)}`;
+  const left = 64, bottom = 56, H = 420, right = Math.max(150, 20 + 6.9 * Math.max(0, ...c.series.filter((s) => s.points.length).map((s) => endText(s).length)));
+  const W = left + 506 + right;
   const legend: { x: number; row: number }[] = [];
   for (let i = 0, x = left, row = 0; i < c.series.length; i++) {
     const w = 34 + c.series[i].name.length * 6.6;
@@ -84,7 +94,7 @@ export function lineChart(c: LineChart): string {
   c.series.forEach((s, i) => {
     // The legend is in each series' colour, like its line.
     const { x: lx, row } = legend[i], ly = 70 + 18 * row;
-    out.push(`<line class="line c${s.slot}"${stroke(s)} x1="${lx}" y1="${ly}" x2="${lx + 18}" y2="${ly}"/><text class="label t${s.slot}"${fill(s)} x="${lx + 24}" y="${ly + 4}">${esc(s.name)}</text>`);
+    out.push(`<line class="line c${s.slot}"${stroke(s)}${s.dash ? ` stroke-dasharray="${s.dash}"` : ''} x1="${lx}" y1="${ly}" x2="${lx + 18}" y2="${ly}"/><text class="label t${s.slot}"${fill(s)} x="${lx + 24}" y="${ly + 4}">${esc(s.name)}</text>`);
   });
   for (const t of c.yTicks) {
     out.push(`<line class="grid" x1="${left}" x2="${left + pw}" y1="${sy(t)}" y2="${sy(t)}"/>`);
@@ -100,14 +110,17 @@ export function lineChart(c: LineChart): string {
   const ends: { y: number; s: Series; last: [number, number] }[] = [];
   for (const s of c.series) {
     if (!s.points.length) continue;
-    const d = s.points.map(([x, y], i) => `${i ? 'L' : 'M'}${sx(x).toFixed(1)} ${sy(y).toFixed(1)}`).join(' ');
-    out.push(`<path class="line c${s.slot}"${stroke(s)} d="${d}"/>`);
+    const path = (pts: [number, number][]) => pts.map(([x, y], i) => `${i ? 'L' : 'M'}${sx(x).toFixed(1)} ${sy(y).toFixed(1)}`).join(' ');
+    for (const r of s.runs ?? []) if (r.length) out.push(`<path class="line c${s.slot}" style="stroke-width:1;opacity:.28${s.colour ? `;stroke:${s.colour}` : ''}" d="${path(r)}"/>`);
+    out.push(`<path class="line c${s.slot}"${stroke(s)}${s.dash ? ` stroke-dasharray="${s.dash}"` : ''} d="${path(s.points)}"/>`);
     s.ranges?.forEach(([lo, hi], i) => {
       const x = sx(s.points[i][0]).toFixed(1);
       out.push(`<line class="line c${s.slot}" style="stroke-width:1.5;opacity:.55${s.colour ? `;stroke:${s.colour}` : ''}" x1="${x}" x2="${x}" y1="${sy(lo).toFixed(1)}" y2="${sy(hi).toFixed(1)}"/>`);
     });
     const shown = c.markers ? s.points : [s.points[s.points.length - 1]];
     for (const [x, y] of shown) {
+      // A series that stopped ends in an open ring: it did not get further.
+      if (s.stopped && x === s.points.at(-1)![0] && y === s.points.at(-1)![1]) { out.push(`<circle class="line c${s.slot}" style="fill:var(--surface);stroke-width:2${s.colour ? `;stroke:${s.colour}` : ''}" cx="${sx(x).toFixed(1)}" cy="${sy(y).toFixed(1)}" r="5"><title>${esc(`${s.name}: ${s.stopped}`)}</title></circle>`); continue; }
       out.push(`<circle class="dot f${s.slot}"${fill(s)} cx="${sx(x).toFixed(1)}" cy="${sy(y).toFixed(1)}" r="4.5"><title>${esc(`${s.name}: ${fy(y)} at ${c.xLabel.toLowerCase()} ${fx(x)}`)}</title></circle>`);
     }
     const last = s.points[s.points.length - 1];
@@ -118,7 +131,7 @@ export function lineChart(c: LineChart): string {
   for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 16) ends[i].y = ends[i - 1].y + 16;
   const labelX = Math.max(...ends.map((e) => sx(e.last[0]))) + 12;
   for (const e of ends) {
-    out.push(`<text class="label t${e.s.slot}"${fill(e.s)} x="${labelX}" y="${e.y + 4}">${esc(e.s.name)}: ${esc(fy(e.last[1]))}</text>`);
+    out.push(`<text class="label t${e.s.slot}"${fill(e.s)} x="${labelX}" y="${e.y + 4}">${esc(endText(e.s))}</text>`);
   }
   out.push('</svg>');
   return out.join('\n');
@@ -242,6 +255,57 @@ export function rangeChart(c: { title: string; subtitle: string; xLabel: string;
       y += rowH;
     }
   }
+  out.push('</svg>');
+  return out.join('\n');
+}
+
+export interface Effect {
+  /** What is compared, e.g. "Reward: OSO α 0.2 minus shared library". */
+  label: string;
+  /** What changes between the two setups, in OSO parameters (one short line under the label). */
+  detail?: string;
+  est: number; lo: number; hi: number;
+}
+
+/**
+ * The comparisons fixed in advance, one row each: the difference as a dot, its 95% range as a line, and zero
+ * marked, so "the range includes zero" reads at a glance. Values are printed at the right, so the chart reads
+ * without the axis. One colour: the rows are comparisons, not setups.
+ */
+export function effectChart(c: { title: string; subtitle: string; xLabel: string; rows: Effect[]; format?: (v: number) => string }): string {
+  const fx = c.format ?? ((v: number) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(1)}`);
+  const rowH = 62, left = 20, labelW = 360, right = 190, top = 84, W = left + labelW + 360 + right, pw = 360;
+  const H = top + c.rows.length * rowH + 50;
+  const all = c.rows.flatMap((r) => [r.lo, r.hi]).concat([0]);
+  let lo = Math.min(...all), hi = Math.max(...all);
+  const pad = (hi - lo || 1) * 0.08;
+  lo -= pad; hi += pad;
+  const x0 = left + labelW, sx = (v: number) => x0 + ((v - lo) / (hi - lo)) * pw;
+  const step = niceStep((hi - lo) / 5), ticks: number[] = [];
+  for (let t = Math.ceil(lo / step) * step; t <= hi; t += step) ticks.push(Math.round(t / step) * step);
+  const out: string[] = [];
+  out.push(`<svg xmlns="http://www.w3.org/2000/svg" class="viz" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${esc(c.title)}">`);
+  out.push(`<style>${STYLE}</style><rect class="bg" width="${W}" height="${H}" rx="8"/>`);
+  out.push(`<text class="title" x="${left}" y="30">${esc(c.title)}</text>`);
+  out.push(`<text class="sub" x="${left}" y="50">${esc(c.subtitle)}</text>`);
+  const bottom = H - 44;
+  for (const t of ticks) {
+    out.push(`<line class="${t === 0 ? 'base' : 'grid'}" x1="${sx(t)}" x2="${sx(t)}" y1="${top - 10}" y2="${bottom}"${t === 0 ? ' style="stroke-width:1.5"' : ''}/>`);
+    out.push(`<text class="tick" x="${sx(t)}" y="${bottom + 16}" text-anchor="middle">${esc(t === 0 ? '0' : fx(t))}</text>`);
+  }
+  out.push(`<text class="axis" x="${x0 + pw / 2}" y="${H - 10}" text-anchor="middle">${esc(c.xLabel)}</text>`);
+  c.rows.forEach((r, i) => {
+    const y = top + i * rowH + rowH / 2 - 6;
+    out.push(`<text class="label" x="${left}" y="${y - (r.detail ? 3 : -4)}">${esc(r.label)}</text>`);
+    // The details wrap at the label column, so they never reach the plot.
+    const lines: string[] = [];
+    for (const w of (r.detail ?? '').split(' ').filter(Boolean)) { if (lines.length && (lines.at(-1)! + ' ' + w).length <= 54) lines[lines.length - 1] += ' ' + w; else lines.push(w); }
+    lines.slice(0, 2).forEach((l, k) => out.push(`<text class="tick" x="${left}" y="${y + 13 + 13 * k}" style="font-size:11px">${esc(l)}</text>`));
+    out.push(`<line class="line ce" x1="${sx(r.lo).toFixed(1)}" x2="${sx(r.hi).toFixed(1)}" y1="${y}" y2="${y}" style="stroke-width:2.5"/>`);
+    for (const v of [r.lo, r.hi]) out.push(`<line class="line ce" x1="${sx(v).toFixed(1)}" x2="${sx(v).toFixed(1)}" y1="${y - 6}" y2="${y + 6}" style="stroke-width:2"/>`);
+    out.push(`<circle class="dot fe" cx="${sx(r.est).toFixed(1)}" cy="${y}" r="6"><title>${esc(`${r.label}: ${fx(r.est)} (95% range ${fx(r.lo)} to ${fx(r.hi)})`)}</title></circle>`);
+    out.push(`<text class="label" x="${x0 + pw + 16}" y="${y + 4}">${esc(fx(r.est))}<tspan class="tick" style="font-weight:400"> (${esc(fx(r.lo))} to ${esc(fx(r.hi))})</tspan></text>`);
+  });
   out.push('</svg>');
   return out.join('\n');
 }

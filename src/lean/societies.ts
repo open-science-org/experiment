@@ -5,32 +5,32 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { referenceCost } from './prices.ts';
 import { LEAN_REWARDS, charged, countedOf, mintOf, progress, spendTo, stats, type CommunityOptions, type CommunityResult, type Rules } from './community.ts';
-import { lineChart } from '../report/figures.ts';
+import { effectChart, lineChart } from '../report/figures.ts';
 import { writeCard } from '../card.ts';
 import { RESULTS_DIR } from '../paths.ts';
 import { loadTasks } from './tasks.ts';
 import { experimentName } from './names.ts';
 
-export interface Society { /** What labs are told to aim for ('prove': no rewards mentioned or shown). */ aim?: 'prove'; /** Earnings not shown to the labs (the rules still are). */ hidden?: boolean; /** Planner rules: no strategy advice and no failure reports for the planner. */ plain?: boolean; /** Labs choose what to publish, with the knowledge reward by proof size (roadmap M3). */ choose?: boolean; /** With `choose`: 'off' pays no reward for publishing, so keeping a result costs nothing. */ knowledge?: 'off' | 'flat-mint'; name: string; /** The setup in OSO settings: when others see a result, α, who decides the work. */ rules: Rules; alpha?: number; /** One lab with everyone's budget. */ single?: boolean; colour: string; slot: 1 | 2 | 3 }
+export interface Society { /** A dash pattern for its line, so the grey baselines stay apart. */ dash?: string; /** What labs are told to aim for ('prove': no rewards mentioned or shown). */ aim?: 'prove'; /** Earnings not shown to the labs (the rules still are). */ hidden?: boolean; /** Planner rules: no strategy advice and no failure reports for the planner. */ plain?: boolean; /** Labs choose what to publish, with the knowledge reward by proof size (roadmap M3). */ choose?: boolean; /** With `choose`: 'off' pays no reward for publishing, so keeping a result costs nothing. */ knowledge?: 'off' | 'flat-mint'; name: string; /** The setup in OSO settings: when others see a result, α, who decides the work. */ rules: Rules; alpha?: number; /** One lab with everyone's budget. */ single?: boolean; colour: string; slot: 1 | 2 | 3 }
 
 /** OSO is orange, traditional blue; the baselines are greys. */
 export const SOCIETIES: Record<string, Society> = {
   single: { name: 'Single agent', rules: 'independent', single: true, colour: '#5f5e5a', slot: 3 },
-  independent: { name: 'Independent labs', rules: 'independent', colour: '#8a8984', slot: 3 },
+  independent: { name: 'Independent labs', rules: 'independent', colour: '#8a8984', slot: 3, dash: '2 4' },
   shared: { name: 'Shared library', rules: 'shared', colour: '#b3b1aa', slot: 3 },
   // The planner as first built: its prompt also has strategy advice and a report of what failed last round.
   planner: { name: 'Planner with a good strategy', rules: 'planner', colour: '#33322f', slot: 3 },
   // The same role with the same information as the labs: what coordination alone is worth.
-  'planner-plain': { name: 'Plain planner', rules: 'planner', plain: true, colour: '#8f8d86', slot: 3 },
+  'planner-plain': { name: 'Plain planner', rules: 'planner', plain: true, colour: '#8f8d86', slot: 3, dash: '8 4' },
   // New results pay their authors a flat amount and nothing flows back: credit without the dependency graph.
-  'pay-lemma': { name: 'Pay per lemma', rules: 'oso', alpha: 1, knowledge: 'flat-mint', colour: '#6f6e69', slot: 3 },
+  'pay-lemma': { name: 'Pay per lemma', rules: 'oso', alpha: 1, knowledge: 'flat-mint', colour: '#6f6e69', slot: 3, dash: '2 3 8 3' },
   traditional: { name: 'Traditional', rules: 'traditional', colour: '#2a78d6', slot: 1 },
   oso: { name: 'OSO, α 0.8', rules: 'oso', alpha: 0.8, colour: '#eb6834', slot: 2 },
   'oso-0.2': { name: 'OSO, α 0.2', rules: 'oso', alpha: 0.2, colour: '#f2a07b', slot: 2 },
   // Instruction against reward (2026-11-24): the shared library told only to prove targets, with no bounty, reward or
   // earnings in its prompts; and OSO α 0.2 with its rules stated but each lab's earnings not shown.
-  'shared-prove': { name: 'Shared library, told to prove', rules: 'shared', aim: 'prove', colour: '#d6d4ce', slot: 3 },
-  'oso-0.2-hidden': { name: 'OSO, α 0.2, earnings hidden', rules: 'oso', alpha: 0.2, hidden: true, colour: '#c4501f', slot: 2 },
+  'shared-prove': { name: 'Shared library, told to prove', rules: 'shared', aim: 'prove', colour: '#a3a19a', slot: 3, dash: '6 4' },
+  'oso-0.2-hidden': { name: 'OSO, α 0.2, earnings hidden', rules: 'oso', alpha: 0.2, hidden: true, colour: '#c4501f', slot: 2, dash: '6 4' },
   // Labs choose what to publish (roadmap M3); knowledge reward by proof size. α 1: nothing flows back.
   'choose-1': { name: 'Labs choose, α 1', rules: 'oso', alpha: 1, choose: true, colour: '#33322f', slot: 3 },
   'choose-0.8': { name: 'Labs choose, α 0.8', rules: 'oso', alpha: 0.8, choose: true, colour: '#eb6834', slot: 2 },
@@ -136,7 +136,17 @@ function solvedAt(pts: [number, number][], x: number) {
   return y;
 }
 
-export function writeSocieties(id: string, runs: SocietyRun[], k: number, note = '', stub = false): string {
+/** The comparisons fixed in advance for an experiment (from its plan, lean/runs/<id>.plan.json): a measure from
+ *  stats(), and each comparison as setup a minus setup b. Drawn as figures/effects.svg. */
+export interface Effects { measure: string; name: string; contrasts: { label: string; a: string; b: string }[] }
+
+/** A difference of two means with its 95% range, as numbers (runs not paired; degrees of freedom from the smaller group). */
+export function diffRange(a: number[], b: number[]): { est: number; lo: number; hi: number } {
+  const d = mean(a) - mean(b), h = t95(Math.min(a.length, b.length) - 1) * Math.sqrt(sd(a) ** 2 / a.length + sd(b) ** 2 / b.length);
+  return { est: d, lo: Number.isFinite(h) ? d - h : d, hi: Number.isFinite(h) ? d + h : d };
+}
+
+export function writeSocieties(id: string, runs: SocietyRun[], k: number, note = '', stub = false, effects?: Effects): string {
   const dir = join(RESULTS_DIR, 'community', id);
   mkdirSync(join(dir, 'figures'), { recursive: true });
   const keys = [...new Set(runs.map((r) => r.key))];
@@ -150,12 +160,14 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
   const grid = Array.from({ length: 61 }, (_, n) => (total * n) / 60);
   const series = keys.map((key) => {
     const curves = runs.filter((r) => r.key === key).map((r) => progress(r.result));
-    return { name: SOCIETIES[key].name, slot: SOCIETIES[key].slot, colour: SOCIETIES[key].colour, points: grid.map((x) => [x, mean(curves.map((c) => solvedAt(c, x)))] as [number, number]) };
+    // Each run faint behind the mean, so the spread shows; a run's line ends at the money it spent.
+    const own = curves.map((c) => grid.filter((x) => x <= c.at(-1)![0] + total / 60).map((x) => [x, solvedAt(c, x)] as [number, number]));
+    return { name: SOCIETIES[key].name, slot: SOCIETIES[key].slot, colour: SOCIETIES[key].colour, dash: SOCIETIES[key].dash, runs: curves.length > 1 ? own : undefined, points: grid.map((x) => [x, mean(curves.map((c) => solvedAt(c, x)))] as [number, number]) };
   });
   const yMax = Math.max(1, counted.length);
   writeFileSync(join(dir, 'figures', 'progress.svg'), lineChart({
     title: 'Verified targets for the money',
-    subtitle: `Same agents, Lean checker and total money ($${f2(total)} ${local ? 'priced' : priced}) in every society; mean of ${reps} run${reps > 1 ? 's' : ''}.`,
+    subtitle: `Same agents, Lean checker and money ($${f2(total)} ${local ? 'priced' : priced}) in every setup; bold: mean of ${reps} run${reps > 1 ? 's' : ''}${reps > 1 ? '; faint: each run' : ''}.`,
     xLabel: 'Dollars spent so far', yLabel: 'Targets verified by Lean',
     series, x: [0, total], y: [0, yMax], xTicks: [0, total / 4, total / 2, (3 * total) / 4, total],
     yTicks: Array.from({ length: yMax + 1 }, (_, n) => n).filter((n) => yMax <= 8 || n % 2 === 0),
@@ -216,6 +228,22 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
   const best = [...rows].sort((a, b) => mean(b.got) - mean(a.got))[0];
   const answer = chooseAnswer ? chooseAnswer : moneyAnswer ? moneyAnswer : !osoRows.length || !base ? `Most targets proved: ${SOCIETIES[best.key].name}, ${f2(mean(best.got))} of ${nTargets}.`
     : `${reps < 2 ? 'One run each, no verdict yet. ' : ''}${osoRows.map(verdict).join(' ')}`;
+  // The comparisons fixed in advance, each with its 95% range (only those whose setups both ran).
+  const contrasts = (effects?.contrasts ?? []).filter((x) => keys.includes(x.a) && keys.includes(x.b));
+  const of = (key: string) => runs.filter((r) => r.key === key).map((r) => Number((stats(r.result) as Record<string, unknown>)[effects!.measure] ?? 0));
+  if (contrasts.length) {
+    const what = (key: string) => osoParams(runs.find((r) => r.key === key)!.result.opts).split(' · ');
+    writeFileSync(join(dir, 'figures', 'effects.svg'), effectChart({
+      title: `The comparisons fixed in advance: ${effects!.name}`,
+      subtitle: `Difference of means, a run each, with 95% ranges (Student t, runs not paired); ${reps} run${reps > 1 ? 's' : ''} per setup.`,
+      xLabel: `Difference in ${effects!.name} a run`,
+      rows: contrasts.map((x) => {
+        const pa = what(x.a), pb = what(x.b), from = pb.filter((p) => !pa.includes(p)), to = pa.filter((p) => !pb.includes(p));
+        const changed = from.length || to.length ? [`${from.join(', ') || '—'} → ${to.join(', ') || '—'}`] : [];
+        return { label: `${x.label}: ${SOCIETIES[x.a].name} minus ${SOCIETIES[x.b].name}`, detail: changed.length ? `Changes: ${changed.join('; ')}` : undefined, ...diffRange(of(x.a), of(x.b)) };
+      }),
+    }) + '\n');
+  }
   const o = [...runs].sort((a, b) => b.result.opts.agents.length - a.result.opts.agents.length)[0].result.opts;
   writeCard(dir, {
     id, kind: 'race', date: new Date().toISOString().slice(0, 10), title: experimentName(id) === id ? `Societies compared: targets proved for the money (${id})` : experimentName(id),
@@ -243,7 +271,7 @@ export function writeSocieties(id: string, runs: SocietyRun[], k: number, note =
     page: `results/community/${id}/summary.md`,
     chart: `results/community/${id}/figures/progress.svg`,
   }, `${note}
-
+${contrasts.length ? `\n![The comparisons fixed in advance](figures/effects.svg)\n` : ''}
 ![Verified targets for the money](figures/progress.svg)
 
 - **Societies:** single agent (one lab, everyone's money); independent labs (nothing shared, a target counts when any lab proves it); shared library (everything public at once, no value flows back); planner (lab 1 assigns work to the others each round, results shared, nothing flows back); traditional (private until a target is proved); OSO (public at once, value flows back to what a result used; α is the share an author keeps).
