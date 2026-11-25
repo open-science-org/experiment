@@ -41,6 +41,11 @@ const write = (f: string, d: unknown) => { mkdirSync(STATE, { recursive: true })
  *  steps are enough. A step is an ordinary lemma; it is proved when a library lemma states it exactly, and it
  *  earns as any lemma does, when a target's proof uses it. */
 export interface StepList { target: string; about: string; checked: string; open: string[]; steps: { id: string; plain: string; statement: string; after: string[] }[] }
+/** Each posted step with who proved it: a library lemma with the same statement and namespaces, if any. */
+export const stepStatus = (lists: StepList[], lib: Entry[]) => lists.map((l) => ({ ...l, steps: l.steps.map((st) => {
+  const e = lib.find((x) => x.kind === 'lemma' && sameStatement(x, { statement: st.statement, open: l.open }));
+  return { ...st, open: l.open, provedBy: e ? { id: e.id, name: e.name, lab: e.lab } : null };
+}) }));
 export const stepLists = () => (existsSync(STEPS) ? readdirSync(STEPS).filter((f) => f.endsWith('.json')).sort().map((f) => JSON.parse(readFileSync(join(STEPS, f), 'utf8')) as StepList) : []);
 export const board = () => read<Target[]>(join(STATE, 'board.json'), []);
 export const library = () => read<Entry[]>(join(STATE, 'library.json'), []);
@@ -178,10 +183,7 @@ function summarize() {
     activeLabs: labs.filter((l) => l.lastAt && Date.parse(l.lastAt) > day).length,
     targets: targets.map((t) => ({ ...t, solvedBy: lib.find((e) => e.kind === 'target' && e.target === t.id)?.lab ?? null })),
     library: lib.map((e) => ({ id: e.id, lab: e.lab, kind: e.kind, target: e.target, uses: e.uses, at: e.at, pr: e.pr, points: Math.round((c.entries[e.id] ?? 0) * 10) / 10, statement: e.statement })),
-    steps: stepLists().map((l) => ({ ...l, steps: l.steps.map((st) => {
-      const e = lib.find((x) => x.kind === 'lemma' && sameStatement(x, { statement: st.statement, open: l.open }));
-      return { ...st, open: l.open, provedBy: e ? { id: e.id, name: e.name, lab: e.lab } : null };
-    }) })),
+    steps: stepStatus(stepLists(), lib),
     labs, feed: verdicts.slice(-40).reverse(),
   });
 }

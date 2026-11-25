@@ -4,7 +4,10 @@
 // by `apply` alone: either side of an = or ↔ may come first, arguments in any order, other hypotheses at hand, and
 // no computing through the definitions (with_reducible). A lab lemma is proved, so whatever it gives is really
 // available: no step is coloured wrongly. A step proved in another shape (k·C against C·k) or split over several
-// lemmas is missed, so a grey step means "not proved in this form". Works for any problem set: it reads the
+// lemmas is missed by this first pass. A second pass takes each step still not reached and asks Lean for it by
+// rewriting with the labs' lemmas only (`simp only`), or by chaining them (`solve_by_elim`, 4 deep), never unfolding
+// definitions; Lean's axiom list names the lab
+// lemmas it used, so the step counts as reached once the last of them was proved (`combos`). Works for any problem set: it reads the
 // run's options and the set's reference files.
 // Writes <run dir>/matches.json and checks only lemmas it has not checked before, so it can run every minute.
 import { execFileSync } from 'node:child_process';
@@ -20,12 +23,16 @@ const opts = JSON.parse(readFileSync(join(dir, 'options.json'), 'utf8')) as Comm
 const problems = (opts.problems ?? 'main') as Problems;
 process.env.OSO_PROBLEMS = problems;
 const out = join(dir, 'matches.json');
-type Matches = { checked: Record<string, string>; covers: Record<string, string[]> };
+/** covers: lab lemma -> the steps it gives alone. combos: step -> the lab lemmas that give it together (second pass). */
+type Matches = { checked: Record<string, string>; covers: Record<string, string[]>; combos?: Record<string, string[]>; combosAt?: number; combosFinal?: boolean };
 const saved: Matches = existsSync(out) ? JSON.parse(readFileSync(out, 'utf8')) : { checked: {}, covers: {} };
 
 const actions = (existsSync(join(dir, 'actions.jsonl')) ? readFileSync(join(dir, 'actions.jsonl'), 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l)) : []) as Action[];
 const fresh = actions.filter((a) => a.ok && a.entry && a.kind === 'lemma' && a.signature && saved.checked[a.entry] !== a.signature);
-if (!fresh.length) process.exit(0);
+// The second pass (below) takes about a minute of Lean: while a run goes, at most every 15 minutes; once more when it ends.
+const finished = existsSync(join(dir, 'result.json'));
+const comboDue = !saved.combosFinal && (finished || Date.now() - (saved.combosAt ?? 0) > 15 * 60_000);
+if (!fresh.length && !comboDue) process.exit(0);
 // MATCH_DEBUG=1 prints the generated Lean file's path, to read Lean's own messages.
 const DEBUG = process.env.MATCH_DEBUG;
 
@@ -56,11 +63,24 @@ const steps = loadTasks(problems).filter((t) => !t.posted && !FREE.includes(t.na
 const pairs: { i: number; t: (typeof steps)[number] }[] = [];
 fresh.forEach((a, i) => { const k = shape(a.signature!); for (const t of steps) if (shape(t.signature) === k) pairs.push({ i, t }); });
 
+/** Runs Lean on a generated file and returns its output (errors included). */
+function lean(lines: string[]) {
+  const file = join(mkdtempSync(join(tmpdir(), 'oso-match-')), 'Match.lean');
+  writeFileSync(file, lines.join('\n'));
+  if (DEBUG) console.log('file', file);
+  try { return execFileSync('lake', ['env', 'lean', '-DmaxErrors=1000000', file], { cwd: LEAN_DIR, encoding: 'utf8', maxBuffer: 64 << 20, stdio: ['ignore', 'pipe', 'pipe'] }); }
+  catch (e) { return `${(e as { stdout?: string }).stdout ?? ''}${(e as { stderr?: string }).stderr ?? ''}`; }
+}
+const axiomLine = (sig: string) => (/^[:({]/.test(sig.trim()) ? sig : `: ${sig}`);
+// Positive proof only: a check counts when Lean prints its axioms and they do not include sorryAx (a failed proof is
+// closed with sorry). Silence never counts, so a cut-off log cannot make a match.
+const proved = (log: string) => new Map([...log.matchAll(/'([\w.]+)' depends on axioms: \[([^\]]*)\]/g)].filter((m) => !m[2].includes('sorryAx')).map((m) => [m[1], m[2].split(',').map((x) => x.trim())]));
+
 const covers: Record<string, string[]> = {};
 if (pairs.length) {
   const open = opened(problems);
   const head = [...filesOf(problems).map(([f]) => `import Reference.${f}`), 'set_option autoImplicit false', '', 'namespace OSO.Lab', `open ${open}`,
-    ...fresh.map((a, i) => `axiom e${i} ${a.signature!.trim().startsWith(':') || a.signature!.trim().startsWith('(') || a.signature!.trim().startsWith('{') ? a.signature : `: ${a.signature}`}`), 'end OSO.Lab', ''];
+    ...fresh.map((a, i) => `axiom e${i} ${axiomLine(a.signature!)}`), 'end OSO.Lab', ''];
   const lines = [...head], at: { from: number; to: number; i: number; name: string }[] = [];
   pairs.forEach(({ i, t }, k) => {
     const from = lines.length + 1, e = `OSO.Lab.e${i}`;
@@ -69,21 +89,40 @@ if (pairs.length) {
       `  | (with_reducible apply ${e} <;> assumption)`, `  | (apply Eq.symm; with_reducible apply ${e} <;> assumption)`, `  | (apply Iff.symm; with_reducible apply ${e} <;> assumption)`, `end ${t.ns}`, `#print axioms ${t.ns}.oso_match_${k}`, '');
     at.push({ from, to: lines.length, i, name: `${t.ns}.oso_match_${k}`, step: t.name } as never);
   });
-  const file = join(mkdtempSync(join(tmpdir(), 'oso-match-')), 'Match.lean');
-  writeFileSync(file, lines.join('\n'));
-  if (DEBUG) console.log('file', file);
-  let log = '';
-  try { log = execFileSync('lake', ['env', 'lean', '-DmaxErrors=1000000', file], { cwd: LEAN_DIR, encoding: 'utf8', maxBuffer: 64 << 20, stdio: ['ignore', 'pipe', 'pipe'] }); }
-  catch (e) { log = `${(e as { stdout?: string }).stdout ?? ''}${(e as { stderr?: string }).stderr ?? ''}`; }
+  const log = lean(lines);
   // A lab lemma Lean cannot read (rare: it was read once already, by the checker) gets no axiom, and its checks fail.
   const bad = [...log.matchAll(/Match\.lean:(\d+):\d+: error/g)].map((m) => Number(m[1])).filter((l) => l <= head.length);
   if (bad.length) console.error(`match-steps: Lean could not read ${bad.length} lab lemma line(s); their checks count as not matched`);
-  // Positive proof only: a check counts when Lean prints its axioms and they do not include sorryAx (a failed
-  // proof is closed with sorry). Silence never counts, so a cut-off log cannot make a match.
-  const held = new Set([...log.matchAll(/'([\w.]+)' depends on axioms: \[([^\]]*)\]/g)].filter((m) => !m[2].includes('sorryAx')).map((m) => m[1]));
+  const held = proved(log);
   for (const p of at as unknown as { i: number; name: string; step: string }[]) if (held.has(p.name)) (covers[fresh[p.i].entry!] ??= []).push(p.step);
 }
 for (const a of fresh) { saved.checked[a.entry!] = a.signature!; saved.covers[a.entry!] = covers[a.entry!] ?? []; }
+
+// Second pass: steps no single lemma gives, from all the run's lab lemmas together, by rewriting with them only.
+// Redone when due (a new lemma can complete a step). Hypotheses of the step may be used (`*`).
+if (comboDue) {
+  const all = actions.filter((a) => a.ok && a.entry && a.kind === 'lemma' && a.signature);
+  const single = new Set(Object.values(saved.covers).flat());
+  const left = steps.filter((t) => !single.has(t.name));
+  const combos: Record<string, string[]> = {};
+  if (all.length && left.length) {
+    const open = opened(problems);
+    const lines = [...filesOf(problems).map(([f]) => `import Reference.${f}`), 'set_option autoImplicit false', '', 'namespace OSO.Lab', `open ${open}`,
+      ...all.map((a, i) => `axiom e${i} ${axiomLine(a.signature!)}`), 'end OSO.Lab', ''];
+    const es = all.map((_, i) => `OSO.Lab.e${i}`).join(', ');
+    left.forEach((t, k) => lines.push(`namespace ${t.ns}`, ...(t.ns === 'OSO' ? [`open ${open}`] : []), 'set_option maxHeartbeats 40000 in',
+      `theorem oso_combo_${k} ${t.signature} := by`, '  intros', '  first', `  | with_reducible simp only [${es}, *]`, `  | with_reducible solve_by_elim (maxDepth := 4) [${es}]`, `end ${t.ns}`, `#print axioms ${t.ns}.oso_combo_${k}`, ''));
+    const held = proved(lean(lines));
+    left.forEach((t, k) => {
+      const ax = held.get(`${t.ns}.oso_combo_${k}`);
+      if (ax) combos[t.name] = ax.filter((x) => x.startsWith('OSO.Lab.e')).map((x) => all[Number(x.slice(9))].entry!);
+    });
+  }
+  // A step the rewriting closes with no lab lemma at all would be the definitions alone: not the labs' work.
+  saved.combos = Object.fromEntries(Object.entries(combos).filter(([, used]) => used.length));
+  saved.combosAt = Date.now();
+  saved.combosFinal = finished;
+}
 writeFileSync(out, JSON.stringify(saved, null, 1) + '\n');
 const hit = Object.values(saved.covers).filter((c) => c.length).length;
-console.log(`match-steps: ${fresh.length} new lemmas, ${pairs.length} checks; ${hit} of ${Object.keys(saved.covers).length} lemmas give a hidden step`);
+console.log(`match-steps: ${fresh.length} new lemmas, ${pairs.length} checks; ${hit} of ${Object.keys(saved.covers).length} lemmas give a hidden step; ${Object.keys(saved.combos ?? {}).length} more steps from lemmas together`);

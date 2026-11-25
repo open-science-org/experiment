@@ -36,7 +36,10 @@ const setups = sources.map(({ key, from, repeats, earlier }) => {
     first ??= opts;
     const actions = lines(join(dir, 'actions.jsonl')) as Action[];
     // Lab lemma -> the hidden steps it gives (scripts/match-steps.ts; empty until it has run).
-    const covers = existsSync(join(dir, 'matches.json')) ? (JSON.parse(readFileSync(join(dir, 'matches.json'), 'utf8')) as { covers: Record<string, string[]> }).covers : {};
+    // Steps given by several lab lemmas together (second pass): reached when the last of them was proved.
+    const m = existsSync(join(dir, 'matches.json')) ? (JSON.parse(readFileSync(join(dir, 'matches.json'), 'utf8')) as { covers: Record<string, string[]>; combos?: Record<string, string[]> }) : null;
+    const covers = m?.covers ?? {}, combos = m?.combos ?? {};
+    const inCombo = new Set(Object.values(combos).flat());
     let spent = 0;
     const targets: string[] = [], steps: [number, number][] = [[0, 0]], lsteps: [number, number][] = [[0, 0]];
     // For the round-by-round view: the round each target was first proved, money spent by the end of each round,
@@ -63,12 +66,18 @@ const setups = sources.map(({ key, from, repeats, earlier }) => {
       covered: (() => {
         const out: Record<string, [number, number, string]> = {};
         for (const a of actions) if (a.ok && a.entry) for (const step of covers[a.entry] ?? []) if (!out[step] || out[step][0] > a.round) out[step] = [a.round, a.agent + 1, a.entry];
+        const first = new Map<string, Action>();
+        for (const a of actions) if (a.ok && a.entry && !first.has(a.entry)) first.set(a.entry, a);
+        for (const [step, used] of Object.entries(combos)) {
+          const last = used.map((e) => first.get(e)).filter((a): a is Action => !!a).sort((x, y) => y.round - x.round)[0];
+          if (last && !out[step]) out[step] = [last.round, last.agent + 1, last.entry!];
+        }
         return out;
       })(),
       library: (() => {
         const got = actions.filter((a) => a.ok && a.entry);
         const names = new Set(got.map((a) => a.entry!));
-        return got.map((a) => ({ n: a.entry!, lab: a.agent + 1, round: a.round, target: a.kind === 'target' ? a.target : undefined, s: a.signature, onMap: !!covers[a.entry!]?.length,
+        return got.map((a) => ({ n: a.entry!, lab: a.agent + 1, round: a.round, target: a.kind === 'target' ? a.target : undefined, s: a.signature, onMap: !!covers[a.entry!]?.length || inCombo.has(a.entry!),
           uses: [...new Set((a.uses ?? []).map((u) => u.replace(/^OSO\./, '')).filter((u) => names.has(u) && u !== a.entry))] }));
       })(),
       spentBy: Array.from({ length: spentBy.length }, (_, i) => Math.round(1e4 * (spentBy.slice(0, i + 1).filter((x) => x !== undefined).at(-1) ?? 0)) / 1e4),
