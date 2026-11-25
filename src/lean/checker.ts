@@ -57,7 +57,7 @@ export function banned(proof: string, allowGrind = false): string[] {
 /** The checked file: definitions, the library as axioms, the attempt, and the axioms it uses. */
 export function checkFile(task: Pick<Task, 'ns' | 'signature'>, proof: string, library: CheckOptions['library'], problems: Problems = defaultProblems()): { text: string; firstProofLine: number } {
   const head = [
-    problems === 'big' ? 'import Problems.BigDefs' : problems === 'deep' ? 'import Problems.DeepDefs' : 'import Problems.Defs',
+    problems === 'big' ? 'import Problems.BigDefs' : problems === 'deep' ? 'import Problems.DeepDefs' : problems === 'qr' ? 'import Problems.QrDefs' : 'import Problems.Defs',
     'set_option autoImplicit false',
     '',
     '-- The agent\'s library: theorems proved earlier, stated as axioms.',

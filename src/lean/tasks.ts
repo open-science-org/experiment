@@ -19,7 +19,7 @@ export interface Task {
   /** The reference proof, starting at `:=` or the first `|` (used only to test the harness). */
   reference: string;
   depth: number;
-  area: 'A' | 'B' | 'C' | 'D' | 'P' | 'cross';
+  area: 'A' | 'B' | 'C' | 'D' | 'P' | 'Q' | 'cross';
   /** Posted target id (A3, …), or '' for a hidden lemma. */
   posted: string;
   /** Anonymous public id, the same as in worlds/lean-reference.json (posted targets keep their id). */
@@ -33,17 +33,22 @@ export interface Task {
 /** Definitional lemmas (proved by rfl): free for everyone, as part of the definitions. */
 export const FREE = ['OSO.u_succ_succ', 'OSO.L_succ_succ', // L_succ_succ: bigger set only (used where the set has it)
   // The deep set's definitional lemmas.
-  ...['zero_eq', 'one_eq', 'add_zero', 'add_succ', 'mul_zero', 'mul_succ', 'pow_zero', 'pow_succ', 'succ_eq_add_one', 'le_iff', 'lt_iff', 'dvd_iff', 'sum_zero', 'sum_succ', 'choose_zero_succ', 'choose_succ_succ'].map((n) => `OSO.${n}`)];
+  ...['zero_eq', 'one_eq', 'add_zero', 'add_succ', 'mul_zero', 'mul_succ', 'pow_zero', 'pow_succ', 'succ_eq_add_one', 'le_iff', 'lt_iff', 'dvd_iff', 'sum_zero', 'sum_succ', 'choose_zero_succ', 'choose_succ_succ'].map((n) => `OSO.${n}`),
+  // The QR set's, on top of the deep set's.
+  ...['mod_zero_left', 'mod_succ', 'div_zero_left', 'div_succ', 'prod_zero', 'prod_succ', 'count_zero', 'count_succ'].map((n) => `OSO.${n}`)];
 
 // The harder targets are a separate set, so that the runs made on the main set keep their meaning.
 // The bigger set (2026-11-20) keeps the main set's 8 targets and adds areas D (search trees) and E (counting).
 // The deep set (2026-11-23) stands alone: its own numbers, from zero to Fermat's little theorem, one posted target.
-export type Problems = 'main' | 'hard' | 'big' | 'deep';
+// The QR set (2026-11-25) builds on the same numbers, from zero to quadratic reciprocity, one posted target.
+export type Problems = 'main' | 'hard' | 'big' | 'deep' | 'qr';
+/** The sets built on the deep set's own numbers. */
+export const onN = (problems: Problems) => problems === 'deep' || problems === 'qr';
 /** The problem set when none is given: OSO_PROBLEMS (the CLI sets it from --problems), else main. */
-export const defaultProblems = (): Problems => (['hard', 'big', 'deep'].includes(process.env.OSO_PROBLEMS ?? '') ? process.env.OSO_PROBLEMS as Problems : 'main');
+export const defaultProblems = (): Problems => (['hard', 'big', 'deep', 'qr'].includes(process.env.OSO_PROBLEMS ?? '') ? process.env.OSO_PROBLEMS as Problems : 'main');
 /** The namespace opened inside `OSO` for statements: the matrices, or the deep set's numbers. */
-export const opened = (problems: Problems = defaultProblems()) => (problems === 'deep' ? 'N' : 'M2');
-export const filesOf = (problems: Problems): [string, Task['area']][] => problems === 'deep' ? [['Deep', 'P']] : [['A', 'A'], ['B', 'B'], ['C', 'C'], ['Cross', 'cross'],
+export const opened = (problems: Problems = defaultProblems()) => (onN(problems) ? 'N' : 'M2');
+export const filesOf = (problems: Problems): [string, Task['area']][] => problems === 'deep' ? [['Deep', 'P']] : problems === 'qr' ? [['Deep', 'P'], ['QR', 'Q']] : [['A', 'A'], ['B', 'B'], ['C', 'C'], ['Cross', 'cross'],
   ...(problems === 'hard' ? [['Hard', 'cross'] as [string, Task['area']]] : []),
   ...(problems === 'big' ? [['BigA', 'A'], ['BigAC', 'cross'], ['BigDE', 'D']] as [string, Task['area']][] : [])];
 
@@ -86,7 +91,7 @@ export function parseReference(problems: Problems = defaultProblems()): Map<stri
 export function loadTasks(problems: Problems = defaultProblems()): Task[] {
   const src = parseReference(problems);
   const rows: { depth: number; name: string; area: Task['area']; posted: string; uses: string[] }[] = [];
-  for (const line of (problems === 'big' ? ['reference-dag-big.md'] : problems === 'deep' ? ['reference-dag-deep.md'] : ['reference-dag.md', ...(problems === 'hard' ? ['reference-dag-hard.md'] : [])]).flatMap((f) => readFileSync(join(LEAN_DIR, f), 'utf8').split('\n'))) {
+  for (const line of (problems === 'big' ? ['reference-dag-big.md'] : problems === 'deep' ? ['reference-dag-deep.md'] : problems === 'qr' ? ['reference-dag-qr.md'] : ['reference-dag.md', ...(problems === 'hard' ? ['reference-dag-hard.md'] : [])]).flatMap((f) => readFileSync(join(LEAN_DIR, f), 'utf8').split('\n'))) {
     if (!/^\| \d/.test(line)) continue;
     const [depth, name, area, posted, uses] = line.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim());
     const q = (n: string) => `OSO.${n.replace(/`/g, '')}`;
@@ -103,7 +108,7 @@ export function loadTasks(problems: Problems = defaultProblems()): Task[] {
   for (const r of rows) if (r.posted) postedRows.set(r.posted, [...(postedRows.get(r.posted) ?? []), r]);
   for (const group of postedRows.values()) group.sort((a, b) => a.depth - b.depth).slice(0, -1).forEach((r) => { r.posted = ''; });
   const sorted = [...rows].sort((a, b) => a.depth - b.depth || a.area.localeCompare(b.area) || a.name.slice(4).localeCompare(b.name.slice(4)));
-  const letter = { A: 'A', B: 'B', C: 'C', D: 'D', P: 'P', cross: 'X' } as const;
+  const letter = { A: 'A', B: 'B', C: 'C', D: 'D', P: 'P', Q: 'Q', cross: 'X' } as const;
   const counts: Record<string, number> = {};
   const ids = new Map<string, string>();
   for (const r of sorted) {
@@ -140,6 +145,7 @@ export const PLAIN: Record<string, string> = {
   H4: 'Merging two merge-sorted lists gives the merge sort of the two lists joined together.',
   H5: 'Merge sort leaves a list unchanged exactly when the list is already sorted.',
   P1: "Fermat's little theorem, from scratch: for every prime p and every number a, a to the power p leaves the same remainder as a when divided by p.",
+  Q1: 'Quadratic reciprocity, from scratch: for two different odd primes p and q, q is a square remainder mod p exactly when p is one mod q, unless both p and q leave remainder 3 when divided by 4; then exactly one of them is.',
   H6: 'A doubling formula: u(2n) is u(n) times the trace of the n-th power of the sequence\'s matrix.',
 };
 export const AREAS: Record<string, string> = {
@@ -148,6 +154,7 @@ export const AREAS: Record<string, string> = {
   C: '2×2 integer matrices: product, determinant, powers.',
   D: 'Search trees and counting (bigger set): insertion into a search tree, tree sort, lists with the same counts, sums.',
   P: 'Numbers from scratch (deep set): addition, multiplication, order, divisibility, primes, binomial coefficients and congruences, built from zero and successor.',
+  Q: 'Quadratic reciprocity (QR set): remainders, products over a range, counting, and squares mod a prime, on the same numbers built from zero and successor.',
   cross: 'Mixes two areas.',
 };
 
@@ -155,9 +162,10 @@ export const AREAS: Record<string, string> = {
 export function definitions(problems: Problems = defaultProblems()): string {
   const main = readFileSync(join(LEAN_DIR, 'Problems', 'Defs.lean'), 'utf8');
   const free = (names: string) => `\n-- Free to cite (true by \`rfl\`): ${names}.\n`;
-  if (problems === 'deep') {
-    const ref = parseReference('deep');
+  if (onN(problems)) {
+    const ref = parseReference(problems);
     return readFileSync(join(LEAN_DIR, 'Problems', 'DeepDefs.lean'), 'utf8').trimEnd()
+      + (problems === 'qr' ? '\n\n' + readFileSync(join(LEAN_DIR, 'Problems', 'QrDefs.lean'), 'utf8').replace(/^import .*\n/m, '').trimEnd() : '')
       + free(FREE.filter((n) => ref.has(n)).map((n) => `${n} ${ref.get(n)!.signature}`).join('; '));
   }
   if (problems !== 'big') return main.trimEnd() + free('OSO.u_succ_succ (n : Nat) : u (n + 2) = 5 * u (n + 1) + 3 * u n');

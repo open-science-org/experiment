@@ -158,7 +158,7 @@ export function checkOptions(o: CommunityOptions): string[] {
   oneOf('knowledge', o.knowledge, ['off', 'flat-mint', 'proof-size']);
   oneOf('effort', o.effort, ['low', 'medium', 'high']);
   oneOf('pricing', o.pricing, ['reference', 'charged']);
-  oneOf('problems', o.problems, ['main', 'hard', 'big', 'deep']);
+  oneOf('problems', o.problems, ['main', 'hard', 'big', 'deep', 'qr']);
   oneOf('publishing', o.publishing, ['rules', 'choose']);
   oneOf('aim', o.aim, ['earn', 'prove']);
   if (o.aim === 'prove' && (o.follow !== undefined || o.publishing === 'choose' || o.conjectures?.length)) bad.push('aim prove hides rewards, so it cannot be combined with money following earnings, labs choosing, or conjecture bounties');

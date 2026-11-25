@@ -18,7 +18,7 @@ const git = (...args: string[]) => { try { return execFileSync('git', ['-C', ROO
 
 /** The files that define a problem set: its DAG, the definitions and statements, and the reference proofs (as src/lean/tasks.ts reads them). */
 export function problemFiles(problems: Problems): string[] {
-  const dag = problems === 'big' ? ['reference-dag-big.md'] : problems === 'deep' ? ['reference-dag-deep.md'] : ['reference-dag.md', ...(problems === 'hard' ? ['reference-dag-hard.md'] : [])];
+  const dag = problems === 'big' ? ['reference-dag-big.md'] : problems === 'deep' ? ['reference-dag-deep.md'] : problems === 'qr' ? ['reference-dag-qr.md'] : ['reference-dag.md', ...(problems === 'hard' ? ['reference-dag-hard.md'] : [])];
   const defs = readdirSync(join(LEAN_DIR, 'Problems')).filter((f) => f.endsWith('.lean')).sort().map((f) => `Problems/${f}`);
   return [...dag, ...defs, ...filesOf(problems).map(([f]) => `Reference/${f}.lean`), 'lean-toolchain'].filter((f) => existsSync(join(LEAN_DIR, f)));
 }
