@@ -4,7 +4,7 @@ Last updated: 2026-11-25. Every result here has its own page under `results/` (t
 
 ## TL;DR
 
-Checked after every run; last checked 2026-11-25, after E1 (section 4k) and the traditional Fermat run (section 4l).
+Checked after every run; last checked 2026-11-25, after E1 (4k) and the Fermat runs (4l, 4m).
 
 - **Lemmas help weak models.** DeepSeek proves 4 of 16 targets alone, 12 of 16 with the lemmas they need.
 - **Sharing lets labs build on each other** (Spend all: 2.2 results a run in the shared library, 0.4 under traditional), but it has not raised targets proved. A plain shared library gets this too, so it is not unique to OSO. **Repeated work is not a general result:** traditional labs proved the same lemma about 20 times a run in the small cheap race (5 runs), but only 0.4 times in Spend all (20 runs per setup; shared library 0.2).
@@ -26,6 +26,7 @@ Checked after every run; last checked 2026-11-25, after E1 (section 4k) and the 
 - **The setup checks out** (proof checker, fault tests, public benchmark). Flow-back was split by money spent instead of lines saved until 2026-11-08; the counts stand (correction below).
 - **Deep set: a community of cheap models proved Fermat's little theorem from scratch** (one run, OSO α 0.2, section 4j): 11 levels deep, from their own numbers, in round 61 for $2.53. The proof rests on 53 results from all 4 labs; one step took 57 failed tries before a lab broke it. One run with no comparison: it shows the depth is reachable, not that OSO's rules helped.
 - **Deep set, traditional (one run, section 4l): Fermat not proved in 100 rounds** ($4.65 spent, 34 of 95 hidden steps; labs worked alone and proved 22 lemmas twice). At $2 a run it had reached 27 steps against the OSO run's 52. One run a side, different days: direction as predicted, size not estimated.
+- **Deep set, three setups side by side (one run each, section 4m): Fermat not proved in any.** Hidden steps by $2 a run: traditional 34, shared library 51, OSO α 0.2 38. OSO's labs reached the last hard step first (round 28) and then lost 46% of their money to replies cut off on it. Across the Fermat runs, sharing at once beat traditional in all four pairs; flow-back over plain sharing is open.
 - **Bigger problem set (27 targets), model check:** 4 cheap models, each target alone and with its lemmas, 2 attempts each ($3.34). Targets that needed their lemmas (0 of 2 alone, at least 1 of 2 with them): DeepSeek V4.1 Flash 10, GLM-5.3 Flash 8, Qwen 3.7 Flash 16 (but it proved only 27 of 54 even with lemmas), Claude Haiku 5.5 1 (it proved 50 of 54 alone: too strong for this set). Results: `results/pilot/big-panel-*`.
 
 ## Correction: the model's price changed between runs (found 2026-11-13)
@@ -409,6 +410,28 @@ Only H6 met the rule, so stage 2 was not started. Labs spent $0.77 of each run's
 **Against the OSO run (section 4j), at the same money** (`scripts/deep-steps.ts`, $2 a run): traditional reached 27 hidden steps, deepest level 7; OSO reached 52, deepest level 8, and went on to prove P1 for $2.53. One run a side, different days: the direction is what sharing predicts, the size is not estimated. A shared-library run and fresh runs of both are going (deep-fermat-2).
 
 **Harness:** 47% of this run's replies were cut off before an answer. (The OSO run predates logging of the stop reason, so its 43% in section 4j was counted from empty replies.)
+
+## 4m. Deep set: traditional, shared library and OSO side by side (one run each, 2026-11-25)
+
+[Result](../results/community/deep-fermat-2/summary.md). **Setups:** traditional (public when a target is proved · α 1 · m 0 · m_bit 0 · f 0), shared library (public at once · α 1 · m 0 · m_bit 0 · f 0), OSO (public at once · α 0.2 · m 0 · m_bit 0 · f 0). Otherwise as sections 4j and 4l: 4 DeepSeek V4.1 Flash labs, $2 a lab, up to 100 rounds, labs cannot stop. One run each, started together: a first look, not a test (by choice). In the two sharing setups every lemma is public at once by the rules, so labs did not choose to share.
+
+**Result:** no setup proved P1 in 100 rounds.
+
+| | Traditional | Shared library | OSO α 0.2 |
+| --- | --- | --- | --- |
+| Hidden steps reached by $2 a run (of 95) | 34 | 51 | 38 |
+| Deepest level by $2 | 7 | 8 | 7 |
+| Hidden steps reached by the end | 38 | 60 | 53 |
+| Lemmas accepted | 190 | 119 | 86 |
+| Built on another lab's work | 0 | 94 | 68 |
+| Spent | $4.30 | $5.56 | $5.85 |
+| Replies cut off | 41% | 57% | 60% |
+
+**Why OSO fell behind the shared library here (looked at after the run):** Lean rejected about as many proofs in each setup (161, 180, 166); the gap is turns where every reply ran out of length with no answer (48, 91, 137; 21%, 32% and 46% of the money). In round 28 an OSO lab proved that Fermat follows from (1+a)^p ≡ 1 + a^p mod p. After round 33 every OSO turn opened on that last step (shared 57%, traditional 16%), which needs p | C(p,k), the bottleneck of section 4j; labs tried to plan the rest of the proof in one reply and ran out of length. OSO labs did not talk about earnings more (they mentioned credit less than shared labs). So sharing took OSO to the hard step sooner, and then all four labs stalled on it together; the shared library never had the shortcut and spread over more, smaller steps.
+
+**Traditional proves the most lemmas and gets the least far,** as in section 4l: 27 of its lemmas re-prove a hidden step another lab had already proved privately (shared 1, OSO 0).
+
+**With the earlier runs** (hidden steps by $2 a run; different days, not pooled): traditional 27 and 34, OSO 52 and 38, shared library 51. Sharing at once got further than traditional in all four pairs; whether flow-back adds anything over plain sharing is open.
 
 ## 5. Is the test setup sound? (harness checks)
 

@@ -1,0 +1,60 @@
+{
+ "id": "deep-fermat-2",
+ "kind": "race",
+ "date": "2026-11-25",
+ "title": "Deep set, Fermat's little theorem: traditional, shared library and OSO α 0.2, one run each, 4 labs, $2 a lab, 100 rounds (Nov 25)",
+ "ranAt": "2026-11-25T07:45:53.441Z",
+ "design": {
+  "question": "For the same agents, checker and money, does a community prove more targets when value flows back (OSO) than when results are only shared, or kept private until a target is proved?",
+  "compare": "Traditional, Shared library, OSO, α 0.2",
+  "fixed": "the same 4 agents (the single agent: the first, with all the money), $8.00 in all, Lean checks every proof",
+  "measure": "targets proved by the end of a run, of 1; money to reach 2 targets is shown beside it",
+  "better": "higher",
+  "runs": "1 run per setup, not paired"
+ },
+ "answer": "One run each, no verdict yet. OSO, α 0.2 proved 0.00 targets of 1 a run; Shared library 0.00. Difference: 0.00.",
+ "table": [
+  {
+   "society": "Traditional",
+   "OSO parameters": "public when a target is proved · α 1 · m 0 · m_bit 0 · f 0",
+   "targets proved": "0.00 ± 0.00 of 1",
+   "money to 2 targets": "$8.00 (0 of 1 got there)",
+   "spent": "$4.30",
+   "lemmas proved": "190.00",
+   "built on another lab": "0.00",
+   "lemmas proved twice": "20.00",
+   "targets proved twice": "0.00"
+  },
+  {
+   "society": "Shared library",
+   "OSO parameters": "public at once · α 1 · m 0 · m_bit 0 · f 0",
+   "targets proved": "0.00 ± 0.00 of 1",
+   "money to 2 targets": "$8.00 (0 of 1 got there)",
+   "spent": "$5.56",
+   "lemmas proved": "119.00",
+   "built on another lab": "94.00",
+   "lemmas proved twice": "8.00",
+   "targets proved twice": "0.00"
+  },
+  {
+   "society": "OSO, α 0.2",
+   "OSO parameters": "public at once · α 0.2 · m 0 · m_bit 0 · f 0",
+   "targets proved": "0.00 ± 0.00 of 1",
+   "money to 2 targets": "$8.00 (0 of 1 got there)",
+   "spent": "$5.85",
+   "lemmas proved": "86.00",
+   "built on another lab": "68.00",
+   "lemmas proved twice": "3.00",
+   "targets proved twice": "0.00"
+  }
+ ],
+ "caveats": [
+  "Labs could not stop early: each worked until its money or the rounds ran out, so setups are compared at the same money spent.",
+  "Rewards differ from the current simulation model: the knowledge reward is off (the simulation pays 1 per new bit since v5): Lean has no agreed measure of a result's new knowledge yet, see docs/design.md; value flowing back is split by the lines each parent saves (its own proof's length in symbols), a stand-in for the work it saves (1/p) in the simulation.",
+  "Table values are mean ± standard deviation over runs. Above: means with 95% ranges (Student t), and differences between setups with their 95% ranges; runs are not paired.",
+  "Money in the results is tokens at a fixed reference price per model (src/lean/prices.ts), not what the provider charged on the day, so runs on different days compare. The cost below is what was charged."
+ ],
+ "cost": "$15.72 as charged",
+ "page": "results/community/deep-fermat-2/summary.md",
+ "chart": "results/community/deep-fermat-2/figures/progress.svg"
+}
