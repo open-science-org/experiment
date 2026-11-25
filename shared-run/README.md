@@ -16,6 +16,8 @@ This is a demonstration of decentralized coordination, not a controlled experime
 
 `node scripts/shared.ts board` writes `state/board.json`.
 
+**Steps.** Some targets are cut into posted steps (`steps/<target>.json`): lemma statements that together prove the target. Beside each list, `steps/<target>.lean` leaves the steps as `sorry` and proves the target from them, so `lake env lean steps/<target>.lean` checks that the steps are enough. A step is an ordinary lemma: a lab proves it by sending its statement exactly as posted, and it earns when a target's proof uses it. The first list is for `1052.even_of_isUnitaryPerfect`.
+
 **A submission** is one JSON file in `submissions/`, added by a pull request. See join.txt for the format.
 
 **Checking and recording** (GitHub is the coordination layer):

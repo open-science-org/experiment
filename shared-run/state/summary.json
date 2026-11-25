@@ -1,6 +1,6 @@
 {
  "alpha": 0.2,
- "updatedAt": "2026-11-24T19:33:27.958Z",
+ "updatedAt": "2026-11-25T06:11:57.910Z",
  "activeLabs": 1,
  "targets": [
   {
@@ -266,6 +266,72 @@
    "pr": 13,
    "points": 0,
    "statement": "(p : ℕ) (hp : p.Prime) : ¬ IsUnitaryPerfect p"
+  }
+ ],
+ "steps": [
+  {
+   "target": "1052.even_of_isUnitaryPerfect",
+   "about": "Every unitary perfect number is even. The route: write σ*(n) for the sum of all unitary divisors of n, n itself included. A unitary perfect n has σ*(n) = 2n. σ* is multiplicative, and σ*(p^k) = 1 + p^k. If n were odd, split off one prime power, n = p^k·m: then 2n = (1 + p^k)·σ*(m). Both factors are even when m > 1, so 4 divides 2n and n is even after all; when m = 1, 1 + p^k = 2p^k forces p^k = 1. Either way a contradiction.",
+   "checked": "With the five steps taken as given, Lean accepts this proof of the target (shared-run/steps/1052.even_of_isUnitaryPerfect.lean).",
+   "open": [
+    "Erdos1052"
+   ],
+   "steps": [
+    {
+     "id": "S1",
+     "plain": "A unitary perfect number's unitary divisors, n itself included, add up to 2n.",
+     "statement": "(n : ℕ) (hn : IsUnitaryPerfect n) : ∑ d ∈ n.divisors.filter (fun d => d.Coprime (n / d)), d = 2 * n",
+     "after": [],
+     "open": [
+      "Erdos1052"
+     ],
+     "provedBy": null
+    },
+    {
+     "id": "S2",
+     "plain": "The sum of unitary divisors is multiplicative: for coprime a and b, σ*(ab) = σ*(a)·σ*(b). The hardest step.",
+     "statement": "(a b : ℕ) (h : a.Coprime b) : ∑ d ∈ (a * b).divisors.filter (fun d => d.Coprime (a * b / d)), d = (∑ d ∈ a.divisors.filter (fun d => d.Coprime (a / d)), d) * (∑ d ∈ b.divisors.filter (fun d => d.Coprime (b / d)), d)",
+     "after": [],
+     "open": [
+      "Erdos1052"
+     ],
+     "provedBy": null
+    },
+    {
+     "id": "S3",
+     "plain": "A prime power p^k (k ≥ 1) has exactly two unitary divisors, 1 and p^k.",
+     "statement": "(p k : ℕ) (hp : p.Prime) (hk : 0 < k) : ∑ d ∈ (p ^ k).divisors.filter (fun d => d.Coprime (p ^ k / d)), d = 1 + p ^ k",
+     "after": [],
+     "open": [
+      "Erdos1052"
+     ],
+     "provedBy": null
+    },
+    {
+     "id": "S4",
+     "plain": "Any n > 1 splits off one prime power: n = p^k·m with k ≥ 1 and p^k coprime to m.",
+     "statement": "(n : ℕ) (hn : 1 < n) : ∃ p k m : ℕ, p.Prime ∧ 0 < k ∧ (p ^ k).Coprime m ∧ n = p ^ k * m",
+     "after": [],
+     "open": [
+      "Erdos1052"
+     ],
+     "provedBy": null
+    },
+    {
+     "id": "S5",
+     "plain": "An odd number above 1 has an even sum of unitary divisors.",
+     "statement": "(m : ℕ) (hm : Odd m) (h1 : 1 < m) : Even (∑ d ∈ m.divisors.filter (fun d => d.Coprime (m / d)), d)",
+     "after": [
+      "S2",
+      "S3",
+      "S4"
+     ],
+     "open": [
+      "Erdos1052"
+     ],
+     "provedBy": null
+    }
+   ]
   }
  ],
  "labs": [
