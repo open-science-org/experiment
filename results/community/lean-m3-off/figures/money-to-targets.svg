@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" class="viz" viewBox="0 0 760 420" width="760" height="420" role="img" aria-label="Money spent to reach a number of targets">
+<svg xmlns="http://www.w3.org/2000/svg" class="viz" viewBox="0 0 914.3 420" width="914.3" height="420" role="img" aria-label="Money spent to reach a number of targets">
 <style>
   .viz { --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --grid: #e6e5e1;
          --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --dead: #c9c7c0; }
@@ -19,9 +19,10 @@
   .dot { stroke: var(--surface); stroke-width: 2; }
   .label { font-size: 12px; font-weight: 700; }
   .t1 { fill: var(--s1); } .t2 { fill: var(--s2); } .t3 { fill: var(--s3); }
-</style><rect class="bg" width="760" height="420" rx="8"/>
+  .ce { stroke: var(--ink); } .fe { fill: var(--ink); }
+</style><rect class="bg" width="914.3" height="420" rx="8"/>
 <text class="title" x="64" y="30">Money spent to reach a number of targets</text>
-<text class="sub" x="64" y="50">All: labs choose when to publish, m 0, m_bit 0, f 0. Median of 10 runs; bars: 95% ranges.</text>
+<text class="sub" x="64" y="50">All: labs choose when to publish, m 0, m_bit 0, f 0. Median of 10 runs, bold; each run faint; bars: 95% ranges; an open ring: the line stops there.</text>
 <line class="line c3" style="stroke:#33322f" x1="64" y1="70" x2="82" y2="70"/><text class="label t3" style="fill:#33322f" x="88" y="74">α = 1</text>
 <line class="line c2" style="stroke:#eb6834" x1="131" y1="70" x2="149" y2="70"/><text class="label t2" style="fill:#eb6834" x="155" y="74">α = 0.8</text>
 <line class="line c2" style="stroke:#f2a07b" x1="211.2" y1="70" x2="229.2" y2="70"/><text class="label t2" style="fill:#f2a07b" x="235.2" y="74">α = 0.2</text>
@@ -41,11 +42,21 @@
 <text class="tick" x="208.57142857142856" y="382" text-anchor="middle">3</text>
 <text class="tick" x="280.85714285714283" y="382" text-anchor="middle">4</text>
 <text class="tick" x="353.1428571428571" y="382" text-anchor="middle">5</text>
-<text class="tick" x="425.42857142857144" y="382" text-anchor="middle">6</text>
+<text class="tick" x="425.4285714285714" y="382" text-anchor="middle">6</text>
 <text class="tick" x="497.71428571428567" y="382" text-anchor="middle">7</text>
 <text class="tick" x="570" y="382" text-anchor="middle">8</text>
 <text class="axis" x="317" y="408" text-anchor="middle">Targets proved (of 8)</text>
 <text class="axis" transform="translate(16 228) rotate(-90)" text-anchor="middle">Money spent, all labs ($)</text>
+<path class="line c3" style="stroke-width:1;opacity:.28;stroke:#33322f" d="M64.0 351.3 L136.3 337.1 L208.6 319.6 L280.9 299.2"/>
+<path class="line c3" style="stroke-width:1;opacity:.28;stroke:#33322f" d="M64.0 354.1 L136.3 354.1 L208.6 245.1"/>
+<path class="line c3" style="stroke-width:1;opacity:.28;stroke:#33322f" d="M64.0 349.3 L136.3 337.5 L208.6 337.5 L280.9 276.4 L353.1 233.5"/>
+<path class="line c3" style="stroke-width:1;opacity:.28;stroke:#33322f" d="M64.0 336.1 L136.3 308.2 L208.6 243.1"/>
+<path class="line c3" style="stroke-width:1;opacity:.28;stroke:#33322f" d="M64.0 354.1 L136.3 354.1 L208.6 337.4 L280.9 337.4 L353.1 292.5"/>
+<path class="line c3" style="stroke-width:1;opacity:.28;stroke:#33322f" d="M64.0 335.8 L136.3 335.8 L208.6 322.1 L280.9 273.3"/>
+<path class="line c3" style="stroke-width:1;opacity:.28;stroke:#33322f" d="M64.0 347.8 L136.3 328.5 L208.6 315.2 L280.9 291.3 L353.1 240.3"/>
+<path class="line c3" style="stroke-width:1;opacity:.28;stroke:#33322f" d="M64.0 348.6 L136.3 337.0 L208.6 320.9 L280.9 300.0 L353.1 300.0"/>
+<path class="line c3" style="stroke-width:1;opacity:.28;stroke:#33322f" d="M64.0 351.7 L136.3 351.7 L208.6 331.7 L280.9 252.0 L353.1 252.0"/>
+<path class="line c3" style="stroke-width:1;opacity:.28;stroke:#33322f" d="M64.0 336.9 L136.3 336.9"/>
 <path class="line c3" style="stroke:#33322f" d="M64.0 348.9 L136.3 337.1 L208.6 320.3 L280.9 274.8"/>
 <line class="line c3" style="stroke-width:1.5;opacity:.55;stroke:#33322f" x1="64.0" x2="64.0" y1="354.1" y2="336.1"/>
 <line class="line c3" style="stroke-width:1.5;opacity:.55;stroke:#33322f" x1="136.3" x2="136.3" y1="354.1" y2="328.5"/>
@@ -54,7 +65,17 @@
 <circle class="dot f3" style="fill:#33322f" cx="64.0" cy="348.9" r="4.5"><title>α = 1: $0.03 at targets proved (of 8) 1</title></circle>
 <circle class="dot f3" style="fill:#33322f" cx="136.3" cy="337.1" r="4.5"><title>α = 1: $0.06 at targets proved (of 8) 2</title></circle>
 <circle class="dot f3" style="fill:#33322f" cx="208.6" cy="320.3" r="4.5"><title>α = 1: $0.10 at targets proved (of 8) 3</title></circle>
-<circle class="dot f3" style="fill:#33322f" cx="280.9" cy="274.8" r="4.5"><title>α = 1: $0.20 at targets proved (of 8) 4</title></circle>
+<circle class="line c3" style="fill:var(--surface);stroke-width:2;stroke:#33322f" cx="280.9" cy="274.8" r="5"><title>α = 1: $0.197 at 4; most runs never reached 5</title></circle>
+<path class="line c2" style="stroke-width:1;opacity:.28;stroke:#eb6834" d="M64.0 351.8 L136.3 351.8 L208.6 287.1 L280.9 265.0 L353.1 250.7"/>
+<path class="line c2" style="stroke-width:1;opacity:.28;stroke:#eb6834" d="M64.0 336.0 L136.3 302.2 L208.6 252.6"/>
+<path class="line c2" style="stroke-width:1;opacity:.28;stroke:#eb6834" d="M64.0 350.4 L136.3 335.4 L208.6 322.4 L280.9 322.4 L353.1 277.9"/>
+<path class="line c2" style="stroke-width:1;opacity:.28;stroke:#eb6834" d="M64.0 348.5 L136.3 340.3 L208.6 318.1 L280.9 277.3 L353.1 262.7"/>
+<path class="line c2" style="stroke-width:1;opacity:.28;stroke:#eb6834" d="M64.0 355.9 L136.3 289.6 L208.6 289.6 L280.9 229.8"/>
+<path class="line c2" style="stroke-width:1;opacity:.28;stroke:#eb6834" d="M64.0 351.2 L136.3 302.3 L208.6 302.3 L280.9 238.8"/>
+<path class="line c2" style="stroke-width:1;opacity:.28;stroke:#eb6834" d="M64.0 343.6 L136.3 335.6 L208.6 335.6 L280.9 318.6 L353.1 270.5"/>
+<path class="line c2" style="stroke-width:1;opacity:.28;stroke:#eb6834" d="M64.0 348.0 L136.3 283.8 L208.6 264.4 L280.9 264.4 L353.1 226.3"/>
+<path class="line c2" style="stroke-width:1;opacity:.28;stroke:#eb6834" d="M64.0 359.1 L136.3 359.1 L208.6 350.9 L280.9 350.9 L353.1 236.8"/>
+<path class="line c2" style="stroke-width:1;opacity:.28;stroke:#eb6834" d="M64.0 331.5 L136.3 331.5 L208.6 318.9 L280.9 318.9 L353.1 266.2"/>
 <path class="line c2" style="stroke:#eb6834" d="M64.0 349.4 L136.3 333.5 L208.6 310.2 L280.9 271.1 L353.1 243.8"/>
 <line class="line c2" style="stroke-width:1.5;opacity:.55;stroke:#eb6834" x1="64.0" x2="64.0" y1="355.9" y2="336.0"/>
 <line class="line c2" style="stroke-width:1.5;opacity:.55;stroke:#eb6834" x1="136.3" x2="136.3" y1="351.8" y2="289.6"/>
@@ -65,7 +86,17 @@
 <circle class="dot f2" style="fill:#eb6834" cx="136.3" cy="333.5" r="4.5"><title>α = 0.8: $0.07 at targets proved (of 8) 2</title></circle>
 <circle class="dot f2" style="fill:#eb6834" cx="208.6" cy="310.2" r="4.5"><title>α = 0.8: $0.12 at targets proved (of 8) 3</title></circle>
 <circle class="dot f2" style="fill:#eb6834" cx="280.9" cy="271.1" r="4.5"><title>α = 0.8: $0.20 at targets proved (of 8) 4</title></circle>
-<circle class="dot f2" style="fill:#eb6834" cx="353.1" cy="243.8" r="4.5"><title>α = 0.8: $0.27 at targets proved (of 8) 5</title></circle>
+<circle class="line c2" style="fill:var(--surface);stroke-width:2;stroke:#eb6834" cx="353.1" cy="243.8" r="5"><title>α = 0.8: $0.265 at 5; most runs never reached 6</title></circle>
+<path class="line c2" style="stroke-width:1;opacity:.28;stroke:#f2a07b" d="M64.0 359.4 L136.3 337.6 L208.6 320.7 L280.9 263.6 L353.1 249.6 L425.4 234.6"/>
+<path class="line c2" style="stroke-width:1;opacity:.28;stroke:#f2a07b" d="M64.0 341.2 L136.3 341.2 L208.6 262.9 L280.9 254.6 L353.1 232.9"/>
+<path class="line c2" style="stroke-width:1;opacity:.28;stroke:#f2a07b" d="M64.0 357.1 L136.3 357.1 L208.6 300.5 L280.9 263.5 L353.1 252.1"/>
+<path class="line c2" style="stroke-width:1;opacity:.28;stroke:#f2a07b" d="M64.0 352.8 L136.3 246.7 L208.6 246.7 L280.9 225.6"/>
+<path class="line c2" style="stroke-width:1;opacity:.28;stroke:#f2a07b" d="M64.0 326.4 L136.3 286.1 L208.6 271.2 L280.9 230.4"/>
+<path class="line c2" style="stroke-width:1;opacity:.28;stroke:#f2a07b" d="M64.0 351.7 L136.3 333.7 L208.6 333.7 L280.9 275.4"/>
+<path class="line c2" style="stroke-width:1;opacity:.28;stroke:#f2a07b" d="M64.0 348.3 L136.3 317.7 L208.6 317.7 L280.9 299.4 L353.1 262.7 L425.4 262.7"/>
+<path class="line c2" style="stroke-width:1;opacity:.28;stroke:#f2a07b" d="M64.0 339.9 L136.3 296.3 L208.6 270.4 L280.9 237.5"/>
+<path class="line c2" style="stroke-width:1;opacity:.28;stroke:#f2a07b" d="M64.0 346.6 L136.3 329.3 L208.6 307.7 L280.9 303.2"/>
+<path class="line c2" style="stroke-width:1;opacity:.28;stroke:#f2a07b" d="M64.0 330.6 L136.3 311.7 L208.6 289.9 L280.9 268.8 L353.1 268.8 L425.4 246.5"/>
 <path class="line c2" style="stroke:#f2a07b" d="M64.0 347.5 L136.3 323.5 L208.6 295.2 L280.9 263.6"/>
 <line class="line c2" style="stroke-width:1.5;opacity:.55;stroke:#f2a07b" x1="64.0" x2="64.0" y1="357.1" y2="330.6"/>
 <line class="line c2" style="stroke-width:1.5;opacity:.55;stroke:#f2a07b" x1="136.3" x2="136.3" y1="341.2" y2="286.1"/>
@@ -74,8 +105,8 @@
 <circle class="dot f2" style="fill:#f2a07b" cx="64.0" cy="347.5" r="4.5"><title>α = 0.2: $0.04 at targets proved (of 8) 1</title></circle>
 <circle class="dot f2" style="fill:#f2a07b" cx="136.3" cy="323.5" r="4.5"><title>α = 0.2: $0.09 at targets proved (of 8) 2</title></circle>
 <circle class="dot f2" style="fill:#f2a07b" cx="208.6" cy="295.2" r="4.5"><title>α = 0.2: $0.15 at targets proved (of 8) 3</title></circle>
-<circle class="dot f2" style="fill:#f2a07b" cx="280.9" cy="263.6" r="4.5"><title>α = 0.2: $0.22 at targets proved (of 8) 4</title></circle>
-<text class="label t2" style="fill:#eb6834" x="365.1428571428571" y="247.78067114666666">α = 0.8: $0.27</text>
-<text class="label t2" style="fill:#f2a07b" x="365.1428571428571" y="267.5969790933333">α = 0.2: $0.22</text>
-<text class="label t3" style="fill:#33322f" x="365.1428571428571" y="283.5969790933333">α = 1: $0.20</text>
+<circle class="line c2" style="fill:var(--surface);stroke-width:2;stroke:#f2a07b" cx="280.9" cy="263.6" r="5"><title>α = 0.2: $0.221 at 4; most runs never reached 5</title></circle>
+<text class="label t2" style="fill:#eb6834" x="365.1428571428571" y="247.78067114666666">α = 0.8: $0.265 at 5; most runs never reached 6</text>
+<text class="label t2" style="fill:#f2a07b" x="365.1428571428571" y="267.5969790933333">α = 0.2: $0.221 at 4; most runs never reached 5</text>
+<text class="label t3" style="fill:#33322f" x="365.1428571428571" y="283.5969790933333">α = 1: $0.197 at 4; most runs never reached 5</text>
 </svg>

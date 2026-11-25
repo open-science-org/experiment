@@ -4,7 +4,7 @@
 Session: c47e3b16-8be4-4ac2-81b3-3c703bdb6a60 · branch master · last commit 9408854
 
 **Done**
-- Deep problem set `--problems deep`, "Peano to Fermat": its own numbers, no Mathlib, one target P1 (Fermat's little theorem), depth 11, 96 hidden results (c67808a). All reference proofs pass; stand-in labs solve it in round 27.
+- Deep problem set `--problems deep`, "Peano to Fermat": its own numbers, no Mathlib, one target P1 (Fermat's little theorem), depth 11, 95 hidden results (c67808a). All reference proofs pass; stand-in labs solve it in round 27.
 - Paid run `deep-fermat-1` (OSO α 0.2, 4 DeepSeek V4.1 Flash, $2 each, 100 rounds) is RUNNING on the Mac since 2026-11-23 23:07, streaming every minute. At 17:13: round 47, about 76 lemmas, $1.7 spent, no target try. The labs are stuck on (k+1)·C(n+1,k+1) = (n+1)·C(n,k): 15+ failed tries.
 - Empty-reply test done and pushed (68ecb02): medium, low and capped thinking all leave 71–75% of replies cut off; the thinking cap seems ignored.
 - `--think N` and `--only` options; the local lab sees library lemmas (f4af264).
