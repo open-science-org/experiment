@@ -28,6 +28,8 @@ const setups = plan.societies.map((key) => {
     cap = opts.budget * opts.agents.length;
     first ??= opts;
     const actions = lines(join(dir, 'actions.jsonl')) as Action[];
+    // Lab lemma -> the hidden steps it gives (scripts/match-steps.ts; empty until it has run).
+    const covers = existsSync(join(dir, 'matches.json')) ? (JSON.parse(readFileSync(join(dir, 'matches.json'), 'utf8')) as { covers: Record<string, string[]> }).covers : {};
     let spent = 0;
     const targets: string[] = [], steps: [number, number][] = [[0, 0]], lsteps: [number, number][] = [[0, 0]];
     // For the round-by-round view: the round each target was first proved, money spent by the end of each round,
@@ -50,10 +52,16 @@ const setups = plan.societies.map((key) => {
       lemmas: actions.filter((a) => a.kind === 'lemma' && a.ok).length, steps, lsteps, provedAt,
       // What the labs built: every new result Lean accepted, who proved it and when, and the earlier results its
       // proof cites (read from Lean, so exact). Statements, not proofs.
+      // Hidden steps the labs have proved (scripts/match-steps.ts): step name -> [round, lab, lab's lemma], earliest.
+      covered: (() => {
+        const out: Record<string, [number, number, string]> = {};
+        for (const a of actions) if (a.ok && a.entry) for (const step of covers[a.entry] ?? []) if (!out[step] || out[step][0] > a.round) out[step] = [a.round, a.agent + 1, a.entry];
+        return out;
+      })(),
       library: (() => {
         const got = actions.filter((a) => a.ok && a.entry);
         const names = new Set(got.map((a) => a.entry!));
-        return got.map((a) => ({ n: a.entry!, lab: a.agent + 1, round: a.round, target: a.kind === 'target' ? a.target : undefined, s: a.signature,
+        return got.map((a) => ({ n: a.entry!, lab: a.agent + 1, round: a.round, target: a.kind === 'target' ? a.target : undefined, s: a.signature, onMap: !!covers[a.entry!]?.length,
           uses: [...new Set((a.uses ?? []).map((u) => u.replace(/^OSO\./, '')).filter((u) => names.has(u) && u !== a.entry))] }));
       })(),
       spentBy: Array.from({ length: spentBy.length }, (_, i) => Math.round(1e4 * (spentBy.slice(0, i + 1).filter((x) => x !== undefined).at(-1) ?? 0)) / 1e4),
@@ -111,7 +119,7 @@ const snapshot = {
       proved: Object.fromEntries(tasks.map((t) => [t.publicId, s.reps.filter((r) => r.targets.includes(t.publicId)).length])),
       // The library one run built (the first started run of this setup), for the page's graph of it.
       library: started[0]?.library ?? [],
-      reps: s.reps.map(({ steps: _, lsteps: __, library: ___, ...r }) => r),
+      reps: s.reps.map(({ steps: _, lsteps: __, library: ___, covered, ...r }) => ({ ...r, covered: Object.fromEntries(Object.entries(covered ?? {}).flatMap(([k, v]) => (idOf.has(k) ? [[idOf.get(k)!, v]] : []))) })),
       // Attempts at each target by round, over all runs: [accepted, not accepted].
       tried: s.tried,
     };

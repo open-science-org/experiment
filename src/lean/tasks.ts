@@ -43,7 +43,7 @@ export type Problems = 'main' | 'hard' | 'big' | 'deep';
 export const defaultProblems = (): Problems => (['hard', 'big', 'deep'].includes(process.env.OSO_PROBLEMS ?? '') ? process.env.OSO_PROBLEMS as Problems : 'main');
 /** The namespace opened inside `OSO` for statements: the matrices, or the deep set's numbers. */
 export const opened = (problems: Problems = defaultProblems()) => (problems === 'deep' ? 'N' : 'M2');
-const filesOf = (problems: Problems): [string, Task['area']][] => problems === 'deep' ? [['Deep', 'P']] : [['A', 'A'], ['B', 'B'], ['C', 'C'], ['Cross', 'cross'],
+export const filesOf = (problems: Problems): [string, Task['area']][] => problems === 'deep' ? [['Deep', 'P']] : [['A', 'A'], ['B', 'B'], ['C', 'C'], ['Cross', 'cross'],
   ...(problems === 'hard' ? [['Hard', 'cross'] as [string, Task['area']]] : []),
   ...(problems === 'big' ? [['BigA', 'A'], ['BigAC', 'cross'], ['BigDE', 'D']] as [string, Task['area']][] : [])];
 
