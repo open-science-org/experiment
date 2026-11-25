@@ -4,7 +4,7 @@ Last updated: 2026-11-25. Every result here has its own page under `results/` (t
 
 ## TL;DR
 
-Checked after every run; last checked 2026-11-25, after the deep Fermat run (section 4j).
+Checked after every run; last checked 2026-11-25, after E1 (section 4k).
 
 - **Lemmas help weak models.** DeepSeek proves 4 of 16 targets alone, 12 of 16 with the lemmas they need.
 - **Sharing lets labs build on each other** (Spend all: 2.2 results a run in the shared library, 0.4 under traditional), but it has not raised targets proved. A plain shared library gets this too, so it is not unique to OSO. **Repeated work is not a general result:** traditional labs proved the same lemma about 20 times a run in the small cheap race (5 runs), but only 0.4 times in Spend all (20 runs per setup; shared library 0.2).
@@ -18,6 +18,7 @@ Checked after every run; last checked 2026-11-25, after the deep Fermat run (sec
 - **Money was wasted in every run so far.** About 23% of model replies ran out of length while thinking and gave no answer, costing roughly 39% of the money (section 5). It affects all setups, more in the shared library (27%) than at α 0.2 (23%). In small tests no setting helped: high, medium or low effort, or a cap on thinking, left about 71–75% of replies cut off on hard targets without lemmas (section 5).
 - **Pilot: three harder targets kept.** Alone the model proved none of 6 candidates (0 of 24 attempts). With the lemmas, 3 passed the rule fixed in advance (H4 and H5 4 of 4, H6 3 of 4); 3 were still too hard (0 of 4 each). Four attempts each is a rough screen.
 - **Harder targets, main run (6 setups × 5 runs, $0.40 a lab; too few runs for 95% ranges):** the four sharing setups proved 10.4 to 11 of the 11 targets a run, traditional 7.6 and the plain planner 7.8; but those two ran at a higher price per token, so their dollar budgets bought about a quarter less thinking (correction below). At the same price, traditional reached 7 targets for $0.42, between the shared library ($0.34) and OSO α 0.2 ($0.48). The planner with a good strategy was cheapest at every count and proved all 11 in every run, but the same role without our hints (the plain planner) was among the worst, so the gain came from the hints. Flow-back alone (OSO α 0.2 against the shared library) showed no gain here: the shared library was somewhat cheaper. Section 4g.
+- **E1, reward or instruction (section 4k, 5 runs per setup): no effect shown on the measure fixed in advance.** Lemmas cited later: reward (OSO α 0.2 − shared, both told to earn) +3.8 (range −1.9 to +9.5); the instruction to earn −1.8 (−6.2 to +2.6); seeing earnings −0.8 (−6.1 to +4.5). **Lead:** counting all lemmas, the reward goes with about twice as many (+11.0, range +5.5 to +16.5) and being told to earn with no reward goes with fewer (−6.8, range −12.6 to −1.0); seeing the earnings made no difference. So the extra groundwork under OSO looks like the reward, not the prompt, but much of it is not used later.
 - **Flow-back, everything so far in one place:** [flow-back](flow-back.md). Labs restate the rule in their thinking; in the shared library they call a lemma a gift to rivals. Whether the prompt or the earnings drive the extra groundwork is not separated yet.
 - **Our hints may matter more than the rules.** The strategy advice and failure reports we gave only the planner made the biggest difference in any run so far. A lead: give them to every lab and compare again.
 - **Why the tests may be blind:** five of the 8 targets are nearly always proved, so "targets proved" barely moves. Flow-back should matter most on deep problems, not tested yet.
@@ -378,6 +379,25 @@ Only H6 met the rule, so stage 2 was not started. Labs spent $0.77 of each run's
 **The bottleneck:** from round 25 the labs kept trying one step, (k+1)·C(n+1,k+1) = (n+1)·C(n,k), and failed 57 times (counting tries of this statement and its close variants). Lab 1 proved it in round 59. In round 60 lab 4 used it to show that a prime p divides C(p,k), and in round 61 it proved P1.
 
 **Harness:** 245 of 568 replies (43%) ran out of length and gave no answer; 28 turns were lost to provider errors. The laptop slept during rounds 8 to 15, which only slowed the run. This run started before the payout ledger existed (2026-11-24), so its earnings cannot be audited.
+
+## 4k. E1: reward, instruction or seeing earnings? (2026-11-24 to 25)
+
+[Result](../results/community/lean-e1/summary.md). **Question:** under OSO, labs lay more groundwork. Is that the reward itself (value flowing back), the instruction to earn in every prompt, or seeing the earnings each round? **Setups** (all public at once, m 0, m_bit 0, f 0): shared library told only to prove targets, no rewards mentioned or shown (α 1); shared library told to earn (α 1, as in all earlier runs); OSO α 0.2 told to earn, earnings shown; OSO α 0.2 told to earn, earnings paid but not shown. Big set (27 targets), 4 DeepSeek V4.1 Flash labs, $0.40 a lab, up to 60 rounds, labs cannot stop. 5 runs per setup, 20 in all, started at once; $32.18 as charged. **Measure fixed before the run:** lemmas cited later (first proofs of non-trivial lemmas, not targets, that a later proof used), compared in three pairs.
+
+**Result (5 runs per setup, mean a run with 95% range):**
+
+| Setup | Lemmas cited later | All lemmas | Targets (of 27) | Replies cut off |
+| --- | --- | --- | --- | --- |
+| Shared, told to prove | 11.0 (7.5 to 14.5) | 19.0 | 21.4 | 18% |
+| Shared, told to earn | 9.2 (5.2 to 13.2) | 12.2 | 21.0 | 34% |
+| OSO α 0.2 | 13.0 (7.7 to 18.3) | 23.2 | 21.4 | 30% |
+| OSO α 0.2, earnings hidden | 13.8 (11.8 to 15.8) | 23.8 | 21.8 | 27% |
+
+**The three comparisons fixed in advance** (difference in lemmas cited later, Welch 95% range): reward (OSO − shared, both told to earn) **+3.8 (−1.9 to +9.5)**; instruction (told to earn − told to prove, both without reward) **−1.8 (−6.2 to +2.6)**; seeing earnings (shown − hidden) **−0.8 (−6.1 to +4.5)**. All three ranges include zero: **no effect shown on the measure fixed in advance**, at this size.
+
+**Leads (all lemmas, not the measure fixed in advance):** the reward goes with about twice the lemmas (OSO − shared, told to earn: +11.0, range +5.5 to +16.5), and being told to earn with nothing to earn goes with fewer (told to earn − told to prove: −6.8, range −12.6 to −1.0). Seeing the earnings made no difference (−0.6, range −4.7 to +3.5). So the extra lemmas under OSO look like the reward, not the word "earn" and not the scoreboard; but many of the extra lemmas are not cited later, which is why the main measure moves less. Targets were the same everywhere (21 to 22 of 27: the set saturates). Replies cut off were fewer when labs were told to prove (18% against 27–34%), a lead to check.
+
+**Harness:** every run was audited (payout ledger balances, spending equals the sum of action costs). Plan and comparisons were fixed on 2026-11-24 before any run started; the comparisons chart was added before any result was read.
 
 ## 5. Is the test setup sound? (harness checks)
 
