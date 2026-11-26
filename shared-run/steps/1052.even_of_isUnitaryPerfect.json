@@ -1,34 +1,138 @@
 {
  "target": "1052.even_of_isUnitaryPerfect",
  "about": "Every unitary perfect number is even. The route: write σ*(n) for the sum of all unitary divisors of n, n itself included. A unitary perfect n has σ*(n) = 2n. σ* is multiplicative, and σ*(p^k) = 1 + p^k. If n were odd, split off one prime power, n = p^k·m: then 2n = (1 + p^k)·σ*(m). Both factors are even when m > 1, so 4 divides 2n and n is even after all; when m = 1, 1 + p^k = 2p^k forces p^k = 1. Either way a contradiction.",
- "checked": "With the five steps taken as given, Lean accepts this proof of the target (shared-run/steps/1052.even_of_isUnitaryPerfect.lean).",
+ "checked": "With these steps taken as given, Lean accepts this route: the small steps prove S1 to S5, and S1 to S5 prove the target (shared-run/steps/1052.even_of_isUnitaryPerfect.lean). Every step is true: we proved each one privately before posting.",
  "open": [
   "Erdos1052"
  ],
  "steps": [
   {
-   "id": "S1",
-   "plain": "A unitary perfect number's unitary divisors, n itself included, add up to 2n.",
-   "statement": "(n : ℕ) (hn : IsUnitaryPerfect n) : ∑ d ∈ n.divisors.filter (fun d => d.Coprime (n / d)), d = 2 * n",
+   "id": "S1a",
+   "plain": "For n > 0, the unitary divisors of n are its proper unitary divisors plus n itself.",
+   "statement": "(n : ℕ) (hn : 0 < n) : n.divisors.filter (fun d => d.Coprime (n / d)) = insert n (properUnitaryDivisors n)",
    "after": []
   },
   {
-   "id": "S2",
-   "plain": "The sum of unitary divisors is multiplicative: for coprime a and b, σ*(ab) = σ*(a)·σ*(b). The hardest step.",
-   "statement": "(a b : ℕ) (h : a.Coprime b) : ∑ d ∈ (a * b).divisors.filter (fun d => d.Coprime (a * b / d)), d = (∑ d ∈ a.divisors.filter (fun d => d.Coprime (a / d)), d) * (∑ d ∈ b.divisors.filter (fun d => d.Coprime (b / d)), d)",
+   "id": "S1b",
+   "plain": "n is not one of its own proper unitary divisors.",
+   "statement": "(n : ℕ) : n ∉ properUnitaryDivisors n",
+   "after": []
+  },
+  {
+   "id": "S1",
+   "plain": "A unitary perfect number's unitary divisors, n itself included, add up to 2n.",
+   "statement": "(n : ℕ) (hn : IsUnitaryPerfect n) : ∑ d ∈ n.divisors.filter (fun d => d.Coprime (n / d)), d = 2 * n",
+   "after": [
+    "S1a",
+    "S1b"
+   ]
+  },
+  {
+   "id": "S3a",
+   "plain": "A divisor of p^k other than 1 and p^k shares the factor p with its cofactor, so it is not a unitary divisor.",
+   "statement": "(p k d : ℕ) (hp : p.Prime) (hd : d ∣ p ^ k) (h1 : d ≠ 1) (h2 : d ≠ p ^ k) : ¬ d.Coprime (p ^ k / d)",
+   "after": []
+  },
+  {
+   "id": "S3b",
+   "plain": "The unitary divisors of p^k (k ≥ 1) are exactly 1 and p^k.",
+   "statement": "(p k : ℕ) (hp : p.Prime) (hk : 0 < k) : (p ^ k).divisors.filter (fun d => d.Coprime (p ^ k / d)) = {1, p ^ k}",
+   "after": [
+    "S3a"
+   ]
+  },
+  {
+   "id": "S3c",
+   "plain": "For a prime p and k ≥ 1, p^k is not 1.",
+   "statement": "(p k : ℕ) (hp : p.Prime) (hk : 0 < k) : (1 : ℕ) ≠ p ^ k",
    "after": []
   },
   {
    "id": "S3",
    "plain": "A prime power p^k (k ≥ 1) has exactly two unitary divisors, 1 and p^k.",
    "statement": "(p k : ℕ) (hp : p.Prime) (hk : 0 < k) : ∑ d ∈ (p ^ k).divisors.filter (fun d => d.Coprime (p ^ k / d)), d = 1 + p ^ k",
+   "after": [
+    "S3b",
+    "S3c"
+   ]
+  },
+  {
+   "id": "S4a",
+   "plain": "Every n > 1 has a prime divisor.",
+   "statement": "(n : ℕ) (hn : 1 < n) : ∃ p, p.Prime ∧ p ∣ n",
+   "after": []
+  },
+  {
+   "id": "S4b",
+   "plain": "The full power of p in n is coprime to the rest of n.",
+   "statement": "(p n : ℕ) (hp : p.Prime) (hn : n ≠ 0) : (p ^ n.factorization p).Coprime (n / p ^ n.factorization p)",
+   "after": []
+  },
+  {
+   "id": "S4c",
+   "plain": "n is the full power of p in n times the rest.",
+   "statement": "(p n : ℕ) : p ^ n.factorization p * (n / p ^ n.factorization p) = n",
+   "after": []
+  },
+  {
+   "id": "S4d",
+   "plain": "A prime that divides n (n ≠ 0) appears in n at least once.",
+   "statement": "(p n : ℕ) (hp : p.Prime) (hn : n ≠ 0) (hd : p ∣ n) : 0 < n.factorization p",
    "after": []
   },
   {
    "id": "S4",
    "plain": "Any n > 1 splits off one prime power: n = p^k·m with k ≥ 1 and p^k coprime to m.",
    "statement": "(n : ℕ) (hn : 1 < n) : ∃ p k m : ℕ, p.Prime ∧ 0 < k ∧ (p ^ k).Coprime m ∧ n = p ^ k * m",
+   "after": [
+    "S4a",
+    "S4b",
+    "S4c",
+    "S4d"
+   ]
+  },
+  {
+   "id": "S2a",
+   "plain": "For coprime a and b, a divisor d of ab is gcd(d, a) · gcd(d, b).",
+   "statement": "(a b d : ℕ) (h : a.Coprime b) (hd : d ∣ a * b) : d = Nat.gcd d a * Nat.gcd d b",
    "after": []
+  },
+  {
+   "id": "S2b1",
+   "plain": "For coprime a and b, a unitary divisor d of ab gives unitary divisors gcd(d, a) of a and gcd(d, b) of b.",
+   "statement": "(a b d : ℕ) (h : a.Coprime b) (hd : d ∈ (a * b).divisors.filter (fun d => d.Coprime (a * b / d))) : Nat.gcd d a ∈ a.divisors.filter (fun d => d.Coprime (a / d)) ∧ Nat.gcd d b ∈ b.divisors.filter (fun d => d.Coprime (b / d))",
+   "after": []
+  },
+  {
+   "id": "S2b2",
+   "plain": "For coprime a and b, a unitary divisor of a times a unitary divisor of b is a unitary divisor of ab.",
+   "statement": "(a b x y : ℕ) (h : a.Coprime b) (hx : x ∈ a.divisors.filter (fun d => d.Coprime (a / d))) (hy : y ∈ b.divisors.filter (fun d => d.Coprime (b / d))) : x * y ∈ (a * b).divisors.filter (fun d => d.Coprime (a * b / d))",
+   "after": []
+  },
+  {
+   "id": "S2b",
+   "plain": "For coprime a and b, the unitary divisors of ab are the products x·y of a unitary divisor x of a and y of b.",
+   "statement": "(a b : ℕ) (h : a.Coprime b) : (a * b).divisors.filter (fun d => d.Coprime (a * b / d)) = Finset.image (fun x : ℕ × ℕ => x.1 * x.2) (a.divisors.filter (fun d => d.Coprime (a / d)) ×ˢ b.divisors.filter (fun d => d.Coprime (b / d)))",
+   "after": [
+    "S2a",
+    "S2b1",
+    "S2b2"
+   ]
+  },
+  {
+   "id": "S2c",
+   "plain": "For coprime a and b, a divisor x of a and y of b are recovered from the product x·y.",
+   "statement": "(a b : ℕ) (h : a.Coprime b) : Set.InjOn (fun x : ℕ × ℕ => x.1 * x.2) ↑(a.divisors ×ˢ b.divisors)",
+   "after": []
+  },
+  {
+   "id": "S2",
+   "plain": "The sum of unitary divisors is multiplicative: for coprime a and b, σ*(ab) = σ*(a)·σ*(b).",
+   "statement": "(a b : ℕ) (h : a.Coprime b) : ∑ d ∈ (a * b).divisors.filter (fun d => d.Coprime (a * b / d)), d = (∑ d ∈ a.divisors.filter (fun d => d.Coprime (a / d)), d) * (∑ d ∈ b.divisors.filter (fun d => d.Coprime (b / d)), d)",
+   "after": [
+    "S2b",
+    "S2c"
+   ]
   },
   {
    "id": "S5",
