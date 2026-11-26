@@ -1,0 +1,51 @@
+{
+ "id": "qr-smoke-1",
+ "k": 2,
+ "counted": [
+  "Q1"
+ ],
+ "runs": [
+  {
+   "society": "oso-0.2",
+   "rep": 1,
+   "runId": "qr-smoke-1-r1-oso-0.2",
+   "stats": {
+    "rules": "oso",
+    "targetsSolved": 0,
+    "countedSolved": 0,
+    "counted": 1,
+    "conjecturesProved": 0,
+    "sharedAtOnce": 1,
+    "sharedOfChosen": null,
+    "chosen": 0,
+    "chosenShared": 0,
+    "noChoice": 0,
+    "lemmaSize": 73.09677419354838,
+    "citedLater": 33,
+    "builtOnOthers": 44,
+    "deepestTarget": 0,
+    "value": 0,
+    "spent": 0.1784200399999999,
+    "budget": 1,
+    "actions": 80,
+    "lemmasAccepted": 62,
+    "lemmasDuplicate": 11,
+    "targetsDuplicate": 0,
+    "replies": 124,
+    "repliesCutOff": 1,
+    "errors": 0,
+    "trivial": 0,
+    "failed": 7,
+    "plansUnusable": 0,
+    "published": 62,
+    "neverPublished": 0,
+    "earnings": [
+     0,
+     0,
+     0,
+     0
+    ]
+   }
+  }
+ ]
+}
