@@ -4,7 +4,7 @@ Last updated: 2026-11-25. Every result here has its own page under `results/` (t
 
 ## TL;DR
 
-Checked after every run; last checked 2026-11-25, after E1 (4k), the Fermat runs (4l, 4m) and the QR test run (4n).
+Checked after every run; last checked 2026-11-25, after E1 (4k), the Fermat runs (4l, 4m), the QR test run (4n) and the replay test of the prompt fix (4o).
 
 - **Lemmas help weak models.** DeepSeek proves 4 of 16 targets alone, 12 of 16 with the lemmas they need.
 - **Sharing lets labs build on each other** (Spend all: 2.2 results a run in the shared library, 0.4 under traditional), but it has not raised targets proved. A plain shared library gets this too, so it is not unique to OSO. **Repeated work is not a general result:** traditional labs proved the same lemma about 20 times a run in the small cheap race (5 runs), but only 0.4 times in Spend all (20 runs per setup; shared library 0.2).
@@ -27,6 +27,7 @@ Checked after every run; last checked 2026-11-25, after E1 (4k), the Fermat runs
 - **Deep set: a community of cheap models proved Fermat's little theorem from scratch** (one run, OSO α 0.2, section 4j): 11 levels deep, from their own numbers, in round 61 for $2.53. The proof rests on 53 results from all 4 labs; one step took 57 failed tries before a lab broke it. One run with no comparison: it shows the depth is reachable, not that OSO's rules helped.
 - **Deep set, traditional (one run, section 4l): Fermat not proved in 100 rounds** ($4.65 spent, 34 of 95 hidden steps; labs worked alone and proved 22 lemmas twice). At $2 a run it had reached 27 steps against the OSO run's 52. One run a side, different days: direction as predicted, size not estimated.
 - **Deep set, three setups side by side (one run each, section 4m): Fermat not proved in any.** Hidden steps by $2 a run: traditional 34, shared library 51, OSO α 0.2 38. OSO's labs reached the last hard step first (round 28) and then lost 46% of their money to replies cut off on it. Across the Fermat runs, sharing at once beat traditional in all four pairs; flow-back over plain sharing is open.
+- **Asking for one small lemma a turn cuts wasted money (replay test, section 4o).** Retaking 90 turns of the Fermat OSO run per prompt: lemmas accepted per turn 0.11 with the prompt as run, 0.31 asking for one small lemma (+0.20, range +0.08 to +0.32), 0.36 also showing recent failures (+0.24, range +0.13 to +0.36). Replies cut off before an answer fell from 70% of model replies to 40% and 14%. Lemmas per dollar: 7, 26, 49. One run's moments only; accepted lemmas, not hidden steps.
 - **QR set ready (test run, not a result, section 4n).** A new problem: quadratic reciprocity from scratch, 206 hidden steps, 17 levels deep (Fermat: 95, 11). One cheap OSO α 0.2 run (20 rounds, $0.18) reached 34 hidden steps, the deepest at level 10. Everything worked: checker, step map, live snapshot.
 - **Bigger problem set (27 targets), model check:** 4 cheap models, each target alone and with its lemmas, 2 attempts each ($3.34). Targets that needed their lemmas (0 of 2 alone, at least 1 of 2 with them): DeepSeek V4.1 Flash 10, GLM-5.3 Flash 8, Qwen 3.7 Flash 16 (but it proved only 27 of 54 even with lemmas), Claude Haiku 5.5 1 (it proved 50 of 54 alone: too strong for this set). Results: `results/pilot/big-panel-*`.
 
@@ -442,6 +443,23 @@ Only H6 met the rule, so stage 2 was not started. Labs spent $0.77 of each run's
 - **Setup:** OSO α 0.2 (public at once, α 0.2, m 0, m_bit 0, f 0), 4 DeepSeek V4.1 Flash labs, $0.25 each, 20 rounds, labs could not stop.
 - **What happened:** the 20 rounds ran out first, at $0.18 spent. 80 turns: 62 lemmas accepted, 18 failed. 44 lemmas built on another lab's; 11 proved twice. **34 of the 206 hidden steps reached, the deepest at level 10.** Q1 not proved, as expected.
 - **Checks:** the checker accepted the labs' proofs on the QR definitions; the step matcher found hidden steps; the live snapshot builds (206-step map, Q1 at depth 17). Not pushed to the Live page, since it is a test.
+
+## 4o. Replay test: one small lemma a turn, and showing failures (2026-11-26)
+
+Why: in the Fermat OSO run (4m), 46% of the money went on turns with no answer, mostly replies cut off while thinking. Run with `scripts/replay-turn.ts`, $3.20; data in the run folder (not in git, like all transcripts).
+
+- **Design:** the OSO α 0.2 run of deep-fermat-2, rebuilt as it stood at rounds 40, 55 and 70. Each lab retakes its turn 30 times per round under each prompt (90 turns a prompt): *as run*; *small* (asks for one small lemma a turn); *small + failures* (also shows the last 20 failed tries and why). Lean checks every reply, as in a run.
+
+| Prompt | Lemmas accepted a turn (95% range) | Turns with an answer | Replies cut off | Money | Lemmas per dollar |
+| --- | --- | --- | --- | --- | --- |
+| As run | 0.11 (0.05–0.18) | 49 of 90 | 186 of 267 (70%) | $1.48 | 7 |
+| Small | 0.31 (0.22–0.41) | 84 of 90 | 99 of 247 (40%) | $1.06 | 26 |
+| Small + failures | 0.36 (0.26–0.45) | 90 of 90 | 32 of 236 (14%) | $0.66 | 49 |
+
+- **Differences, lemmas accepted a turn:** small − as run +0.20 (range +0.08 to +0.32); small + failures − as run +0.24 (+0.13 to +0.36); small + failures − small +0.04 (−0.09 to +0.18).
+- **Reading:** both changes help clearly against the prompt as run, at lower cost. Showing failures adds little more in lemmas but halves the money a turn again. At round 70 (the hard last step) the gains shrink: 1, 5 and 7 lemmas accepted of 30.
+- **Limits:** one run, three moments; turns at one moment share the same state, so the ranges are too narrow if anything. "Accepted" counts lemmas Lean passed, not hidden steps reached or targets proved. Small lemmas may also be easier and less useful.
+- **Decision this informs:** turn on `smallSteps` and `showFailures` for the QR runs, for every setup alike.
 
 ## 5. Is the test setup sound? (harness checks)
 
