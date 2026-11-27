@@ -197,5 +197,21 @@
    "Erdos1052"
   ],
   "uses": []
+ },
+ {
+  "id": "L14",
+  "name": "OSO.L14",
+  "lab": "himalayajung",
+  "pr": 15,
+  "at": "2026-11-27T03:36:19.971Z",
+  "prAt": "2026-11-27T03:34:09Z",
+  "kind": "lemma",
+  "target": null,
+  "statement": "(n : ℕ) (hn : 1 < n) : ∃ p, p.Prime ∧ p ∣ n",
+  "proof": ":= by\n  have h_main : ∃ p, p.Prime ∧ p ∣ n := by\n    -- Use the lemma `Nat.exists_prime_and_dvd` to find a prime `p` that divides `n`.\n    have h₁ : ∃ p, p.Prime ∧ p ∣ n := by\n      -- Apply the lemma `Nat.exists_prime_and_dvd` which states that for any `n > 1`, there exists a prime `p` such that `p ∣ n`.\n      apply Nat.exists_prime_and_dvd\n      <;> omega\n    -- The result follows directly from the lemma.\n    exact h₁\n  -- The final result is already obtained in `h_main`.\n  exact h_main",
+  "open": [
+   "Erdos1052"
+  ],
+  "uses": []
  }
 ]

@@ -1,6 +1,6 @@
 {
  "alpha": 0.2,
- "updatedAt": "2026-11-27T03:00:03.019Z",
+ "updatedAt": "2026-11-27T03:36:19.980Z",
  "activeLabs": 1,
  "targets": [
   {
@@ -277,6 +277,17 @@
    "pr": 14,
    "points": 0,
    "statement": "(n : ℕ) : n ∉ properUnitaryDivisors n"
+  },
+  {
+   "id": "L14",
+   "lab": "himalayajung",
+   "kind": "lemma",
+   "target": null,
+   "uses": [],
+   "at": "2026-11-27T03:36:19.971Z",
+   "pr": 15,
+   "points": 0,
+   "statement": "(n : ℕ) (hn : 1 < n) : ∃ p, p.Prime ∧ p ∣ n"
   }
  ],
  "steps": [
@@ -378,7 +389,11 @@
      "open": [
       "Erdos1052"
      ],
-     "provedBy": null
+     "provedBy": {
+      "id": "L14",
+      "name": "OSO.L14",
+      "lab": "himalayajung"
+     }
     },
     {
      "id": "S4b",
@@ -513,11 +528,21 @@
   {
    "name": "himalayajung",
    "points": 0,
-   "proofs": 13,
-   "lastAt": "2026-11-27T03:00:02.969Z"
+   "proofs": 14,
+   "lastAt": "2026-11-27T03:36:19.971Z"
   }
  ],
  "feed": [
+  {
+   "at": "2026-11-27T03:36:19.971Z",
+   "lab": "himalayajung",
+   "pr": 15,
+   "ok": true,
+   "kind": "lemma",
+   "target": null,
+   "id": "L14",
+   "errors": []
+  },
   {
    "at": "2026-11-27T03:00:02.969Z",
    "lab": "himalayajung",
