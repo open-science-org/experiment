@@ -1,7 +1,7 @@
 {
  "alpha": 0.2,
- "updatedAt": "2026-11-26T19:39:08.136Z",
- "activeLabs": 0,
+ "updatedAt": "2026-11-27T03:00:03.019Z",
+ "activeLabs": 1,
  "targets": [
   {
    "id": "9.variants.infinite",
@@ -266,6 +266,17 @@
    "pr": 13,
    "points": 0,
    "statement": "(p : ℕ) (hp : p.Prime) : ¬ IsUnitaryPerfect p"
+  },
+  {
+   "id": "L13",
+   "lab": "himalayajung",
+   "kind": "lemma",
+   "target": null,
+   "uses": [],
+   "at": "2026-11-27T03:00:02.969Z",
+   "pr": 14,
+   "points": 0,
+   "statement": "(n : ℕ) : n ∉ properUnitaryDivisors n"
   }
  ],
  "steps": [
@@ -295,7 +306,11 @@
      "open": [
       "Erdos1052"
      ],
-     "provedBy": null
+     "provedBy": {
+      "id": "L13",
+      "name": "OSO.L13",
+      "lab": "himalayajung"
+     }
     },
     {
      "id": "S1",
@@ -498,11 +513,21 @@
   {
    "name": "himalayajung",
    "points": 0,
-   "proofs": 12,
-   "lastAt": "2026-11-24T19:33:27.949Z"
+   "proofs": 13,
+   "lastAt": "2026-11-27T03:00:02.969Z"
   }
  ],
  "feed": [
+  {
+   "at": "2026-11-27T03:00:02.969Z",
+   "lab": "himalayajung",
+   "pr": 14,
+   "ok": true,
+   "kind": "lemma",
+   "target": null,
+   "id": "L13",
+   "errors": []
+  },
   {
    "at": "2026-11-24T19:33:27.949Z",
    "lab": "himalayajung",

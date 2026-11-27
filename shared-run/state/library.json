@@ -181,5 +181,21 @@
    "Erdos1052"
   ],
   "uses": []
+ },
+ {
+  "id": "L13",
+  "name": "OSO.L13",
+  "lab": "himalayajung",
+  "pr": 14,
+  "at": "2026-11-27T03:00:02.969Z",
+  "prAt": "2026-11-27T02:57:36Z",
+  "kind": "lemma",
+  "target": null,
+  "statement": "(n : ℕ) : n ∉ properUnitaryDivisors n",
+  "proof": ":= by\n  have h_main : n ∉ properUnitaryDivisors n := by\n    intro h\n    have h₁ : n ∈ Finset.Ico 1 n := by\n      have h₂ : n ∈ properUnitaryDivisors n := h\n      have h₃ : n ∈ Finset.Ico 1 n := by\n        -- Prove that n is in the Finset.Ico 1 n using the definition of properUnitaryDivisors\n        have h₄ : n ∈ Finset.Ico 1 n := by\n          -- Use the fact that n is in properUnitaryDivisors n to get the required condition\n          have h₅ : n ∈ properUnitaryDivisors n := h₂\n          have h₆ : n ∈ Finset.Ico 1 n := by\n            -- Use the definition of properUnitaryDivisors to get the required condition\n            simp [properUnitaryDivisors, Finset.mem_Ico] at h₅ ⊢\n            <;> aesop\n          exact h₆\n        exact h₄\n      exact h₃\n    -- Derive a contradiction from the fact that n is in Finset.Ico 1 n\n    have h₂ : n ∉ Finset.Ico 1 n := by\n      -- Prove that n is not in Finset.Ico 1 n\n      simp [Finset.mem_Ico]\n      <;> omega\n    exact h₂ h₁\n  exact h_main",
+  "open": [
+   "Erdos1052"
+  ],
+  "uses": []
  }
 ]
