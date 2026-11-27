@@ -15,10 +15,11 @@ if [ ! -d "$live" ]; then
 fi
 total=$(node -e "const p=require('./lean/runs/$id.plan.json');console.log(p.societies.length*p.repeats)")
 while :; do
+  # Which hidden steps the labs have proved (new lemmas only; a failure leaves the graph as it was). Outside the lock:
+  # it writes only to this experiment's run folders, and on a big run it takes minutes, which would stall other streams.
+  for d in lean/runs/"$id"-r*/; do [ -f "$d/options.json" ] && node scripts/match-steps.ts "$d" >/dev/null 2>&1; done; true
   until mkdir "$lock" 2>/dev/null; do sleep 5; done
   mkdir -p "$live/experiments"
-  # Which hidden steps the labs have proved (new lemmas only; a failure leaves the graph as it was).
-  for d in lean/runs/"$id"-r*/; do [ -f "$d/options.json" ] && node scripts/match-steps.ts "$d" >/dev/null 2>&1; done; true
   node scripts/live-snapshot.ts "$id" "$live/experiments/$id.json" >/dev/null
   node scripts/live-index.ts "$live" >/dev/null
   done=$(ls lean/runs/"$id"-r*/result.json 2>/dev/null | wc -l | tr -d ' ')
