@@ -15,9 +15,11 @@ if [ ! -d "$live" ]; then
 fi
 total=$(node -e "const p=require('./lean/runs/$id.plan.json');console.log(p.societies.length*p.repeats)")
 while :; do
-  # Which hidden steps the labs have proved (new lemmas only; a failure leaves the graph as it was). Outside the lock:
-  # it writes only to this experiment's run folders, and on a big run it takes minutes, which would stall other streams.
-  for d in lean/runs/"$id"-r*/; do [ -f "$d/options.json" ] && node scripts/match-steps.ts "$d" >/dev/null 2>&1; done; true
+  # Which hidden steps the labs have proved (new lemmas only; a failure leaves the graph as it was). In the background,
+  # one at a time per run: on a big run it takes minutes, so each push carries the matches saved so far.
+  for d in lean/runs/"$id"-r*/; do
+    [ -f "$d/options.json" ] && ! pgrep -f "match-steps.ts $d" >/dev/null && { node scripts/match-steps.ts "$d" >/dev/null 2>&1 & }
+  done; true
   until mkdir "$lock" 2>/dev/null; do sleep 5; done
   mkdir -p "$live/experiments"
   node scripts/live-snapshot.ts "$id" "$live/experiments/$id.json" >/dev/null
@@ -26,6 +28,10 @@ while :; do
   (cd "$live" && git add -A . && { git rev-parse -q --verify HEAD >/dev/null && git commit -q --amend -m "live: $id" || git commit -q -m "live: $id"; } && git -c core.sshCommand='ssh -o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=2' push -q -f origin live) \
     && echo "$(date '+%H:%M') pushed: $done of $total runs done" || true
   rmdir "$lock"
-  [ "$done" -ge "$total" ] && break
+  # The last push waits for the final matches.
+  if [ "$done" -ge "$total" ]; then
+    [ -n "${final:-}" ] && break
+    while pgrep -f "match-steps.ts lean/runs/$id-r" >/dev/null; do sleep 10; done; final=1; continue
+  fi
   sleep "$every"
 done
