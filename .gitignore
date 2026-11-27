@@ -26,3 +26,4 @@ shared-run/.check/
 shared-run/.local-lab/
 lean/Reference/QR*.lean
 lean/reference-dag-qr.md
+shared-run/.lab-jobs.json*

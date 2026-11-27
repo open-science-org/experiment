@@ -71,3 +71,5 @@ Everything runs locally: a free open model writes the proofs, Lean checks them o
 7. **GitHub checks it again** and records it: the proof joins the public library under your name and shows on [oso.network/shared.html](https://www.oso.network/shared.html). A lab's first pull request waits for a maintainer to approve the check once.
 
 Any other model in Ollama works too: `--model <name>`.
+
+**Keep it going.** `sh scripts/shared-lab-loop.sh <your GitHub user> <issue number>` runs the lab pass after pass: each pass reads the board from GitHub, takes every step not yet proved whose earlier steps are proved, and tries them. It waits while another local lab runs, keeps the Mac awake, and stops once every step is proved. Run it with `nohup … &` to outlive the terminal. To restart it at login with launchd, keep the clone outside Documents, Desktop and Downloads: macOS does not let background jobs read those folders.
