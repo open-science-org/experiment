@@ -430,7 +430,7 @@ function leanRun(id: string) {
 async function costData() {
   const dir = join(LEAN_DIR, 'runs');
   type Row = { id: string; name: string; kind: string; runs: number; spent: number; listOnly: number; first: number; last: number; running: boolean };
-  const rows = new Map<string, Row>(), hours = new Map<number, number>();
+  const rows = new Map<string, Row>(), days = new Map<number, number>();
   const add = (id: string, name: string, kind: string, recs: Record<string, unknown>[], modified: number, open: boolean, undated = modified) => {
     const r = rows.get(id) ?? { id, name, kind, runs: 0, spent: 0, listOnly: 0, first: Infinity, last: 0, running: false };
     r.runs++;
@@ -443,7 +443,8 @@ async function costData() {
       // A record without a time: its file's age (the oldest file, which later edits to the folder do not move).
       const t = (a.t as number | undefined) ?? undated;
       r.first = Math.min(r.first, t); r.last = Math.max(r.last, t);
-      if (c && kind !== 'test') { const h = Math.floor(t / 3_600_000); hours.set(h, (hours.get(h) ?? 0) + c); }
+      // Spending by day (the Mac's midnight), so "spent today" starts at the day's first point.
+      if (c && kind !== 'test') { const d = new Date(t).setHours(0, 0, 0, 0); days.set(d, (days.get(d) ?? 0) + c); }
     }
     if (!recs.length) { r.first = Math.min(r.first, modified); r.last = Math.max(r.last, modified); }
     r.running ||= open && Date.now() - modified < 10 * 60_000;
@@ -454,6 +455,9 @@ async function costData() {
     if (!statSync(p).isDirectory()) continue;
     const files = ['actions.jsonl', 'attempts.jsonl', 'attempts-superseded.jsonl'].map((f) => join(p, f)).filter(existsSync);
     const recs = files.flatMap((f) => jsonl(f));
+    // A run carried on with --continue starts with the earlier run's turns copied in: count only its own.
+    const from = existsSync(join(p, 'options.json')) ? (JSON.parse(readFileSync(join(p, 'options.json'), 'utf8')).continuedFrom as string | undefined) : undefined;
+    if (from && existsSync(join(from, 'actions.jsonl'))) recs.splice(0, jsonl(join(from, 'actions.jsonl')).length);
     const modified = Math.max(statSync(p).mtimeMs, ...files.map((f) => statSync(f).mtimeMs));
     const undated = files.length ? Math.min(...files.map((f) => statSync(f).mtimeMs)) : modified;
     const m = /^(.*)-r(\d+)-(.+)$/.exec(d);
@@ -471,7 +475,7 @@ async function costData() {
   // Pipeline tests charge a pretend $0.01 a call and local models are priced as if hosted: no real money, left out.
   const list = [...rows.values()].filter((r) => r.kind !== 'test' && (r.spent > 0 || r.running)).map((r) => ({ ...r, spent: Math.round(r.spent * 1e4) / 1e4, listOnly: Math.round(r.listOnly * 1e4) / 1e4 })).sort((a, b) => b.last - a.last);
   let run = 0;
-  const series = [...hours.entries()].sort((a, b) => a[0] - b[0]).map(([h, c]) => [h * 3_600_000, Math.round((run += c) * 1e4) / 1e4]);
+  const series = [...days.entries()].sort((a, b) => a[0] - b[0]).map(([d, c]) => [d, Math.round((run += c) * 1e4) / 1e4]);
   const key = process.env.OPENROUTER_API_KEY;
   return { total: Math.round(list.reduce((a, r) => a + r.spent, 0) * 100) / 100, experiments: list, series, keyUsage: key ? await keyUsage(key) : null, credit: key ? await creditLeft(key) : null };
 }
