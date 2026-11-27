@@ -1,0 +1,9 @@
+{
+ "kind": "lemma",
+ "statement": "(p n : ℕ) (hp : p.Prime) (hn : n ≠ 0) (hd : p ∣ n) : 0 < n.factorization p",
+ "proof": ":= by\n  have h_main : 0 < n.factorization p := by\n    have h₁ : p ∣ n := hd\n    have h₂ : p.Prime := hp\n    have h₃ : n.factorization p > 0 := by\n      -- Use the fact that if a prime divides a number, its factorization is positive\n      have h₄ : p ∣ n := h₁\n      have h₅ : n.factorization p > 0 := by\n        -- Use the property of prime factorization\n        have h₆ : p.Prime := h₂\n        have h₇ : p ∣ n := h₄\n        have h₈ : n.factorization p > 0 := by\n          -- Use the fact that if a prime divides a number, its factorization is positive\n          apply Nat.pos_of_ne_zero\n          intro h\n          have h₉ := Nat.Prime.ne_zero h₆\n          have h₁₀ := Nat.Prime.ne_zero h₆\n          simp_all [Nat.factorization_eq_zero_iff]\n          <;> aesop\n        exact h₈\n      exact h₅\n    exact h₃\n  exact h_main",
+ "open": [
+  "Erdos1052"
+ ],
+ "note": "factorization_pos_of_prime_dvd; local model Goedel-Prover-V2-8B-GGUF:Q4_K_M"
+}
