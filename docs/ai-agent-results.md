@@ -4,7 +4,7 @@ Last updated: 2026-11-25. Every result here has its own page under `results/` (t
 
 ## TL;DR
 
-Checked after every run; last checked 2026-11-25, after E1 (4k), the Fermat runs (4l, 4m), the QR test run (4n), the replay test of the prompt fix (4o) and the first QR comparison (4p).
+Checked after every run; last checked 2026-11-27, after E1 (4k), the Fermat runs (4l, 4m), the QR test run (4n), the replay test of the prompt fix (4o), the first QR comparison (4p) and labs choose on QR (4q).
 
 - **Lemmas help weak models.** DeepSeek proves 4 of 16 targets alone, 12 of 16 with the lemmas they need.
 - **Sharing lets labs build on each other** (Spend all: 2.2 results a run in the shared library, 0.4 under traditional), but it has not raised targets proved. A plain shared library gets this too, so it is not unique to OSO. **Repeated work is not a general result:** traditional labs proved the same lemma about 20 times a run in the small cheap race (5 runs), but only 0.4 times in Spend all (20 runs per setup; shared library 0.2).
@@ -27,6 +27,7 @@ Checked after every run; last checked 2026-11-25, after E1 (4k), the Fermat runs
 - **Deep set: a community of cheap models proved Fermat's little theorem from scratch** (one run, OSO α 0.2, section 4j): 11 levels deep, from their own numbers, in round 61 for $2.53. The proof rests on 53 results from all 4 labs; one step took 57 failed tries before a lab broke it. One run with no comparison: it shows the depth is reachable, not that OSO's rules helped.
 - **Deep set, traditional (one run, section 4l): Fermat not proved in 100 rounds** ($4.65 spent, 34 of 95 hidden steps; labs worked alone and proved 22 lemmas twice). At $2 a run it had reached 27 steps against the OSO run's 52. One run a side, different days: direction as predicted, size not estimated.
 - **Deep set, three setups side by side (one run each, section 4m): Fermat not proved in any.** Hidden steps by $2 a run: traditional 34, shared library 51, OSO α 0.2 38. OSO's labs reached the last hard step first (round 28) and then lost 46% of their money to replies cut off on it. Across the Fermat runs, sharing at once beat traditional in all four pairs; flow-back over plain sharing is open.
+- **QR, labs choose what to publish (one run each, section 4q): labs share almost everything either way.** Published at once: 96% at α 1, 100% at α 0.2, with nothing rewarding it. Flow-back has little to change when sharing is already the default. Hidden steps by $2 a run: 78 and 76.
 - **QR, three setups side by side (one run each, section 4p): no setup got past level 10 of 17.** Hidden steps reached of 206: traditional 56, shared library 69, OSO α 0.2 70. Lead, not a result: sharing got further than working alone (+13 and +14); flow-back added nothing beyond sharing (+1). All stalled on the basics before Wilson's theorem and Gauss's lemma. With the small-lemma prompt, each run spent only $1.02 to $1.24 of $8 before the 100 rounds ran out, so counts are at 100 rounds, not equal money. One run each: no ranges.
 - **Asking for one small lemma a turn cuts wasted money (replay test, section 4o).** Retaking 90 turns of the Fermat OSO run per prompt: lemmas accepted per turn 0.11 with the prompt as run, 0.31 asking for one small lemma (+0.20, range +0.08 to +0.32), 0.36 also showing recent failures (+0.24, range +0.13 to +0.36). Replies cut off before an answer fell from 70% of model replies to 40% and 14%. Lemmas per dollar: 7, 26, 49. One run's moments only; accepted lemmas, not hidden steps.
 - **QR set ready (test run, not a result, section 4n).** A new problem: quadratic reciprocity from scratch, 206 hidden steps, 17 levels deep (Fermat: 95, 11). One cheap OSO α 0.2 run (20 rounds, $0.18) reached 34 hidden steps, the deepest at level 10. Everything worked: checker, step map, live snapshot.
@@ -475,6 +476,18 @@ Why: in the Fermat OSO run (4m), 46% of the money went on turns with no answer, 
 - **Reading:** a lead to test, not a result: sharing got further than working alone (+13, +14 steps), as on Fermat, and OSO's flow-back added nothing on top of sharing (+1). Sharing was forced in both the shared library and OSO, so this run does not test whether flow-back makes labs *choose* to share; that is the labs-choose test (qr-choose-1). Fewer than 2 runs a side, so none of these gaps has a range.
 - **Limits:** the prompt fix shows each lab recent failed tries, but traditional labs see only their own, while shared and OSO labs see everyone's. That fits each setup's rules, but part of the sharing gap may come from shared failures, not shared lemmas.
 - **Next:** the same three setups with many more rounds (money was not the limit), and then 5 runs a setup if a gap remains.
+
+## 4q. QR set: labs choose what to publish, α 1 vs α 0.2 (one run each, 2026-11-27)
+
+[Result](../results/community/qr-choose-1/summary.md). Follows 4p, where sharing was forced: here each lab chooses, for every lemma, whether to publish it at once or keep it.
+
+- **Setup:** labs choose (public at once only if the lab says so), knowledge reward off (nothing pays for publishing), α 1 against α 0.2, m 0, m_bit 0, f 0. 4 DeepSeek V4.1 Flash labs, $2 each, 300 rounds, labs could not stop. Prompt fix on (4o).
+- **Main measure, share of lemmas published at once:** α 1 96% (36 of 1,021 kept back, 10 of those published later); α 0.2 100% (1 of 930). Difference +3 points (+4 in lean-big-1, range −3 to +12). Replies with no PUBLISH line left out: 11 and 24.
+- **Hidden steps reached (of 206):** by $2 a run, α 1 78, α 0.2 76; by $6.70 a run, 94 and 81. Deepest level 10 of 17 in both; Q1 not proved.
+- **Money:** $6.78 and $7.94 of $8 a run.
+- **Reading:** labs share almost everything even when nothing rewards it and they keep all the credit. On these models sharing is the default, so flow-back has little left to change; lean-big-1 found the same on the main set. The step gap at $6.70 (+13 for α 1) cannot come from sharing, which was nearly equal; one run each, so it has no range.
+- **Limits:** one run each. The labs are one model, trained to be helpful, told the rules; people or models that guard their work may act differently. The prompt names publishing as a choice, which may itself push toward yes.
+- **Next:** testing whether flow-back makes labs share needs labs that sometimes keep work back, e.g. a cost to publishing or a reward for being first to a target.
 
 ## 5. Is the test setup sound? (harness checks)
 

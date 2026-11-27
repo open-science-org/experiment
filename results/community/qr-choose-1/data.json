@@ -1,0 +1,93 @@
+{
+ "id": "qr-choose-1",
+ "k": 2,
+ "counted": [
+  "Q1"
+ ],
+ "runs": [
+  {
+   "society": "choose-off-1",
+   "rep": 1,
+   "runId": "qr-choose-1-r1-choose-off-1",
+   "stats": {
+    "rules": "oso",
+    "targetsSolved": 0,
+    "countedSolved": 0,
+    "counted": 1,
+    "conjecturesProved": 0,
+    "sharedAtOnce": 0.9535113748763601,
+    "sharedOfChosen": 0.9643564356435643,
+    "chosen": 1010,
+    "chosenShared": 974,
+    "noChoice": 11,
+    "lemmaSize": 68.07835455435847,
+    "citedLater": 545,
+    "builtOnOthers": 897,
+    "deepestTarget": 0,
+    "value": 0,
+    "spent": 6.779628695999999,
+    "budget": 8,
+    "actions": 1200,
+    "lemmasAccepted": 1011,
+    "lemmasDuplicate": 84,
+    "targetsDuplicate": 0,
+    "replies": 2018,
+    "repliesCutOff": 229,
+    "errors": 0,
+    "trivial": 10,
+    "failed": 110,
+    "plansUnusable": 0,
+    "published": 986,
+    "neverPublished": 35,
+    "earnings": [
+     0,
+     0,
+     0,
+     0
+    ]
+   }
+  },
+  {
+   "society": "choose-off-0.2",
+   "rep": 1,
+   "runId": "qr-choose-1-r1-choose-off-0.2",
+   "stats": {
+    "rules": "oso",
+    "targetsSolved": 0,
+    "countedSolved": 0,
+    "counted": 1,
+    "conjecturesProved": 0,
+    "sharedAtOnce": 0.9738276990185387,
+    "sharedOfChosen": 0.9988962472406181,
+    "chosen": 906,
+    "chosenShared": 905,
+    "noChoice": 24,
+    "lemmaSize": 85.55483870967743,
+    "citedLater": 546,
+    "builtOnOthers": 818,
+    "deepestTarget": 0,
+    "value": 0,
+    "spent": 7.936990544000001,
+    "budget": 8,
+    "actions": 1187,
+    "lemmasAccepted": 917,
+    "lemmasDuplicate": 119,
+    "targetsDuplicate": 0,
+    "replies": 2186,
+    "repliesCutOff": 404,
+    "errors": 0,
+    "trivial": 13,
+    "failed": 145,
+    "plansUnusable": 0,
+    "published": 909,
+    "neverPublished": 21,
+    "earnings": [
+     0,
+     0,
+     0,
+     0
+    ]
+   }
+  }
+ ]
+}
