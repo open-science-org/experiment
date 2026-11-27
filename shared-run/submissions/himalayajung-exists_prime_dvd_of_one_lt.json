@@ -1,0 +1,9 @@
+{
+ "kind": "lemma",
+ "statement": "(n : ℕ) (hn : 1 < n) : ∃ p, p.Prime ∧ p ∣ n",
+ "proof": ":= by\n  have h_main : ∃ p, p.Prime ∧ p ∣ n := by\n    -- Use the lemma `Nat.exists_prime_and_dvd` to find a prime `p` that divides `n`.\n    have h₁ : ∃ p, p.Prime ∧ p ∣ n := by\n      -- Apply the lemma `Nat.exists_prime_and_dvd` which states that for any `n > 1`, there exists a prime `p` such that `p ∣ n`.\n      apply Nat.exists_prime_and_dvd\n      <;> omega\n    -- The result follows directly from the lemma.\n    exact h₁\n  -- The final result is already obtained in `h_main`.\n  exact h_main",
+ "open": [
+  "Erdos1052"
+ ],
+ "note": "exists_prime_dvd_of_one_lt; local model Goedel-Prover-V2-8B-GGUF:Q4_K_M"
+}
