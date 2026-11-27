@@ -777,6 +777,11 @@ export async function runCommunity(opts: CommunityOptions, chatFor: (com: Commun
   const file = join(dir, 'actions.jsonl');
   writeFileSync(file, com.actions.map((x) => JSON.stringify(x) + '\n').join(''));
   if (from && existsSync(join(from, 'reasoning.jsonl'))) writeFileSync(join(dir, 'reasoning.jsonl'), readFileSync(join(from, 'reasoning.jsonl')));
+  // The step matcher's work on the carried-over lemmas, so its first pass checks only new ones (the second pass reruns).
+  if (from && existsSync(join(from, 'matches.json'))) {
+    const { combosFinal: _f, ...m } = JSON.parse(readFileSync(join(from, 'matches.json'), 'utf8'));
+    writeFileSync(join(dir, 'matches.json'), JSON.stringify({ ...m, combosAt: 0 }));
+  }
   const chats = opts.agents.map((_, i) => chatFor(com, i));
   let stopped: string | undefined;
   for (let round = firstRound; round <= opts.rounds && !com.done() && !stopped; round++) {
