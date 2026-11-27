@@ -16,7 +16,7 @@
 //                target, or a lemma to state and prove). Results are shared at once and nothing flows
 //                back, as in a shared library. A strong orchestration baseline, at the same total money.
 // Transcripts are large, so they stay in lean/runs/, out of git.
-import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { check, type CheckOptions } from './checker.ts';
 import { definedNames, definitions, FREE, LEAN_DIR, loadTasks, parseReference, type Problems, type Task } from './tasks.ts';
@@ -747,20 +747,39 @@ export const costOf = (a: Action) => (a.usage ? referenceCost(a.model, a.usage) 
 export const charged = (r: CommunityResult) => r.actions.every((a) => a.cost !== undefined);
 
 /** Runs one community to the end: rounds of one action per agent with budget left, in parallel. */
-export async function runCommunity(opts: CommunityOptions, chatFor: (com: Community, i: number) => Chat, price: (model: string, u: Usage) => number, runId: string, log = console.log, root = join(LEAN_DIR, 'runs')): Promise<CommunityResult> {
+/** `from`: the run folder of an earlier run to carry on from (same options but the round limit): its library, turns,
+ *  earnings, money spent, payouts and stopped labs are restored, its turns and thinking copied in, and the rounds
+ *  go on from the round after its last. The result is as if the run had been given more rounds from the start. */
+export async function runCommunity(opts: CommunityOptions, chatFor: (com: Community, i: number) => Chat, price: (model: string, u: Usage) => number, runId: string, log = console.log, root = join(LEAN_DIR, 'runs'), from?: string): Promise<CommunityResult> {
   const com = new Community(opts);
   const dir = join(root, runId);
   mkdirSync(dir, { recursive: true });
-  writeFileSync(join(dir, 'options.json'), JSON.stringify({ kind: 'community', ...opts, rewards: { gaps: LEAN_REWARDS.gaps(opts) } }, null, 1));
+  let firstRound = 1;
+  if (from) {
+    const prev = JSON.parse(readFileSync(join(from, 'result.json'), 'utf8')) as CommunityResult;
+    const { rounds: _r, ...a } = prev.opts, { rounds: _s, ...b } = opts;
+    if (JSON.stringify(a) !== JSON.stringify(b)) throw new Error(`--continue: ${from} was run with other options; only the round limit may change`);
+    if (opts.follow !== undefined) throw new Error('--continue does not carry money-follows-earnings state yet');
+    com.library.push(...prev.library);
+    com.actions.push(...prev.actions);
+    com.earnings.splice(0, com.earnings.length, ...prev.earnings);
+    com.spent.splice(0, com.spent.length, ...prev.spent);
+    com.ledger.push(...(prev.ledger ?? []));
+    for (const x of prev.actions) if (x.kind === 'pass') com.passed.add(x.agent);
+    firstRound = Math.max(0, ...prev.actions.map((x) => x.round)) + 1;
+    log(`  continuing ${from} from round ${firstRound}: ${prev.library.length} results, $${prev.spent.reduce((s, x) => s + x, 0).toFixed(2)} spent`);
+  }
+  writeFileSync(join(dir, 'options.json'), JSON.stringify({ kind: 'community', ...opts, ...(from ? { continuedFrom: from } : {}), rewards: { gaps: LEAN_REWARDS.gaps(opts) } }, null, 1));
   // The exact instructions each lab gets, as sent (the viewer shows these; the code's wording may change later).
   const prompts = opts.agents.map((_, i) => com.systemPrompt(i));
   writeFileSync(join(dir, 'prompts.json'), JSON.stringify(prompts, null, 1));
   writeFileSync(join(dir, 'manifest.json'), JSON.stringify(runManifest(runId, opts, prompts), null, 1));
   const file = join(dir, 'actions.jsonl');
-  writeFileSync(file, '');
+  writeFileSync(file, com.actions.map((x) => JSON.stringify(x) + '\n').join(''));
+  if (from && existsSync(join(from, 'reasoning.jsonl'))) writeFileSync(join(dir, 'reasoning.jsonl'), readFileSync(join(from, 'reasoning.jsonl')));
   const chats = opts.agents.map((_, i) => chatFor(com, i));
   let stopped: string | undefined;
-  for (let round = 1; round <= opts.rounds && !com.done() && !stopped; round++) {
+  for (let round = firstRound; round <= opts.rounds && !com.done() && !stopped; round++) {
     com.fund();
     const before = [...com.earnings], spentBefore = [...com.spent];
     if (opts.rules === 'planner') {

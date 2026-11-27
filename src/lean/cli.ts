@@ -25,6 +25,7 @@
 //     --providers TAG,...         OpenRouter companies allowed to serve the calls (e.g. deepinfra/fp8); default: any within the price cap
 //     --may-stop yes|no (yes): may a lab pass and stop early? no: every lab works until its money or the rounds run out
 //     --only A5,...               post only these targets (the set's others are not shown to the labs)
+//     --continue ID               carry each run on from run ID's same setup and repeat (same options, more --rounds)
 //     --small-steps yes|no (no)   ask labs for one small lemma a turn
 //     --show-failures N (0)       show labs the last N failed tries they can see, and why (replay test 4o used 20)
 import { chatFor, creditLeft, DEFAULT_MODEL, DEFAULT_MODELS, defaultProvider, type Provider } from './agent.ts';
@@ -128,7 +129,7 @@ if (cmd === 'community') {
   const societies = pick('societies', '').split(',').filter(Boolean);
   if (societies.length) rules.splice(0, rules.length, ...(societies as never[]));
   // Stop a bad run before it spends: an unknown flag (a typo runs with the default), or a setting out of range.
-  const KNOWN = ['problems', 'config', 'agents', 'budget', 'rounds', 'repairs', 'knowledge', 'pricing', 'providers', 'follow', 'effort', 'conjectures', 'conjectureBounty', 'may-stop', 'counted', 'only', 'rules', 'societies', 'dry-run', 'stub', 'run', 'repeats', 'from-rep', 'k', 'parallel', 'max-tokens', 'think', 'design', 'small-steps', 'show-failures'];
+  const KNOWN = ['problems', 'config', 'agents', 'budget', 'rounds', 'repairs', 'knowledge', 'pricing', 'providers', 'follow', 'effort', 'conjectures', 'conjectureBounty', 'may-stop', 'counted', 'only', 'rules', 'societies', 'dry-run', 'stub', 'run', 'repeats', 'from-rep', 'k', 'parallel', 'max-tokens', 'think', 'design', 'small-steps', 'show-failures', 'continue'];
   const unknown = args.filter((a) => a.startsWith('--') && !KNOWN.includes(a.slice(2)));
   const { checkOptions } = await import('./community.ts');
   const { societyOptions } = await import('./societies.ts');
@@ -190,7 +191,8 @@ if (cmd === 'community') {
       const runId = `${id}-r${rep}-${key}`;
       console.log(`\nRun ${rep} of ${repeats}, ${key}:`);
       const log = parallel ? (line: string) => console.log(`[r${rep} ${key}] ${line.trimStart()}`) : console.log;
-      return { key, rep, runId, result: await runCommunity(societyOptions(key, opts), chat, price, runId, log) };
+      const from = pick('continue', '') ? join(LEAN_DIR, 'runs', `${pick('continue', '')}-r${rep}-${key}`) : undefined;
+      return { key, rep, runId, result: await runCommunity(societyOptions(key, opts), chat, price, runId, log, undefined, from) };
     };
     const have = (key: string, rep: number) => rep < fromRep && existsSync(join(LEAN_DIR, 'runs', `${id}-r${rep}-${key}`, 'result.json'));
     if (parallel) {
