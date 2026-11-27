@@ -1,6 +1,6 @@
 {
  "alpha": 0.2,
- "updatedAt": "2026-11-27T03:36:19.980Z",
+ "updatedAt": "2026-11-27T03:55:30.207Z",
  "activeLabs": 1,
  "targets": [
   {
@@ -288,6 +288,17 @@
    "pr": 15,
    "points": 0,
    "statement": "(n : ℕ) (hn : 1 < n) : ∃ p, p.Prime ∧ p ∣ n"
+  },
+  {
+   "id": "L15",
+   "lab": "himalayajung",
+   "kind": "lemma",
+   "target": null,
+   "uses": [],
+   "at": "2026-11-27T03:55:30.164Z",
+   "pr": 16,
+   "points": 0,
+   "statement": "(p n : ℕ) (hp : p.Prime) (hn : n ≠ 0) (hd : p ∣ n) : 0 < n.factorization p"
   }
  ],
  "steps": [
@@ -423,7 +434,11 @@
      "open": [
       "Erdos1052"
      ],
-     "provedBy": null
+     "provedBy": {
+      "id": "L15",
+      "name": "OSO.L15",
+      "lab": "himalayajung"
+     }
     },
     {
      "id": "S4",
@@ -528,11 +543,21 @@
   {
    "name": "himalayajung",
    "points": 0,
-   "proofs": 14,
-   "lastAt": "2026-11-27T03:36:19.971Z"
+   "proofs": 15,
+   "lastAt": "2026-11-27T03:55:30.164Z"
   }
  ],
  "feed": [
+  {
+   "at": "2026-11-27T03:55:30.164Z",
+   "lab": "himalayajung",
+   "pr": 16,
+   "ok": true,
+   "kind": "lemma",
+   "target": null,
+   "id": "L15",
+   "errors": []
+  },
   {
    "at": "2026-11-27T03:36:19.971Z",
    "lab": "himalayajung",
