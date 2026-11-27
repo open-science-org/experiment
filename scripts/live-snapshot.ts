@@ -24,6 +24,17 @@ function resultsSection(id: string): { heading: string; html: string } | null {
   return { heading: head.replace(/^##\s*/, '').replace(/^[0-9]+[a-z]?\.\s*/, ''), html: marked.parse(md, { async: false }) as string };
 }
 import { osoLabel, osoParams } from '../src/lean/societies.ts';
+
+/** A lemma's statement with its variable names replaced by position, so `(n : N) : n + 0 = n` and `(m : N) : m + 0 = m` match. */
+function statementKey(sig: string) {
+  const s = sig.replace(/\s+/g, ' ').trim(), names = new Map<string, string>();
+  // Names bound by binders ((x y : T), {x : T}, [h : T]) and by ∀, ∃, fun, λ.
+  for (const m of s.matchAll(/[({[]\s*([^():{}\[\]]+?)\s*:(?!=)/g)) for (const n of m[1].split(' ')) if (/^[\p{L}_][\p{L}\p{N}_'.]*$/u.test(n)) names.set(n, '');
+  for (const m of s.matchAll(/(?:∀|∃|fun|λ)\s+([^,:=>]+?)\s*(?:,|:|=>)/g)) for (const n of m[1].split(/[\s()]+/)) if (/^[\p{L}_][\p{L}\p{N}_']*$/u.test(n)) names.set(n, '');
+  let k = 0;
+  for (const n of names.keys()) names.set(n, `v${++k}`);
+  return s.replace(/[\p{L}_][\p{L}\p{N}_'.]*/gu, (w) => names.get(w) ?? w);
+}
 import { AREAS, LEAN_DIR, loadTasks, PLAIN } from '../src/lean/tasks.ts';
 
 const [id, out = 'live.json'] = process.argv.slice(2);
@@ -63,6 +74,7 @@ const setups = sources.map(({ key, from, repeats, earlier }) => {
     // For the round-by-round view: the round each target was first proved, money spent by the end of each round,
     // and every attempt at a target (round, accepted or not).
     const provedAt: Record<string, number> = {}, spentBy: number[] = [];
+    const seen = new Set<string>();
     for (const a of actions) {
       spent += costOf(a);
       spentBy[a.round] = spent;
@@ -70,8 +82,8 @@ const setups = sources.map(({ key, from, repeats, earlier }) => {
         if (a.ok && provedAt[a.target] === undefined) provedAt[a.target] = a.round;
         ((tried[a.target] ??= {})[a.round] ??= [0, 0])[a.ok ? 0 : 1]++;
       }
-      // New lemmas only: a lemma another lab proved first is refused as a duplicate and has no entry.
-      if (a.kind === 'lemma' && a.ok && a.entry) lsteps.push([spent, lsteps.length]);
+      // Unique lemmas only: a statement any lab in the run proved before (variables renamed aside) counts once.
+      if (a.kind === 'lemma' && a.ok && a.entry && a.signature && !seen.has(statementKey(a.signature))) { seen.add(statementKey(a.signature)); lsteps.push([spent, lsteps.length]); }
       if (a.kind === 'target' && a.ok && a.target && !a.reason?.includes('duplicate') && !targets.includes(a.target)) { targets.push(a.target); steps.push([spent, targets.length]); }
     }
     return {
