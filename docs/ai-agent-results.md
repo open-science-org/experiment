@@ -472,7 +472,7 @@ Why: in the Fermat OSO run (4m), 46% of the money went on turns with no answer, 
 - **Where they stopped:** most steps reached are the deep set's basics and the congruence stage (S1). A handful reach products (S2) and single pieces of Gauss's lemma and the parity facts (S4, S5); almost none of Wilson's theorem or Euler's criterion (S3).
 - **Money:** $1.16, $1.24 and $1.02 spent of $8 a run; the 100 rounds ran out first. Cheap turns are the prompt fix at work (4o), so more rounds, not more money, would go further.
 - **Work:** lemmas accepted 351, 306, 313; built on another lab's 0, 277, 265; proved twice 52, 32, 43.
-- **Reading:** as on Fermat, sharing helps against working alone. OSO's flow-back adds nothing on top of sharing here (+1 step). Fewer than 2 runs a side, so none of these gaps has a range.
+- **Reading:** as on Fermat, sharing helps against working alone. OSO's flow-back adds nothing on top of sharing here (+1 step). Sharing was forced in both the shared library and OSO, so this run does not test whether flow-back makes labs *choose* to share; that is the labs-choose test (qr-choose-1). Fewer than 2 runs a side, so none of these gaps has a range.
 - **Next:** the same three setups with many more rounds (money was not the limit), and then 5 runs a setup if a gap remains.
 
 ## 5. Is the test setup sound? (harness checks)
