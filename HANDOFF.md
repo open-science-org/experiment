@@ -1,5 +1,13 @@
 # Handoff notes
 
+## 2026-11-26 23:18 · QR set built and run; prompt fix; --continue; Erdős lab loop
+Session: d9a08bd6-9ee5-45f0-9b1d-b8874a70e358 · branch master · last commit 6196d849
+
+**Done** — QR problem set: hidden proof `lean/Reference/QR.lean` (129 theorems, git-ignored), map `python3 levels.py qr` → `lean/reference-dag-qr.md` (206 steps, depth 17, git-ignored), `--problems qr` (346f3432); selftest 206/206. Runs: qr-smoke-1 (4n), replay test 4o (small + failures: lemmas/turn 0.11 → 0.36), qr-1 (4p: traditional 56, shared 69, OSO 70 of 206, all level 10). CLI `--small-steps`, `--show-failures` (0987941b), `--continue ID` (2b5dce04, tested free). Erdős 1052 steps 5 → 19 (2bd51bf4); `scripts/shared-lab-loop.sh` (91977e75). Live: legend on every chart (site bdcc998).
+**Decisions** — push without asking; only spending > $5 needs OK (memory oso-push-cadence). Prompt fix on for all QR runs. qr-1 answer says sharing was forced, so flow-back-makes-sharing is the qr-choose-1 question.
+**Open threads** — 1. qr-1-long running (continues qr-1 from round 101 to 600, ≤ ~$20; log lean/runs/qr-1-long.log, live-push running): write up as 4q when done, text user, refresh live. 2. qr-choose-1 running (labs choose, α 1 vs 0.2, 300 rounds): write up, measure = share published at once. 3. Erdős lab: launchd job network.oso.lab runs the loop from ~/oso-lab/experiment (log ~/Library/Logs/oso-lab.log); 3 of 19 steps proved (S1b, S4a, S4d). 4. Scaling proper needs 5 runs a setup on Fermat and QR with the same prompt (~$100–150; credit ~$50 after running jobs).
+**Watch out** — `src/lean/societies.ts` uncommitted (B3 setups, kept). QR proof and maps must never be pushed. Mac must stay plugged in. DeepDAG skips `eq_*` names (only eq_one_of_lt_two, unused).
+
 ## 2026-11-24 17:13 · Deep Fermat set and run, live page graphs, step matcher, stay-awake
 Session: c47e3b16-8be4-4ac2-81b3-3c703bdb6a60 · branch master · last commit 9408854
 
@@ -91,4 +99,3 @@ Session: 325534a2-fc59-4bd5-9a6c-c5af07c5d3b1 · branch master · last commit 5d
 - Never use `rm` (denied); move files to the scratchpad instead.
 - The viewer server dies on restart from some shells; start it detached: `nohup caffeinate -i node --env-file-if-exists=.env src/viewer/server.ts > /tmp/claude-501/viewer.log 2>&1 & disown`.
 - Puppeteer checks: hash-only navigation does not reload the page; load `about:blank` first.
-
