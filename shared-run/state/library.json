@@ -229,5 +229,21 @@
    "Erdos1052"
   ],
   "uses": []
+ },
+ {
+  "id": "L16",
+  "name": "OSO.L16",
+  "lab": "himalayajung",
+  "pr": 17,
+  "at": "2026-11-28T02:09:08.864Z",
+  "prAt": "2026-11-28T02:06:02Z",
+  "kind": "lemma",
+  "target": null,
+  "statement": "(p k : ℕ) (hp : p.Prime) (hk : 0 < k) : (1 : ℕ) ≠ p ^ k",
+  "proof": ":= by\n  have h_p_ge_two : 2 ≤ p := by\n    have h := hp.two_le\n    exact h\n  \n  have h_k_ge_one : 1 ≤ k := by\n    omega\n  \n  have h_one_lt_pow : 1 < p ^ k := by\n    have h₁ : 1 < p := by\n      linarith [h_p_ge_two]\n    have h₂ : 1 < p ^ k := by\n      apply Nat.one_lt_pow (by omega)\n      <;> omega\n    exact h₂\n  \n  have h_main : (1 : ℕ) ≠ p ^ k := by\n    intro h\n    have h₁ : 1 < p ^ k := h_one_lt_pow\n    linarith\n  \n  exact h_main",
+  "open": [
+   "Erdos1052"
+  ],
+  "uses": []
  }
 ]
