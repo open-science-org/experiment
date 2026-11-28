@@ -138,6 +138,11 @@ export interface CommunityOptions {
   /** Show only the newest N library results in each turn's prompt, and let labs search the rest by words
    *  (ACTION: search, up to 3 a turn; src/lean/search.ts); unset: the whole library, as before. */
   librarySearch?: number;
+  /** With librarySearch: half the shown results are the newest, half the ones most related to the lab's last tries. */
+  relatedLemmas?: boolean;
+  /** A lemma already in the library the lab can cite does not end the turn: the lab is told its name and tries again
+   *  (up to 2 times a turn, no repair used). Unset: the turn ends, as before 2026-11-27. */
+  retryDuplicates?: boolean;
   /** Which problem set: the main 8 targets (default) or those plus the harder targets (see lean/reference-dag-hard.md). */
   problems?: Problems;
   /** Enforced persona features, per lab: repairs per action, reasoning effort, and whether it sees others' results. */
@@ -448,6 +453,16 @@ ${o.librarySearch ? '- To find library results not shown, reply with only the li
     return `Recent failed tries${atOnce(this.opts.rules) ? ' (all labs)' : ' (yours)'}, newest first:\n${tries.join('\n')}${empty ? `\n- in the last 10 rounds, ${empty} turn${empty > 1 ? 's' : ''} gave no answer: every reply ran out of length` : ''}\n\n`;
   }
 
+  /** The part of the library a turn's prompt shows (librarySearch): the newest n, or with relatedLemmas the newest n/2
+   *  and the n/2 most related to the lab's last 3 tries (by the same word search as ACTION: search), in library order. */
+  shownLibrary(i: number, lib: Entry[], n: number) {
+    if (lib.length <= n || !this.opts.relatedLemmas) return lib.slice(-n);
+    const newest = lib.slice(-Math.ceil(n / 2)), older = lib.slice(0, -Math.ceil(n / 2));
+    const query = this.actions.filter((a) => a.agent === i && (a.signature || a.target)).slice(-3).map((a) => `${a.name ?? ''} ${a.signature ?? this.targets.find((t) => t.publicId === a.target)?.signature ?? ''}`).join(' ');
+    const related = new Set(search(query, older, (e) => ({ name: e.name, statement: e.signature }), Math.floor(n / 2)));
+    return lib.filter((e) => related.has(e) || newest.includes(e));
+  }
+
   /** One library result as lab i sees it. */
   libLine(e: Entry, i: number) {
     return `theorem ${e.ns === 'OSO' ? '' : e.ns.replace(/^OSO\./, '') + '.'}${e.name} ${e.signature}${e.public ? (e.author === i ? '   -- yours, published' : `   -- lab ${e.author + 1}`) : '   -- yours, private'}`;
@@ -455,7 +470,7 @@ ${o.librarySearch ? '- To find library results not shown, reply with only the li
 
   turnPrompt(i: number, round: number): string {
     const lib = this.visible(i);
-    const shown = this.opts.librarySearch ? lib.slice(-this.opts.librarySearch) : lib;
+    const shown = this.opts.librarySearch ? this.shownLibrary(i, lib, this.opts.librarySearch) : lib;
     const fmt = (e: Entry) => this.libLine(e, i);
     const targets = this.targets.map((t) => {
       const s = this.solved(t.publicId);
@@ -473,7 +488,7 @@ Posted targets:
 ${targets.join('\n')}
 
 ${conj.length ? `Posted conjectures:\n${conj.join('\n')}\n\n` : ''}${this.failuresFor(i)}Library you can cite:
-${lib.length ? '```lean\n' + shown.map(fmt).join('\n') + '\n```' : '(empty)'}${shown.length < lib.length ? `\n${shown.length} newest of ${lib.length} shown. You can cite any of them by name; to find others, reply ACTION: search <words>.` : ''}
+${lib.length ? '```lean\n' + shown.map(fmt).join('\n') + '\n```' : '(empty)'}${shown.length < lib.length ? `\n${shown.length} of ${lib.length} shown (${this.opts.relatedLemmas ? 'the newest, and those related to your recent tries' : 'the newest'}). You can cite any library result by name; to find others, reply ACTION: search <words>.` : ''}
 ${this.plans[i] ? `\nYour assignment from the planner this round:\n${this.plans[i]}\n` : ''}
 Take one action.`;
   }
@@ -541,7 +556,7 @@ ${last.length && !this.opts.plainPlanner ? `Last round:\n${last.join('\n')}\n\n`
     const servedBy: string[] = [];
     let kind: Action['kind'] = 'none', target: string | undefined, lemma: ReturnType<typeof parseLemma> = null, ok = false, reason = '';
     const repairs = this.opts.repairsByLab?.[i] ?? this.opts.repairs;
-    let searches = 0;
+    let searches = 0, dupRetries = 0;
     for (let k = 0; k <= repairs; k++) {
       const reply = await chat(system, messages);
       for (const key of ['input', 'output', 'cacheRead', 'cacheWrite'] as const) usage[key] += reply.usage[key];
@@ -628,7 +643,8 @@ ${last.length && !this.opts.plainPlanner ? `Last round:\n${last.join('\n')}\n\n`
               if (pub.length) known = (await check({ ns: 'OSO', signature: lemma.signature }, `:= by first ${pub.map((n) => `| (apply ${n} <;> assumption) | (apply ${n}; done)`).join(' ')}`, { library: this.checkLibrary(i), problems: this.problems })).ok;
             }
             const dup = this.visible(i).find((e) => norm(e.signature) === norm(lemma!.signature));
-            if (dup) { reason = `duplicate of ${dup.name}, which you can already cite`; }
+            if (dup && this.opts.retryDuplicates && dupRetries < 2) { dupRetries++; k--; errors = [`Already in the library as ${dup.name}: cite it by that name. Prove something that is not there yet.`]; }
+            else if (dup) { reason = `duplicate of ${dup.name}, which you can already cite`; }
             else {
               ok = true;
               if (trivial) reason = 'trivial: citable, but earns no mint';

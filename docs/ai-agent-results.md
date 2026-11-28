@@ -515,6 +515,10 @@ Why: on QR, shared and OSO labs read the whole library every turn (about 800 lem
 - **Cost a turn:** traditional $0.0034, shared $0.0068, OSO $0.0065 at the reference price. OpenRouter charged about 1.6 times the reference price.
 - **Reading:** under these prompts, reading the whole shared library cost more than the repeated work it saved. That is a fault of the prompt, not of sharing; qr-2 tests the setups with prompts of the same size.
 
+## 4t. QR set: qr-2, first fair-prompt run (stopped 2026-11-27)
+
+**Disclaimer: stopped early, not a result.** Every setup saw the newest 60 lemmas and searched the rest (4r), at $1 a lab on Baidu. Turn costs were now equal ($0.0019–0.0022), but a new flaw showed: shared and OSO labs often re-proved lemmas already in the library that were not among the 60 shown, and Lean refused each as a duplicate, which ended the turn. Duplicates ended 94 of 383 shared turns and 104 of 396 OSO turns, against 18 of 363 for working alone. Stopped at about round 90 ($2.18 at the reference price). Replaced by qr-3: a duplicate tells the lab the name and lets it try again in the same turn (up to 2 times, no repair used), and half the lemmas shown are those related to the lab's last tries.
+
 ## 5. Is the test setup sound? (harness checks)
 
 | Check | Result |
