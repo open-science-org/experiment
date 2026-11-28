@@ -84,7 +84,8 @@ const setups = sources.map(({ key, from, repeats, earlier }) => {
       if (a.kind === 'target' && a.ok && a.target && !a.reason?.includes('duplicate') && !targets.includes(a.target)) { targets.push(a.target); steps.push([spent, targets.length]); }
     }
     return {
-      rep: k + 1, status: existsSync(join(dir, 'result.json')) ? 'done' as const : 'running' as const,
+      // A run stopped by hand has no result.json; stopped.json ({ at, reason }) marks it finished where it stopped.
+      rep: k + 1, status: existsSync(join(dir, 'result.json')) || existsSync(join(dir, 'stopped.json')) ? 'done' as const : 'running' as const,
       round: Math.max(0, ...actions.map((a) => a.round)), spent, targets,
       lemmas: actions.filter((a) => a.kind === 'lemma' && a.ok).length, steps, lsteps, provedAt,
       // What the labs built: every new result Lean accepted, who proved it and when, and the earlier results its
