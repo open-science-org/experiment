@@ -457,3 +457,17 @@ test('charts: faint runs, dashes, a stopped line and the effect chart make valid
   assert.match(eff, /\+4\.8/);
   assert.match(eff, /\(\+0\.9 to \+8\.7\)/);
 });
+
+test('library search: rare words and name words rank first; nothing for no match', async () => {
+  const { search } = await import('../src/lean/search.ts');
+  const lib = [
+    { name: 'add_zero_N', statement: '(n : N) : n + 0 = n' },
+    { name: 'prod_mod_prime', statement: '(p : N) (hp : p.Prime) : prod p % p = p - 1' },
+    { name: 'mul_comm_N', statement: '(a b : N) : a * b = b * a' },
+    { name: 'wilsonStep', statement: '(p : N) : prod p % p = 1' },
+  ];
+  const t = (e: (typeof lib)[number]) => ({ name: e.name, statement: e.statement });
+  assert.equal(search('prod mod prime', lib, t)[0].name, 'prod_mod_prime');
+  assert.equal(search('wilson', lib, t)[0].name, 'wilsonStep');
+  assert.deepEqual(search('gauss', lib, t), []);
+});

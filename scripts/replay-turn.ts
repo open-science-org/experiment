@@ -14,7 +14,7 @@ import { referenceCost } from '../src/lean/prices.ts';
 const [dir, roundsArg, triesArg, variantsArg] = process.argv.slice(2);
 if (!dir || !roundsArg || !triesArg) { console.error('usage: node scripts/replay-turn.ts <run dir> <round[,round]> <tries> [as-run,small,small+failures]'); process.exit(1); }
 const rounds = roundsArg.split(',').map(Number), tries = Number(triesArg);
-const VARIANTS: Record<string, Partial<CommunityOptions>> = { 'as-run': {}, small: { smallSteps: true }, 'small+failures': { smallSteps: true, showFailures: 20 } };
+const VARIANTS: Record<string, Partial<CommunityOptions>> = { 'as-run': {}, small: { smallSteps: true }, 'small+failures': { smallSteps: true, showFailures: 20 }, 'small+failures+search': { smallSteps: true, showFailures: 20, librarySearch: 60 } };
 const variants = (variantsArg ?? Object.keys(VARIANTS).join(',')).split(',');
 for (const v of variants) if (!VARIANTS[v]) { console.error(`unknown variant ${v}`); process.exit(1); }
 

@@ -28,6 +28,7 @@
 //     --continue ID               carry each run on from run ID's same setup and repeat (same options, more --rounds)
 //     --small-steps yes|no (no)   ask labs for one small lemma a turn
 //     --show-failures N (0)       show labs the last N failed tries they can see, and why (replay test 4o used 20)
+//     --library-search N          show only the newest N library results a turn; labs search the rest (ACTION: search)
 import { chatFor, creditLeft, DEFAULT_MODEL, DEFAULT_MODELS, defaultProvider, type Provider } from './agent.ts';
 import { referenceCost } from './prices.ts';
 import { estimate, readRun, writeComparison, referenceChat, runPilot, writeMeasuredWorld, writeSummary, type Condition, type PilotOptions } from './pilot.ts';
@@ -120,6 +121,7 @@ if (cmd === 'community') {
     mayStop: pick('may-stop', 'yes') !== 'no',
     ...(pick('small-steps', 'no') === 'yes' ? { smallSteps: true } : {}),
     ...(Number(pick('show-failures', '0')) > 0 ? { showFailures: Number(pick('show-failures', '0')) } : {}),
+    ...(Number(pick('library-search', '0')) > 0 ? { librarySearch: Number(pick('library-search', '0')) } : {}),
     counted: (cfg.counted as string[] | undefined) ?? (value('counted', '') ? value('counted', '').split(',') : []),
     only: (cfg.only as string[] | undefined) ?? (value('only', '') ? value('only', '').split(',') : []),
     ...(['hard', 'big', 'deep', 'qr'].includes(pick('problems', process.env.OSO_PROBLEMS ?? 'main')) ? { problems: pick('problems', process.env.OSO_PROBLEMS ?? 'main') as 'hard' | 'big' | 'deep' | 'qr' } : {}),
@@ -129,7 +131,7 @@ if (cmd === 'community') {
   const societies = pick('societies', '').split(',').filter(Boolean);
   if (societies.length) rules.splice(0, rules.length, ...(societies as never[]));
   // Stop a bad run before it spends: an unknown flag (a typo runs with the default), or a setting out of range.
-  const KNOWN = ['problems', 'config', 'agents', 'budget', 'rounds', 'repairs', 'knowledge', 'pricing', 'providers', 'follow', 'effort', 'conjectures', 'conjectureBounty', 'may-stop', 'counted', 'only', 'rules', 'societies', 'dry-run', 'stub', 'run', 'repeats', 'from-rep', 'k', 'parallel', 'max-tokens', 'think', 'design', 'small-steps', 'show-failures', 'continue'];
+  const KNOWN = ['problems', 'config', 'agents', 'budget', 'rounds', 'repairs', 'knowledge', 'pricing', 'providers', 'follow', 'effort', 'conjectures', 'conjectureBounty', 'may-stop', 'counted', 'only', 'rules', 'societies', 'dry-run', 'stub', 'run', 'repeats', 'from-rep', 'k', 'parallel', 'max-tokens', 'think', 'design', 'small-steps', 'show-failures', 'continue', 'library-search'];
   const unknown = args.filter((a) => a.startsWith('--') && !KNOWN.includes(a.slice(2)));
   const { checkOptions } = await import('./community.ts');
   const { societyOptions } = await import('./societies.ts');
@@ -137,6 +139,7 @@ if (cmd === 'community') {
     ...unknown.map((a) => `unknown option ${a}`),
     ...(['yes', 'no'].includes(pick('may-stop', 'yes')) ? [] : [`may-stop must be yes or no (got ${pick('may-stop', 'yes')})`]),
     ...(['yes', 'no'].includes(pick('small-steps', 'no')) ? [] : [`small-steps must be yes or no (got ${pick('small-steps', 'no')})`]),
+    ...(Number.isInteger(Number(pick('library-search', '0'))) && Number(pick('library-search', '0')) >= 0 ? [] : [`library-search must be a whole number (got ${pick('library-search', '0')})`]),
     ...(Number.isInteger(Number(pick('show-failures', '0'))) && Number(pick('show-failures', '0')) >= 0 ? [] : [`show-failures must be a whole number (got ${pick('show-failures', '0')})`]),
     ...[['repeats', '1'], ['from-rep', '1'], ['k', '2']].filter(([n, d]) => !(Number.isInteger(Number(pick(n, d))) && Number(pick(n, d)) >= 1)).map(([n, d]) => `${n} must be a whole number, at least 1 (got ${pick(n, d)})`),
     ...(() => { try { return [...new Set(rules.flatMap((r) => checkOptions(societies.length ? societyOptions(r, { ...base, rules: 'oso' }) : { ...base, rules: r })))]; } catch (e) { return [(e as Error).message]; } })(),

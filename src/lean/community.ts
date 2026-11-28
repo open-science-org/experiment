@@ -19,6 +19,7 @@
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { check, type CheckOptions } from './checker.ts';
+import { search } from './search.ts';
 import { definedNames, definitions, FREE, LEAN_DIR, loadTasks, parseReference, type Problems, type Task } from './tasks.ts';
 import { OPENROUTER_API, type Chat, type Usage } from './agent.ts';
 import { referenceCost } from './prices.ts';
@@ -134,6 +135,9 @@ export interface CommunityOptions {
   smallSteps?: boolean;
   /** Show each lab the most recent failed tries it can see (statement, lab, why), up to this many; 0 or unset: none. */
   showFailures?: number;
+  /** Show only the newest N library results in each turn's prompt, and let labs search the rest by words
+   *  (ACTION: search, up to 3 a turn; src/lean/search.ts); unset: the whole library, as before. */
+  librarySearch?: number;
   /** Which problem set: the main 8 targets (default) or those plus the harder targets (see lean/reference-dag-hard.md). */
   problems?: Problems;
   /** Enforced persona features, per lab: repairs per action, reasoning effort, and whether it sees others' results. */
@@ -209,7 +213,7 @@ export interface Action {
   servedBy?: string[];
   /** Each reply: the model's thinking (saved since 2026-11-07, where the provider returns it), why it ended and its output
    *  tokens (since 2026-11-24; 'length' is cut off), its answer, the proof and Lean's errors. */
-  transcript: { reasoning?: string; stop?: string; output?: number; text: string; proof: string | null; errors: string[] }[];
+  transcript: { reasoning?: string; stop?: string; output?: number; text: string; proof: string | null; errors: string[]; /** A library search (librarySearch) and how many it found. */ search?: string; found?: number }[];
   t: number;
 }
 
@@ -422,7 +426,7 @@ ACTION: target <ID>
 \`\`\`
 - To prove a posted target, start your reply with the line ACTION: target <ID>, and give the proof that completes \`theorem attempt <statement>\` (starting with := or with | match arms).
 ${this.conjectures.length ? `- To prove a posted conjecture, start your reply with the line ACTION: conjecture <ID>, and give the proof that completes \`theorem attempt <statement>\` (starting with := or with | match arms). A conjecture is an intermediate result the community wants; it earns a bounty of ${o.conjectureBounty ?? 1} when it is published, and can then be cited by the name shown.\n` : ''}- To state and prove a new lemma, start with ACTION: lemma, and give the whole declaration: \`theorem <name> <statement> := <proof>\`. Choose lemmas that bring a target within reach.${o.smallSteps ? ' Prove one small lemma each turn, one you can finish in a few lines. Do not work out the whole proof of a target in one reply: the library keeps what you prove, and you can build on it next turn.' : ''}
-${o.mayStop === false ? '- You keep working until your budget or the rounds run out: you cannot stop early. Use every turn to prove something useful.' : '- If nothing seems worth your budget, reply ACTION: pass. You stop for the rest of the run and keep what you have not spent.'}${persona ? `\n\n${persona}` : ''}`;
+${o.librarySearch ? '- To find library results not shown, reply with only the line ACTION: search <words> (words from a name or statement, e.g. prod mod prime). You get up to 15 matches, then take your action. Up to 3 searches a turn; each costs a reply.\n' : ''}${o.mayStop === false ? '- You keep working until your budget or the rounds run out: you cannot stop early. Use every turn to prove something useful.' : '- If nothing seems worth your budget, reply ACTION: pass. You stop for the rest of the run and keep what you have not spent.'}${persona ? `\n\n${persona}` : ''}`;
   }
 
   /** The most recent failed tries lab i can see, one line each (opts.showFailures): under rules that share at once every
@@ -444,9 +448,15 @@ ${o.mayStop === false ? '- You keep working until your budget or the rounds run 
     return `Recent failed tries${atOnce(this.opts.rules) ? ' (all labs)' : ' (yours)'}, newest first:\n${tries.join('\n')}${empty ? `\n- in the last 10 rounds, ${empty} turn${empty > 1 ? 's' : ''} gave no answer: every reply ran out of length` : ''}\n\n`;
   }
 
+  /** One library result as lab i sees it. */
+  libLine(e: Entry, i: number) {
+    return `theorem ${e.ns === 'OSO' ? '' : e.ns.replace(/^OSO\./, '') + '.'}${e.name} ${e.signature}${e.public ? (e.author === i ? '   -- yours, published' : `   -- lab ${e.author + 1}`) : '   -- yours, private'}`;
+  }
+
   turnPrompt(i: number, round: number): string {
     const lib = this.visible(i);
-    const fmt = (e: Entry) => `theorem ${e.ns === 'OSO' ? '' : e.ns.replace(/^OSO\./, '') + '.'}${e.name} ${e.signature}${e.public ? (e.author === i ? '   -- yours, published' : `   -- lab ${e.author + 1}`) : '   -- yours, private'}`;
+    const shown = this.opts.librarySearch ? lib.slice(-this.opts.librarySearch) : lib;
+    const fmt = (e: Entry) => this.libLine(e, i);
     const targets = this.targets.map((t) => {
       const s = this.solved(t.publicId);
       const status = s ? ((s.public && this.opts.rules !== 'independent') || s.author === i ? `solved by lab ${s.author + 1}` : 'open') : 'open';
@@ -463,7 +473,7 @@ Posted targets:
 ${targets.join('\n')}
 
 ${conj.length ? `Posted conjectures:\n${conj.join('\n')}\n\n` : ''}${this.failuresFor(i)}Library you can cite:
-${lib.length ? '```lean\n' + lib.map(fmt).join('\n') + '\n```' : '(empty)'}
+${lib.length ? '```lean\n' + shown.map(fmt).join('\n') + '\n```' : '(empty)'}${shown.length < lib.length ? `\n${shown.length} newest of ${lib.length} shown. You can cite any of them by name; to find others, reply ACTION: search <words>.` : ''}
 ${this.plans[i] ? `\nYour assignment from the planner this round:\n${this.plans[i]}\n` : ''}
 Take one action.`;
   }
@@ -531,6 +541,7 @@ ${last.length && !this.opts.plainPlanner ? `Last round:\n${last.join('\n')}\n\n`
     const servedBy: string[] = [];
     let kind: Action['kind'] = 'none', target: string | undefined, lemma: ReturnType<typeof parseLemma> = null, ok = false, reason = '';
     const repairs = this.opts.repairsByLab?.[i] ?? this.opts.repairs;
+    let searches = 0;
     for (let k = 0; k <= repairs; k++) {
       const reply = await chat(system, messages);
       for (const key of ['input', 'output', 'cacheRead', 'cacheWrite'] as const) usage[key] += reply.usage[key];
@@ -539,6 +550,16 @@ ${last.length && !this.opts.plainPlanner ? `Last round:\n${last.join('\n')}\n\n`
       const c = price(reply.usage);
       this.spent[i] += c; counted += c;
       const text = reply.text;
+      // A search is not an attempt: it does not use up a repair.
+      const query = this.opts.librarySearch ? /ACTION:\s*search\b[ \t]*(.*)/i.exec(text) : null;
+      if (query && searches < 3 && this.spent[i] < this.budgetOf(i)) {
+        searches++; k--;
+        const found = search(query[1], this.visible(i), (e) => ({ name: e.name, statement: e.signature }));
+        transcript.push({ ...(reply.reasoning ? { reasoning: reply.reasoning } : {}), stop: reply.stop, output: reply.usage.output, text, proof: null, errors: [], search: query[1].trim(), found: found.length });
+        messages.push({ role: 'assistant', content: reply.content });
+        messages.push({ role: 'user', content: `${found.length ? '```lean\n' + found.map((e) => this.libLine(e, i)).join('\n') + '\n```' : 'No matches.'}\n\n${searches < 3 ? 'Search again, or take' : 'No more searches this turn. Take'} your action in the same format.` });
+        continue;
+      }
       if (/ACTION:\s*pass\b/i.test(text)) {
         // Labs that may not stop lose only this turn.
         if (this.opts.mayStop === false) { reason = 'tried to pass, which is not allowed: turn skipped'; transcript.push({ ...(reply.reasoning ? { reasoning: reply.reasoning } : {}), stop: reply.stop, output: reply.usage.output, text, proof: null, errors: [] }); break; }
