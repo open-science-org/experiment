@@ -163,8 +163,8 @@ if (cmd === 'community') {
     let most = rules.length * agents.length * base.budget * (Number(pick('repeats', '1')) - Number(pick('from-rep', '1')) + 1);
     const left = await creditLeft(process.env.OPENROUTER_API_KEY!);
     // At the reference price, budgets can buy tokens that cost more on the day (2026-11-17: the cheapest company
-    // charged about twice DeepSeek's reference price), so the credit must cover that too.
-    if (base.pricing === 'reference') most *= 2.5;
+    // charged about twice DeepSeek's reference price; qr-1-long, 2026-11-27: 1.6 times), so the credit must cover that too.
+    if (base.pricing === 'reference') most *= 1.8;
     if (left != null && left < most * 1.1) { console.error(`The key has $${left.toFixed(2)} left; this test can spend up to $${most.toFixed(2)}. Add credit first.`); process.exit(1); }
   }
   const id = pick('run', `${stub ? 'stub-' : ''}community-${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}`);
