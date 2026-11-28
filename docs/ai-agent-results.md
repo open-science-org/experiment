@@ -489,6 +489,21 @@ Why: in the Fermat OSO run (4m), 46% of the money went on turns with no answer, 
 - **Limits:** one run each. The labs are one model, trained to be helpful, told the rules; people or models that guard their work may act differently. The prompt names publishing as a choice, which may itself push toward yes.
 - **Next:** testing whether flow-back makes labs share needs labs that sometimes keep work back, e.g. a cost to publishing or a reward for being first to a target.
 
+## 4r. Replay test: library search (2026-11-27)
+
+Why: on QR, shared and OSO labs read the whole library every turn (about 800 lemmas, 50,000 tokens by round 200) and think longer over it, so a turn cost about twice a traditional one. Run with `scripts/replay-turn.ts`, $0.27; data in the run folder (not in git).
+
+- **Design:** the α 0.2 run of qr-choose-1 (930 lemmas), rebuilt at rounds 200 and 280; 10 turns a round under each prompt (20 a prompt). *As run* (small lemmas and failures shown, whole library); *search* (the same, but only the newest 60 lemmas shown; labs ask for others with `ACTION: search <words>`, matched in code, up to 3 a turn).
+
+| Prompt | Cost a turn | Lemmas accepted | Replies cut off | Lemmas per dollar |
+| --- | --- | --- | --- | --- |
+| Whole library | $0.0093 | 15 of 20 | 11 of 35 | 81 |
+| Newest 60 + search | $0.0043 | 12 of 20 | 1 of 90 | 140 |
+
+- **Reading:** search halves the cost of a turn and nearly ends replies cut off; labs used it about 3 times a turn. Lemmas accepted a turn may be a little lower (0.60 against 0.75); 20 turns a prompt is too few to say.
+- **Limits:** one run, two moments, 20 turns a prompt: no ranges. Word matching only.
+- **Decision this informs:** from 2026-11-27 every setup shows the newest 60 lemmas it can see and has search (`--library-search 60`, the default), so a turn's prompt is about the same size in every setup.
+
 ## 5. Is the test setup sound? (harness checks)
 
 | Check | Result |
