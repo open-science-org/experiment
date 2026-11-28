@@ -14,7 +14,7 @@ import { stayAwake } from '../src/lean/awake.ts';
 import { execFileSync, spawn } from 'node:child_process';
 import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { board, checkOne, SOURCES, type Submission } from './shared.ts';
+import { board, checkOne, SOURCES, suggestions, type Submission } from './shared.ts';
 
 interface Job { kind: 'target' | 'lemma'; target?: string; name?: string; statement?: string; open?: string[]; problem?: string }
 const args = process.argv.slice(2);
@@ -130,9 +130,10 @@ for (const job of jobs) {
   const head = sig.trim().startsWith(':') || /^[({]/.test(sig.trim()) ? sig.trim() : `: ${sig.trim()}`;
   const known = await libraryFor(ns);
   const prompt = `Complete the following Lean 4 code:\n\n\`\`\`lean4\nimport Mathlib\nimport Aesop\n\nset_option maxHeartbeats 400000\n\n${context(problem)}\n\n${known}\n\ntheorem attempt ${head} := by\n  sorry\n\`\`\`\n\nBefore producing the Lean 4 code to formally prove the given theorem, provide a detailed proof plan outlining the main proof steps and strategies.\nThe plan should highlight key ideas, intermediate lemmas, and proof structures that will guide the construction of the final formal proof.`;
+  let feedback = '';
   for (let k = 1; k <= tries; k++) {
     const t0 = Date.now();
-    const reply = await ask(prompt);
+    const reply = await ask(prompt + feedback);
     writeFileSync(join(work, `${label}-${k}.txt`), reply);
     const proof = proofOf(reply, 'attempt');
     if (!proof) { console.log(`${label} try ${k}: no proof in the reply (${Math.round((Date.now() - t0) / 1000)} s)`); continue; }
@@ -143,6 +144,8 @@ for (const job of jobs) {
     writeFileSync(file, JSON.stringify(sub, null, 1) + '\n');
     const v = await checkOne(file);
     console.log(`${label} try ${k}: ${v.ok ? 'PASS' : 'FAIL'} (${Math.round((Date.now() - t0) / 1000)} s)${v.ok ? '' : ' ' + v.errors[0]?.split('\n')[0].slice(0, 160)}`);
+    // The next try sees this one's proof and Lean's errors, with real Mathlib names for any it did not know.
+    if (!v.ok) feedback = `\n\nA previous attempt was:\n\n\`\`\`lean4\ntheorem attempt ${head} ${proof}\n\`\`\`\n\nLean rejected it:\n${v.errors.slice(0, 3).join('\n').slice(0, 1500)}\n${suggestions(v.errors)}\nWrite a corrected proof.`;
     if (v.ok) {
       const saved = join(work, `${lab}-${label.replace(/[^A-Za-z0-9_]+/g, '-')}.json`);
       writeFileSync(saved, JSON.stringify(sub, null, 1) + '\n');

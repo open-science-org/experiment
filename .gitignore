@@ -24,6 +24,7 @@ shared-run/.lake/
 shared-run/.check/
 .live.lock/
 shared-run/.local-lab/
+shared-run/.mathlib-names*.json
 lean/Reference/QR*.lean
 lean/reference-dag-qr.md
 shared-run/.lab-jobs.json*

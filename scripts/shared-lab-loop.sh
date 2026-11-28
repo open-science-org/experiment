@@ -15,7 +15,7 @@ while :; do
     echo "$(date '+%F %T') no network; retry in 5 min"; sleep 300; continue
   fi
   n=$(node -e "
-    const s = require('$jobs.summary');
+    const s = JSON.parse(require('fs').readFileSync('$jobs.summary', 'utf8'));
     const out = [];
     for (const l of s.steps ?? []) {
       const done = new Set(l.steps.filter((x) => x.provedBy).map((x) => x.id));
@@ -24,6 +24,7 @@ while :; do
     }
     require('fs').writeFileSync('$jobs', JSON.stringify(out, null, 1));
     console.log(out.length);")
+  case "$n" in ""|*[!0-9]*) echo "$(date '+%F %T') could not read the board; retry in 5 min"; sleep 300; continue;; esac
   if [ "$n" = "0" ]; then echo "$(date '+%F %T') every step is proved; stopping"; exit 0; fi
   echo "$(date '+%F %T') pass: $n open steps"
   git pull -q --rebase --autostash 2>/dev/null

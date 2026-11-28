@@ -14,7 +14,7 @@
 // Rules: α = 0.2. A target's bounty is paid once, to the first lab that proves it. The prover keeps α; the
 // rest flows back in equal shares to the library lemmas the proof used, and on down the tree (each lemma
 // keeps α of what reaches it). A lemma no one builds on earns nothing. Points only, no money.
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { banned, compileAndRead, STANDARD_AXIOMS } from '../src/lean/checker.ts';
@@ -254,4 +254,38 @@ if (cmd === 'board') {
 } else if (main) {
   console.error('usage: node scripts/shared.ts board | check <file.json>... [--out v.json] | apply <v.json> --lab <user> --pr <n> [--pr-at time] | audit | credit');
   process.exitCode = 2;
+}
+
+/** Every theorem, lemma and alias name in Mathlib's source (last part only, with its namespace when one is open),
+ *  read once and cached: for suggesting the real name when the model uses one Lean does not know. */
+export function mathlibNames(): string[] {
+  const cache = join('shared-run', '.mathlib-names-2.json'), root = join('shared-run', '.lake', 'packages', 'mathlib', 'Mathlib');
+  if (existsSync(cache)) return JSON.parse(readFileSync(cache, 'utf8'));
+  const names: string[] = [];
+  const walk = (d: string) => { for (const f of readdirSync(d)) { const p = join(d, f); if (statSync(p).isDirectory()) walk(p); else if (f.endsWith('.lean')) {
+    const ns: string[] = [];
+    for (const line of readFileSync(p, 'utf8').split('\n')) {
+      const n = /^namespace\s+(\S+)/.exec(line); if (n) { ns.push(n[1]); continue; }
+      const e = /^end\s+(\S+)/.exec(line); if (e && ns.at(-1) === e[1]) { ns.pop(); continue; }
+      const m = /^(?:@\[[^\]]*\]\s*)?(?:protected\s+|nonrec\s+)*(?:theorem|lemma|alias)\s+([^\s(:{\[]+)/.exec(line);
+      if (m && !m[1].startsWith('_')) names.push(m[1].startsWith('_root_.') ? m[1].slice(7) : ns.length && m[1].startsWith(ns.join('.') + '.') ? m[1] : [...ns, m[1]].join('.'));
+    } } } };
+  if (existsSync(root)) walk(root);
+  writeFileSync(cache, JSON.stringify(names));
+  return names;
+}
+
+/** For each name Lean did not know, the Mathlib names whose words match it best. */
+export function suggestions(errors: string[]) {
+  const unknown = [...new Set(errors.join('\n').matchAll(/Unknown (?:constant|identifier) [`']?([^\s`']+)/g))].map((m) => m[1]);
+  if (!unknown.length) return '';
+  const words = (s: string) => new Set(s.split('.').pop()!.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase().split(/[_']+/).filter(Boolean));
+  const all = mathlibNames();
+  const lines = [...new Set(unknown)].slice(0, 4).map((u) => {
+    const w = words(u), ns = u.includes('.') ? u.split('.').slice(0, -1).join('.') : '';
+    const scored = all.map((n) => { const x = words(n); let s = 0; for (const a of w) if (x.has(a)) s++; return { n, s: s / (w.size + x.size - s) + (ns && n.startsWith(ns + '.') ? 0.2 : 0) }; });
+    const best = scored.sort((a, b) => b.s - a.s || a.n.length - b.n.length).slice(0, 5).filter((x) => x.s > 0.3).map((x) => x.n);
+    return best.length ? `- \`${u}\` does not exist. Names that do: ${best.map((b) => `\`${b}\``).join(', ')}` : `- \`${u}\` does not exist.`;
+  });
+  return `\nNames:\n${lines.join('\n')}\n`;
 }
