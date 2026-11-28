@@ -436,8 +436,8 @@ async function costData() {
     r.runs++;
     for (const a of recs) {
       const u = (a.usage ?? {}) as { cost?: number };
-      // A free search (freeSearch) is money spent all the same: the Money page counts it.
-      const charged = a.cost !== undefined ? (a.cost as number) + ((a.searchCost as number | undefined) ?? 0) : u.cost ?? (a.dollars as number | undefined);
+      // Free coordination (freeCoordination) is money spent all the same: the Money page counts it.
+      const charged = a.cost !== undefined ? (a.cost as number) + ((a.coordCost as number | undefined) ?? 0) : u.cost ?? (a.dollars as number | undefined);
       const c = charged ?? (a.listCost as number | undefined) ?? 0;
       if (charged === undefined && c) r.listOnly += c;
       r.spent += c;
