@@ -471,3 +471,33 @@ test('library search: rare words and name words rank first; nothing for no match
   assert.equal(search('wilson', lib, t)[0].name, 'wilsonStep');
   assert.deepEqual(search('gauss', lib, t), []);
 });
+
+test('free coordination: a search reply is paid by the harness, not the lab; without it the lab pays', async () => {
+  const { runCommunity } = await import('../src/lean/community.ts');
+  const { mkdtempSync, readFileSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const root = mkdtempSync(join(tmpdir(), 'oso-coord-'));
+  const opts = { rules: 'shared' as const, agents: ['a'], budget: 1, rounds: 1, repairs: 0, alpha: 1, mint: 0, effort: 'low' as const, knowledge: 'off' as const, mayStop: false, librarySearch: 60 };
+  // Each turn: one search, then a pass (not allowed, so the turn ends). Every reply costs $0.01.
+  const script = () => { let k = 0; return (async () => ({ text: k++ === 0 ? 'ACTION: search add zero' : 'ACTION: pass', content: 'x', usage: { input: 1, output: 1, cacheRead: 0, cacheWrite: 0 }, stop: 'stop' })) as never; };
+  const turn = async (run: string, free: boolean) => {
+    await runCommunity({ ...opts, ...(free ? { freeCoordination: true } : {}) }, () => script(), () => 0.01, run, () => {}, root);
+    return JSON.parse(readFileSync(join(root, run, 'actions.jsonl'), 'utf8').trim().split('\n')[0]);
+  };
+  const free = await turn('free', true), paid = await turn('paid', false);
+  assert.equal(free.cost, 0.01); assert.equal(free.coordCost, 0.01); assert.equal(free.spentAfter, 0.01);
+  assert.equal(paid.cost, 0.02); assert.equal(paid.coordCost, undefined);
+});
+
+test('shown library: half the newest, half related to the lab\'s last tries, in library order', async () => {
+  const { Community } = await import('../src/lean/community.ts');
+  const c = new Community({ rules: 'shared', agents: ['a', 'b'], budget: 1, rounds: 1, repairs: 0, alpha: 1, mint: 0, effort: 'low', knowledge: 'off', librarySearch: 4, relatedLemmas: true });
+  const entry = (name: string, signature: string, round: number) => ({ name, ns: 'OSO', signature, author: 1, public: true, round, uses: [] });
+  c.library.push(entry('wilson_prod', '(p : N) : prod p = p - 1', 1), entry('mul_comm_N', '(a b : N) : a * b = b * a', 2), entry('add_zero_N', '(n : N) : n + 0 = n', 3),
+    entry('gauss_count', '(p : N) : count p = 0', 4), entry('newest_a', '(n : N) : n = n', 5), entry('newest_b', '(n : N) : n * 1 = n', 6));
+  c.actions.push({ round: 6, agent: 0, model: 'a', kind: 'lemma', name: 'wilson_step', signature: '(p : N) : prod p % p = 1', ok: false, turns: 1, usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, spentAfter: 0, transcript: [], t: 0 });
+  const shown = c.shownLibrary(0, c.visible(0), 4).map((e) => e.name);
+  assert.deepEqual(shown.slice(-2), ['newest_a', 'newest_b']);
+  assert.ok(shown.includes('wilson_prod'));
+  assert.equal(shown.length, 4);
+});

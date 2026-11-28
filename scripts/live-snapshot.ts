@@ -88,6 +88,8 @@ const setups = sources.map(({ key, from, repeats, earlier }) => {
       rep: k + 1, status: existsSync(join(dir, 'result.json')) || existsSync(join(dir, 'stopped.json')) ? 'done' as const : 'running' as const,
       round: Math.max(0, ...actions.map((a) => a.round)), spent, targets,
       lemmas: actions.filter((a) => a.kind === 'lemma' && a.ok).length, steps, lsteps, provedAt,
+      // Coordination the harness paid for (freeCoordination: searches, the reply after a duplicate), not in `spent`.
+      coord: actions.reduce((x, a) => x + (a.coordCost ?? 0), 0),
       // What the labs built: every new result Lean accepted, who proved it and when, and the earlier results its
       // proof cites (read from Lean, so exact). Statements, not proofs.
       // Hidden steps the labs have proved (scripts/match-steps.ts): step name -> [round, lab, lab's lemma], earliest.
@@ -150,6 +152,8 @@ const snapshot = {
     areas: [...new Set(all.map((t) => t.area))].map((a) => AREAS[a]).filter(Boolean),
   },
   dag,
+  // Labs paid only for their own tries (freeCoordination): the money axis is work, and coordination is shown apart.
+  freeCoordination: !!first?.freeCoordination,
   setups: setups.map((s) => {
     const started = s.reps.filter((r) => r.status !== 'waiting');
     // Each setup's lines stop at the most one of its runs has spent, so a setup that has spent less is not drawn
@@ -160,6 +164,8 @@ const snapshot = {
     const grid = (f: (m: number) => number) => [...Array.from({ length: GRID + 1 }, (_, g) => reach * g / GRID).filter((m, g) => g === 0 || m < own), ...(own > 0 ? [own] : [])].map((m) => [m, f(m)]);
     return {
       key: s.key, label: s.label, params: s.params, from: s.from, earlier: s.earlier,
+      // Mean coordination cost a run, paid by the harness (0 when coordination was not free).
+      coord: started.length ? started.reduce((a, r) => a + (r.coord ?? 0), 0) / started.length : 0,
       runs: { done: s.reps.filter((r) => r.status === 'done').length, running: s.reps.filter((r) => r.status === 'running').length, total: s.repeats },
       // Line graph: mean over started runs of targets proved for the money spent, money as a share of a run's money.
       curve: started.length ? grid((m) => started.reduce((a, r) => a + at(r.steps, m), 0) / started.length) : [],

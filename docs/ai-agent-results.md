@@ -519,6 +519,13 @@ Why: on QR, shared and OSO labs read the whole library every turn (about 800 lem
 
 **Disclaimer: stopped early, not a result.** Every setup saw the newest 60 lemmas and searched the rest (4r), at $1 a lab on Baidu. Turn costs were now equal ($0.0019–0.0022), but a new flaw showed: shared and OSO labs often re-proved lemmas already in the library that were not among the 60 shown, and Lean refused each as a duplicate, which ended the turn. Duplicates ended 94 of 383 shared turns and 104 of 396 OSO turns, against 18 of 363 for working alone. Stopped at about round 90 ($2.18 at the reference price). Replaced by qr-3: a duplicate tells the lab the name and lets it try again in the same turn (up to 2 times, no repair used), and half the lemmas shown are those related to the lab's last tries.
 
+## 4u. QR set: qr-3, second fair-prompt run (stopped 2026-11-27)
+
+**Disclaimer: stopped early, not a result.** As qr-2 (4t), with two fixes: a lemma already in the library told the lab its name and let it try again in the same turn, and half the 60 lemmas shown were those related to the lab's last tries. Duplicates no longer ended turns (3 of 60 by round 30). But every search and every retry after a duplicate was paid from the lab's own money, and shared and OSO labs did both far more often: about 4 replies a turn against 2.2 for working alone, so their turns cost about a quarter more ($0.0023–0.0025 against $0.0019). Stopped at about round 85 ($0.70–0.81 of $4 a run).
+
+- **Hidden steps by then:** traditional 58, shared library 54, OSO α 0.2 48. 30 of traditional's steps were reached by two or more of its labs (shared 5, OSO 11).
+- **What changed after it:** free coordination (`--free-coordination`, on by default). Searches and the reply after a duplicate are paid by us, not the lab, and recorded apart (coordCost). A lab's money buys only its own tries and its fixes after Lean's errors, the same in every setup. The Live page then shows work spent on the money axis and what coordination cost each setup.
+
 ## 5. Is the test setup sound? (harness checks)
 
 | Check | Result |
