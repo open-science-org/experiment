@@ -30,6 +30,7 @@
 //     --show-failures N (0)       show labs the last N failed tries they can see, and why (replay test 4o used 20)
 //     --related yes|no (yes)      with --library-search: half the shown results are the newest, half those related to the lab's last tries
 //     --retry-duplicates yes|no (yes)  a lemma already in the library does not end the turn: the lab is told its name, tries again
+//     --free-search yes|no (yes)  a reply that only searched does not count against the lab's budget (the harness pays)
 //     --library-search N (60)     show only the newest N library results a turn, the same in every setup; labs search the
 //                                 rest (ACTION: search). 0: the whole library (runs before 2026-11-27; use it with --continue)
 import { chatFor, creditLeft, DEFAULT_MODEL, DEFAULT_MODELS, defaultProvider, type Provider } from './agent.ts';
@@ -126,6 +127,7 @@ if (cmd === 'community') {
     ...(Number(pick('show-failures', '0')) > 0 ? { showFailures: Number(pick('show-failures', '0')) } : {}),
     ...(Number(pick('library-search', '60')) > 0 ? { librarySearch: Number(pick('library-search', '60')), ...(pick('related', 'yes') === 'yes' ? { relatedLemmas: true } : {}) } : {}),
     ...(pick('retry-duplicates', 'yes') === 'yes' ? { retryDuplicates: true } : {}),
+    ...(pick('free-search', 'yes') === 'yes' ? { freeSearch: true } : {}),
     counted: (cfg.counted as string[] | undefined) ?? (value('counted', '') ? value('counted', '').split(',') : []),
     only: (cfg.only as string[] | undefined) ?? (value('only', '') ? value('only', '').split(',') : []),
     ...(['hard', 'big', 'deep', 'qr'].includes(pick('problems', process.env.OSO_PROBLEMS ?? 'main')) ? { problems: pick('problems', process.env.OSO_PROBLEMS ?? 'main') as 'hard' | 'big' | 'deep' | 'qr' } : {}),
@@ -135,7 +137,7 @@ if (cmd === 'community') {
   const societies = pick('societies', '').split(',').filter(Boolean);
   if (societies.length) rules.splice(0, rules.length, ...(societies as never[]));
   // Stop a bad run before it spends: an unknown flag (a typo runs with the default), or a setting out of range.
-  const KNOWN = ['problems', 'config', 'agents', 'budget', 'rounds', 'repairs', 'knowledge', 'pricing', 'providers', 'follow', 'effort', 'conjectures', 'conjectureBounty', 'may-stop', 'counted', 'only', 'rules', 'societies', 'dry-run', 'stub', 'run', 'repeats', 'from-rep', 'k', 'parallel', 'max-tokens', 'think', 'design', 'small-steps', 'show-failures', 'continue', 'library-search', 'related', 'retry-duplicates'];
+  const KNOWN = ['problems', 'config', 'agents', 'budget', 'rounds', 'repairs', 'knowledge', 'pricing', 'providers', 'follow', 'effort', 'conjectures', 'conjectureBounty', 'may-stop', 'counted', 'only', 'rules', 'societies', 'dry-run', 'stub', 'run', 'repeats', 'from-rep', 'k', 'parallel', 'max-tokens', 'think', 'design', 'small-steps', 'show-failures', 'continue', 'library-search', 'related', 'retry-duplicates', 'free-search'];
   const unknown = args.filter((a) => a.startsWith('--') && !KNOWN.includes(a.slice(2)));
   const { checkOptions } = await import('./community.ts');
   const { societyOptions } = await import('./societies.ts');

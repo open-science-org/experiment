@@ -143,6 +143,9 @@ export interface CommunityOptions {
   /** A lemma already in the library the lab can cite does not end the turn: the lab is told its name and tries again
    *  (up to 2 times a turn, no repair used). Unset: the turn ends, as before 2026-11-27. */
   retryDuplicates?: boolean;
+  /** Searches are free to the lab: a reply that only searched does not count against its budget (the harness pays;
+   *  recorded as the action's searchCost). Unset: a search reply counts like any other. */
+  freeSearch?: boolean;
   /** Which problem set: the main 8 targets (default) or those plus the harder targets (see lean/reference-dag-hard.md). */
   problems?: Problems;
   /** Enforced persona features, per lab: repairs per action, reasoning effort, and whether it sees others' results. */
@@ -212,6 +215,8 @@ export interface Action {
   ok: boolean; reason?: string; turns: number;
   /** The library entry an accepted action created, and the results its proof used. */
   entry?: string; uses?: string[];
+  /** With freeSearch: dollars spent on replies that only searched, paid by the harness, not counted in `cost`. */
+  searchCost?: number;
   /** Dollars this action counted against the budget: the provider's charge. Older runs have only listCost. */
   usage: Usage; cost?: number; listCost?: number; spentAfter: number;
   /** The companies that served this action's calls, in order. */
@@ -556,7 +561,7 @@ ${last.length && !this.opts.plainPlanner ? `Last round:\n${last.join('\n')}\n\n`
     const servedBy: string[] = [];
     let kind: Action['kind'] = 'none', target: string | undefined, lemma: ReturnType<typeof parseLemma> = null, ok = false, reason = '';
     const repairs = this.opts.repairsByLab?.[i] ?? this.opts.repairs;
-    let searches = 0, dupRetries = 0;
+    let searches = 0, dupRetries = 0, searchCost = 0;
     for (let k = 0; k <= repairs; k++) {
       const reply = await chat(system, messages);
       for (const key of ['input', 'output', 'cacheRead', 'cacheWrite'] as const) usage[key] += reply.usage[key];
@@ -569,6 +574,7 @@ ${last.length && !this.opts.plainPlanner ? `Last round:\n${last.join('\n')}\n\n`
       const query = this.opts.librarySearch ? /ACTION:\s*search\b[ \t]*(.*)/i.exec(text) : null;
       if (query && searches < 3 && this.spent[i] < this.budgetOf(i)) {
         searches++; k--;
+        if (this.opts.freeSearch) { this.spent[i] -= c; counted -= c; searchCost += c; }
         const found = search(query[1], this.visible(i), (e) => ({ name: e.name, statement: e.signature }));
         transcript.push({ ...(reply.reasoning ? { reasoning: reply.reasoning } : {}), stop: reply.stop, output: reply.usage.output, text, proof: null, errors: [], search: query[1].trim(), found: found.length });
         messages.push({ role: 'assistant', content: reply.content });
@@ -676,7 +682,7 @@ ${last.length && !this.opts.plainPlanner ? `Last round:\n${last.join('\n')}\n\n`
     const a: Action = {
       round, agent: i, model, kind, target, name: lemma?.name, signature: lemma?.signature, ok, reason: reason || (ok ? undefined : 'not accepted'),
       ...(made ? { entry: made.name, uses: made.uses } : {}),
-      turns: transcript.length, usage, cost: counted, spentAfter: this.spent[i], ...(servedBy.length ? { servedBy } : {}), transcript, t: Date.now(),
+      turns: transcript.length, usage, cost: counted, ...(searchCost ? { searchCost } : {}), spentAfter: this.spent[i], ...(servedBy.length ? { servedBy } : {}), transcript, t: Date.now(),
     };
     this.actions.push(a);
     log(a);
