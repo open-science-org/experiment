@@ -1,5 +1,34 @@
 # Handoff notes
 
+## 2026-11-27 23:08 · Fair QR harness: search, duplicate retries, free coordination; three QR runs stopped
+Session: cb6b4a2c-2b0b-4d9d-b868-103b51b9603e · branch master · last commit 5af2de08
+
+**Done**
+- Live streams: step matcher in the background, outside the lock (56c3a48a); `--continue` carries matches.json (e5c8e9c3); a run with `stopped.json` counts as finished (58a25695).
+- Money page by day; continued runs count only their own turns (a767c563). Lemma chart counts unique lemmas: same statement or rewording of reached steps left out (ca3b5af5, 7453e8d7).
+- Fair-prompt harness, all on by default: `--library-search 60` with ACTION: search (src/lean/search.ts; 67d487ae, 68f947e3), `--related` (30 newest + 30 related) and `--retry-duplicates` (e29a1880), `--free-coordination`: searches and the reply after a duplicate are paid by the harness, recorded as coordCost (f0b56648). Credit check factor 1.8 (1649a160). Live: x-axis "work spent", coordination cost per setup (5af2de08, site 4db99ca). Tests 35/35.
+- Results: qr-choose-1 written up (4q: 96% vs 100% published at once). Replay test of search (4r, $0.27). qr-1-long stopped, not fair (4s). qr-2 stopped (4t, duplicates ended a quarter of shared/OSO turns). qr-3 stopped (4u, searches charged to labs). Old QR titles say Old/stopped (0ab8e51a).
+- Erdős lab: tries see Lean's errors and real Mathlib names (scripts/shared.ts suggestions); loop read the board wrong and crashed every pass, fixed (70f59a26); launchd job at 3 tries. S3c proved (PR #17): 4 of 19.
+- Push hook ~/.claude/hooks/push-gate.py: git push allowed in OSO repos except notes, asks elsewhere (replaced the global ask rule).
+
+**Decisions**
+- Labs pay only for work (own tries + fixes after Lean errors); coordination is free to them and reported apart: main measure at equal work, coordination dollars as the second number.
+- Calls pinned to Baidu (`--providers baidu`): charges ~0.98x reference; DeepInfra charged 1.69x.
+- QR at $1 a lab ($4 a run): qr-1-long reached most of its steps by $4. One run per setup (credit ~$22).
+- No DeepSeek lab on Erdős (user said no); local Goedel 8B only.
+
+**Open threads**
+1. Test run `test-qr-free-coord` (40 rounds, $0.10 a lab, Baidu) running: past round 20 check work $/turn is about equal across setups and no turns end on duplicates; then ask the user before the full run.
+2. Full fair QR comparison (qr-4): traditional, shared, oso-0.2, $1 a lab, 600 rounds, Baidu, defaults on; ~$12 lab money + coordination (~$15–16 real). Needs the user's go. Write names first.
+3. Erdős: launchd loop keeps trying 7 ready steps with the local model.
+4. Unique lemmas still text-based; Lean check against earlier lemmas would catch off-map rewordings (offered, not asked for).
+
+**Watch out**
+- `src/lean/societies.ts` uncommitted (B3 setups, kept on purpose).
+- Credit $22.72 (OpenRouter account: $422.79 used of $450). Mac was on battery at 21:31: runs stall when it sleeps.
+- `--continue` on an old run now needs `--library-search 0 --related no --retry-duplicates no --free-coordination no` to match its options.
+- Shared-run bot commits to master often: pull --rebase --autostash before pushing.
+
 ## 2026-11-26 23:18 · QR set built and run; prompt fix; --continue; Erdős lab loop
 Session: d9a08bd6-9ee5-45f0-9b1d-b8874a70e358 · branch master · last commit 6196d849
 
