@@ -22,8 +22,9 @@ while :; do
   done; true
   until mkdir "$lock" 2>/dev/null; do sleep 5; done
   mkdir -p "$live/experiments"
-  node scripts/live-snapshot.ts "$id" "$live/experiments/$id.json" >/dev/null
-  node scripts/live-index.ts "$live" >/dev/null
+  # A failed snapshot skips this push but still lets go of the lock, so other streams go on.
+  { node scripts/live-snapshot.ts "$id" "$live/experiments/$id.json" >/dev/null && node scripts/live-index.ts "$live" >/dev/null; } \
+    || { echo "$(date '+%H:%M') snapshot failed; next try in ${every}s"; rmdir "$lock"; sleep "$every"; continue; }
   done=$(ls -d lean/runs/"$id"-r*/ 2>/dev/null | while read -r d; do [ -f "$d/result.json" ] || [ -f "$d/stopped.json" ] && echo; done | wc -l | tr -d ' ')
   (cd "$live" && git add -A . && { git rev-parse -q --verify HEAD >/dev/null && git commit -q --amend -m "live: $id" || git commit -q -m "live: $id"; } && git -c core.sshCommand='ssh -o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=2' push -q -f origin live) \
     && echo "$(date '+%H:%M') pushed: $done of $total runs done" || true

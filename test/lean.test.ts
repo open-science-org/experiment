@@ -487,6 +487,27 @@ test('free coordination: a search reply is paid by the harness, not the lab; wit
   const free = await turn('free', true), paid = await turn('paid', false);
   assert.equal(free.cost, 0.01); assert.equal(free.coordCost, 0.01); assert.equal(free.spentAfter, 0.01);
   assert.equal(paid.cost, 0.02); assert.equal(paid.coordCost, undefined);
+  assert.equal(free.coordUsage.output, 1); assert.equal(free.usage.output, 2);
+});
+
+test('money: costOf is the labs\' work only, coordOf the searches, at the same price; old runs split by the charge', async () => {
+  const { costOf, coordOf } = await import('../src/lean/community.ts');
+  const { referenceCost } = await import('../src/lean/prices.ts');
+  const m = 'deepseek/deepseek-v4.1-flash', u = (output: number) => ({ input: 1000, output, cacheRead: 0, cacheWrite: 0 });
+  const base = { round: 1, agent: 0, model: m, kind: 'lemma' as const, ok: true, turns: 2, spentAfter: 0, transcript: [], t: 0 };
+  const a = { ...base, usage: u(3000), cost: 0.002, coordCost: 0.001, coordUsage: u(1000) };
+  const ref = (x: number) => referenceCost(m, u(x))!;
+  // Work: the tokens less the search's (here the search read 1000 input tokens too).
+  assert.ok(Math.abs(costOf(a) - referenceCost(m, { input: 0, output: 2000, cacheRead: 0 })!) < 1e-12);
+  assert.ok(Math.abs(coordOf(a) - ref(1000)) < 1e-12);
+  // Before coordUsage was kept: the charge's split.
+  const old = { ...base, usage: u(3000), cost: 0.003, coordCost: 0.001 };
+  assert.ok(Math.abs(costOf(old) + coordOf(old) - ref(3000)) < 1e-12);
+  assert.ok(Math.abs(coordOf(old) - ref(3000) / 4) < 1e-12);
+  // A turn lost to an error: no tokens, only charges.
+  const err = { ...base, kind: 'error' as const, usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, cost: 0.002, coordCost: 0.001 };
+  assert.equal(coordOf(err), 0.001);
+  assert.equal(costOf({ ...base, usage: u(3000), cost: 0.003 }), ref(3000));
 });
 
 test('shown library: half the newest, half related to the lab\'s last tries, in library order', async () => {

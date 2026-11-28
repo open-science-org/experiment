@@ -11,7 +11,7 @@
 // run's options and the set's reference files.
 // Writes <run dir>/matches.json and checks only lemmas it has not checked before, so it can run every minute.
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import type { Action, CommunityOptions } from '../src/lean/community.ts';
@@ -30,7 +30,8 @@ const saved: Matches = existsSync(out) ? JSON.parse(readFileSync(out, 'utf8')) :
 const actions = (existsSync(join(dir, 'actions.jsonl')) ? readFileSync(join(dir, 'actions.jsonl'), 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l)) : []) as Action[];
 const fresh = actions.filter((a) => a.ok && a.entry && a.kind === 'lemma' && a.signature && saved.checked[a.entry] !== a.signature);
 // The second pass (below) takes about a minute of Lean: while a run goes, at most every 15 minutes; once more when it ends.
-const finished = existsSync(join(dir, 'result.json'));
+// A run stopped by hand (stopped.json) has ended too.
+const finished = existsSync(join(dir, 'result.json')) || existsSync(join(dir, 'stopped.json'));
 const comboDue = !saved.combosFinal && (finished || Date.now() - (saved.combosAt ?? 0) > 15 * 60_000);
 if (!fresh.length && !comboDue) process.exit(0);
 // MATCH_DEBUG=1 prints the generated Lean file's path, to read Lean's own messages.
@@ -123,6 +124,8 @@ if (comboDue) {
   saved.combosAt = Date.now();
   saved.combosFinal = finished;
 }
-writeFileSync(out, JSON.stringify(saved, null, 1) + '\n');
+// Written whole, then renamed: the live snapshot reads this file while a run goes and must never see half of it.
+writeFileSync(out + '.tmp', JSON.stringify(saved, null, 1) + '\n');
+renameSync(out + '.tmp', out);
 const hit = Object.values(saved.covers).filter((c) => c.length).length;
 console.log(`match-steps: ${fresh.length} new lemmas, ${pairs.length} checks; ${hit} of ${Object.keys(saved.covers).length} lemmas give a hidden step; ${Object.keys(saved.combos ?? {}).length} more steps from lemmas together`);

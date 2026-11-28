@@ -143,9 +143,10 @@ export interface CommunityOptions {
   /** A lemma already in the library the lab can cite does not end the turn: the lab is told its name and tries again
    *  (up to 2 times a turn, no repair used). Unset: the turn ends, as before 2026-11-27. */
   retryDuplicates?: boolean;
-  /** Coordination is free to the lab: a reply that only searched the library, and the reply after being told a lemma is
-   *  already there, do not count against its budget. The harness pays; recorded as the action's coordCost. Labs pay only
-   *  for work: their own tries and fixes after Lean's errors, the same in every setup. Unset: every reply counts. */
+  /** Coordination is free to the lab: a reply that only searched the library does not count against its budget. The
+   *  harness pays; recorded as the action's coordCost (and its tokens as coordUsage). Labs pay for every reply that
+   *  tries a proof, including the one after being told a lemma is already there: that is work, the same in every setup
+   *  (until 2026-11-28 that reply was free, which booked shared and OSO labs' work as coordination). Unset: every reply counts. */
   freeCoordination?: boolean;
   /** Which problem set: the main 8 targets (default) or those plus the harder targets (see lean/reference-dag-hard.md). */
   problems?: Problems;
@@ -216,8 +217,9 @@ export interface Action {
   ok: boolean; reason?: string; turns: number;
   /** The library entry an accepted action created, and the results its proof used. */
   entry?: string; uses?: string[];
-  /** With freeCoordination: dollars spent on coordination replies, paid by the harness, not counted in `cost`. */
-  coordCost?: number;
+  /** With freeCoordination: dollars spent on coordination replies, paid by the harness, not counted in `cost`;
+   *  coordUsage: their tokens, which are also in `usage`. */
+  coordCost?: number; coordUsage?: Usage;
   /** Dollars this action counted against the budget: the provider's charge. Older runs have only listCost. */
   usage: Usage; cost?: number; listCost?: number; spentAfter: number;
   /** The companies that served this action's calls, in order. */
@@ -290,6 +292,8 @@ export class Community {
   /** Earnings by agent. */
   earnings: number[];
   spent: number[];
+  /** Coordination the harness paid for, by agent (freeCoordination): not in `spent`. */
+  coord: number[];
   actions: Action[] = [];
   free: Pick<Task, 'name' | 'ns' | 'short' | 'signature'>[];
   problems: Problems;
@@ -318,6 +322,7 @@ export class Community {
     });
     this.earnings = opts.agents.map(() => 0);
     this.spent = opts.agents.map(() => 0);
+    this.coord = opts.agents.map(() => 0);
     this.released = opts.agents.map(() => 0);
     this.recent = opts.agents.map(() => 0);
     const ref = parseReference(this.problems);
@@ -562,7 +567,8 @@ ${last.length && !this.opts.plainPlanner ? `Last round:\n${last.join('\n')}\n\n`
     const servedBy: string[] = [];
     let kind: Action['kind'] = 'none', target: string | undefined, lemma: ReturnType<typeof parseLemma> = null, ok = false, reason = '';
     const repairs = this.opts.repairsByLab?.[i] ?? this.opts.repairs;
-    let searches = 0, dupRetries = 0, coordCost = 0, afterDuplicate = false;
+    let searches = 0, dupRetries = 0, coordCost = 0;
+    const coordUsage: Usage = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, cost: 0 };
     for (let k = 0; k <= repairs; k++) {
       const reply = await chat(system, messages);
       for (const key of ['input', 'output', 'cacheRead', 'cacheWrite'] as const) usage[key] += reply.usage[key];
@@ -574,9 +580,12 @@ ${last.length && !this.opts.plainPlanner ? `Last round:\n${last.join('\n')}\n\n`
       // A search is not an attempt: it does not use up a repair.
       const query = this.opts.librarySearch ? /ACTION:\s*search\b[ \t]*(.*)/i.exec(text) : null;
       const searching = !!query && searches < 3 && this.spent[i] - (this.opts.freeCoordination ? c : 0) < this.budgetOf(i);
-      // Coordination replies (a search, or the reply after being told a lemma is already there) are the harness's cost.
-      if (this.opts.freeCoordination && (searching || afterDuplicate)) { this.spent[i] -= c; counted -= c; coordCost += c; }
-      afterDuplicate = false;
+      // A reply that only searched is coordination: the harness's cost. Every reply that tries a proof is the lab's.
+      if (this.opts.freeCoordination && searching) {
+        this.spent[i] -= c; counted -= c; coordCost += c; this.coord[i] += c;
+        for (const key of ['input', 'output', 'cacheRead', 'cacheWrite'] as const) coordUsage[key] += reply.usage[key];
+        coordUsage.cost = (coordUsage.cost ?? 0) + (reply.usage.cost ?? 0);
+      }
       if (searching) {
         searches++; k--;
         const found = search(query[1], this.visible(i), (e) => ({ name: e.name, statement: e.signature }));
@@ -653,7 +662,7 @@ ${last.length && !this.opts.plainPlanner ? `Last round:\n${last.join('\n')}\n\n`
               if (pub.length) known = (await check({ ns: 'OSO', signature: lemma.signature }, `:= by first ${pub.map((n) => `| (apply ${n} <;> assumption) | (apply ${n}; done)`).join(' ')}`, { library: this.checkLibrary(i), problems: this.problems })).ok;
             }
             const dup = this.visible(i).find((e) => norm(e.signature) === norm(lemma!.signature));
-            if (dup && this.opts.retryDuplicates && dupRetries < 2) { dupRetries++; k--; afterDuplicate = true; errors = [`Already in the library as ${dup.name}: cite it by that name. Prove something that is not there yet.`]; }
+            if (dup && this.opts.retryDuplicates && dupRetries < 2) { dupRetries++; k--; errors = [`Already in the library as ${dup.name}: cite it by that name. Prove something that is not there yet.`]; }
             else if (dup) { reason = `duplicate of ${dup.name}, which you can already cite`; }
             else {
               ok = true;
@@ -686,7 +695,7 @@ ${last.length && !this.opts.plainPlanner ? `Last round:\n${last.join('\n')}\n\n`
     const a: Action = {
       round, agent: i, model, kind, target, name: lemma?.name, signature: lemma?.signature, ok, reason: reason || (ok ? undefined : 'not accepted'),
       ...(made ? { entry: made.name, uses: made.uses } : {}),
-      turns: transcript.length, usage, cost: counted, ...(coordCost ? { coordCost } : {}), spentAfter: this.spent[i], ...(servedBy.length ? { servedBy } : {}), transcript, t: Date.now(),
+      turns: transcript.length, usage, cost: counted, ...(coordCost ? { coordCost, coordUsage } : {}), spentAfter: this.spent[i], ...(servedBy.length ? { servedBy } : {}), transcript, t: Date.now(),
     };
     this.actions.push(a);
     log(a);
@@ -787,9 +796,26 @@ export function audit(r: CommunityResult, cost: (a: Action) => number = (a) => a
   return { ok: !problems.length, problems, overspent: r.spent.map((s, i) => Math.max(0, s - given(i))) };
 }
 
-/** What an action cost: its tokens at the model's reference price (prices.ts), so runs on different days compare;
- *  for a model without one, the charge, or the list price for runs recorded before charges were used. */
-export const costOf = (a: Action) => (a.usage ? referenceCost(a.model, a.usage) : null) ?? a.cost ?? a.listCost ?? 0;
+/** What a whole action cost, coordination included: its tokens at the model's reference price (prices.ts), so runs on
+ *  different days compare; for a model without one, the charge, or the list price for runs recorded before charges were used. */
+const wholeOf = (a: Action) => (a.usage ? referenceCost(a.model, a.usage) : null) ?? (a.cost !== undefined ? a.cost + (a.coordCost ?? 0) : a.listCost) ?? 0;
+/** Tokens of `u` less those of `v`. */
+const less = (u: Usage, v: Usage): Usage => ({ input: u.input - v.input, output: u.output - v.output, cacheRead: u.cacheRead - v.cacheRead, cacheWrite: u.cacheWrite - v.cacheWrite, cost: (u.cost ?? 0) - (v.cost ?? 0) });
+/** The labs' work only: coordination the harness paid for (coordOf) is left out. */
+export const costOf = (a: Action) => {
+  if (!a.coordCost) return wholeOf(a);
+  if (a.coordUsage) return referenceCost(a.model, less(a.usage, a.coordUsage)) ?? a.cost ?? 0;
+  // Runs before coordUsage was kept (2026-11-28): the work's share of the charge.
+  return wholeOf(a) * (a.cost ?? 0) / ((a.cost ?? 0) + a.coordCost);
+};
+/** What an action's coordination cost (freeCoordination: searches), at the same price as costOf. Work plus this is the real spend. */
+export const coordOf = (a: Action) => {
+  if (!a.coordCost) return 0;
+  if (a.coordUsage) return referenceCost(a.model, a.coordUsage) ?? a.coordCost;
+  const whole = wholeOf(a);
+  // A turn lost to an error has no tokens: its charges are all there is.
+  return whole ? whole * a.coordCost / ((a.cost ?? 0) + a.coordCost) : a.coordCost;
+};
 /** Whether a run's money is the provider's charge (true) or list prices (older runs). */
 export const charged = (r: CommunityResult) => r.actions.every((a) => a.cost !== undefined);
 
@@ -833,7 +859,7 @@ export async function runCommunity(opts: CommunityOptions, chatFor: (com: Commun
   let stopped: string | undefined;
   for (let round = firstRound; round <= opts.rounds && !com.done() && !stopped; round++) {
     com.fund();
-    const before = [...com.earnings], spentBefore = [...com.spent];
+    const before = [...com.earnings], spentBefore = [...com.spent], coordBefore = [...com.coord];
     if (opts.rules === 'planner') {
       com.plans = [];
       if (com.active(0)) await com.plan(round, chats[0], (u) => price(opts.agents[0], u), (a) => appendFileSync(file, JSON.stringify(a) + '\n')).catch((e) => {
@@ -861,7 +887,7 @@ export async function runCommunity(opts: CommunityOptions, chatFor: (com: Commun
       const msg = (e as Error).message;
       log(`  round ${round} · agent ${i + 1}: error ${msg}`);
       // Kept in the log, so a lost turn is counted, not silently missing.
-      const a: Action = { round, agent: i, model: opts.agents[i], kind: 'error', ok: false, reason: msg.slice(0, 500), turns: 0, usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, cost: com.spent[i] - spentBefore[i], spentAfter: com.spent[i], transcript: [], t: Date.now() } as Action;
+      const a: Action = { round, agent: i, model: opts.agents[i], kind: 'error', ok: false, reason: msg.slice(0, 500), turns: 0, usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, cost: com.spent[i] - spentBefore[i], ...(com.coord[i] > coordBefore[i] ? { coordCost: com.coord[i] - coordBefore[i] } : {}), spentAfter: com.spent[i], transcript: [], t: Date.now() } as Action;
       com.actions.push(a);
       appendFileSync(file, JSON.stringify(a) + '\n');
       // Out of credit: every later call fails too, so the run would only look like labs giving up.

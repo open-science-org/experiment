@@ -30,8 +30,8 @@
 //     --show-failures N (0)       show labs the last N failed tries they can see, and why (replay test 4o used 20)
 //     --related yes|no (yes)      with --library-search: half the shown results are the newest, half those related to the lab's last tries
 //     --retry-duplicates yes|no (yes)  a lemma already in the library does not end the turn: the lab is told its name, tries again
-//     --free-coordination yes|no (yes)  searches and the retry after a duplicate do not count against the lab's budget
-//                                 (the harness pays, recorded as coordCost): labs pay only for their own tries
+//     --free-coordination yes|no (yes)  searches do not count against the lab's budget (the harness pays, recorded as
+//                                 coordCost): labs pay for every reply that tries a proof, the retry after a duplicate too
 //     --library-search N (60)     show only the newest N library results a turn, the same in every setup; labs search the
 //                                 rest (ACTION: search). 0: the whole library (runs before 2026-11-27; use it with --continue)
 import { chatFor, creditLeft, DEFAULT_MODEL, DEFAULT_MODELS, defaultProvider, type Provider } from './agent.ts';
@@ -171,6 +171,8 @@ if (cmd === 'community') {
     // At the reference price, budgets can buy tokens that cost more on the day (2026-11-17: the cheapest company
     // charged about twice DeepSeek's reference price; qr-1-long, 2026-11-27: 1.6 times), so the credit must cover that too.
     if (base.pricing === 'reference') most *= 1.8;
+    // Free coordination (searches) is paid on top of the budgets: 11-26% of work in test-qr-free-coord (2026-11-28).
+    if (base.freeCoordination && base.librarySearch) most *= 1.3;
     if (left != null && left < most * 1.1) { console.error(`The key has $${left.toFixed(2)} left; this test can spend up to $${most.toFixed(2)}. Add credit first.`); process.exit(1); }
   }
   const id = pick('run', `${stub ? 'stub-' : ''}community-${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}`);

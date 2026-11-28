@@ -3,7 +3,7 @@
 // decided goes out (targets and lemmas proved or not, money spent): no proofs, no model thinking.
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { costOf, type Action, type CommunityOptions } from '../src/lean/community.ts';
+import { coordOf, costOf, type Action, type CommunityOptions } from '../src/lean/community.ts';
 import { ROOT } from '../src/paths.ts';
 import { EXPERIMENT_ANSWERS, EXPERIMENT_NAMES, EXPERIMENT_QUESTIONS } from '../src/lean/names.ts';
 
@@ -57,7 +57,8 @@ const setups = sources.map(({ key, from, repeats, earlier }) => {
     const actions = lines(join(dir, 'actions.jsonl')) as Action[];
     // Lab lemma -> the hidden steps it gives (scripts/match-steps.ts; empty until it has run).
     // Steps given by several lab lemmas together (second pass): reached when the last of them was proved.
-    const m = existsSync(join(dir, 'matches.json')) ? (JSON.parse(readFileSync(join(dir, 'matches.json'), 'utf8')) as { covers: Record<string, string[]>; combos?: Record<string, string[]> }) : null;
+    // Unreadable (an older matcher wrote it in place): the push goes ahead without step matches, the next one has them.
+    const m = (() => { try { return existsSync(join(dir, 'matches.json')) ? (JSON.parse(readFileSync(join(dir, 'matches.json'), 'utf8')) as { covers: Record<string, string[]>; combos?: Record<string, string[]> }) : null; } catch { return null; } })();
     const covers = m?.covers ?? {}, combos = m?.combos ?? {};
     const inCombo = new Set(Object.values(combos).flat());
     let spent = 0;
@@ -88,8 +89,8 @@ const setups = sources.map(({ key, from, repeats, earlier }) => {
       rep: k + 1, status: existsSync(join(dir, 'result.json')) || existsSync(join(dir, 'stopped.json')) ? 'done' as const : 'running' as const,
       round: Math.max(0, ...actions.map((a) => a.round)), spent, targets,
       lemmas: actions.filter((a) => a.kind === 'lemma' && a.ok).length, steps, lsteps, provedAt,
-      // Coordination the harness paid for (freeCoordination: searches, the reply after a duplicate), not in `spent`.
-      coord: actions.reduce((x, a) => x + (a.coordCost ?? 0), 0),
+      // Coordination the harness paid for (freeCoordination: searches), not in `spent`, at the same price.
+      coord: actions.reduce((x, a) => x + coordOf(a), 0),
       // What the labs built: every new result Lean accepted, who proved it and when, and the earlier results its
       // proof cites (read from Lean, so exact). Statements, not proofs.
       // Hidden steps the labs have proved (scripts/match-steps.ts): step name -> [round, lab, lab's lemma], earliest.
