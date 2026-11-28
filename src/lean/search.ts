@@ -27,3 +27,14 @@ export function search<T>(query: string, entries: T[], text: (e: T) => { name: s
     .slice(0, limit)
     .map((x) => x.d.e);
 }
+
+/** A lemma's statement with its variable names replaced by position, so `(n : N) : n + 0 = n` and `(m : N) : m + 0 = m` match. */
+export function statementKey(sig: string) {
+  const s = sig.replace(/\s+/g, ' ').trim(), names = new Map<string, string>();
+  // Names bound by binders ((x y : T), {x : T}, [h : T]) and by ∀, ∃, fun, λ.
+  for (const m of s.matchAll(/[({[]\s*([^():{}\[\]]+?)\s*:(?!=)/g)) for (const n of m[1].split(' ')) if (/^[\p{L}_][\p{L}\p{N}_'.]*$/u.test(n)) names.set(n, '');
+  for (const m of s.matchAll(/(?:∀|∃|fun|λ)\s+([^,:=>]+?)\s*(?:,|:|=>)/g)) for (const n of m[1].split(/[\s()]+/)) if (/^[\p{L}_][\p{L}\p{N}_']*$/u.test(n)) names.set(n, '');
+  let k = 0;
+  for (const n of names.keys()) names.set(n, `v${++k}`);
+  return s.replace(/[\p{L}_][\p{L}\p{N}_'.]*/gu, (w) => names.get(w) ?? w);
+}
